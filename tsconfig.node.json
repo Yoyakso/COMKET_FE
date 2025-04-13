@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2022",
     "lib": ["ES2023"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "./dist",
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -17,8 +21,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["vite.config.ts"]
 }
