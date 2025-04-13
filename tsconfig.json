@@ -1,7 +1,13 @@
 {
   "compilerOptions": {
+    "target": "ES2015",
+    "module": "ESNext",
+    "lib": ["DOM", "ES2015", "DOM.Iterable", "ESNext"],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "esModuleInterop": true,
+    "types": ["vite/client", "react", "react-dom"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
