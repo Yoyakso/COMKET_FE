@@ -1,6 +1,7 @@
 {
-  "files": [],
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
@@ -14,8 +15,15 @@
       "@api/*": ["src/api/*"]
     }
   },
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "src/**/*.d.ts",
+    "svg.d.ts",
+    "src",
+    "src/types"
   ]
+  // "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
 }

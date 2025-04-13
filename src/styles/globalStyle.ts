@@ -51,6 +51,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body {
+  font-family: 'Pretendard', sans-serif;
     background-color: #fff;
     color: #000;
   }
