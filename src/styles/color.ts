@@ -79,5 +79,10 @@ export const color = {
   textList: '#25282D',
   textLabel: '#707987',
   textPlaceholder: '#9BA8C6',
+  textPlaceholder16: 'rgba(155, 168, 198, 0.16)',
+  textPlaceholder24: 'rgba(155, 168, 198, 0.24)',
+  textPlaceholder32: 'rgba(155, 168, 198, 0.32)',
+  textPlaceholder70: 'rgba(155, 168, 198, 0.70)',
+
   textWhite: '#FFFFFF',
 };
