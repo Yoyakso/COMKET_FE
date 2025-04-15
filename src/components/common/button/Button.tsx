@@ -1,5 +1,6 @@
 import type React from "react"
 import * as S from "./Button.Style"
+import PlusIcon from "@/assets/icons/PlusIcon.svg?react"
 
 export type ButtonStyle =
   | "primaryFilled"
@@ -34,9 +35,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = ({ children, variant, size, withIcon, ...props }: ButtonProps) => {
   return (
     <S.ButtonContainer variant={variant} size={size} disabled={props.disabled} {...props}>
-      {withIcon && <S.IconWrapper>+</S.IconWrapper>}
+      {withIcon && <S.IconWrapper><PlusIcon /></S.IconWrapper>}
       {children}
-      {withIcon && <S.IconWrapper>+</S.IconWrapper>}
+      {withIcon && <S.IconWrapper><PlusIcon /></S.IconWrapper>}
     </S.ButtonContainer>
   )
 }
