@@ -71,6 +71,8 @@ export const color = {
 
   neutral: '#EFF1F6',
 
+  quaternary: '#9AA3B2',
+
   textHeading: '#17191C',
   textPrimary: '#25282D',
   textSecondary: '#525964',
