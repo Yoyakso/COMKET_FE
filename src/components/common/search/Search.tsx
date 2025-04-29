@@ -20,6 +20,7 @@ interface SearchProps {
   onClear?: () => void
   disabled?: boolean
   state?: SearchState // ← 직접 넘기면 강제 적용 / 없으면 자동 추론
+  className?: string
 }
 
 export const Search = ({
@@ -30,6 +31,7 @@ export const Search = ({
   onClear,
   disabled = false,
   state,
+  className,
 }: SearchProps) => {
   const [focused, setFocused] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -46,7 +48,7 @@ export const Search = ({
   }, [state, value, focused, hovered, disabled])
 
   return (
-    <S.Container variant={variant} size={size} state={computedState}>
+    <S.Container variant={variant} size={size} state={computedState} className={className}>
       <S.TextBox
         variant={variant}
         size={size}
