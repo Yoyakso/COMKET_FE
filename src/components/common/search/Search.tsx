@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import SearchIcon from '@/assets/icons/SearchIcon.svg?react'
-import ClearIcon from '@/assets/icons/SearchClearIcon.svg?react'
+import ClearIcon from '@/assets/icons/ClearIcon.svg?react'
 import * as S from './Search.style'
 
 export type SearchState =
