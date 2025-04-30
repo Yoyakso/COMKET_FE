@@ -8,7 +8,7 @@ export const Container = styled.div<{
 }>`
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 100%;
   opacity: ${({ state }) =>
     state === 'disable' || state === 'activated-disabled' ? 0.5 : 1};
 `
@@ -44,26 +44,25 @@ export const TextBox = styled.div<{
     if (variant === 'outlined') {
       return `
         background-color: ${isDisabled ? color.textPlaceholder32 : color.white};
-    ${isDisabled 
-    ? 'border: none;'  
-    :`border: 1px solid ${
-           isHover || isFocus || isTyping? color.basic1000  
-          : color.textPlaceholder24
-        };`}
+    ${isDisabled
+          ? 'border: none;'
+          : `border: 1px solid ${isHover || isFocus || isTyping ? color.basic1000
+            : color.textPlaceholder24
+          };`}
     color: ${isDisabled ? color.textSecondary
-            : isTyping || isActivated ? color.textPrimary
+          : isTyping || isActivated ? color.textPrimary
             : color.textPlaceholder70
-            };`
+        };`
     }
 
     if (variant === 'filled') {
       return `
-        background-color: ${isDisabled ? color.textPlaceholder32 : color.  textPlaceholder16};
+        background-color: ${isDisabled ? color.textPlaceholder32 : color.textPlaceholder16};
         border: none;
         color: ${isDisabled ? color.textSecondary
-            : isTyping || isActivated ? color.textPrimary
+          : isTyping || isActivated ? color.textPrimary
             : color.textPlaceholder70
-            };`
+        };`
     }
 
     return ''
@@ -81,7 +80,7 @@ export const StyledInput = styled.input`
 `
 
 export const IconWrapper = styled.button<{
-    size: string
+  size: string
 }>`
   display: flex;
   align-items: center;

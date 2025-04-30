@@ -43,6 +43,13 @@ export const GlobalStyle = createGlobalStyle`
     font-style: normal;
   }
 
+  @font-face {
+    font-family: 'Lexend';
+    src: url('/fonts/Lexend-ExtraBold.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+  }
+
   * {
     margin: 0;
     padding: 0;
