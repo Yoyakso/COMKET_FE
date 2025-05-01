@@ -71,6 +71,8 @@ export const color = {
 
   neutral: '#EFF1F6',
 
+  quaternary: '#9AA3B2',
+
   textHeading: '#17191C',
   textPrimary: '#25282D',
   textSecondary: '#525964',
@@ -79,5 +81,10 @@ export const color = {
   textList: '#25282D',
   textLabel: '#707987',
   textPlaceholder: '#9BA8C6',
+  textPlaceholder16: 'rgba(155, 168, 198, 0.16)',
+  textPlaceholder24: 'rgba(155, 168, 198, 0.24)',
+  textPlaceholder32: 'rgba(155, 168, 198, 0.32)',
+  textPlaceholder70: 'rgba(155, 168, 198, 0.70)',
+
   textWhite: '#FFFFFF',
 };
