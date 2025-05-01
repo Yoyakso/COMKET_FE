@@ -1,17 +1,19 @@
 import { color } from '@/styles/color';
 import styled from 'styled-components';
 
+
+
 export const Container = styled.div`
     display: flex;
+    justify-content: center;
+    align-items: center;
     width: 720px;
     padding: 40px 32px 32px 32px;
-    margin: 300px;
     flex-direction: column;
-    align-items: flex-start;
     gap: 40px;
     border-radius: 8px;
     border: 0.2px solid ${color.textPlaceholder24};
-    background: color.white;
+    background: ${color.white};
     box-shadow: 0px 4px 8px 0px rgba(219, 221, 233, 0.50);
 `;
 
