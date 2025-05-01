@@ -1,4 +1,3 @@
-// ✅ Radio.tsx (resolveState 버그 수정 반영 최종)
 import React from 'react'
 import * as S from './Radio.style'
 

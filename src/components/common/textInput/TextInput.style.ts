@@ -4,7 +4,7 @@ import { color } from '@/styles/color';
 export const Container = styled.div<{ size: string; state: string }>`
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 100%;
   background-color: ${color.white};
   opacity: ${({ state }) => (state === 'disabled' ? 0.5 : 1)};
 `;
@@ -156,5 +156,6 @@ export const Clear2Button = styled.button<{ size: string }>`
 export const HelperText = styled.span<{ state: string }>`
   margin-top: 6px;
   font-size: 12px;
-  color: ${({ state }) => (state === 'error' ? color.error : 'transparent')};
+  color: ${({ state }) =>
+  state === 'error' ? color.error : color.textTertiary};
 `;

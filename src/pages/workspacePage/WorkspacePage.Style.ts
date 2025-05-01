@@ -7,7 +7,6 @@ export const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: ${color.white};
 `;
 
 export const Card = styled.div`
@@ -28,7 +27,7 @@ export const Title = styled.h2`
   font-weight: 700;
 `;
 
-export const DescriptionBox = styled.div`
+export const Description = styled.div`
   background-color: ${color.textPlaceholder08};
   color: ${color.textPrimary};
   padding: 16px 0px;

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import * as S from "./CheckBox.Style";
+import * as S from "./CheckBox.style";
 import CheckIcon from "@/assets/icons/CheckIcon.svg?react";
 import MinusIcon from "@/assets/icons/MinusIcon.svg?react";
 
