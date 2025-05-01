@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import * as S from "./CheckBox.style";
+import * as S from "./CheckBox.Style";
 import CheckIcon from "@/assets/icons/CheckIcon.svg?react";
 import MinusIcon from "@/assets/icons/MinusIcon.svg?react";
 
@@ -45,8 +45,8 @@ export const CheckBox = ({
     );
 
   const handleClick = useCallback(() => {
-    !isControlled && !isDisabled && toggleVisual();
-    !isDisabled && onChange?.();
+    if (!isControlled && !isDisabled) toggleVisual();
+    if (!isDisabled) onChange?.();
   }, [isControlled, isDisabled, onChange]);
 
   const icon =
@@ -59,8 +59,8 @@ export const CheckBox = ({
       <S.Box
         size={size}
         variant={variant}
-        visualState={visualState ?? "unchecked"}
-        interactionState={interactionState ?? "default"}
+        $visualState={visualState}
+        $interactionState={interactionState}
         onClick={handleClick}
       >
         {icon}

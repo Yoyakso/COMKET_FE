@@ -80,7 +80,7 @@ const textVariantColor = {
 // 전체 드롭다운 박스 너비
 export const Wrapper = styled.div`
   position: relative;
-  width: 200px;
+  width: 100%;
 `
 
 // 드롭다운 본체

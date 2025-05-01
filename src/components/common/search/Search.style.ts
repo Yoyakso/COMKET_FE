@@ -13,10 +13,22 @@ export const Container = styled.div<{
     state === 'disable' || state === 'activated-disabled' ? 0.5 : 1};
 `
 
-const sizeStyles: Record<string, string> = {
-  sm: `height: 40px; font-size: 14px;`,
-  md: `height: 48px; font-size: 16px;`,
-  lg: `height: 56px; font-size: 18px;`,
+const sizeStyles: Record<string, ReturnType<typeof css>> = {
+  sm: css`
+    height: 40px;
+    font-size: 14px;
+    line-height: 1;
+  `,
+  md: css`
+    height: 48px;
+    font-size: 16px;
+    line-height: 1;
+  `,
+  lg: css`
+    height: 56px;
+    font-size: 18px;
+    line-height: 1;
+  `,
 }
 
 export const TextBox = styled.div<{
@@ -24,13 +36,15 @@ export const TextBox = styled.div<{
   size: string
   state: string
 }>`
-    display: flex;
-    box-sizing: border-box;
-    align-items: center;
-    border-radius: 3px;
-    width: 100%;
-    padding: 0 12px;
-    gap: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  border-radius: 3px;
+  width: 100%;
+  padding: 0 12px;
+  gap: 4px;
+  overflow: hidden;
 
   ${({ size }) => sizeStyles[size]}
 
@@ -41,42 +55,46 @@ export const TextBox = styled.div<{
     const isHover = state === 'hover'
     const isActivated = state === 'activated'
 
-    if (variant === 'outlined') {
-      return `
-        background-color: ${isDisabled ? color.textPlaceholder32 : color.white};
-    ${isDisabled
-          ? 'border: none;'
-          : `border: 1px solid ${isHover || isFocus || isTyping ? color.basic1000
+    const baseColor = isDisabled
+      ? color.textPlaceholder32
+      : variant === 'filled'
+      ? color.textPlaceholder16
+      : color.white
+
+    const borderColor = isDisabled
+      ? 'none'
+      : variant === 'outlined'
+      ? `1px solid ${
+          isHover || isFocus || isTyping
+            ? color.basic1000
             : color.textPlaceholder24
-          };`}
-    color: ${isDisabled ? color.textSecondary
-          : isTyping || isActivated ? color.textPrimary
-            : color.textPlaceholder70
-        };`
-    }
+        }`
+      : 'none'
 
-    if (variant === 'filled') {
-      return `
-        background-color: ${isDisabled ? color.textPlaceholder32 : color.textPlaceholder16};
-        border: none;
-        color: ${isDisabled ? color.textSecondary
-          : isTyping || isActivated ? color.textPrimary
-            : color.textPlaceholder70
-        };`
-    }
+    const textColor = isDisabled
+      ? color.textSecondary
+      : isTyping || isActivated
+      ? color.textPrimary
+      : color.textPlaceholder70
 
-    return ''
+    return `
+      background-color: ${baseColor};
+      border: ${borderColor};
+      color: ${textColor};
+    `
   }}
 `
 
 export const StyledInput = styled.input`
   flex: 1;
+  height: 100%;
   min-width: 0;
   background: transparent;
   border: none;
   outline: none;
   font-family: inherit;
-
+  font-size: inherit;
+  line-height: 1;
 `
 
 export const IconWrapper = styled.button<{
@@ -89,8 +107,11 @@ export const IconWrapper = styled.button<{
   border: none;
   cursor: pointer;
   padding: 0;
-   svg {
-    width: ${({ size }) => (size === 's' ? '14px' : size === 'm' ? '18px' : '22px')};
-    height: ${({ size }) => (size === 's' ? '14px' : size === 'm' ? '18px' : '22px')};
+  flex-shrink: 0;
+
+  svg {
+    display: block;
+    width: ${({ size }) => (size === 'sm' ? '14px' : size === 'md' ? '18px' : '22px')};
+    height: ${({ size }) => (size === 'sm' ? '14px' : size === 'md' ? '18px' : '22px')};
   }
 `
