@@ -29,7 +29,7 @@ export const WorkspacePage = () => {
     <S.Container>
       <S.Card>
         <S.Title>워크스페이스 선택</S.Title>
-    <CheckBox variant="indigo" size="sm" interactionState="default" label="선택박스"/>
+  
         <S.WorkspaceRow>
           <Dropdown
             options={options}
@@ -58,11 +58,6 @@ export const WorkspacePage = () => {
           초대 코드로 입장
         </S.FullWidthButton>
       </S.Card>
-
-
-      <div>   <Search variant="filled" size="md"  value={searchValue}
-  onChange={setSearchValue}
-  onClear={() => setSearchValue('')}></Search></div>
     </S.Container>
   );
 };

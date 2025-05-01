@@ -117,7 +117,6 @@ export const TextInput = ({
           </S.RemoveButton>
         )}
       </S.InputBox>
-
       {!!helperText && <S.HelperText state={state}>{helperText}</S.HelperText>}
     </S.Container>
   );
