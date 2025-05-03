@@ -1,14 +1,14 @@
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar";
-import { LoginForm } from "@/components/login/LoginForm";
+import { SignUpComplete } from "@/components/login/SignUpComplete";
 import { Footer } from "@/components/common/footer/Footer";
-import * as S from "./LoginPage.Style";
+import * as S from "./SignUpCompletePage.Style";
 
-export const LoginPage = () => {
+export const SignUpCompletePage = () => {
   return (
     <div>
       <GlobalNavBar />
       <S.PageContainer>
-        <LoginForm />
+        <SignUpComplete />
       </S.PageContainer>
       <Footer type="default" />
     </div>

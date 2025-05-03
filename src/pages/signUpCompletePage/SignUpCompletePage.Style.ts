@@ -10,4 +10,3 @@ export const PageContainer = styled.div`
   height: 100vh;
   background-color: ${color.basic0};
 `
-

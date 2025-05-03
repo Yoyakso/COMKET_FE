@@ -3,8 +3,8 @@ import { color } from "@/styles/color";
 import type { UserStatus } from "./NavProfile"
 
 export const ProfileContainer = styled.div`
-  width: 200px;
-  height: 40px;
+  width: 110px;
+  height: 48px;
   display: flex;
   align-items: center;
   position: relative;
@@ -66,7 +66,6 @@ export const UserName = styled.p`
   font-weight: 500;
   color: ${color.textPrimary};
   margin: 0;
-  padding: 2px 0;
 `
 
 export const UserStatusContainer = styled.div`

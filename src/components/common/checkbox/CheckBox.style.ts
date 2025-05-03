@@ -70,16 +70,16 @@ const borderStyles = (
   interactionState: CheckBoxInteractionState
 ): string =>
   variant === "disabled" ? `1px solid ${color.textPlaceholder24}` :
-  variant === "error" && visualState !== "unchecked" ? "none" :
-  visualState === "checked" || visualState === "indeterminate" ? "none" :
-  variant === "error" ? `1px solid ${color.error}` :
-  interactionState === "hp"
-    ? `1px solid ${{
-        primary: color.teal400,
-        indigo: color.indigo400,
-        black: color.basic900,
-      }[variant] || color.teal400}`
-    : `1px solid ${color.textPlaceholder24}`;
+    variant === "error" && visualState !== "unchecked" ? "none" :
+      visualState === "checked" || visualState === "indeterminate" ? "none" :
+        variant === "error" ? `1px solid ${color.error}` :
+          interactionState === "hp"
+            ? `1px solid ${{
+              primary: color.teal400,
+              indigo: color.indigo400,
+              black: color.basic900,
+            }[variant] || color.teal400}`
+            : `1px solid ${color.textPlaceholder24}`;
 
 const iconColorStyles = (
   variant: CheckBoxVariant,
@@ -87,12 +87,12 @@ const iconColorStyles = (
   interactionState: CheckBoxInteractionState
 ): string =>
   variant === "disabled" ? color.textPlaceholder24 :
-  visualState === "unchecked" ? "transparent" :
-  color.white;
+    visualState === "unchecked" ? "transparent" :
+      color.white;
 
 export const Box = styled.div<{
   size: CheckBoxSize;
-  variant?: CheckBoxVariant;
+  $variant?: CheckBoxVariant;
   $visualState?: CheckBoxVisualState;
   $interactionState?: CheckBoxInteractionState;
 }>`
@@ -100,18 +100,18 @@ export const Box = styled.div<{
   align-items: center;
   justify-content: center;
   border-radius: 3px;
-  cursor: ${({ variant }) => (variant === "disabled" ? "not-allowed" : "pointer")};
+  cursor: ${({ $variant }) => ($variant === "disabled" ? "not-allowed" : "pointer")};
 
   ${({ size }) => css`
     ${boxSizeStyles[size]};
     ${iconSizeStyles[size]};
   `}
 
-  ${({ variant = "primary", $visualState = "unchecked", $interactionState = "default" }) => {
+  ${({ $variant = "primary", $visualState = "unchecked", $interactionState = "default" }) => {
     const background =
-      backgroundStyles?.[variant]?.[$visualState]?.[$interactionState] ?? color.white;
-    const border = borderStyles(variant, $visualState, $interactionState);
-    const iconColor = iconColorStyles(variant, $visualState, $interactionState);
+      backgroundStyles?.[$variant]?.[$visualState]?.[$interactionState] ?? color.white;
+    const border = borderStyles($variant, $visualState, $interactionState);
+    const iconColor = iconColorStyles($variant, $visualState, $interactionState);
 
     return css`
       background-color: ${background};
@@ -128,12 +128,12 @@ export const Box = styled.div<{
   }}
 `;
 
-export const Label = styled.span<{ size: CheckBoxSize; variant: CheckBoxVariant }>`
+export const Label = styled.span<{ size: CheckBoxSize; $variant: CheckBoxVariant }>`
   ${({ size }) => labelFontSize[size]}
-  color: ${({ variant }) =>
-    variant === "disabled"
+  color: ${({ $variant }) =>
+    $variant === "disabled"
       ? color.textTertiary
-      : variant === "error"
-      ? color.error
-      : color.textPrimary};
+      : $variant === "error"
+        ? color.error
+        : color.textPrimary};
 `;
