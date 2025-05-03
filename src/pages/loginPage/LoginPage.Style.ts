@@ -1,14 +1,13 @@
 import styled from 'styled-components';
 import { color } from '../../styles/color';
 
-export const title = styled.h1`
-  font-size: 2rem;
-  font-weight: 700;
-  color: ${color.textPrimary};
-`;
+export const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  background-color: ${color.basic0};
+`
 
-export const errorMessage = styled.p`
-  font-size: 1rem;
-  font-weight: 500;
-  color: ${color.error};
-  `;
