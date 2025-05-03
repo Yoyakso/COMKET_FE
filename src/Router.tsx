@@ -4,6 +4,7 @@ import { LoginPage } from './pages/loginPage/LoginPage';
 import { WorkspacePage } from './pages/workspacePage/WorkspacePage';
 import { CreateWorkspacePage } from './pages/workspacePage/create/CreateWorkspacePage';
 import { SignUpPage } from './pages/signUpPage/SignUpPage';
+import { SignUpCompletePage } from './pages/signUpCompletePage/SignUpCompletePage';
 
 export const Router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ export const Router = createBrowserRouter([
       {
         path: 'signup',
         element: <SignUpPage />,
+      },
+      {
+        path: 'signup/complete',
+        element: <SignUpCompletePage />,
       }
     ],
   },
