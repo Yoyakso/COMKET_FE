@@ -14,7 +14,7 @@ export const OauthLoginButton = ({ onClick, children, buttonStyle }: OauthLoginB
 
   const handleOauth = async () => {
     const clientId = import.meta.env.VITE_GOOGLE_AUTH_CLIENT_ID;
-    const redirectUri = encodeURIComponent(import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI);
+    const redirectUri = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI
     const scope = encodeURIComponent("email profile openid");
 
     const googleLoginUrl =
