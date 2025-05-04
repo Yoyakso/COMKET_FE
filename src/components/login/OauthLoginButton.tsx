@@ -23,7 +23,9 @@ export const OauthLoginButton = ({ onClick, children, buttonStyle }: OauthLoginB
       `&redirect_uri=${redirectUri}` +
       `&response_type=code` +
       `&scope=${scope}` +
-      `&access_type=offline`;
+      `&access_type=offline` +
+      `&prompt=consent`
+      ;
 
     console.log("🔎 Google 로그인 URL:", googleLoginUrl);
 
