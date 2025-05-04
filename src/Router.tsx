@@ -5,6 +5,8 @@ import { WorkspacePage } from './pages/workspacePage/WorkspacePage';
 import { CreateWorkspacePage } from './pages/workspacePage/create/CreateWorkspacePage';
 import { SignUpPage } from './pages/signUpPage/SignUpPage';
 import { SignUpCompletePage } from './pages/signUpCompletePage/SignUpCompletePage';
+import { MemberPage } from './pages/memberPage/MemberPage';
+import { GoogleRedirect } from './pages/loginPage/GoogleRedirect';
 
 export const Router = createBrowserRouter([
   {
@@ -14,6 +16,10 @@ export const Router = createBrowserRouter([
       {
         path: 'login',
         element: <LoginPage />,
+      },
+      {
+        path: 'oauth/google',
+        element: <GoogleRedirect />,
       },
       {
         path: 'workspace',
@@ -30,6 +36,10 @@ export const Router = createBrowserRouter([
       {
         path: 'signup/complete',
         element: <SignUpCompletePage />,
+      },
+      {
+        path: 'member',
+        element: <MemberPage />,
       }
     ],
   },
