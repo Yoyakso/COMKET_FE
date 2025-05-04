@@ -42,7 +42,7 @@ export const LoginForm = () => {
           <S.RememberSignupRow>
             <CheckBox
               label="이메일 기억하기"
-              variant="primary"
+              $variant="primary"
               visualState={rememberEmail ? "checked" : "unchecked"}
               onChange={handleCheckboxChange}
               size="md"
