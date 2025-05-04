@@ -6,26 +6,25 @@ export type CheckBoxVisualState = "unchecked" | "checked" | "indeterminate";
 export type CheckBoxInteractionState = "default" | "hp";
 export type CheckBoxSize = "sm" | "md" | "lg";
 
-
-const boxSizeStyles: Record<CheckBoxSize, ReturnType<typeof css>> = {
+const boxSizeStyles = {
   sm: css`width: 16px; height: 16px;`,
   md: css`width: 20px; height: 20px;`,
   lg: css`width: 24px; height: 24px;`,
 };
 
-const iconSizeStyles: Record<CheckBoxSize, ReturnType<typeof css>> = {
+const iconSizeStyles = {
   sm: css`svg { width: 12px; height: 12px; }`,
   md: css`svg { width: 14px; height: 14px; }`,
   lg: css`svg { width: 16px; height: 16px; }`,
 };
 
-const labelFontSize: Record<CheckBoxSize, ReturnType<typeof css>> = {
+const labelFontSize = {
   sm: css`font-size: 12px;`,
   md: css`font-size: 14px;`,
   lg: css`font-size: 16px;`,
 };
 
-const gapStyles: Record<CheckBoxSize, ReturnType<typeof css>> = {
+const gapStyles = {
   sm: css`gap: 4px;`,
   md: css`gap: 6px;`,
   lg: css`gap: 10px;`,
@@ -36,7 +35,6 @@ export const Container = styled.label<{ size: CheckBoxSize }>`
   align-items: center;
   ${({ size }) => gapStyles[size]}
 `;
-
 
 const backgroundStyles = {
   primary: {
@@ -66,53 +64,54 @@ const backgroundStyles = {
   },
 };
 
-
 const borderStyles = (
   variant: CheckBoxVariant,
   visualState: CheckBoxVisualState,
   interactionState: CheckBoxInteractionState
 ): string =>
-  variant === "disabled" ? `1px solid ${color.textPlaceholder24}` 
-  :variant === "error" && visualState !== "unchecked" ? "none" 
-  :visualState === "checked" || visualState === "indeterminate" ? "none"
-  :variant === "error" ? `1px solid ${color.error}`
-  :interactionState === "hp" ? `1px solid ${
-    { primary: color.teal400, indigo: color.indigo400, black: color.basic900 }[variant]
-  }` :
-  `1px solid ${color.textPlaceholder24}`;
-
+  variant === "disabled" ? `1px solid ${color.textPlaceholder24}` :
+    variant === "error" && visualState !== "unchecked" ? "none" :
+      visualState === "checked" || visualState === "indeterminate" ? "none" :
+        variant === "error" ? `1px solid ${color.error}` :
+          interactionState === "hp"
+            ? `1px solid ${{
+              primary: color.teal400,
+              indigo: color.indigo400,
+              black: color.basic900,
+            }[variant] || color.teal400}`
+            : `1px solid ${color.textPlaceholder24}`;
 
 const iconColorStyles = (
   variant: CheckBoxVariant,
   visualState: CheckBoxVisualState,
   interactionState: CheckBoxInteractionState
 ): string =>
-  variant === "disabled" ? color.textPlaceholder24 
-  :visualState === "unchecked" ? "transparent" 
-  :color.white;
-
+  variant === "disabled" ? color.textPlaceholder24 :
+    visualState === "unchecked" ? "transparent" :
+      color.white;
 
 export const Box = styled.div<{
   size: CheckBoxSize;
-  variant: CheckBoxVariant;
-  visualState: CheckBoxVisualState;
-  interactionState: CheckBoxInteractionState;
+  $variant?: CheckBoxVariant;
+  $visualState?: CheckBoxVisualState;
+  $interactionState?: CheckBoxInteractionState;
 }>`
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 3px;
-  cursor: ${({ variant }) => (variant === "disabled" ? "not-allowed" : "pointer")};
+  cursor: ${({ $variant }) => ($variant === "disabled" ? "not-allowed" : "pointer")};
 
   ${({ size }) => css`
     ${boxSizeStyles[size]};
     ${iconSizeStyles[size]};
   `}
 
-  ${({ variant, visualState, interactionState }) => {
-    const background = backgroundStyles[variant][visualState][interactionState];
-    const border = borderStyles(variant, visualState, interactionState);
-    const iconColor = iconColorStyles(variant, visualState, interactionState);
+  ${({ $variant = "primary", $visualState = "unchecked", $interactionState = "default" }) => {
+    const background =
+      backgroundStyles?.[$variant]?.[$visualState]?.[$interactionState] ?? color.white;
+    const border = borderStyles($variant, $visualState, $interactionState);
+    const iconColor = iconColorStyles($variant, $visualState, $interactionState);
 
     return css`
       background-color: ${background};
@@ -129,11 +128,12 @@ export const Box = styled.div<{
   }}
 `;
 
-
-export const Label = styled.span<{ size: CheckBoxSize; variant: CheckBoxVariant }>`
+export const Label = styled.span<{ size: CheckBoxSize; $variant: CheckBoxVariant }>`
   ${({ size }) => labelFontSize[size]}
-  color: ${({ variant }) =>
-    variant === "disabled"
-      ? color.textTertiary : variant === "error"
-      ? color.error : color.textPrimary};
+  color: ${({ $variant }) =>
+    $variant === "disabled"
+      ? color.textTertiary
+      : $variant === "error"
+        ? color.error
+        : color.textPrimary};
 `;

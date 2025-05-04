@@ -4,12 +4,10 @@ import { color } from "@/styles/color";
 export const NavContainer = styled.div<{ $variant: "default" | "settings" }>`
   display: flex;
   flex-direction: column;
-  width: 280px;
+  width: 260px;
   height: 100vh;
-  padding: 16px 20px;
   border-right: 1px solid #9BA8C63D;
-  background-color: ${(props) =>
-    props.$variant === "settings" ? `${color.basic0}` : "#ffffff"};
+  background-color: ${color.white};
 `;
 
 export const NavContent = styled.div`
@@ -21,12 +19,12 @@ export const NavContent = styled.div`
 `;
 
 export const SectionContainer = styled.div`
-  padding: 16px 20px;
+  padding: 16px 12px;
 `;
 
 export const SectionTitle = styled.div`
-  padding: 10.5px 12px;
-  font-size: 12px;
+  padding: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: #A7ADB5;
 `;
@@ -34,17 +32,18 @@ export const SectionTitle = styled.div`
 export const ItemsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 `;
 
 export const NavItemLink = styled.a<{ $active?: boolean }>`
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 8px 12px;
   font-size: 14px;
-  color: ${(props) => (props.$active ? "#111827" : "#4b5563")};
-  background-color: ${(props) => (props.$active ? "#f3f4f6" : "transparent")};
-  font-weight: ${(props) => (props.$active ? "500" : "normal")};
+  color: ${(props) => (props.$active ? `${color.textPrimary}` : `${color.textSecondary}`)};
+  background-color: ${(props) => (props.$active ? `${color.neutral}` : "transparent")};
+  border-radius: 3px;
+  font-weight: ${(props) => (props.$active ? "600" : "500")};
   text-decoration: none;
 
   &:hover {
@@ -59,11 +58,19 @@ export const IconWrapper = styled.span`
   align-items: center;
 `;
 
+export const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: #e5e7eb;
+`
+
 export const NavProfileContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
+  width: 100%;
+  padding: 10px 24px;
 `;
 
 export const IconContainer = styled.div`

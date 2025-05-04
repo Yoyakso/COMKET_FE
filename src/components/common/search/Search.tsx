@@ -19,7 +19,7 @@ interface SearchProps {
   onChange: (v: string) => void
   onClear?: () => void
   disabled?: boolean
-  state?: SearchState // ← 직접 넘기면 강제 적용 / 없으면 자동 추론
+  state?: SearchState
   className?: string
 }
 
@@ -36,19 +36,28 @@ export const Search = ({
   const [focused, setFocused] = useState(false)
   const [hovered, setHovered] = useState(false)
 
-  // 상태 자동 추론
-  const computedState: SearchState = useMemo(() => {
-    if (state) return state
-    if (disabled) return 'disable'
-    if (value && !focused) return 'activated'
-    if (value && focused) return 'typing'
-    if (focused) return 'focus'
-    if (hovered) return 'hover'
-    return 'enable'
-  }, [state, value, focused, hovered, disabled])
+  const computedState: SearchState = useMemo(
+    () =>
+      state
+        ? state : disabled
+        ? 'disable': value && focused
+        ? 'typing' : value && !focused
+        ? 'activated' : focused
+        ? 'focus' : hovered
+        ? 'hover' : 'enable',
+    [state, value, focused, hovered, disabled]
+  )
+
+  const isClearVisible = ['typing', 'activated'].includes(computedState) && value
+  const isDisabled = computedState === 'disable' || computedState === 'activated-disabled'
 
   return (
-    <S.Container variant={variant} size={size} state={computedState} className={className}>
+    <S.Container
+      variant={variant}
+      size={size}
+      state={computedState}
+      className={className}
+    >
       <S.TextBox
         variant={variant}
         size={size}
@@ -60,18 +69,22 @@ export const Search = ({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="텍스트"
-          disabled={computedState === 'disable' || computedState === 'activated-disabled'}
+          disabled={isDisabled}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
 
-        {['typing', 'activated'].includes(computedState) && value && (
-          <S.IconWrapper size={size} onClick={onClear}>
-            <ClearIcon />
-          </S.IconWrapper>
-        )}
+        {/* ✅ 항상 자리는 차지하고, 조건부로 보여주기 */}
+        <S.IconWrapper
+          size={size}
+          onClick={onClear}
+          aria-label="clear"
+          style={{ visibility: isClearVisible ? 'visible' : 'hidden' }}
+        >
+          <ClearIcon />
+        </S.IconWrapper>
 
-        <S.IconWrapper size={size}>
+        <S.IconWrapper size={size} aria-hidden>
           <SearchIcon />
         </S.IconWrapper>
       </S.TextBox>

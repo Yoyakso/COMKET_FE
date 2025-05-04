@@ -25,7 +25,7 @@ const Size = {
      border-radius: 4px;
    `,
   lg: css`
-     width: 153px;
+     width: 100%;
      height: 56px;
      padding: 12px 20px;
      font-size: 18px;
