@@ -7,6 +7,10 @@ import { SignUpPage } from './pages/signUpPage/SignUpPage';
 import { SignUpCompletePage } from './pages/signUpCompletePage/SignUpCompletePage';
 import { MemberPage } from './pages/memberPage/MemberPage';
 import { GoogleRedirect } from './pages/loginPage/GoogleRedirect';
+import { WorkspaceLayout } from '@/components/layout/WorkspaceLayout';
+import { WorkspaceManageLayout } from '@/components/layout/WorkspaceManageLayout';
+import { WorkspaceInfoPage } from './pages/workspacePage/manage/WorkspaceInfoPage';
+import { InviteCodePage } from './pages/InviteCodePage/InviteCodePage';
 
 export const Router = createBrowserRouter([
   {
@@ -22,14 +26,6 @@ export const Router = createBrowserRouter([
         element: <GoogleRedirect />,
       },
       {
-        path: 'workspace',
-        element: <WorkspacePage />,
-      },
-      {
-        path: 'workspace/create',
-        element: <CreateWorkspacePage />,
-      },
-      {
         path: 'signup',
         element: <SignUpPage />,
       },
@@ -40,7 +36,42 @@ export const Router = createBrowserRouter([
       {
         path: 'member',
         element: <MemberPage />,
-      }
+      },
+
+      {
+        path: 'invitecode',
+        element: (
+          <WorkspaceLayout>
+          <InviteCodePage />
+          </WorkspaceLayout>),
+      },
+
+      {
+        path: 'workspace',
+        element: (
+          <WorkspaceLayout>
+            <WorkspacePage />
+          </WorkspaceLayout>
+        ),
+      },
+      {
+        path: 'workspace/create',
+        element: (
+          <WorkspaceLayout>
+            <CreateWorkspacePage />
+          </WorkspaceLayout>
+        ),
+      },
+      {
+        path: 'workspace/manage',
+        element: <WorkspaceManageLayout />,
+        children: [
+          {
+            path: 'info',
+            element: <WorkspaceInfoPage />,
+          },
+        ],
+      },
     ],
   },
 ]);

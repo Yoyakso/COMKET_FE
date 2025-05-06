@@ -1,95 +1,70 @@
-// ✅ Radio.style.ts (최종 - state 기반 단일 프롭 구조 대응)
 import styled, { css } from 'styled-components'
 import { color } from '@/styles/color'
 
-export const Container = styled.label`
-  display: inline-flex;
+export const Container = styled.div`
+  display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
 `
 
-const sizeStyles = {
-  s: css`
-    width: 20px;
-    height: 20px;
-  `,
-  m: css`
-    width: 24px;
-    height: 24px;
-  `,
-}
-
-const getBorderColor = (
-  colorKey: 'black' | 'teal',
-  checked: boolean,
-  interactionState: 'default' | 'active' | 'disabled',
-) => {
-  if (interactionState === 'disabled') return color.textPlaceholder24
-  if (interactionState === 'active') {
-    return checked
-      ? colorKey === 'black'
-        ? color.basic1000
-        : color.teal500
-      : colorKey === 'black'
-      ? color.basic1000
-      : color.teal500
-  }
-  if (checked) {
-    return colorKey === 'black' ? color.basic1000 : color.teal500
-  }
-  return color.textPlaceholder24
-}
-
-const getDotColor = (
-  colorKey: 'black' | 'teal',
-  checked: boolean,
-  interactionState: 'default' | 'active' | 'disabled',
-) => {
-  if (!checked) return 'transparent'
-  if (interactionState === 'disabled') return color.textPlaceholder24
-  return colorKey === 'black' ? color.basic1000 : color.teal500
-}
-
-export const RadioButton = styled.div<{
-  color: 'black' | 'teal'
-  size: 'sm' | 'md'
+export const RadioButton = styled.button<{
   checked: boolean
-  interactionState: 'default' | 'active' | 'disabled'
   disabled: boolean
+  color: 'black' | 'teal'
 }>`
-  ${({ size }) => sizeStyles[size]};
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  border: 1px solid
-    ${({ color: c, checked, interactionState }) =>
-      getBorderColor(c, checked, interactionState)};
-    background-color: ${({ disabled }) =>
-  disabled ? color.textPlaceholder16 : color.white};
-    opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+  border: 2px solid;
+  padding: 0;
+  background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+
+  ${({ checked, color: c }) => {
+    const borderColor = checked
+      ? color[c === 'teal' ? 'teal500' : 'black']
+      : color.basic300
+    return css`
+      border-color: ${borderColor};
+    `
+  }}
+
+  ${({ disabled }) =>
+    disabled &&
+    css`
+      background-color: ${color.basic100};
+      border-color: ${color.basic200};
+      cursor: not-allowed;
+    `}
+
+  &:hover {
+    border-color: ${({ color: c, checked }) =>
+      checked ? color[c === 'teal' ? 'teal500' : 'black'] : color.basic500};
+  }
 `
 
-export const InnerDot = styled.div<{
-  visible: boolean
+export const InnerDot = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['isChecked', 'color'].includes(prop),
+})<{
+  isChecked: boolean
   color: 'black' | 'teal'
-  interactionState: 'default' | 'active' | 'disabled'
-  disabled: boolean
-  checked: boolean
 }>`
-  width: 11px;
-  height: 11px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background-color: ${({ visible, color: c, interactionState, checked }) =>
-    getDotColor(c, checked, interactionState)};
-  transition: background-color 0.2s ease;
+  background-color: ${({ color: c }) => color[c === 'teal' ? 'teal500' : 'black']};
+  opacity: ${({ isChecked }) => (isChecked ? 1 : 0)};
+  transition: opacity 0.2s ease;
 `
 
-export const Label = styled.span<{ disabled: boolean; size: 'sm' | 'md' }>`
-  font-size: ${({ size }) => (size === 'sm' ? '12px' : '14px')};
+export const Label = styled.span<{
+  disabled: boolean
+}>`
+  font-size: 14px;
   color: ${({ disabled }) =>
-    disabled ? color.textPlaceholder : color.basic1000};
+    disabled ? color.basic400 : color.basic900};
 `

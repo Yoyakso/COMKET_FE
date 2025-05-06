@@ -1,142 +1,110 @@
 import styled, { css } from 'styled-components'
 import type { DropdownSize, DropdownVariant } from './Dropdown'
-import {color}  from '../../../styles/color' 
-// Props 타입 정의
-type ContainerProps = {
-  size: DropdownSize
-  variant: DropdownVariant
-  isOpen: boolean
-}
+import { color } from '@/styles/color'
 
-type IconProps = {
-  size: DropdownSize
-  variant: DropdownVariant
-}
-
-type SelectedProps = {
-  size: DropdownSize
-  variant: DropdownVariant
-}
-
-type OptionItemProps = {
-  size: DropdownSize
-  selected?: boolean
-}
-
-// size별 공통 스타일
 const sizeStyles = {
   sm: css`
     height: 40px;
+    font-size: 12px;
     padding: 0 10px;
-    align-items: center;
   `,
   md: css`
     height: 48px;
+    font-size: 14px;
     padding: 0 12px;
-    align-items: center;
-  `,
-  lg: css`
-    height: 56px;
-    padding: 0 14px;
-    align-items: center;
   `,
 }
 
-// 상태별 variant 스타일 (테두리, 배경 등)
-const containerVariantStyles = {
-  activated: css`
+const containerVariants = {
+  none: css`
     background-color: ${color.white};
     border: 1px solid ${color.textPlaceholder24};
-    border-radius: 3px;
     &:hover {
       border-color: ${color.basic1000};
     }
   `,
-  invalid: css`
-    background-color: ${color.white};
-    border: 1px solid ${color.error};
-    border-radius: 3px;
-  `,
-  disabled: css`
-    background-color: ${color.textPlaceholder32};
-    border-radius: 3px;
-    opacity: 0.5;
-  `,
-  none: css`
+  activated: css`
     background-color: ${color.white};
     border: 1px solid ${color.textPlaceholder24};
-    border-radius: 3px;
+    &:hover {
+      border-color: ${color.basic1000};
+    }
+  `,
+  'activated-chip': css`
+    background-color: ${color.white};
+    border: 1px solid ${color.textPlaceholder24};
+    &:hover {
+      border-color: ${color.basic1000};
+    }
+  `,
+  'activated-disabled': css`
+    background-color: ${color.textPlaceholder16};
+    border: 1px solid transparent;
+    cursor: not-allowed;
+  `,
+  disabled: css`
+    background-color: ${color.textPlaceholder16};
+    border: 1px solid transparent;
+    cursor: not-allowed;
+  `,
+  error: css`
+    background-color: ${color.white};
+    border: 1px solid ${color.error};
   `,
 }
 
-// 텍스트 색상만 분리 정의
-const textVariantColor = {
-  activated: css`color: ${color.textPrimary};`,
-  invalid: css`color: ${color.textPlaceholder};`,
-  disabled: css`color: ${color.textTertiary};`,
-  none: css`color: ${color.textTertiary};`,
+const textColors = {
+  none: color.textTertiary,
+  activated: color.textPrimary,
+  'activated-chip': color.textPrimary,
+  'activated-disabled': color.textPrimary,
+  error: color.textPrimary,
+  disabled: color.textTertiary,
 }
 
-// 전체 드롭다운 박스 너비
 export const Wrapper = styled.div`
   position: relative;
   width: 100%;
 `
 
-// 드롭다운 본체
-export const Container = styled.div<ContainerProps>`
-  display: flex;
-  justify-content: center;
-  border-radius: 4px;
-  cursor: pointer;
-  position: relative;
-
-  ${({ size }) => sizeStyles[size]}
-  ${({ variant }) => containerVariantStyles[variant]}
-`
-//텍스트 박스
-export const TextBox = styled.div<SelectedProps>`
-  flex: 1;
+export const Container = styled.div<{
+  size: DropdownSize
+  variant: DropdownVariant
+}>`
   display: flex;
   align-items: center;
+  border-radius: 4px;
+  position: relative;
+  ${({ size }) => sizeStyles[size]}
+  ${({ variant }) => containerVariants[variant]}
+  cursor: ${({ variant }) =>
+    variant === 'disabled' || variant === 'activated-disabled'
+      ? 'not-allowed'
+      : 'pointer'};
+`
 
-  ${({ size }) => {
-    switch (size) {
-      case 'sm': return css`padding-left: 36px; font-size: 12px;`;
-      case 'md': return css`padding-left: 40px; font-size: 14px;`;
-      case 'lg': return css`padding-left: 44px; font-size: 16px;`;
-    }
-  }}
-
-  ${({ variant }) => textVariantColor[variant]}
-
+export const TextBox = styled.div<{
+  size: DropdownSize
+  variant: DropdownVariant
+}>`
+  flex: 1;
+  padding-left: 2px;
+  color: ${({ variant }) => textColors[variant]};
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 `
 
-
-// 왼쪽 아이콘
-export const IconLeft = styled.span<IconProps>`
-  position: absolute;
-  left: 10px;
+export const IconLeft = styled.span<{
+  size: DropdownSize
+  variant: DropdownVariant
+}>`
   display: flex;
   align-items: center;
-
-  ${({ size }) => {
-    switch (size) {
-      case 'sm': return css`width: 24px; height: 24px;`;
-      case 'md': return css`width: 28px; height: 28px;`;
-      case 'lg': return css`width: 32px; height: 32px;`;
-    }
-  }}
-
-  ${({ variant }) => variant === 'disabled' && css`
-     color: ${color.textPlaceholder32};
-      svg {
-        fill: currentColor;
-      }
-  `}
+  justify-content: center;
+  margin-right: 8px;
+  width: ${({ size }) => (size === 'sm' ? '20px' : '24px')};
+  height: ${({ size }) => (size === 'sm' ? '20px' : '24px')};
 
   svg {
     width: 100%;
@@ -144,26 +112,17 @@ export const IconLeft = styled.span<IconProps>`
   }
 `
 
-// 오른쪽 아이콘
-export const IconRight = styled.span<IconProps>`
+export const IconRight = styled.span<{
+  size: DropdownSize
+  variant: DropdownVariant
+}>`
   position: absolute;
   right: 10px;
   display: flex;
   align-items: center;
   pointer-events: none;
-
-  ${({ size }) => {
-    switch (size) {
-      case 'sm': return css`width: 16px; height: 16px;`;
-      case 'md': return css`width: 18px; height: 18px;`;
-      case 'lg': return css`width: 20px; height: 20px;`;
-    }
-  }}
-
-  ${({ variant }) => variant === 'disabled' && css`
-    filter: grayscale(100%);
-    opacity: 0.4;
-  `}
+  width: ${({ size }) => (size === 'sm' ? '16px' : '18px')};
+  height: ${({ size }) => (size === 'sm' ? '16px' : '18px')};
 
   svg {
     width: 100%;
@@ -171,42 +130,90 @@ export const IconRight = styled.span<IconProps>`
   }
 `
 
-// 옵션 리스트 박스
 export const OptionList = styled.ul<{ size: DropdownSize }>`
   position: absolute;
-  top: calc(100% + 2px);
-  
+  top: calc(100% + 4px);
   width: 100%;
-  margin: 0;
   padding: 6px;
-  border: 1px solid ${color.textPlaceholder};
+  margin: 0;
+  border: 1px solid ${color.textPlaceholder24};
   border-radius: 4px;
   background-color: ${color.white};
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
-  z-index: 10;
+  z-index: 100;
+  max-height: 240px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: ${color.textPlaceholder16};
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+
+    &:hover {
+      background-color: ${color.textPlaceholder24};
+    }
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: ${color.textPlaceholder16} transparent;
 `
 
-// 개별 옵션 항목
-export const OptionItem = styled.li<OptionItemProps>`
-  ${({ size }) => sizeStyles[size]}
+export const OptionItem = styled.li<{
+  size: DropdownSize
+  selected?: boolean
+}>`
+  ${({ size }) => sizeStyles[size]};
+  padding: 0 12px;
   display: flex;
   align-items: center;
   cursor: pointer;
-  background-color: ${({ selected}) =>
+  background-color: ${({ selected }) =>
     selected ? color.basic100 : color.white};
-
-  padding:0 12px;
-  height: ${({ size }) => {
-    switch (size) {
-      case 'sm': return '40px';
-      case 'md': return '48px';
-      case 'lg': return '56px';
-    }
-  }};
+  border-radius: 4px;
 
   &:hover {
     background-color: ${color.basic100};
-    border-radius: 3px;
-
   }
+
 `
+
+export const OptionItemContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+`
+
+export const IconCircle = styled.img`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+`
+
+export const GroupLabel = styled.div`
+  width: 100%;
+  padding: 12px 12px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: ${color.textLabel};
+  background-color: ${color.textPlaceholder08};
+`
+
+export const GroupBlock = styled.div`
+  width: 100%;
+  padding-bottom: 8px;
+`
+
+export const ChipContainer = styled.div`
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+`
+

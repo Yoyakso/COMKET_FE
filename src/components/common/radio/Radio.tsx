@@ -1,75 +1,38 @@
-import React from 'react'
-import * as S from './Radio.style'
+import * as S from './Radio.Style'
 
-export type RadioVisualState =
-  | 'checked'
-  | 'unchecked'
-  | 'active-checked'
-  | 'active-unchecked'
-  | 'disabled-checked'
-  | 'disabled-unchecked'
-
-export type RadioProps = {
-  color: 'black' | 'teal'
-  size: 'sm' | 'md'
-  label?: string
-  state: RadioVisualState
-  onChange?: () => void
-}
-
-const resolveState = (state: RadioVisualState): {
+export interface RadioProps {
+  label: string
   checked: boolean
-  disabled: boolean
-  interactionState: 'default' | 'active' | 'disabled'
-} => {
-  const checked =
-    state === 'checked' ||
-    state === 'active-checked' ||
-    state === 'disabled-checked'
-  const disabled = state.includes('disabled')
-  const interactionState: 'default' | 'active' | 'disabled' = disabled
-    ? 'disabled'
-    : state.includes('active')
-    ? 'active'
-    : 'default'
-  return { checked, disabled, interactionState }
+  disabled?: boolean
+  color: 'black' | 'teal'
+  onChange: () => void
 }
 
 export const Radio = ({
-  color,
-  size,
-  state,
   label,
+  checked,
+  disabled = false,
+  color,
   onChange,
 }: RadioProps) => {
-  const { checked, disabled, interactionState } = resolveState(state)
+  const handleClick = () => {
+    if (!disabled) onChange()
+  }
 
   return (
     <S.Container>
       <S.RadioButton
         color={color}
-        size={size}
         checked={checked}
         disabled={disabled}
-        interactionState={interactionState}
-        onClick={!disabled ? onChange : undefined}
-        role="radio-button"
-        data-testid={`radio-${label?.replace(' ', '').toLowerCase()}`}
+        onClick={handleClick}
+        aria-checked={checked}
+        role="radio"
+        tabIndex={0}
       >
-        <S.InnerDot
-          visible={checked}
-          color={color}
-          interactionState={interactionState}
-          disabled={disabled}
-          checked={checked}
-          data-testid="inner-dot"
-        />
+        <S.InnerDot isChecked ={checked} color={color} />
       </S.RadioButton>
-      {label && (
-        <S.Label disabled={disabled} size={size}>
-          {label}
-        </S.Label>
-      )}
+      <S.Label disabled={disabled}>{label}</S.Label>
     </S.Container>
   )
 }
