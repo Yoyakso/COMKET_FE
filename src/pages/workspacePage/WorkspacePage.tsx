@@ -3,13 +3,12 @@ import * as S from "./WorkspacePage.Style";
 import { Button } from "@/components/common/button/Button";
 import { Dropdown, DropdownOption } from "@/components/common/dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
-import {WorkspaceLayout} from "@/components/layout/WorkspaceLayout";
 
 export const WorkspacePage = () => {
   const navigate = useNavigate();
 
   const options: DropdownOption[] = [
-    // 주석 풀면 기존 워크스페이스 드롭다운 화면 나옴옴
+    // 주석 풀면 기존 워크스페이스 드롭다운 화면 나옴
     // { value: "workspace-1", label: "YOYAKSO" },
     // { value: "workspace-2", label: "COMKET" },
     // { value: "workspace-3", label: "TEAM42" },
@@ -22,9 +21,10 @@ export const WorkspacePage = () => {
       navigate(`/workspace/${selectedId}`);
     }
   };
+ 
 
   return (
-    <WorkspaceLayout>
+    
       <S.Container>
         <S.Card>
           <S.Title>워크스페이스 선택</S.Title>
@@ -43,7 +43,7 @@ export const WorkspacePage = () => {
                 <S.Line />
               </S.DividerBox>
 
-              <S.FullWidthButton variant="tealFilled" size="lg">
+              <S.FullWidthButton variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
                 워크스페이스 생성
               </S.FullWidthButton>
               <S.FullWidthButton variant="neutralOutlined" size="lg">
@@ -73,7 +73,8 @@ export const WorkspacePage = () => {
                 <S.Line />
               </S.DividerBox>
 
-              <S.FullWidthButton variant="tealFilled" size="lg">
+              
+              <S.FullWidthButton variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
                 워크스페이스 생성
               </S.FullWidthButton>
               <S.FullWidthButton variant="neutralOutlined" size="lg">
@@ -83,7 +84,7 @@ export const WorkspacePage = () => {
           )}
         </S.Card>
       </S.Container>
-    </WorkspaceLayout>
+
   );
 };
 
