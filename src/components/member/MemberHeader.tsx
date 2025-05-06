@@ -2,6 +2,7 @@ import { useState } from "react"
 import * as S from "./MemberHeader.Style"
 import { FilterIcon } from "@/assets/icons"
 import { Search } from "../common/search/Search"
+import { InviteModal } from "../workspace/InviteModal"
 
 interface MemberHeaderProps {
   memberCount: number
@@ -10,11 +11,19 @@ interface MemberHeaderProps {
 
 export const MemberHeader = ({ memberCount, onSearch }: MemberHeaderProps) => {
   const [searchValue, setSearchValue] = useState("")
+  const [isInviteModalOpen, setInviteModalOpen] = useState(false)
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value); // 입력 값을 상태로 설정
     onSearch(value); // 부모 컴포넌트에 검색 쿼리 전달
   };
+
+  const openInviteModal = () => {
+    setInviteModalOpen(true)
+  }
+  const closeInviteModal = () => {
+    setInviteModalOpen(false)
+  }
 
   return (
     <S.HeaderContainer>
@@ -31,16 +40,20 @@ export const MemberHeader = ({ memberCount, onSearch }: MemberHeaderProps) => {
                 state="enable"
                 variant="outlined"
                 size="sm"
-                onChange={handleSearchChange}
-                onClear={() => setSearchValue("")}
+                onSearch={handleSearchChange}
+                defaultValue={searchValue}
                 disabled={false}
-                value={searchValue}
               />
             </S.SearchInputWrapper>
           </S.SearchContainer>
-          <S.InviteButton>멤버 초대</S.InviteButton>
+          <S.InviteButton onClick={openInviteModal}>멤버 초대</S.InviteButton>
         </S.RightSection>
       </S.HeaderTop>
+
+      {isInviteModalOpen && (
+        <InviteModal onClose={closeInviteModal} />
+      )}
+
     </S.HeaderContainer>
   )
 }

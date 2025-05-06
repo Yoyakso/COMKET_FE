@@ -29,8 +29,8 @@ const sections: NavSection[] = [
     items: [
       { id: "workspace_information", label: "워크스페이스 설정", href: "/", icon: <InformationIcon /> },
       { id: "plan", label: "플랜 관리", href: "/", icon: <PlanIcon /> },
-      { id: "member", label: "멤버 관리", href: "/", icon: <MemberIcon /> },
-      { id: "list", label: "프로젝트 목록", href: "/", icon: <ListIcon /> },
+      { id: "member", label: "멤버 관리", href: "/member", icon: <MemberIcon /> },
+      { id: "list", label: "프로젝트 관리", href: "/project", icon: <ListIcon /> },
     ],
   },
   {
