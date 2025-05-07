@@ -2,6 +2,7 @@ import { useState } from "react"
 import * as S from "./SignUpForm.Style"
 import { COMKET2 } from "@/assets/icons"
 import { CheckBox } from "../common/checkbox/CheckBox"
+import { registerUser, sendVerificationCode } from "@api/Oauth"
 
 export const SignUpForm = () => {
   const [name, setName] = useState("")
@@ -44,9 +45,47 @@ export const SignUpForm = () => {
     setAgreements(updated)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSendVerification = async () => {
+    if (!email) {
+      alert("이메일을 입력해 주세요.");
+      return;
+    }
+    console.log('버튼 클릭됨');
+
+    try {
+      const res = await sendVerificationCode(email);
+      alert("인증번호가 발송되었습니다!");
+      console.log("이메일 인증 응답:", res);
+    } catch (err) {
+      alert("인증번호 발송에 실패했습니다. 이메일 주소를 확인해주세요.");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
+    if (password !== confirmPassword) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    if (!agreements.service || !agreements.privacy) {
+      alert("필수 약관에 동의해주세요.");
+      return;
+    }
+
+    try {
+      const res = await registerUser({
+        email,
+        password,
+        nickname: name,
+        real_name: name,
+      });
+
+      console.log("회원가입 성공:", res);
+      alert("회원가입 완료!");
+    } catch (err) {
+      alert("회원가입 실패! 다시 시도해주세요.");
+    }
   }
 
   return (
@@ -77,7 +116,7 @@ export const SignUpForm = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <S.VerificationButton type="button">인증번호 발송</S.VerificationButton>
+            <S.VerificationButton type="button" onClick={handleSendVerification}>인증번호 발송</S.VerificationButton>
           </S.EmailRow>
         </S.FormRow>
 
