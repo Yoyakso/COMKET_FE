@@ -2,6 +2,7 @@ import { useState } from "react";
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar";
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar";
 import { MemberHeader } from "@/components/member/MemberHeader";
+import { MemberTable } from "@/components/member/MemberTable";
 import { MemberData } from "@/types/member";
 import * as S from "./MemberPage.Style";
 
@@ -21,7 +22,7 @@ export const MemberPage = () => {
     },
     {
       id: "simh3077",
-      name: "조민혁",
+      name: "조민현",
       email: "simh3077@ajou.ac.kr",
       department: "워크스페이스 관리자",
       status: "활성",
@@ -54,7 +55,7 @@ export const MemberPage = () => {
     },
     {
       id: "chito",
-      name: "지토",
+      name: "치토",
       email: "chito@ajou.co.kr",
       department: "일반 멤버",
       status: "활성",
@@ -118,10 +119,9 @@ export const MemberPage = () => {
       initial: "라",
       color: "#748ffc",
     },
-    // More members with different statuses
     {
       id: "tph00300",
-      name: "이태희",
+      name: "이태경",
       email: "tph00300@ajou.co.kr",
       department: "일반 멤버",
       status: "비활성",
@@ -130,7 +130,6 @@ export const MemberPage = () => {
       initial: "이",
       color: "#4dabf7",
     },
-    // Add more members as needed
   ]
 
   const filteredMembers = members.filter(
@@ -155,6 +154,7 @@ export const MemberPage = () => {
 
         <S.Content>
           <MemberHeader memberCount={25} onSearch={handleSearch} />
+          <MemberTable members={filteredMembers} />
         </S.Content>
       </S.MainContainer>
     </S.PageContainer>

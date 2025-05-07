@@ -1,6 +1,7 @@
 import axios from "axios"
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
+const REDIRECT_URI = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI
 
 /**
  * Google OAuth2 로그인 요청
@@ -10,7 +11,10 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL
 export const googleLogin = async (code: string) => {
   try {
     const response = await axios.get(`${BASE_URL}/api/v1/auth/oauth2/google/login`, {
-      params: { code }
+      params: {
+        code,
+        redirect_uri: REDIRECT_URI,
+      }
     })
     return response.data
   } catch (error: any) {

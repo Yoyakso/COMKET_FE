@@ -24,6 +24,11 @@ export const LogoText = styled.span`
   color: #202632;
   letter-spacing: -1.2px;
 `
+export const LeftSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
 
 export const NavLinks = styled.div`
   display: flex;

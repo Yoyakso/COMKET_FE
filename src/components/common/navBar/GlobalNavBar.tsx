@@ -1,6 +1,7 @@
 import { ChevronDown, COMKET, InfoIcon, QuestionIcon } from "@assets/icons"
 import * as S from "./GlobalNavBar.Style"
 import { WorkspaceSelector } from "./WorkspaceSelector"
+import { Search } from "@/components/common/search/Search"
 
 type GNBVariant = "default" | "white" | "workspace"
 
@@ -40,7 +41,8 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
 
       {variant === "workspace" && (
         <S.SearchContainter>
-          <S.StyledSearch variant="filled" size="sm" value="" state="enable" onChange={() => { }} />
+          <Search variant="filled" size="md" onSearch={(test) => console.log("검색키워드:", test)} ></Search>
+          {/*콘솔 로그는 임의로 외부값 전달이 정상적으로 이루어지는 확인 차 넣었습니다*/}
         </S.SearchContainter>
       )}
 
