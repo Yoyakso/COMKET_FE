@@ -1,4 +1,4 @@
-import * as S from './Radio.Style'
+import * as S from './Radio.style'
 
 export interface RadioProps {
   label: string
@@ -30,7 +30,7 @@ export const Radio = ({
         role="radio"
         tabIndex={0}
       >
-        <S.InnerDot isChecked ={checked} color={color} />
+        <S.InnerDot isChecked={checked} color={color} />
       </S.RadioButton>
       <S.Label disabled={disabled}>{label}</S.Label>
     </S.Container>
