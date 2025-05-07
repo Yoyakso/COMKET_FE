@@ -13,7 +13,7 @@ export const googleLogin = async (code: string) => {
     const response = await axios.get(`${BASE_URL}/api/v1/auth/oauth2/google/login`, {
       params: {
         code,
-        redirect_uri: REDIRECT_URI,
+        redirect: REDIRECT_URI,
       }
     })
     return response.data
