@@ -39,6 +39,10 @@ export const SearchContainer = styled.div`
   gap: 10px;
 `
 
+export const FilterButtonContainer = styled.div`
+  position: relative;
+`
+
 export const FilterButton = styled.button`
   display: flex;
   align-items: center;
@@ -71,5 +75,6 @@ export const InviteButton = styled.button`
     background-color: ${color.teal600};
   }
 `
-
-
+export const FilterDropdownWrapper = styled.div`
+  width: 160px;
+`

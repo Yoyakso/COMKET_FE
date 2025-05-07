@@ -4,8 +4,8 @@ import { color } from "@/styles/color"
 export const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
   height: 100vh;
+  width: 100%;
 `
 
 export const GNBContainer = styled.div`
@@ -40,4 +40,19 @@ export const Content = styled.div`
   height: calc(100vh - 72px);
   overflow: auto;
   background-color: ${color.white};
+`
+
+export const NoResultsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 16px;
+`
+
+export const NoResultsText = styled.p`
+  font-size: 16px;
+  color: #6c757d;
 `
