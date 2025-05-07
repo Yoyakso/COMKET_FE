@@ -88,4 +88,5 @@ export const color = {
   textPlaceholder70: 'rgba(155, 168, 198, 0.70)',
 
   textWhite: '#FFFFFF',
+
 };
