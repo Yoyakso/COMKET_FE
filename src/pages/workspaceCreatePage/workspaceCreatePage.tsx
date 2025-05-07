@@ -31,7 +31,7 @@ export const CreateWorkspacePage = () => {
         <S.InputGroup>
           <S.Label>워크스페이스 주소</S.Label>
           <S.URLInputGroup>
-            <S.CustomInputBox isError={isDuplicated}>
+            <S.CustomInputBox $isError={isDuplicated}>
               <S.Prefix>https://comket.co.kr/</S.Prefix>
               <S.StyledInput
                 placeholder="워크스페이스 주소 입력"
@@ -42,13 +42,13 @@ export const CreateWorkspacePage = () => {
 
             {/* 에러 메시지: dot 없이 빨간색 */}
             {isDuplicated && (
-              <S.HelperText isError>
+              <S.HelperText $isError>
                 이미 사용 중인 주소입니다. 다른 주소를 입력해 주세요.
               </S.HelperText>
             )}
 
             {/* 항상 보이는 기본 안내문: dot 포함 + 회색 */}
-            <S.HelperText isError={false}>
+            <S.HelperText $isError={false}>
               · 영어 소문자와 숫자만 입력 가능 / 공백 및 특수문자 입력 불가
               {'\n'}· 생성된 워크스페이스 주소는 나중에 변경할 수 없으니 신중하게 입력해 주세요.
             </S.HelperText>
