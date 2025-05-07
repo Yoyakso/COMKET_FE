@@ -58,7 +58,7 @@ export const InputBox = styled.div<{
   `}
 `;
 
-export const StyledInput = styled.input<{ state: string }>`
+export const StyledInput = styled.input<{ $state: string }>`
   flex: 1;
   background: none;
   border: none;
@@ -68,10 +68,10 @@ export const StyledInput = styled.input<{ state: string }>`
   font-size: inherit;
 
   &::placeholder {
-    color: ${({ state }) =>
-      state === 'disabled'
+    color: ${({ $state }) =>
+      $state === 'disabled'
         ? color.textTertiary
-        : state === 'registered'
+        : $state === 'registered'
         ? 'transparent'
         : color.textPlaceholder70};
   }
@@ -153,9 +153,9 @@ export const Clear2Button = styled.button<{ size: string }>`
   }
 `;
 
-export const HelperText = styled.span<{ state: string }>`
+export const HelperText = styled.span<{ $state: string }>`
   margin-top: 6px;
   font-size: 12px;
-  color: ${({ state }) =>
-  state === 'error' ? color.error : color.textTertiary};
+  color: ${({ $state }) =>
+  $state === 'error' ? color.error : color.textTertiary};
 `;
