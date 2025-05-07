@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import * as S from './Dropdown.Style'
+import * as S from './Dropdown.style'
 
 import ChevronDown from '@/assets/icons/ChevronDown.svg?react'
 import ChevronUp from '@/assets/icons/ChevronUp.svg?react'
@@ -58,8 +58,8 @@ export const Dropdown = ({
   selectedValues = [],
   onChange,
   placeholder,
-  size='md',
-  variant='none',
+  size = 'md',
+  variant = 'none',
   iconLeft,
   type = 'single-text',
 }: Props) => {
@@ -182,11 +182,11 @@ export const Dropdown = ({
         <S.OptionList size={size}>
           {type === 'group-check'
             ? [...new Set(options.map(o => o.groupName))].map(group => (
-                <S.GroupBlock key={group}>
-                  <S.GroupLabel>{group}</S.GroupLabel>
-                  {options.filter(o => o.groupName === group).map(renderOption)}
-                </S.GroupBlock>
-              ))
+              <S.GroupBlock key={group}>
+                <S.GroupLabel>{group}</S.GroupLabel>
+                {options.filter(o => o.groupName === group).map(renderOption)}
+              </S.GroupBlock>
+            ))
             : options.map(renderOption)}
         </S.OptionList>
       )}
