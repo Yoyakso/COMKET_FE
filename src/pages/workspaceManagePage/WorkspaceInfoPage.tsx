@@ -11,6 +11,7 @@ export const WorkspaceInfoPage = () => {
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [fileName, setFileName] = useState('');
   const [isModalOpen, setModalOpen] = useState(false);
 
   const name = 'YOYAKSO';
@@ -18,9 +19,12 @@ export const WorkspaceInfoPage = () => {
 
   const handleOpenModal = () => setModalOpen(true);
 
+  const isValid = description.trim() !== '';
+
   const handleImageSelect = (file: File) => {
     const objectUrl = URL.createObjectURL(file);
     setImageUrl(objectUrl);
+    setFileName(file.name);
   };
 
   return (
@@ -50,7 +54,7 @@ export const WorkspaceInfoPage = () => {
         <S.Label>대표 이미지</S.Label>
         <S.PhotoWrapper>
           <S.Photo>
-            {imageUrl ? <img src={imageUrl} alt="대표 이미지" /> : <S.ImagePlaceholder><DropdownIcon /></S.ImagePlaceholder>}
+            {imageUrl ? <img src={imageUrl} alt="대표 이미지" width={120} height={120} /> : <S.ImagePlaceholder><DropdownIcon /></S.ImagePlaceholder>}
           </S.Photo>
           <S.PhotoUploader>
             <Button onClick={handleOpenModal} variant="neutralOutlined" size="xs" style={{ width: '120px' }}>
@@ -62,7 +66,7 @@ export const WorkspaceInfoPage = () => {
                 onImageSelect={handleImageSelect}
               />
             )}
-            <span style={{ color: color.textTertiary, fontSize: '14px' }}>선택된 파일 없음</span>
+            <span style={{ color: color.textTertiary, fontSize: '14px' }}>{fileName || '선택된 파일 없음'}</span>
           </S.PhotoUploader>
         </S.PhotoWrapper>
       </S.PhotoGroup>
@@ -87,7 +91,13 @@ export const WorkspaceInfoPage = () => {
         <Button variant='neutralOutlined' size='sm'>워크스페이스 나가기</Button>
         <S.SubButtonWrapper>
           <Button variant='neutralOutlined' size='sm'>취소</Button>
-          <Button variant='neutralFilled' size='sm'>저장</Button>
+          <Button
+            variant={isValid ? 'tealFilled' : 'neutralFilled'}
+            size="sm"
+            disabled={!isValid}
+          >
+            저장
+          </Button>
         </S.SubButtonWrapper>
       </S.ButtonWrapper>
     </S.Container>

@@ -97,7 +97,7 @@ export const PhotoWrapper = styled.div`
 `;
 
 export const Photo = styled.div`
-  background-color: basic100;
+  background-color: ${color.basic100};
   border-radius:4px;
   display: flex;
   align-items: center;
