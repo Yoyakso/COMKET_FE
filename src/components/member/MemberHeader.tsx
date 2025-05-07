@@ -1,6 +1,5 @@
 import { useState, useRef } from "react"
 import * as S from "./MemberHeader.Style"
-import { FilterIcon } from "@/assets/icons"
 import { Search } from "../common/search/Search"
 import { InviteModal } from "../workspace/InviteModal"
 import { Dropdown, type DropdownOption } from "@/components/common/dropdown/Dropdown"
@@ -14,7 +13,7 @@ interface MemberHeaderProps {
 export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderProps) => {
   const [searchValue, setSearchValue] = useState("")
   const [isInviteModalOpen, setInviteModalOpen] = useState(false)
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  // const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
 
   const filterButtonRef = useRef<HTMLDivElement>(null)
@@ -41,9 +40,9 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
     setInviteModalOpen(false)
   }
 
-  const toggleFilterDropdown = () => {
-    setIsFilterOpen(!isFilterOpen)
-  }
+  // const toggleFilterDropdown = () => {
+  //   setIsFilterOpen(!isFilterOpen)
+  // }
 
   const handleFilterChange = (values: string | string[]) => {
     if (Array.isArray(values)) {
