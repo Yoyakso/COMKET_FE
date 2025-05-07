@@ -18,8 +18,13 @@ interface SearchProps {
   disabled?: boolean
   state?: SearchState
   className?: string
-  defaultValue?: string // 내부 상태 초기값
-  onSearch?: (value: string) => void // 검색 실행 콜백
+  defaultValue?: string
+  onSearch?: (value: string) => void
+
+  // ✅ 외부 상태 제어용 props
+  value?: string
+  onChange?: (value: string) => void
+  onClear?: () => void
 }
 
 export const Search = ({
@@ -30,26 +35,32 @@ export const Search = ({
   disabled = false,
   state,
   className,
+  value,
+  onChange,
+  onClear,
 }: SearchProps) => {
   const [focused, setFocused] = useState(false)
   const [hovered, setHovered] = useState(false)
-  const [inputValue, setInputValue] = useState(defaultValue)
+  const [internalValue, setInternalValue] = useState(defaultValue)
+
+  const isControlled = value !== undefined
+  const inputValue = isControlled ? value : internalValue
 
   const computedState: SearchState = useMemo(
     () =>
       state
         ? state
         : disabled
-        ? 'disable'
-        : inputValue && focused
-        ? 'typing'
-        : inputValue && !focused
-        ? 'activated'
-        : focused
-        ? 'focus'
-        : hovered
-        ? 'hover'
-        : 'enable',
+          ? 'disable'
+          : inputValue && focused
+            ? 'typing'
+            : inputValue && !focused
+              ? 'activated'
+              : focused
+                ? 'focus'
+                : hovered
+                  ? 'hover'
+                  : 'enable',
     [state, inputValue, focused, hovered, disabled]
   )
 
@@ -58,6 +69,23 @@ export const Search = ({
 
   const handleSearch = () => {
     if (onSearch) onSearch(inputValue)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
+    if (isControlled) {
+      onChange?.(newValue)
+    } else {
+      setInternalValue(newValue)
+    }
+  }
+
+  const handleClear = () => {
+    if (isControlled) {
+      onClear?.()
+    } else {
+      setInternalValue('')
+    }
   }
 
   return (
@@ -76,7 +104,7 @@ export const Search = ({
       >
         <S.StyledInput
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleInputChange}
           placeholder="검색어를 입력하세요"
           disabled={isDisabled}
           onFocus={() => setFocused(true)}
@@ -88,7 +116,7 @@ export const Search = ({
 
         <S.IconWrapper
           size={size}
-          onClick={() => setInputValue('')}
+          onClick={handleClear}
           aria-label="clear"
           style={{ visibility: isClearVisible ? 'visible' : 'hidden' }}
         >
