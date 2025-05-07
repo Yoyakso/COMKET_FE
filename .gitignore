@@ -26,3 +26,5 @@ dev-dist
 
 # Prettier cache
 .prettier*
+
+.settings.json
