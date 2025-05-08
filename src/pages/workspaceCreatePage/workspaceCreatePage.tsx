@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as S from './workspaceCreatePage.Style';
 import { Radio } from '@/components/common/radio/Radio';
 import { Button } from '@/components/common/button/Button';
-import { workspaceCreate } from '@/api/WorkspaceCreate';
+import { workspaceCreate } from '@/api/CreateWorkspace';
 
 export const CreateWorkspacePage = () => {
   const [workspaceName, setWorkspaceName] = useState('');

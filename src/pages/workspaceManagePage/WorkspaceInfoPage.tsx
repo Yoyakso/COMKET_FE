@@ -6,6 +6,7 @@ import { Radio } from '@/components/common/radio/Radio';
 import { color } from '@/styles/color';
 import { ImageUpload } from '@components/workspace/ImageUpload';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
+import { WorkspaceDelete } from '@/components/workspace/WorkspaceDelete';
 
 import { useParams } from 'react-router-dom';
 import { updateWorkspace } from '@/api/WorkspaceInfo';
@@ -20,6 +21,7 @@ export const WorkspaceInfoPage = () => {
   const [profileFileId, setProfileFileId] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const name = 'YOYAKSO';
   const url = 'https://comket.co.kr/yoyakso';
@@ -57,6 +59,17 @@ export const WorkspaceInfoPage = () => {
       alert('워크스페이스 정보가 저장되었습니다!');
     } catch (error) {
       console.error('워크스페이스 저장 실패:', error);
+    }
+  };
+
+  const handleDeleteWorkspace = async () => {
+    try {
+      console.log('Deleting workspace with ID:', workspaceId);
+      alert('삭제되었습니다.');
+      setDeleteModalOpen(false);
+
+    } catch (error) {
+      console.error('삭제 실패:', error);
     }
   };
 
@@ -116,9 +129,16 @@ export const WorkspaceInfoPage = () => {
         <S.Label>워크스페이스 삭제</S.Label>
         <S.DeleteWrapper>
           <S.DeleteText>삭제 시 워크스페이스의 프로젝트와 티켓, 파일 등 모든 데이터가 삭제됩니다.</S.DeleteText>
-          <Button variant="neutralOutlined" size="xs">삭제하기</Button>
+          <Button variant="neutralOutlined" size="xs" onClick={() => setDeleteModalOpen(true)}>삭제하기</Button>
         </S.DeleteWrapper>
       </S.InfoGroup>
+
+      {isDeleteModalOpen && (
+        <WorkspaceDelete
+          onClose={() => setDeleteModalOpen(false)}
+          onDelete={handleDeleteWorkspace}
+        />
+      )}
 
       <S.ButtonWrapper>
         <Button variant='neutralOutlined' size='sm'>워크스페이스 나가기</Button>
