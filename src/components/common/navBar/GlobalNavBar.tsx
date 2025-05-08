@@ -1,4 +1,5 @@
 import { ChevronDown, COMKET, InfoIcon, QuestionIcon } from "@assets/icons"
+import { useNavigate } from "react-router-dom"
 import * as S from "./GlobalNavBar.Style"
 import { WorkspaceSelector } from "./WorkspaceSelector"
 import { Search } from "@/components/common/search/Search"
@@ -10,6 +11,16 @@ interface GNBProps {
 }
 
 export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
+  const navigate = useNavigate();
+
+  const handleLoginButton = () => {
+    navigate('/login');
+  }
+
+  const handleStartButton = () => {
+    navigate('/login')
+  }
+
   return (
     <S.NavbarContainer>
       {variant !== "workspace" && (
@@ -34,8 +45,8 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
       )}
       {variant === "default" && (
         <S.AuthContainer>
-          <S.LoginButton>로그인</S.LoginButton>
-          <S.StartButton>시작하기</S.StartButton>
+          <S.LoginButton onClick={handleLoginButton}>로그인</S.LoginButton>
+          <S.StartButton onClick={handleStartButton}>시작하기</S.StartButton>
         </S.AuthContainer>
       )}
 

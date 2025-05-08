@@ -6,13 +6,22 @@ import { Radio } from '@/components/common/radio/Radio';
 import { color } from '@/styles/color';
 import { ImageUpload } from '@components/workspace/ImageUpload';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
+import { WorkspaceDelete } from '@/components/workspace/WorkspaceDelete';
+
+import { useParams } from 'react-router-dom';
+import { updateWorkspace } from '@/api/WorkspaceInfo';
 
 export const WorkspaceInfoPage = () => {
+
+  const { workspaceId } = useParams();
+
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState('');
+  const [profileFileId, setProfileFileId] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const name = 'YOYAKSO';
   const url = 'https://comket.co.kr/yoyakso';
@@ -21,10 +30,47 @@ export const WorkspaceInfoPage = () => {
 
   const isValid = description.trim() !== '';
 
-  const handleImageSelect = (file: File) => {
-    const objectUrl = URL.createObjectURL(file);
-    setImageUrl(objectUrl);
-    setFileName(file.name);
+  const handleImageSelect = ({
+    file_id,
+    file_url,
+    file_name,
+  }: {
+    file_id: string;
+    file_url: string;
+    file_name: string;
+  }) => {
+    setImageUrl(file_url);
+    setProfileFileId(file_id);
+    setFileName(file_name);
+  };
+
+  const handleSave = async () => {
+    if (!workspaceId || !description.trim()) return;
+
+    const payload = {
+      description,
+      isPublic: visibility === 'public',
+      profile_file_id: profileFileId,
+      state: 'ACTIVE' as const,
+    };
+
+    try {
+      await updateWorkspace(workspaceId, payload);
+      alert('워크스페이스 정보가 저장되었습니다!');
+    } catch (error) {
+      console.error('워크스페이스 저장 실패:', error);
+    }
+  };
+
+  const handleDeleteWorkspace = async () => {
+    try {
+      console.log('Deleting workspace with ID:', workspaceId);
+      alert('삭제되었습니다.');
+      setDeleteModalOpen(false);
+
+    } catch (error) {
+      console.error('삭제 실패:', error);
+    }
   };
 
   return (
@@ -83,9 +129,16 @@ export const WorkspaceInfoPage = () => {
         <S.Label>워크스페이스 삭제</S.Label>
         <S.DeleteWrapper>
           <S.DeleteText>삭제 시 워크스페이스의 프로젝트와 티켓, 파일 등 모든 데이터가 삭제됩니다.</S.DeleteText>
-          <Button variant="neutralOutlined" size="xs">삭제하기</Button>
+          <Button variant="neutralOutlined" size="xs" onClick={() => setDeleteModalOpen(true)}>삭제하기</Button>
         </S.DeleteWrapper>
       </S.InfoGroup>
+
+      {isDeleteModalOpen && (
+        <WorkspaceDelete
+          onClose={() => setDeleteModalOpen(false)}
+          onDelete={handleDeleteWorkspace}
+        />
+      )}
 
       <S.ButtonWrapper>
         <Button variant='neutralOutlined' size='sm'>워크스페이스 나가기</Button>
@@ -95,6 +148,7 @@ export const WorkspaceInfoPage = () => {
             variant={isValid ? 'tealFilled' : 'neutralFilled'}
             size="sm"
             disabled={!isValid}
+            onClick={handleSave}
           >
             저장
           </Button>

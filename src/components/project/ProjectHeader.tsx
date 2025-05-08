@@ -1,44 +1,77 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import * as S from "./ProjectHeader.Style"
-import { FilterIcon } from "@/assets/icons"
 import { Search } from "../common/search/Search"
+import { Dropdown, type DropdownOption } from "@/components/common/dropdown/Dropdown"
 
 interface ProjectHeaderProps {
   projectCount: number
   onSearch: (query: string) => void
+  onCreateProject?: () => void
+  onFilter?: (selectedFilters: string[]) => void
 }
 
-export const ProjectHeader = ({ projectCount, onSearch }: ProjectHeaderProps) => {
+export const ProjectHeader = ({ projectCount, onSearch, onCreateProject, onFilter }: ProjectHeaderProps) => {
   const [searchValue, setSearchValue] = useState("")
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([])
+
+  const filterButtonRef = useRef<HTMLDivElement>(null)
+
+  const filterOptions: DropdownOption[] = [
+    { label: "1", value: "owner", groupName: "프로젝트 태그" },
+    { label: "2", value: "admin", groupName: "프로젝트 태그" },
+    { label: "3", value: "member", groupName: "프로젝트 태그" },
+
+    { label: "전체 공개", value: "public", groupName: "공개 범위" },
+    { label: "멤버 공개", value: "private", groupName: "공개 범위" },
+  ]
+
+  const handleFilterChange = (values: string | string[]) => {
+    if (Array.isArray(values)) {
+      setSelectedFilters(values)
+      if (onFilter) {
+        onFilter(values)
+      }
+    }
+  }
 
   const handleSearchChange = (value: string) => {
-    setSearchValue(value);
-    onSearch(value);
-  };
+    setSearchValue(value)
+    onSearch(value)
+  }
 
   return (
     <S.HeaderContainer>
       <S.Title>프로젝트 관리</S.Title>
       <S.HeaderTop>
-        <S.MemberCount>{projectCount}개</S.MemberCount>
+        <S.ProjectCount>{projectCount}개</S.ProjectCount>
         <S.RightSection>
           <S.SearchContainer>
-            <S.FilterButton>
-              필터 <FilterIcon />
-            </S.FilterButton>
+            <S.FilterButtonContainer ref={filterButtonRef}>
+              <S.FilterDropdownWrapper>
+                <Dropdown
+                  options={filterOptions}
+                  selectedValues={selectedFilters}
+                  onChange={handleFilterChange}
+                  placeholder="필터"
+                  size="sm"
+                  variant={selectedFilters.length > 0 ? "activated-chip" : "none"}
+                  type="group-check"
+                  iconLeft={true}
+                />
+              </S.FilterDropdownWrapper>
+            </S.FilterButtonContainer>
             <S.SearchInputWrapper>
               <Search
                 state="enable"
                 variant="outlined"
                 size="sm"
-                onChange={handleSearchChange}
-                onClear={() => setSearchValue("")}
+                onSearch={handleSearchChange}
+                defaultValue={searchValue}
                 disabled={false}
-                value={searchValue}
               />
             </S.SearchInputWrapper>
           </S.SearchContainer>
-          <S.Button>프로젝트 생성</S.Button>
+          <S.Button onClick={onCreateProject}>프로젝트 생성</S.Button>
         </S.RightSection>
       </S.HeaderTop>
     </S.HeaderContainer>

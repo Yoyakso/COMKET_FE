@@ -19,7 +19,7 @@ export const Title = styled.h1`
   margin-bottom: 24px;
 `
 
-export const MemberCount = styled.div`
+export const ProjectCount = styled.div`
   font-size: 14px;
   font-weight: 700;
   color: ${color.teal500};
@@ -72,4 +72,10 @@ export const Button = styled.button`
   }
 `
 
+export const FilterButtonContainer = styled.div`
+  position: relative;
+`
 
+export const FilterDropdownWrapper = styled.div`
+  width: 160px;
+`

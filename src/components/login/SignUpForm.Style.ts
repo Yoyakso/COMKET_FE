@@ -154,7 +154,6 @@ export const TermLink = styled.a`
 export const SignupButton = styled.button`
   width: 100%;
   height: 56px;
-  background-color: #F3F4F6;
   color: #6B7280;
   font-size: 16px;
   font-weight: 500;
@@ -163,4 +162,17 @@ export const SignupButton = styled.button`
   cursor: pointer;
   transition: background-color 0.3s;
   margin-top: 32px;
+  background-color: ${color.teal500};
+  color: ${color.white};
+
+  &:disabled {
+    background-color: ${color.primaryDisabled};
+    cusrsor: none;
+  }
 `
+
+export const ErrorMessage = styled.div`
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+`;

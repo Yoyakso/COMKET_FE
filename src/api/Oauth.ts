@@ -9,6 +9,7 @@ const REDIRECT_URI = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI
  * @returns 백엔드에서 받은 응답 데이터
  */
 export const googleLogin = async (code: string) => {
+
   try {
     const response = await axios.get(`${BASE_URL}/api/v1/auth/oauth2/google/login`, {
       params: {
@@ -22,3 +23,48 @@ export const googleLogin = async (code: string) => {
     throw error
   }
 }
+
+/**
+ * 이메일로 회원가입하기
+ * @param email 사용자가 입력한 이메일
+ * @param password 사용자가 입력한 비밀번호
+ * @param nickname 닉네임
+ * @param real_name 본명
+ * @returns 
+ */
+export const registerUser = async ({
+  email,
+  password,
+  real_name,
+}: {
+  email: string;
+  password: string;
+  real_name: string;
+}) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/api/v1/auth/register`, {
+      email,
+      password,
+      real_name,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("회원가입 실패:", error);
+    throw error;
+  }
+};
+
+/**
+ * 검증코드 전송
+ * @param email 
+ * @returns 
+ */
+export const sendVerificationCode = async (email: string) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/api/v1/email/verify/send`, { email });
+    return response.data;
+  } catch (error) {
+    console.error("이메일 인증번호 발송 실패:", error);
+    throw error;
+  }
+};
