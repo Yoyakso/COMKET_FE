@@ -9,7 +9,7 @@ import { uploadProfileImage, type UploadResponse } from '@/api/WorkspaceImage';
 
 interface ImageUploadProps {
     onClose: () => void;
-    onImageSelect: (fileInfo: { file_id: string; file_url: string; file_name: string }) => void;
+    onImageSelect: (fileInfo: { file_id: number; file_url: string; file_name: string }) => void;
 }
 
 
@@ -56,7 +56,7 @@ export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
             console.log('업로드 응답:', result);
 
             onImageSelect({
-                file_id: result.fileId.toString(),
+                file_id: result.fileId,
                 file_url: result.fileUrl,
                 file_name: result.fileName,
             });
