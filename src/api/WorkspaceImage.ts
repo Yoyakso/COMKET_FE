@@ -3,7 +3,7 @@ import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export interface UploadResponse {
-  fileId: string;
+  fileId: number;
   fileUrl: string;
   expires_in?: number;
   fileName?: string;

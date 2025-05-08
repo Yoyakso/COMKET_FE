@@ -10,11 +10,14 @@ export const WorkspacePage = () => {
   const navigate = useNavigate();
 
   const [options, setOptions] = useState<DropdownOption[]>([]);
+  const [selectedSlug, setSelectedSlug] = useState<string>("");
   const [selectedId, setSelectedId] = useState<string>("");
 
+
   interface Workspace {
-    workspaceId: string;
-    workspaceName: string;
+    id: string;
+    name: string;
+    slug: string; // Added slug property
   }
 
   useEffect(() => {
@@ -23,15 +26,19 @@ export const WorkspacePage = () => {
         const data: Workspace[] = await fetchMyWorkspaces();
 
         const formatted = data.map((ws: Workspace) => ({
-          label: ws.workspaceName,
-          value: ws.workspaceId,
+          label: ws.name,
+          value: ws.slug,
         }));
 
         setOptions(formatted);
-        setSelectedId(formatted[0]?.value ?? '');
+        if (formatted.length > 0) {
+          setSelectedSlug(formatted[0].value);
+        }
         console.log(data);
       } catch (err) {
         console.error("워크스페이스 목록 불러오기 실패:", err);
+        setOptions([]);
+        setSelectedSlug('');
       }
     };
 
@@ -40,8 +47,8 @@ export const WorkspacePage = () => {
 
 
   const handleJoin = () => {
-    if (selectedId) {
-      navigate(`/workspace/${selectedId}`);
+    if (selectedSlug) {
+      navigate(`/workspace/${selectedSlug}`);
     }
   };
 
@@ -78,10 +85,10 @@ export const WorkspacePage = () => {
             <S.WorkspaceRow>
               <Dropdown
                 options={options}
-                value={selectedId}
+                value={selectedSlug}
                 onChange={(value) => {
                   if (typeof value === "string") {
-                    setSelectedId(value);
+                    setSelectedSlug(value);
                   }
                 }}
                 placeholder="워크스페이스 선택"

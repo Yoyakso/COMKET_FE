@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import * as S from './WorkspaceInfoPage.Style';
-import { TextInput } from '@/components/common/textInput/TextInput';
 import { Button } from '@/components/common/button/Button';
 import { Radio } from '@/components/common/radio/Radio';
 import { color } from '@/styles/color';
@@ -12,31 +11,59 @@ import { useParams } from 'react-router-dom';
 import { updateWorkspace } from '@/api/WorkspaceInfo';
 
 export const WorkspaceInfoPage = () => {
-
   const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
-  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
-  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
+
+  const [workspaceId, setWorkspaceId] = useState<string>(''); // id 저장용
+  const [workspace, setWorkspace] = useState<any>(null);
   const [description, setDescription] = useState('');
+  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [profileFileId, setProfileFileId] = useState<string | null>(null);
+  const [profileFileId, setProfileFileId] = useState<number | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const workspaceName = localStorage.getItem('workspaceName');
-  const url = localStorage.getItem('workspaceSlug');
-
-
-  const handleOpenModal = () => setModalOpen(true);
-
   const isValid = description.trim() !== '';
+
+  useEffect(() => {
+
+    const fetchWorkspaceInfo = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/workspaces?includePublic=false`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(res.data);
+        const all = res.data;
+        const target = all.find((ws: any) => ws.slug === workspaceSlug);
+
+        if (!target) {
+          alert("해당 슬러그의 워크스페이스를 찾을 수 없습니다.");
+          return;
+        }
+
+        setWorkspace(target);
+        setWorkspaceId(target.id);
+        setDescription(target.description);
+        setVisibility(target.isPublic ? 'public' : 'private');
+        setImageUrl(target.profileFileUrl);
+      } catch (err) {
+        console.error("워크스페이스 정보 불러오기 실패:", err);
+      }
+    };
+
+    if (workspaceSlug) fetchWorkspaceInfo();
+  }, [workspaceSlug]);
 
   const handleImageSelect = ({
     file_id,
     file_url,
     file_name,
   }: {
-    file_id: string;
+    file_id: number;
     file_url: string;
     file_name: string;
   }) => {
@@ -46,44 +73,30 @@ export const WorkspaceInfoPage = () => {
   };
 
   const handleSave = async () => {
+    console.log(workspaceId);
+    if (!workspaceId || !description.trim()) return;
+    try {
+      const token = localStorage.getItem("accessToken");
+      await updateWorkspace(workspaceId, {
+        name: workspace?.name,
+        description,
+        isPublic: visibility === "public",
+        profile_file_id: profileFileId,
+        state: "ACTIVE",
+      });
+      alert("저장되었습니다.");
 
-    if (!workspaceId || !description.trim()) {
-
-    } return;
-
-
-
-  };
-
-  useEffect(() => {
-    const fetchWorkspaceId = async () => {
-      try {
-        const token = localStorage.getItem('accessToken');
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/workspaces/slug/${workspaceSlug}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setWorkspaceId(res.data.workspaceId);
-      } catch (err) {
-        console.error('워크스페이스 ID 조회 실패:', err);
-      }
-    };
-
-    if (workspaceSlug) {
-      fetchWorkspaceId();
+    } catch (error) {
+      console.error("저장 실패:", error);
+      alert("저장 실패");
     }
-  }, [workspaceSlug]);
+  };
 
   const handleDeleteWorkspace = async () => {
     try {
       console.log('Deleting workspace with ID:', workspaceId);
       alert('삭제되었습니다.');
       setDeleteModalOpen(false);
-
     } catch (error) {
       console.error('삭제 실패:', error);
     }
@@ -95,12 +108,12 @@ export const WorkspaceInfoPage = () => {
 
       <S.InfoGroup>
         <S.Label>워크스페이스 이름</S.Label>
-        <S.PlainText>{workspaceName}</S.PlainText>
+        <S.PlainText>{workspace?.name}</S.PlainText>
       </S.InfoGroup>
 
       <S.InfoGroup>
         <S.Label>워크스페이스 주소</S.Label>
-        <S.PlainText style={{ color: color.lightBlue600 }}>{url}</S.PlainText>
+        <S.PlainText style={{ color: color.lightBlue600 }}>{workspace?.slug}</S.PlainText>
       </S.InfoGroup>
 
       <S.InfoGroup>
@@ -119,7 +132,7 @@ export const WorkspaceInfoPage = () => {
             {imageUrl ? <img src={imageUrl} alt="대표 이미지" width={120} height={120} /> : <S.ImagePlaceholder><DropdownIcon /></S.ImagePlaceholder>}
           </S.Photo>
           <S.PhotoUploader>
-            <Button onClick={handleOpenModal} variant="neutralOutlined" size="xs" style={{ width: '120px' }}>
+            <Button onClick={() => setModalOpen(true)} variant="neutralOutlined" size="xs" style={{ width: '120px' }}>
               사진 선택
             </Button>
             {isModalOpen && (
@@ -173,3 +186,7 @@ export const WorkspaceInfoPage = () => {
     </S.Container>
   );
 };
+function long(profileFileId: string): string {
+  throw new Error('Function not implemented.');
+}
+
