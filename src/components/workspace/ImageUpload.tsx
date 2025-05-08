@@ -5,9 +5,11 @@ import { Button } from '@/components/common/button/Button';
 import { getCroppedImg } from '@/utils/image/getCroppedImg';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
 
+import { uploadProfileImage } from '@/api/WorkspaceImage';
+
 interface ImageUploadProps {
     onClose: () => void;
-    onImageSelect: (file: File) => void;
+    onImageSelect: (fileInfo: { file_id: string; file_url: string; file_name: string }) => void;
 }
 
 export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
@@ -48,10 +50,18 @@ export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
 
         try {
             const file = await getCroppedImg(imageSrc, croppedAreaPixels);
-            onImageSelect(file);
+
+            const { file_id, file_url } = await uploadProfileImage(file, 'WORKSPACE_PROFILE');
+
+            onImageSelect({
+                file_id,
+                file_url,
+                file_name: file.name,
+            });
+
             onClose();
         } catch (err) {
-            console.error(err);
+            console.error('이미지 업로드 실패:', err);
         }
     };
 
@@ -69,7 +79,7 @@ export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
                                 zoom={zoom}
                                 aspect={1}
                                 cropSize={{ width: 120, height: 120 }}
-                                minZoom={0.4} // 자유롭게 축소 가능
+                                minZoom={0.4}
                                 restrictPosition={false}
                                 onCropChange={setCrop}
                                 onCropComplete={onCropComplete}

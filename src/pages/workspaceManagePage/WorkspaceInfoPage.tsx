@@ -7,11 +7,18 @@ import { color } from '@/styles/color';
 import { ImageUpload } from '@components/workspace/ImageUpload';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
 
+import { useParams } from 'react-router-dom';
+import { updateWorkspace } from '@/api/WorkspaceInfo';
+
 export const WorkspaceInfoPage = () => {
+
+  const { workspaceId } = useParams();
+
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState('');
+  const [profileFileId, setProfileFileId] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const name = 'YOYAKSO';
@@ -21,10 +28,36 @@ export const WorkspaceInfoPage = () => {
 
   const isValid = description.trim() !== '';
 
-  const handleImageSelect = (file: File) => {
-    const objectUrl = URL.createObjectURL(file);
-    setImageUrl(objectUrl);
-    setFileName(file.name);
+  const handleImageSelect = ({
+    file_id,
+    file_url,
+    file_name,
+  }: {
+    file_id: string;
+    file_url: string;
+    file_name: string;
+  }) => {
+    setImageUrl(file_url);
+    setProfileFileId(file_id);
+    setFileName(file_name);
+  };
+
+  const handleSave = async () => {
+    if (!workspaceId || !description.trim()) return;
+
+    const payload = {
+      description,
+      isPublic: visibility === 'public',
+      profile_file_id: profileFileId,
+      state: 'ACTIVE' as const,
+    };
+
+    try {
+      await updateWorkspace(workspaceId, payload);
+      alert('워크스페이스 정보가 저장되었습니다!');
+    } catch (error) {
+      console.error('워크스페이스 저장 실패:', error);
+    }
   };
 
   return (
@@ -95,6 +128,7 @@ export const WorkspaceInfoPage = () => {
             variant={isValid ? 'tealFilled' : 'neutralFilled'}
             size="sm"
             disabled={!isValid}
+            onClick={handleSave}
           >
             저장
           </Button>
