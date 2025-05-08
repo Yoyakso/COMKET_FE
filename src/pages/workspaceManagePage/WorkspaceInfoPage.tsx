@@ -9,6 +9,8 @@ import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
 import { WorkspaceDelete } from '@/components/workspace/WorkspaceDelete';
 import { useParams } from 'react-router-dom';
 import { updateWorkspace } from '@/api/WorkspaceInfo';
+import { deleteWorkspace } from '@/api/DeleteWorkspace';
+import { useNavigate } from 'react-router-dom';
 
 export const WorkspaceInfoPage = () => {
   const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
@@ -24,6 +26,7 @@ export const WorkspaceInfoPage = () => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const isValid = description.trim() !== '';
+  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -100,11 +103,25 @@ export const WorkspaceInfoPage = () => {
 
   const handleDeleteWorkspace = async () => {
     try {
-      console.log('Deleting workspace with ID:', workspaceId);
-      alert('삭제되었습니다.');
+      if (!workspaceId) return;
+
+      await deleteWorkspace(workspaceId);
+      alert('워크스페이스가 삭제되었습니다.');
+
+      localStorage.removeItem('workspaceId');
+      localStorage.removeItem('workspaceSlug');
+      localStorage.removeItem('workspaceName');
+
       setDeleteModalOpen(false);
-    } catch (error) {
+
+      navigate('/workspace'); // 삭제 후 워크스페이스 목록 페이지로 이동
+    } catch (error: any) {
       console.error('삭제 실패:', error);
+      if (error?.response?.status === 403) {
+        alert('삭제 권한이 없습니다. OWNER만 삭제할 수 있습니다.');
+      } else {
+        alert('워크스페이스 삭제에 실패했습니다.');
+      }
     }
   };
 
