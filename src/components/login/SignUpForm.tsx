@@ -31,6 +31,19 @@ export const SignUpForm = () => {
     })
   }
 
+  const isFormValid =
+    name.trim() !== "" &&
+    email.trim() !== "" &&
+    verificationCode.trim() !== "" &&
+    password.trim().length >= 8 &&
+    confirmPassword === password &&
+    agreements.service &&
+    agreements.privacy;
+
+  const isPasswordMismatch =
+    password !== "" && confirmPassword !== "" && password !== confirmPassword;
+
+
   const handleAgreementChange = (key: keyof typeof agreements) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked
 
@@ -78,7 +91,6 @@ export const SignUpForm = () => {
       const res = await registerUser({
         email,
         password,
-        nickname: name,
         real_name: name,
       });
 
@@ -155,6 +167,10 @@ export const SignUpForm = () => {
           />
         </S.FormRow>
 
+        {isPasswordMismatch && (
+          <S.ErrorMessage>비밀번호가 일치하지 않습니다.</S.ErrorMessage>
+        )}
+
         <S.CheckboxContainer>
           <S.CheckboxRow>
             <CheckBox
@@ -211,7 +227,7 @@ export const SignUpForm = () => {
           </S.TermRow>
         </S.CheckboxContainer>
 
-        <S.SignupButton type="submit" onClick={handleSubmit} >회원가입</S.SignupButton>
+        <S.SignupButton type="submit" onClick={handleSubmit} disabled={!isFormValid}>회원가입</S.SignupButton>
       </S.Form>
     </S.Container>
   )
