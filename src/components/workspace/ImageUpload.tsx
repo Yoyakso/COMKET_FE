@@ -4,13 +4,14 @@ import * as S from './ImageUpload.Style';
 import { Button } from '@/components/common/button/Button';
 import { getCroppedImg } from '@/utils/image/getCroppedImg';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
+import { uploadProfileImage, type UploadResponse } from '@/api/WorkspaceImage';
 
-import { uploadProfileImage } from '@/api/WorkspaceImage';
 
 interface ImageUploadProps {
     onClose: () => void;
     onImageSelect: (fileInfo: { file_id: string; file_url: string; file_name: string }) => void;
 }
+
 
 export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -51,12 +52,13 @@ export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
         try {
             const file = await getCroppedImg(imageSrc, croppedAreaPixels);
 
-            const { file_id, file_url } = await uploadProfileImage(file, 'WORKSPACE_PROFILE');
+            const result: UploadResponse = await uploadProfileImage(file, 'WORKSPACE_PROFILE');
+            console.log('업로드 응답:', result);
 
             onImageSelect({
-                file_id,
-                file_url,
-                file_name: file.name,
+                file_id: result.fileId.toString(),
+                file_url: result.fileUrl,
+                file_name: result.fileName,
             });
 
             onClose();
@@ -92,7 +94,6 @@ export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
 
                     <S.PreviewGroup>
                         <S.PreviewLabel>미리보기</S.PreviewLabel>
-
                         <S.PreviewWrapper>
                             {previewUrl ? (
                                 <img src={previewUrl} alt="미리보기" width={120} height={120} />

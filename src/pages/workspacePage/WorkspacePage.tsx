@@ -12,18 +12,32 @@ export const WorkspacePage = () => {
   const [options, setOptions] = useState<DropdownOption[]>([]);
   const [selectedId, setSelectedId] = useState<string>("");
 
+  interface Workspace {
+    workspaceId: string;
+    workspaceName: string;
+  }
+
   useEffect(() => {
-    fetchMyWorkspaces()
-      .then((data) => {
-        const formatted = data.map((ws: any) => ({
-          label: ws.name,
-          value: ws.id,
+    const fetchData = async () => {
+      try {
+        const data: Workspace[] = await fetchMyWorkspaces();
+
+        const formatted = data.map((ws: Workspace) => ({
+          label: ws.workspaceName,
+          value: ws.workspaceId,
         }));
+
         setOptions(formatted);
-        setSelectedId(formatted[0]?.value ?? "");
-      })
-      .catch((err) => console.error("워크스페이스 목록 불러오기 실패:", err));
+        setSelectedId(formatted[0]?.value ?? '');
+        console.log(data);
+      } catch (err) {
+        console.error("워크스페이스 목록 불러오기 실패:", err);
+      }
+    };
+
+    fetchData();
   }, []);
+
 
   const handleJoin = () => {
     if (selectedId) {

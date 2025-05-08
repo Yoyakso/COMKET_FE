@@ -13,7 +13,7 @@ export const updateWorkspace = async (
   workspaceId: string,
   payload: UpdateWorkspacePayload
 ) => {
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem('accessToken');
 
   const response = await axios.patch(
     `${BASE_URL}/api/v1/workspaces/${workspaceId}`,
