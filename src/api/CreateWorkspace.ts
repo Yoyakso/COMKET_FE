@@ -3,8 +3,8 @@ import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export interface WorkspaceCreateParams {
-  workspaceName: string;
-  workspaceSlug: string;
+  name: string;
+  slug: string;
   description: string;
   is_public: boolean;
   profile_file_id?: string | null;
@@ -26,6 +26,7 @@ export const workspaceCreate = async (params: WorkspaceCreateParams) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json', 
         },
 
         withCredentials: true, 
@@ -34,7 +35,11 @@ export const workspaceCreate = async (params: WorkspaceCreateParams) => {
 
     return response.data;
   } catch (error) {
-    console.error('워크스페이스 생성 실패:', error);
+    if (error.response) {
+      console.error("💥 서버 응답 에러:", error.response.data); // ✅ 핵심
+    } else {
+      console.error("💥 에러:", error.message);
+    }
     throw error;
   }
 };
