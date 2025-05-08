@@ -11,7 +11,7 @@ export const Row = styled.tr`
 
 export const Cell = styled.td<{ $isCentered?: boolean }>`
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: 13px;
   color: ${color.textPrimary};
   white-space: nowrap;
   text-align: ${(props) => (props.$isCentered ? "center" : "left")};

@@ -94,6 +94,12 @@ export const VerificationButton = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: ${color.primaryDisabled};
+    color: ${color.textTertiary}
+  }
 `
 
 export const CheckboxContainer = styled.div`
