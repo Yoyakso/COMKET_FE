@@ -10,6 +10,8 @@ import SpinnerIcon from '@assets/icons/InviteCodeSpinner.svg?react'
 import ValidIcon from '@/assets/icons/InviteCodeValid.svg?react'
 import ErrorIcon from '@assets/icons/InviteCodeError.svg?react'
 
+import { fetchWorkspaceByInviteCode } from '@/api/InviteCode';
+
 const rotate = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -53,16 +55,38 @@ export const InviteCodePage = () => {
     }
   }
 
-  const handleComplete = (enteredCode: string) => {
-    setCode(enteredCode)
+  const handleComplete = async (enteredCode: string) => {
+    setCode(enteredCode);
+    setCodeStatus({
+      isLoading: true,
+      isSuccess: false,
+      errorType: 'none',
+    });
 
-    const workspaceData: DropdownOption = {
-      label: 'YOYAKSO',
-      value: 'yoyakso',
+    try {
+      const data = await fetchWorkspaceByInviteCode(enteredCode);
+
+      const workspaceData: DropdownOption = {
+        label: data.name,
+        value: data.slug,
+      };
+
+      setWorkspace(workspaceData);
+      setCodeStatus({
+        isLoading: false,
+        isSuccess: true,
+        errorType: 'none',
+      });
+    } catch (error: any) {
+      console.error('초대 코드 조회 실패:', error);
+      setWorkspace(null);
+      setCodeStatus({
+        isLoading: false,
+        isSuccess: false,
+        errorType: 'invalid',
+      });
     }
-
-    setWorkspace(workspaceData)
-  }
+  };
 
   return (
     <S.Container>
@@ -100,7 +124,7 @@ export const InviteCodePage = () => {
               options={workspace ? [workspace] : []}
               type='single-image'
               value={workspace?.value}
-              onChange={() => {}}
+              onChange={() => { }}
               placeholder=""
             />
           </S.DropdownWrapper>

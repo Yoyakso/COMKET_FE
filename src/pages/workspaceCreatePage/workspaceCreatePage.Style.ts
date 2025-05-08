@@ -62,13 +62,13 @@ export const URLInputGroup = styled.div`
   gap: 6px;
 `;
 
-export const CustomInputBox = styled.div<{ isError: boolean }>`
+export const CustomInputBox = styled.div<{ $isError: boolean }>`
   display: flex;
   height: 48px;
   width: 520px;
   border-radius: 6px;
   overflow: hidden;
-  border: 1px solid ${({ isError }) => (isError ? color.error : color.textPlaceholder24)};
+  border: 1px solid ${({ $isError }) => ($isError ? color.error : color.textPlaceholder24)};
 `;
 
 export const Prefix = styled.div`
@@ -94,10 +94,10 @@ export const StyledInput = styled.input`
   }
 `;
 
-export const HelperText = styled.span<{ isError: boolean }>`
+export const HelperText = styled.span<{ $isError: boolean }>`
   font-size: 14px;
   font-weight: 400;
-  color: ${({ isError }) => (isError ? color.error : color.textTertiary)};
+  color: ${({ $isError }) => ($isError ? color.error : color.textTertiary)};
   white-space: pre-wrap;
   line-height: 22px;
   letter-spacing: -0.028px;

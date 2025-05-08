@@ -132,5 +132,4 @@ export const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 24px;
 `;

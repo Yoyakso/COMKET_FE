@@ -1,20 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as S from "./WorkspacePage.Style";
 import { Button } from "@/components/common/button/Button";
 import { Dropdown, DropdownOption } from "@/components/common/dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
+import { fetchMyWorkspaces } from "@/api/Workspace";
 
 export const WorkspacePage = () => {
+
   const navigate = useNavigate();
 
-  const options: DropdownOption[] = [
-    // 주석 풀면 기존 워크스페이스 드롭다운 화면 나옴
-    { value: "workspace-1", label: "YOYAKSO" },
-    { value: "workspace-2", label: "COMKET" },
-    { value: "workspace-3", label: "TEAM42" },
-  ];
+  const [options, setOptions] = useState<DropdownOption[]>([]);
+  const [selectedId, setSelectedId] = useState<string>("");
 
-  const [selectedId, setSelectedId] = useState<string>(options[0]?.value ?? "");
+  useEffect(() => {
+    fetchMyWorkspaces()
+      .then((data) => {
+        const formatted = data.map((ws: any) => ({
+          label: ws.name,
+          value: ws.id,
+        }));
+        setOptions(formatted);
+        setSelectedId(formatted[0]?.value ?? "");
+      })
+      .catch((err) => console.error("워크스페이스 목록 불러오기 실패:", err));
+  }, []);
 
   const handleJoin = () => {
     if (selectedId) {
