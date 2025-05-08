@@ -44,7 +44,7 @@ export const registerUser = async ({
   real_name: string;
 }) => {
   try {
-    const response = await axios.post(`${BASE_URL}/api/v1/auth/register`, {
+    const response = await axios.post(`${BASE_URL}/api/v1/members/register`, {
       email,
       password,
       real_name,
