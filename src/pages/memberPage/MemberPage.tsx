@@ -1,136 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar";
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar";
 import { MemberHeader } from "@/components/member/MemberHeader";
 import { MemberTable } from "@/components/member/MemberTable";
 import { MemberData } from "@/types/member";
 import * as S from "./MemberPage.Style";
+import { getWorkspaceMembers } from "@/api/Member";
 
 export const MemberPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
-  const members: MemberData[] = [
-    {
-      id: "tph00300",
-      name: "이태희",
-      email: "tph00300@ajou.co.kr",
-      department: "워크스페이스 소유자",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "이",
-      color: "#4dabf7",
-    },
-    {
-      id: "simh3077",
-      name: "조민현",
-      email: "simh3077@ajou.ac.kr",
-      department: "워크스페이스 관리자",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "조",
-      color: "#748ffc",
-    },
-    {
-      id: "won980630",
-      name: "원혜연",
-      email: "won980630@ajou.co.kr",
-      department: "워크스페이스 관리자",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "원",
-      color: "#69db7c",
-    },
-    {
-      id: "ka09023",
-      name: "오유민",
-      email: "ka09023@ajou.co.kr",
-      department: "워크스페이스 관리자",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "오",
-      color: "#4dabf7",
-    },
-    {
-      id: "chito",
-      name: "치토",
-      email: "chito@ajou.co.kr",
-      department: "일반 멤버",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "지",
-      color: "#ffa8a8",
-    },
-    {
-      id: "yoojaeseok",
-      name: "유재석",
-      email: "yoojaeseok@ajou.co.kr",
-      department: "일반 멤버",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "유",
-      color: "#ffa94d",
-    },
-    {
-      id: "parkmyeongsu",
-      name: "박명수",
-      email: "parkmyeongsu@ajou.co.kr",
-      department: "일반 멤버",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "박",
-      color: "#ffe066",
-    },
-    {
-      id: "jhd",
-      name: "정형돈",
-      email: "jhd@ajou.co.kr",
-      department: "일반 멤버",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "정",
-      color: "#63e6be",
-    },
-    {
-      id: "norediron",
-      name: "노홍철",
-      email: "norediron@ajou.co.kr",
-      department: "일반 멤버",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "노",
-      color: "#ff8787",
-    },
-    {
-      id: "lavieenrose",
-      name: "라비엔",
-      email: "lavieenrose@ajou.co.kr",
-      department: "일반 멤버",
-      status: "활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "라",
-      color: "#748ffc",
-    },
-    {
-      id: "tph00300",
-      name: "이태경",
-      email: "tph00300@ajou.co.kr",
-      department: "일반 멤버",
-      status: "비활성",
-      registrationDate: "YYYY-MM-DD",
-      lastLoginDate: "YYYY-MM-DD",
-      initial: "이",
-      color: "#4dabf7",
-    },
-  ]
+  const [members, setMembers] = useState<MemberData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getWorkspaceMembers();
+        setMembers(data);
+      } catch (error) {
+        console.error("멤버 불러오기 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, []);
+
+  const handleNavigateMember = async () => {
+    try {
+      console.log('프로젝트 멤버 조회');
+      setIsLoading(true);
+      const data = await getWorkspaceMembers();
+
+      console.log(data)
+    } catch (error) {
+      console.log("프로젝트 멤버 조회 실패:", error);
+      setMembers([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const filteredMembers = members.filter(
     (member) =>
@@ -149,12 +60,17 @@ export const MemberPage = () => {
 
       <S.MainContainer>
         <S.LNBContainer>
-          <LocalNavBar variant="settings" />
+          <LocalNavBar variant="settings" onNavigateMember={handleNavigateMember} />
         </S.LNBContainer>
 
         <S.Content>
           <MemberHeader memberCount={25} onSearch={handleSearch} />
-          <MemberTable members={filteredMembers} />
+          {/* <MemberTable members={filteredMembers} /> */}
+          {isLoading ? (
+            <div>로딩 중...</div>
+          ) : (
+            <MemberTable members={filteredMembers} />
+          )}
         </S.Content>
       </S.MainContainer>
     </S.PageContainer>
