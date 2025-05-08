@@ -13,7 +13,7 @@ import { WorkspaceInfoPage } from './pages/workspaceManagePage/WorkspaceInfoPage
 import { InviteCodePage } from './pages/InviteCodePage/InviteCodePage';
 import { ProjectPage } from './pages/projectPage/ProjectPage';
 import { ProfilePage } from './pages/profilePage/ProfilePage';
-
+import { AccountInfoPage } from './pages/accountInfoPage/AccountInfoPage';
 
 export const Router = createBrowserRouter([
   {
@@ -80,6 +80,10 @@ export const Router = createBrowserRouter([
       {
         path: 'profile',
         element: <ProfilePage />
+      },
+      {
+        path: 'account',
+        element: <AccountInfoPage />
       }
     ],
   },
