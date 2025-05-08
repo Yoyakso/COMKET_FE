@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components"
-import { color } from "@styles/color"
+import { color } from "@/styles/color"
 
 const fadeIn = keyframes`
   from { opacity: 0; }
@@ -28,8 +28,8 @@ export const ModalOverlay = styled.div`
 export const ModalContent = styled.div`
   background-color: white;
   border-radius: 8px;
-  width: 720px;
-  height: 490px;
+  width: 90%;
+  max-width: 720px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 40px 32px 32px 32px;
   display: flex;
@@ -97,6 +97,34 @@ export const TextArea = styled.textarea`
   }
 `
 
+export const ReadOnlyField = styled.div`
+  width: 100%;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+  min-height: 44px;
+  color: #212529;
+`
+
+export const ReadOnlyTagContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  min-height: 48px;
+`
+
+export const EmptyText = styled.span`
+  color: #9e9e9e;
+  font-size: 14px;
+  font-style: italic;
+`
+
 export const TagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -132,25 +160,6 @@ export const RadioGroup = styled.div`
   margin-bottom: 8px;
 `
 
-export const RadioOption = styled.div`
-  display: flex;
-  align-items: center;
-`
-
-export const RadioInput = styled.input`
-  margin: 0;
-  width: 18px;
-  height: 18px;
-  accent-color: #00C853;
-  cursor: pointer;
-`
-
-export const RadioLabel = styled.label`
-  margin-left: 8px;
-  font-size: 14px;
-  cursor: pointer;
-`
-
 export const HelperText = styled.p`
   font-size: 12px;
   color: #757575;
@@ -183,7 +192,7 @@ export const CancelButton = styled.button`
   }
 `
 
-export const CreateButton = styled.button`
+export const ConfirmButton = styled.button`
   padding: 12px;
   border: none;
   border-radius: 8px;

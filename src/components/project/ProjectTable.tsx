@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp } from "@assets/icons"
 
 interface ProjectTableProps {
   projects: ProjectData[]
+  onViewProject?: (projectId: string) => void
 }
 
 type SortField =
@@ -20,7 +21,7 @@ type SortField =
   | "createdAt"
 type SortDirection = "asc" | "desc"
 
-export const ProjectTable = ({ projects }: ProjectTableProps) => {
+export const ProjectTable = ({ projects, onViewProject }: ProjectTableProps) => {
   const [sortField, setSortField] = useState<SortField | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
 
@@ -162,7 +163,7 @@ export const ProjectTable = ({ projects }: ProjectTableProps) => {
         </S.TableHeader>
         <S.TableBody>
           {sortedProjects.map((project, index) => (
-            <ProjectRow key={`${project.id}-${index}`} project={project} />
+            <ProjectRow key={`${project.id}-${index}`} project={project} onViewProject={onViewProject} />
           ))}
         </S.TableBody>
       </S.Table>

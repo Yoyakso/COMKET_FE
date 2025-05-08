@@ -1,10 +1,10 @@
 import * as S from "./EmptyProject.Style"
 
-interface EmptyProjectStateProps {
+interface EmptyProjectProps {
   onCreateProject: () => void
 }
 
-export const EmptyProjectState = ({ onCreateProject }: EmptyProjectStateProps) => {
+export const EmptyProject = ({ onCreateProject }: EmptyProjectProps) => {
   return (
     <S.Container>
       <S.Content>
