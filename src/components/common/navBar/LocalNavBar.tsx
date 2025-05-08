@@ -44,7 +44,7 @@ export const LocalNavBar = ({
       id: "account",
       title: "계정 관리",
       items: [
-        { id: "profile", label: "프로필 설정", href: "/", icon: <ProfileIcon /> },
+        { id: "profile", label: "프로필 설정", href: "/profile", icon: <ProfileIcon /> },
         { id: "account_information", label: "계정 정보", href: "/", icon: <KeyIcon /> },
       ],
     },
