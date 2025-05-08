@@ -68,7 +68,7 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
                   onChange={handleFilterChange}
                   placeholder="필터"
                   size="sm"
-                  variant={selectedFilters.length > 0 ? "activated-chip" : "none"}
+                  variant={selectedFilters.length > 0 ? "activated" : "none"}
                   type="group-check"
                   iconLeft={true}
                 />
