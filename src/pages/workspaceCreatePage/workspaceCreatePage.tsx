@@ -1,18 +1,47 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as S from './workspaceCreatePage.Style';
 import { Radio } from '@/components/common/radio/Radio';
 import { Button } from '@/components/common/button/Button';
+import { workspaceCreate } from '@/api/WorkspaceCreate';
 
 export const CreateWorkspacePage = () => {
   const [workspaceName, setWorkspaceName] = useState('');
   const [workspaceURL, setWorkspaceURL] = useState('');
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const usedAddresses = ['yoyakso', 'comket', 'team42'];
+  const navigate = useNavigate();
+
   const isNameValid = workspaceName.trim().length > 0;
   const isURLValid = /^[a-z0-9]+$/.test(workspaceURL);
-  const isDuplicated = usedAddresses.includes(workspaceURL.toLowerCase());
-  const isFormValid = isNameValid && isURLValid && !isDuplicated;
+  const isFormValid = isNameValid && isURLValid;
+
+  const handleCreateWorkspace = async () => {
+    setErrorMessage('');
+
+    try {
+      const data = await workspaceCreate({
+        name: workspaceName,
+        slug: workspaceURL,
+        is_public: visibility === 'public',
+        description: `${workspaceName}의 워크스페이스입니다.`,
+        profile_file_id: null,
+      });
+
+      navigate(`/workspace/${data.slug}`);
+    } catch (error: any) {
+      if (
+        error.message?.includes('already exists') ||
+        error.message?.includes('409')
+      ) {
+        setErrorMessage('이미 사용 중인 이름 또는 주소입니다.');
+      } else {
+        setErrorMessage('워크스페이스 생성 중 오류가 발생했습니다.');
+      }
+      console.error('워크스페이스 생성 실패:', error);
+    }
+  };
 
   return (
     <S.Container>
@@ -31,7 +60,7 @@ export const CreateWorkspacePage = () => {
         <S.InputGroup>
           <S.Label>워크스페이스 주소</S.Label>
           <S.URLInputGroup>
-            <S.CustomInputBox $isError={isDuplicated}>
+            <S.CustomInputBox $isError={!!errorMessage}>
               <S.Prefix>https://comket.co.kr/</S.Prefix>
               <S.StyledInput
                 placeholder="워크스페이스 주소 입력"
@@ -40,17 +69,13 @@ export const CreateWorkspacePage = () => {
               />
             </S.CustomInputBox>
 
-            {/* 에러 메시지: dot 없이 빨간색 */}
-            {isDuplicated && (
-              <S.HelperText $isError>
-                이미 사용 중인 주소입니다. 다른 주소를 입력해 주세요.
-              </S.HelperText>
+            {errorMessage && (
+              <S.HelperText $isError>{errorMessage}</S.HelperText>
             )}
-
-            {/* 항상 보이는 기본 안내문: dot 포함 + 회색 */}
             <S.HelperText $isError={false}>
               · 영어 소문자와 숫자만 입력 가능 / 공백 및 특수문자 입력 불가
-              {'\n'}· 생성된 워크스페이스 주소는 나중에 변경할 수 없으니 신중하게 입력해 주세요.
+              {'\n'}· 생성된 워크스페이스 주소는 나중에 변경할 수 없으니 신중하게
+              입력해 주세요.
             </S.HelperText>
           </S.URLInputGroup>
         </S.InputGroup>
@@ -77,8 +102,17 @@ export const CreateWorkspacePage = () => {
       </S.FormSection>
 
       <S.ButtonWrapper>
-        <Button size="lg" variant="neutralOutlined">이전</Button>
-        <Button size="lg" variant="tealFilled" disabled={!isFormValid}>생성</Button>
+        <Button size="lg" variant="neutralOutlined">
+          이전
+        </Button>
+        <Button
+          size="lg"
+          variant="tealFilled"
+          disabled={!isFormValid}
+          onClick={handleCreateWorkspace}
+        >
+          생성
+        </Button>
       </S.ButtonWrapper>
     </S.Container>
   );
