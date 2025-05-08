@@ -17,10 +17,8 @@ export const GoogleRedirect = () => {
         console.log("구글 로그인 결과:", result)
         // 로컬스토리지에 토큰과 닉네임 저장
         localStorage.setItem("accessToken", result.accessToken)
-        localStorage.setItem("nickname", result.nickname)
 
-        // 메인 페이지로 이동
-        navigate("/main")
+        navigate("/workspace")
 
       } catch (err: any) {
         if (err.response) {
