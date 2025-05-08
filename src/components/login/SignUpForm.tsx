@@ -1,10 +1,12 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import * as S from "./SignUpForm.Style"
 import { COMKET2 } from "@/assets/icons"
 import { CheckBox } from "../common/checkbox/CheckBox"
 import { registerUser, sendVerificationCode } from "@api/Oauth"
 
 export const SignUpForm = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [verificationCode, setVerificationCode] = useState("")
@@ -50,7 +52,6 @@ export const SignUpForm = () => {
       alert("이메일을 입력해 주세요.");
       return;
     }
-    console.log('버튼 클릭됨');
 
     try {
       const res = await sendVerificationCode(email);
@@ -83,6 +84,7 @@ export const SignUpForm = () => {
 
       console.log("회원가입 성공:", res);
       alert("회원가입 완료!");
+      navigate("/signup/complete");
     } catch (err) {
       alert("회원가입 실패! 다시 시도해주세요.");
     }
@@ -209,7 +211,7 @@ export const SignUpForm = () => {
           </S.TermRow>
         </S.CheckboxContainer>
 
-        <S.SignupButton type="submit">회원가입</S.SignupButton>
+        <S.SignupButton type="submit" onClick={handleSubmit} >회원가입</S.SignupButton>
       </S.Form>
     </S.Container>
   )
