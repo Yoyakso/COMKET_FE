@@ -78,7 +78,7 @@ export const WorkspaceInfoPage = () => {
   };
 
   const handleSave = async () => {
-    console.log(workspaceId);
+
     if (!workspaceId || !description.trim()) return;
     try {
       const token = localStorage.getItem("accessToken");
@@ -89,6 +89,7 @@ export const WorkspaceInfoPage = () => {
         profile_file_id: profileFileId,
         state: "ACTIVE",
       });
+      console.log("profileFileId", profileFileId);
       alert("저장되었습니다.");
 
     } catch (error) {

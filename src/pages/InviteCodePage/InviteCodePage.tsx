@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as S from './InviteCodePage.Style'
 
 import { InviteCode } from '@components/common/textInput/InviteCode'
@@ -24,6 +25,7 @@ const Spinner = styled(SpinnerIcon)`
 `
 
 export const InviteCodePage = () => {
+  const navigate = useNavigate()
   const [code, setCode] = useState<string>('')
   const [workspace, setWorkspace] = useState<DropdownOption | null>(null)
 
@@ -36,12 +38,6 @@ export const InviteCodePage = () => {
     isSuccess: false,
     errorType: 'none',
   })
-
-  const validateCode = (code: string): 'valid' | 'invalid' | 'expired' => {
-    if (code === '123456') return 'valid'
-    if (code === '000000') return 'expired'
-    return 'invalid'
-  }
 
   const handleCodeChange = (newCode: string) => {
     setCode(newCode)
@@ -100,7 +96,6 @@ export const InviteCodePage = () => {
           <S.InviteCodeWrapper>
             <InviteCode
               onComplete={handleComplete}
-              validate={validateCode}
               size="md"
               onStatusChange={(status) => setCodeStatus(status)}
               onChangeCode={handleCodeChange}
@@ -135,7 +130,15 @@ export const InviteCodePage = () => {
         <Button variant="blackOutlined" size="lg">
           이전
         </Button>
-        <Button variant="tealFilled" size="lg" disabled={!code || !workspace}>
+        <Button
+          variant="tealFilled"
+          size="lg"
+          disabled={!code || !workspace}
+          onClick={() => {
+            if (workspace && workspace.value) {
+              navigate(`/workspace/${workspace?.value}`)
+            }
+          }}>
           입장
         </Button>
       </S.ButtonWrapper>

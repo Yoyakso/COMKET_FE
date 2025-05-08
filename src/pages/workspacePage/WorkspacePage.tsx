@@ -76,7 +76,7 @@ export const WorkspacePage = () => {
             <S.FullWidthButton variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
               워크스페이스 생성
             </S.FullWidthButton>
-            <S.FullWidthButton variant="neutralOutlined" size="lg">
+            <S.FullWidthButton variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
               초대 코드로 입장
             </S.FullWidthButton>
           </>
@@ -111,7 +111,7 @@ export const WorkspacePage = () => {
             <S.FullWidthButton variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
               워크스페이스 생성
             </S.FullWidthButton>
-            <S.FullWidthButton variant="neutralOutlined" size="lg">
+            <S.FullWidthButton variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
               초대 코드로 입장
             </S.FullWidthButton>
           </>
