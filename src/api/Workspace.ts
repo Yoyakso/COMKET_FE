@@ -19,21 +19,21 @@ export const fetchMyWorkspaces = async () => {
   }
 };
 
-export const fetchWorkspaceById = async (workspaceId: string) => {
-  try {
-    const token = localStorage.getItem("accessToken");
+// export const fetchWorkspaceById = async (workspaceId: string) => {
+//   try {
+//     const token = localStorage.getItem("accessToken");
 
-    const response = await axios.get(`${BASE_URL}/api/v1/workspaces/${workspaceId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      withCredentials: true,
-    });
+//     const response = await axios.get(`${BASE_URL}/api/v1/workspaces/${workspaceId}`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//       withCredentials: true,
+//     });
 
-    return response.data;
-  } catch (error) {
-    console.error(`워크스페이스(id=${workspaceId}) 조회 실패:`, error);
-    throw error;
-  }
-};
+//     return response.data;
+//   } catch (error) {
+//     console.error(`워크스페이스(id=${workspaceId}) 조회 실패:`, error);
+//     throw error;
+//   }
+// };
 

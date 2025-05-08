@@ -36,7 +36,7 @@ export const WorkspaceInfoPage = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log(res.data);
+
         const all = res.data;
         const target = all.find((ws: any) => ws.slug === workspaceSlug);
 
@@ -50,6 +50,11 @@ export const WorkspaceInfoPage = () => {
         setDescription(target.description);
         setVisibility(target.isPublic ? 'public' : 'private');
         setImageUrl(target.profileFileUrl);
+
+        localStorage.setItem("workspaceId", target.id);
+        localStorage.setItem("workspaceSlug", target.slug);
+        localStorage.setItem("workspaceName", target.name);
+
       } catch (err) {
         console.error("워크스페이스 정보 불러오기 실패:", err);
       }
