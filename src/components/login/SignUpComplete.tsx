@@ -1,7 +1,18 @@
 import * as S from "./SignUpComplete.Style"
 import { COMKET2 } from "@/assets/icons"
+import { useNavigate } from "react-router-dom"
 
 export const SignUpComplete = () => {
+  const navigate = useNavigate();
+
+  const handleHomeButton = () => {
+    navigate('/login');
+  }
+
+  const handleLoginButton = () => {
+    navigate('/login')
+  }
+
   return (
     <div>
       <S.Container>
@@ -17,10 +28,10 @@ export const SignUpComplete = () => {
         </S.MessageContainer>
 
         <S.ButtonContainer>
-          <S.HomeButton>홈</S.HomeButton>
-          <S.LoginButton>로그인</S.LoginButton>
+          <S.HomeButton onClick={handleHomeButton}>홈</S.HomeButton>
+          <S.LoginButton onClick={handleLoginButton}> 로그인</S.LoginButton>
         </S.ButtonContainer>
       </S.Container>
-    </div>
+    </div >
   )
 }

@@ -35,19 +35,16 @@ export const googleLogin = async (code: string) => {
 export const registerUser = async ({
   email,
   password,
-  nickname,
   real_name,
 }: {
   email: string;
   password: string;
-  nickname: string;
   real_name: string;
 }) => {
   try {
     const response = await axios.post(`${BASE_URL}/api/v1/auth/register`, {
       email,
       password,
-      nickname,
       real_name,
     });
     return response.data;
