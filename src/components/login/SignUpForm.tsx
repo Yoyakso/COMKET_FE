@@ -1,17 +1,19 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import * as S from "./SignUpForm.Style"
 import { COMKET2 } from "@/assets/icons"
 import { CheckBox } from "../common/checkbox/CheckBox"
-import { registerUser, sendVerificationCode } from "@api/Oauth"
+import { checkVerificationCode, registerUser, sendVerificationCode } from "@api/Oauth"
 
 export const SignUpForm = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [verificationCode, setVerificationCode] = useState("")
+  const [email, setEmail] = useState(location.state?.email || "")
+  const [code, setCode] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [isVerificationChecked, setIsVerificationChecked] = useState(false);
   const [agreements, setAgreements] = useState({
     all: false,
     service: false,
@@ -34,7 +36,7 @@ export const SignUpForm = () => {
   const isFormValid =
     name.trim() !== "" &&
     email.trim() !== "" &&
-    verificationCode.trim() !== "" &&
+    code.trim() !== "" &&
     password.trim().length >= 8 &&
     confirmPassword === password &&
     agreements.service &&
@@ -74,6 +76,20 @@ export const SignUpForm = () => {
       alert("인증번호 발송에 실패했습니다. 이메일 주소를 확인해주세요.");
     }
   };
+
+  const handleCheckVerification = async () => {
+    if (!code) {
+      alert("코드를 입력해 주세요.");
+    }
+
+    try {
+      const res = await checkVerificationCode(email, Number(code));
+      console.log("인증번호 검증", res);
+      setIsVerificationChecked(true);
+    } catch (err) {
+      alert("인증번호 검증에 실패했습니다. 인증번호를 확인해주세요.")
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -140,9 +156,12 @@ export const SignUpForm = () => {
             type="text"
             autoComplete="one-time-code"
             placeholder="인증번호를 입력해 주세요."
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
           />
+          <S.VerificationButton type="button" onClick={handleCheckVerification} disabled={isVerificationChecked}>
+            인증번호 확인
+          </S.VerificationButton>
         </S.FormRow>
 
         <S.FormRow>
