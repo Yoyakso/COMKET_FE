@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import * as S from './WorkspaceInfoPage.Style';
 import { TextInput } from '@/components/common/textInput/TextInput';
 import { Button } from '@/components/common/button/Button';
@@ -7,14 +8,13 @@ import { color } from '@/styles/color';
 import { ImageUpload } from '@components/workspace/ImageUpload';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
 import { WorkspaceDelete } from '@/components/workspace/WorkspaceDelete';
-
 import { useParams } from 'react-router-dom';
 import { updateWorkspace } from '@/api/WorkspaceInfo';
 
 export const WorkspaceInfoPage = () => {
 
-  const { workspaceId } = useParams();
-
+  const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -23,8 +23,9 @@ export const WorkspaceInfoPage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const name = 'YOYAKSO';
-  const url = 'https://comket.co.kr/yoyakso';
+  const workspaceName = localStorage.getItem('workspaceName');
+  const url = localStorage.getItem('workspaceSlug');
+
 
   const handleOpenModal = () => setModalOpen(true);
 
@@ -45,22 +46,37 @@ export const WorkspaceInfoPage = () => {
   };
 
   const handleSave = async () => {
-    if (!workspaceId || !description.trim()) return;
 
-    const payload = {
-      description,
-      isPublic: visibility === 'public',
-      profile_file_id: profileFileId,
-      state: 'ACTIVE' as const,
+    if (!workspaceId || !description.trim()) {
+
+    } return;
+
+
+
+  };
+
+  useEffect(() => {
+    const fetchWorkspaceId = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/workspaces/slug/${workspaceSlug}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setWorkspaceId(res.data.workspaceId);
+      } catch (err) {
+        console.error('워크스페이스 ID 조회 실패:', err);
+      }
     };
 
-    try {
-      await updateWorkspace(workspaceId, payload);
-      alert('워크스페이스 정보가 저장되었습니다!');
-    } catch (error) {
-      console.error('워크스페이스 저장 실패:', error);
+    if (workspaceSlug) {
+      fetchWorkspaceId();
     }
-  };
+  }, [workspaceSlug]);
 
   const handleDeleteWorkspace = async () => {
     try {
@@ -79,7 +95,7 @@ export const WorkspaceInfoPage = () => {
 
       <S.InfoGroup>
         <S.Label>워크스페이스 이름</S.Label>
-        <S.PlainText>{name}</S.PlainText>
+        <S.PlainText>{workspaceName}</S.PlainText>
       </S.InfoGroup>
 
       <S.InfoGroup>

@@ -22,26 +22,32 @@ export const CreateWorkspacePage = () => {
 
     try {
       const data = await workspaceCreate({
-        name: workspaceName,
-        slug: workspaceURL,
+        workspaceName: workspaceName,
+        workspaceSlug: workspaceURL,
         is_public: visibility === 'public',
         description: `${workspaceName}의 워크스페이스입니다.`,
         profile_file_id: null,
       });
 
+      const name = localStorage.setItem('workspaceName', data.name);
+      const slug = localStorage.setItem('workspaceSlug', data.slug);
       navigate(`/workspace/${data.slug}`);
     } catch (error: any) {
+      const message = error.response?.data?.message || error.message || '';
+
       if (
-        error.message?.includes('already exists') ||
-        error.message?.includes('409')
+        message.includes('already exists') ||
+        error.response?.status === 409
       ) {
         setErrorMessage('이미 사용 중인 이름 또는 주소입니다.');
       } else {
         setErrorMessage('워크스페이스 생성 중 오류가 발생했습니다.');
       }
+
       console.error('워크스페이스 생성 실패:', error);
     }
   };
+
 
   return (
     <S.Container>

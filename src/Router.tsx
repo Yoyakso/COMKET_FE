@@ -64,14 +64,14 @@ export const Router = createBrowserRouter([
         ),
       },
       {
-        path: 'workspace/manage',
-        element: <WorkspaceManageLayout />,
-        children: [
-          {
-            path: 'info',
-            element: <WorkspaceInfoPage />,
-          },
-        ],
+
+        path: 'workspace/:workspaceSlug',
+        element: (
+          <WorkspaceManageLayout>
+            <WorkspaceInfoPage />
+          </WorkspaceManageLayout>)
+
+
       },
       {
         path: 'project',
