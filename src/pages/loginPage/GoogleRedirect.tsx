@@ -15,10 +15,18 @@ export const GoogleRedirect = () => {
       try {
         const result = await googleLogin(code)
         console.log("구글 로그인 결과:", result)
-        // 로컬스토리지에 토큰과 닉네임 저장
-        localStorage.setItem("accessToken", result.accessToken)
 
-        navigate("/workspace")
+        if (result.accessToken && result.name) {
+          // 이미 가입된 유저
+          localStorage.setItem("accessToken", result.accessToken)
+          localStorage.setItem("nickName", result.name)
+          alert("로그인 성공!")
+          navigate("/workspace")
+        } else if (result.email) {
+          // 신규 유저
+          alert("회원가입이 필요한 사용자입니다.")
+          navigate("/signup", { state: { email: result.email } })
+        }
 
       } catch (err: any) {
         if (err.response) {

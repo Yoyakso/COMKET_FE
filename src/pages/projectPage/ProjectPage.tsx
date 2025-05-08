@@ -9,56 +9,22 @@ import { ViewProjectModal } from "@/components/project/ViewProjectModal"
 import type { ProjectData as ProjectTableData } from "@/types/project"
 import type { ProjectData } from "@/components/project/ProjectModal"
 import * as S from "./ProjectPage.Style"
+import { createProject, getAllProjects } from "@api/Project"
 
 export const ProjectPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [viewingProject, setViewingProject] = useState<ProjectData | null>(null)
-  const [projects, setProjects] = useState<ProjectTableData[]>([
-    {
-      name: "COMKET_통합",
-      id: "projectId",
-      description: "프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다",
-      tag: "COMKET",
-      visibility: "전체 공개",
-      owner: "이태희 [tph00300]",
-      memberCount: 1,
-      createdBy: "이태희 [tph00300]",
-      createdAt: "YYYY-MM-DD",
-    },
-    {
-      name: "COMKET_디자인",
-      id: "projectId",
-      description: "프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다",
-      tag: "COMKET, 개발",
-      visibility: "멤버 공개",
-      owner: "노홍철 [norediron]",
-      memberCount: 1,
-      createdBy: "노홍철 [norediron]",
-      createdAt: "YYYY-MM-DD",
-    },
-    {
-      name: "COMKET_개발",
-      id: "projectId",
-      description: "프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다",
-      tag: "COMKET",
-      visibility: "멤버 공개",
-      owner: "라비엔 [lavieenrose]",
-      memberCount: 23,
-      createdBy: "라비엔 [lavieenrose]",
-      createdAt: "YYYY-MM-DD",
-    },
-    // ... 기존 프로젝트 데이터
-  ])
+  const [projects, setProjects] = useState<ProjectTableData[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  // 검색 필터링 로직
   const filteredProjects = projects.filter(
     (project) =>
-      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.tag.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.owner.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.createdBy.toLowerCase().includes(searchQuery.toLowerCase()),
+      (project.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (project.description || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (project.tag || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (project.owner || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (project.createdBy || "").toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const handleSearch = (query: string) => {
@@ -73,6 +39,35 @@ export const ProjectPage = () => {
   const handleCloseCreateModal = () => {
     setShowCreateModal(false)
   }
+
+  const handleNavigateProject = async () => {
+    try {
+      console.log('프로젝트 관리 조회');
+      setIsLoading(true);
+      const data = await getAllProjects();
+
+      // 매핑
+      const parsedProjects: ProjectTableData[] = data.map((project: any) => ({
+        id: project.projectId,
+        name: project.projectName,
+        description: project.projectDescription,
+        tag: "", // 태그는 현재 응답에 없으므로 빈 문자열 처리
+        visibility: project.isPublic ? "전체 공개" : "멤버 공개",
+        owner: "알 수 없음", // 응답에 owner 정보가 없다면 기본값
+        createdBy: "알 수 없음",
+        memberCount: 1, // 예시로 1명, 실제 백엔드에 따라 조정
+        createdAt: project.createTime?.split("T")[0] ?? new Date().toISOString().split("T")[0],
+      }));
+
+      setProjects(parsedProjects);
+    } catch (error) {
+      console.error("프로젝트 조회 실패:", error);
+      setProjects([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   const handleViewProject = (projectId: string) => {
     // 프로젝트 ID로 프로젝트 찾기
@@ -94,39 +89,35 @@ export const ProjectPage = () => {
 
   const handleCreateProjectSubmit = async (projectData: ProjectData) => {
     try {
-      // 실제 구현에서는 API 호출로 프로젝트 생성
-      console.log("프로젝트 생성 데이터:", projectData)
-
-      // API 호출 시뮬레이션 (2초 지연)
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      // 새 프로젝트 객체 생성
-      const newProject: ProjectTableData = {
-        id: `project-${Date.now()}`,
+      const response = await createProject({
         name: projectData.name,
         description: projectData.description,
-        tag: projectData.tags.join(", "), // 태그 배열을 쉼표로 구분된 문자열로 변환
-        visibility: projectData.isPublic ? "전체 공개" : "멤버 공개",
-        owner: "현재 사용자 [userId]", // 실제 구현에서는 현재 로그인한 사용자 정보 사용
+        isPublic: projectData.isPublic,
+        profile_file_id: null,
+      });
+
+      const newProject: ProjectTableData = {
+        id: response.projectId,
+        name: response.projectName,
+        description: response.projectDescription,
+        tag: projectData.tags.join(", "),
+        visibility: response.isPublic ? "전체 공개" : "멤버 공개",
+        owner: "알 수 없음",
         memberCount: 1,
-        createdBy: "현재 사용자 [userId]", // 실제 구현에서는 현재 로그인한 사용자 정보 사용
-        createdAt: new Date().toISOString().split("T")[0], // YYYY-MM-DD 형식
-      }
+        createdBy: "알 수 없음",
+        createdAt: response.createTime?.split("T")[0] || new Date().toISOString().split("T")[0],
+      };
 
-      // 프로젝트 목록에 새 프로젝트 추가
-      setProjects([newProject, ...projects])
-
-      // 모달 닫기
-      setShowCreateModal(false)
+      setProjects([newProject, ...projects]);
+      setShowCreateModal(false);
     } catch (error) {
-      console.error("프로젝트 생성 중 오류 발생:", error)
-      throw error // 에러를 상위로 전파하여 모달에서 처리할 수 있도록 함
+      console.error("프로젝트 생성 실패:", error);
+      throw error;
     }
-  }
+  };
 
-  // 프로젝트가 있는지 확인
+
   const hasProjects = projects.length > 0
-  // 검색 결과가 있는지 확인
   const hasSearchResults = filteredProjects.length > 0
 
   return (
@@ -137,7 +128,7 @@ export const ProjectPage = () => {
 
       <S.MainContainer>
         <S.LNBContainer>
-          <LocalNavBar variant="settings" />
+          <LocalNavBar variant="settings" onNavigateProject={handleNavigateProject} />
         </S.LNBContainer>
 
         <S.Content>
@@ -156,6 +147,8 @@ export const ProjectPage = () => {
             <ProjectTable projects={filteredProjects} onViewProject={handleViewProject} />
           )}
         </S.Content>
+
+
       </S.MainContainer>
 
       {/* 프로젝트 생성 모달 */}

@@ -39,35 +39,35 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
   }
 
   const toggleActionDropdown = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation() // 행 클릭 이벤트 전파 방지
+    e.stopPropagation()
     setShowVisibilityDropdown(false)
     setActiveDropdownId((prevId) => (prevId === id ? null : id))
   }
 
   const toggleVisibilityDropdown = (e: React.MouseEvent) => {
-    e.stopPropagation() // 행 클릭 이벤트 전파 방지
+    e.stopPropagation()
     setShowVisibilityDropdown(!showVisibilityDropdown)
     setActiveDropdownId(null)
   }
 
   const handleVisibilityChange = (visibility: string, e: React.MouseEvent) => {
-    e.stopPropagation() // 행 클릭 이벤트 전파 방지
+    e.stopPropagation()
     setCurrentVisibility(visibility)
     setShowVisibilityDropdown(false)
   }
 
   const handleEditProject = (e: React.MouseEvent) => {
-    e.stopPropagation() // 행 클릭 이벤트 전파 방지
+    e.stopPropagation()
     if (onViewProject) {
       onViewProject(project.id)
     }
-    setActiveDropdownId(null) // 드롭다운 메뉴 닫기
+    setActiveDropdownId(null)
   }
 
   const handleManageMembers = (e: React.MouseEvent) => {
-    e.stopPropagation() // 행 클릭 이벤트 전파 방지
+    e.stopPropagation()
     setShowMemberModal(true)
-    setActiveDropdownId(null) // 드롭다운 메뉴 닫기
+    setActiveDropdownId(null)
   }
 
   const closeMemberModal = () => {
@@ -82,14 +82,11 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
   }
 
   const getUserAvatar = (userName: string) => {
-    // 사용자 이름에서 첫 글자 추출
-    const initial = userName.charAt(0)
-    // 사용자별로 다른 색상 할당 (간단한 해시 함수)
     const colors = ["#4dabf7", "#748ffc", "#69db7c", "#ffa8a8", "#ffa94d", "#ffe066", "#63e6be", "#ff8787"]
-    const colorIndex = userName.charCodeAt(0) % colors.length
-    const color = colors[colorIndex]
+    const randomIndex = Math.floor(Math.random() * colors.length) // 랜덤 인덱스 생성
+    const color = colors[randomIndex]
 
-    return { initial, color }
+    return { color }
   }
 
   const ownerAvatar = getUserAvatar(project.owner)
@@ -128,14 +125,14 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
         </S.Cell>
         <S.Cell>
           <S.UserInfo>
-            <S.UserAvatar color={ownerAvatar.color}>{ownerAvatar.initial}</S.UserAvatar>
+            <S.UserAvatar color={ownerAvatar.color}></S.UserAvatar>
             <S.UserName>{project.owner}</S.UserName>
           </S.UserInfo>
         </S.Cell>
         <S.Cell $isCentered>{project.memberCount}</S.Cell>
         <S.Cell>
           <S.UserInfo>
-            <S.UserAvatar color={creatorAvatar.color}>{creatorAvatar.initial}</S.UserAvatar>
+            <S.UserAvatar color={creatorAvatar.color}></S.UserAvatar>
             <S.UserName>{project.createdBy}</S.UserName>
           </S.UserInfo>
         </S.Cell>
