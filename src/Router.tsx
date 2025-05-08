@@ -12,7 +12,8 @@ import { WorkspaceManageLayout } from '@/components/layout/WorkspaceManageLayout
 import { WorkspaceInfoPage } from './pages/workspaceManagePage/WorkspaceInfoPage';
 import { InviteCodePage } from './pages/InviteCodePage/InviteCodePage';
 import { ProjectPage } from './pages/projectPage/ProjectPage';
-
+import { WorkspaceSelectPage } from './pages/workspacePage/WorkspaceSelectPage';
+import { WorkspaceEmptyPage } from './pages/workspacePage/WorkspaceEmptyPage';
 
 export const Router = createBrowserRouter([
   {
@@ -41,12 +42,12 @@ export const Router = createBrowserRouter([
       },
 
       {
-        path: 'workspace',
-        element: (
-          <WorkspaceLayout>
-            <WorkspacePage />
-          </WorkspaceLayout>
-        ),
+        path: '/workspace',
+        children: [
+          { path: '', element: <WorkspacePage /> },            // 진입 시 자동 분기용
+          { path: 'select', element: <WorkspaceSelectPage /> }, // 워크스페이스 존재 시
+          { path: 'empty', element: <WorkspaceEmptyPage /> },   // 워크스페이스 없을 때
+        ]
       },
       {
         path: 'workspace/invitecode',

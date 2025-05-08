@@ -14,7 +14,7 @@ export const CreateWorkspacePage = () => {
   const navigate = useNavigate();
 
   const isNameValid = workspaceName.trim().length > 0;
-  const isURLValid = /^[a-z0-9]+$/.test(workspaceURL);
+  const isURLValid = /^[a-z0-9-]+$/.test(workspaceURL);
   const isFormValid = isNameValid && isURLValid;
 
   const handleCreateWorkspace = async () => {
@@ -22,8 +22,8 @@ export const CreateWorkspacePage = () => {
 
     try {
       const data = await workspaceCreate({
-        workspaceName: workspaceName,
-        workspaceSlug: workspaceURL,
+        name: workspaceName,
+        slug: workspaceURL,
         is_public: visibility === 'public',
         description: `${workspaceName}의 워크스페이스입니다.`,
         profile_file_id: null,
@@ -31,9 +31,13 @@ export const CreateWorkspacePage = () => {
 
       const name = localStorage.setItem('workspaceName', data.name);
       const slug = localStorage.setItem('workspaceSlug', data.slug);
+
       navigate(`/workspace/${data.slug}`);
+
     } catch (error: any) {
       const message = error.response?.data?.message || error.message || '';
+
+      console.error("📡 서버 응답 상세:", error.response?.data); // ✅ 여기도
 
       if (
         message.includes('already exists') ||
