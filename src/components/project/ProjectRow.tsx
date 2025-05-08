@@ -111,6 +111,8 @@ export const ProjectRow = ({ project }: ProjectRowProps) => {
 
           {activeDropdownId === project.id && (
             <S.DropdownMenu className="dropdown-menu">
+              <S.DropdownItem>프로젝트 정보 수정</S.DropdownItem>
+              <S.DropdownItem>프로젝트 멤버 관리</S.DropdownItem>
               <S.DropdownItem $danger>프로젝트 삭제</S.DropdownItem>
             </S.DropdownMenu>
           )}

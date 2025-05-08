@@ -6,6 +6,7 @@ export const TableContainer = styled.div`
   overflow-x: auto;
   background-color: #fff;
   border-radius: 4px;
+  height: 100vh;
 `
 
 export const Table = styled.table`
