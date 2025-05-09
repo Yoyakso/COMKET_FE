@@ -5,9 +5,11 @@ import { ChevronDown, DotIcon } from "@assets/icons"
 import { RemoveMemberModal } from "./RemoveMemberModal"
 import { getColorFromString } from "@/utils/avatarColor"
 import { formatDate } from "@/utils/dateFormat"
+import { deleteWorkspaceMember, updateWorkspaceMember } from "@/api/Member"
 
 interface MemberRowProps {
   member: MemberData
+  onUpdateMember: (email: string, newRole: "OWNER" | "ADMIN" | "MEMBER") => void
 }
 
 const translateRole = (positionType: string) => {
@@ -48,9 +50,7 @@ const reverseRoleMap = Object.fromEntries(
 
 const roles = Object.values(roleMap)
 
-
-
-export const MemberRow = ({ member }: MemberRowProps) => {
+export const MemberRow = ({ member, onUpdateMember }: MemberRowProps) => {
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
   const [currentRole, setCurrentRole] = useState(translateRole(member.positionType))
   const [activeDropdownId, setActiveDropdownId] = useState<number | null>(null)
@@ -96,16 +96,27 @@ export const MemberRow = ({ member }: MemberRowProps) => {
     setActiveDropdownId(null)
   }
 
-  const handleRoleChange = (koreanRole: string) => {
+  const handleRoleChange = async (koreanRole: string) => {
+    const newPositionType = reverseRoleMap[koreanRole];
     setCurrentRole(koreanRole)
     setShowRoleDropdown(false)
 
-    const newPositionType = reverseRoleMap[koreanRole]
+    try {
+      const workspaceId = Number(localStorage.getItem("workspaceId"));
+      if (!workspaceId) throw new Error("워크스페이스 ID가 없습니다")
 
-    console.log("역할 변경:", newPositionType)
-    //여기서 API 호출
-  }
-
+      await updateWorkspaceMember(workspaceId, {
+        workspace_member_email: member.email,
+        position_type: newPositionType as "OWNER" | "ADMIN" | "MEMBER",
+        state: member.state as "ACTIVE" | "INACTIVE" | "DELETED",
+      });
+      console.log(`역할이 ${newPositionType}로 변경됨`);
+      onUpdateMember(member.email, newPositionType as "OWNER" | "ADMIN" | "MEMBER");
+    } catch (error) {
+      console.error("역할 변경 실패:", error);
+      alert("역할 변경에 실패했습니다: " + (error?.response?.data?.message || error.message));
+    }
+  };
 
   const openRemoveModal = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -120,21 +131,23 @@ export const MemberRow = ({ member }: MemberRowProps) => {
 
   const handleRemoveMember = async () => {
     try {
-      // 멤버 제거 API 호출 로직 구현
+      const workspaceId = Number(localStorage.getItem("workspaceId"))
+      if (!workspaceId) throw new Error("워크스페이스 ID가 없습니다.")
 
-      // API 호출 시뮬레이션 (2초 지연)
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      await deleteWorkspaceMember(workspaceId, member.email)
+      console.log(`멤버 ${member.name}(${member.email}) 제거 완료`)
+      setIsRemoveModalOpen(false)
 
-      console.log(`멤버 ${member.name}(${member.id}) 제거 완료`)
-      // 성공 후 추가 작업 (예: 부모 컴포넌트에 알림)
+
     } catch (error) {
       console.error("멤버 제거 중 오류 발생:", error)
+      alert("멤버 삭제에 실패했습니다: " + (error?.response?.data?.message || error.message))
     }
   }
 
   return (
     <>
-      <S.Row>
+      <S.Row $isDeleted={member.state === "DELETED"}>
         <S.Cell>
           <S.UserInfo>
             <S.UserAvatar color={color}>{member.name?.[0] ?? "?"}</S.UserAvatar>
@@ -145,11 +158,11 @@ export const MemberRow = ({ member }: MemberRowProps) => {
         </S.Cell>
         <S.Cell>{member.email}</S.Cell>
         <S.Cell>
-          <S.RoleContainer onClick={toggleRoleDropdown}>
+          <S.RoleContainer onClick={member.state === "DELETED" ? undefined : toggleRoleDropdown}>
             <span>{currentRole}</span>
-            <ChevronDown />
+            {member.state !== "DELETED" && <ChevronDown />}
 
-            {showRoleDropdown && (
+            {showRoleDropdown && member.state !== "DELETED" && (
               <S.RoleDropdownMenu className="dropdown-menu">
                 {roles.map((role) => (
                   <S.RoleDropdownItem
@@ -159,8 +172,6 @@ export const MemberRow = ({ member }: MemberRowProps) => {
                       setCurrentRole(role)
                       setShowRoleDropdown(false)
                       handleRoleChange(role)
-                      // 서버로 positionType 업데이트하려면 여기에 reverseRoleMap 사용:
-                      // const newType = reverseRoleMap[role]
                     }}
                   >
                     {role}

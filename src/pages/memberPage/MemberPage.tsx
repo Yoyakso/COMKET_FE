@@ -11,6 +11,10 @@ export const MemberPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [members, setMembers] = useState<MemberData[]>([]);
   const [filteredMembers, setFilteredMembers] = useState<MemberData[]>([])
+  const [activeFilter, setActiveFilter] = useState<{ roles: string[], states: string[] }>({
+    roles: ["owner", "admin", "member"],
+    states: ["active", "inactive", "removed"],
+  });
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -46,6 +50,8 @@ export const MemberPage = () => {
   }
 
   const handleFilter = ({ roles, states }: { roles: string[], states: string[] }) => {
+    setActiveFilter({ roles, states });
+
     const filtered = members.filter(member => {
       const roleMatch = roles.includes(member.positionType.toLowerCase())
       const stateMatch = states.includes(member.state.toLowerCase())
@@ -66,6 +72,22 @@ export const MemberPage = () => {
     setSearchQuery(query)
   }
 
+  const handleMemberUpdate = (email: string, newRole: "OWNER" | "ADMIN" | "MEMBER") => {
+    const updated = members.map(m =>
+      m.email === email ? { ...m, positionType: newRole } : m
+    );
+    setMembers(updated);
+
+    // 변경된 members에 대해 현재 필터를 재적용
+    const { roles, states } = activeFilter
+    const reFiltered = updated.filter(member =>
+      roles.includes(member.positionType.toLowerCase()) &&
+      states.includes(member.state.toLowerCase())
+    );
+    setFilteredMembers(reFiltered);
+  };
+
+
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -82,7 +104,7 @@ export const MemberPage = () => {
             memberCount={finalFilteredMembers.length}
             onSearch={handleSearch}
             onFilter={handleFilter} />
-          <MemberTable members={finalFilteredMembers} />
+          <MemberTable members={finalFilteredMembers} onUpdateMember={handleMemberUpdate} />
         </S.Content>
       </S.MainContainer>
     </S.PageContainer>

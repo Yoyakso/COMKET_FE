@@ -6,12 +6,13 @@ import { ChevronDown, ChevronUp } from "@/assets/icons"
 
 interface MemberTableProps {
   members: MemberData[]
+  onUpdateMember: (email: string, newRole: "OWNER" | "ADMIN" | "MEMBER") => void
 }
 
 type SortField = "name" | "email" | "positionType" | "state" | "updatedAt" | "createdAt"
 type SortDirection = "asc" | "desc"
 
-export const MemberTable = ({ members }: MemberTableProps) => {
+export const MemberTable = ({ members, onUpdateMember }: MemberTableProps) => {
   const [sortField, setSortField] = useState<SortField | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
 
@@ -121,7 +122,10 @@ export const MemberTable = ({ members }: MemberTableProps) => {
         </S.TableHeader>
         <S.TableBody>
           {sortedMembers.map((member, index) => (
-            <MemberRow key={`${member.id}-${index}`} member={member} />
+            <MemberRow
+              key={`${member.id}-${index}`}
+              member={member}
+              onUpdateMember={onUpdateMember} />
           ))}
         </S.TableBody>
       </S.Table>
