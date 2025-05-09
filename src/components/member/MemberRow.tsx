@@ -3,28 +3,70 @@ import * as S from "./MemberRow.Style"
 import type { MemberData } from "@/types/member"
 import { ChevronDown, DotIcon } from "@assets/icons"
 import { RemoveMemberModal } from "./RemoveMemberModal"
+import { getColorFromString } from "@/utils/avatarColor"
+import { formatDate } from "@/utils/dateFormat"
 
 interface MemberRowProps {
   member: MemberData
 }
 
-const roles = ["워크스페이스 소유자", "워크스페이스 관리자", "일반 멤버"]
+const translateRole = (positionType: string) => {
+  switch (positionType) {
+    case "OWNER":
+      return "워크스페이스 소유자"
+    case "ADMIN":
+      return "워크스페이스 관리자"
+    case "MEMBER":
+      return "일반 멤버"
+    default:
+      return "-"
+  }
+}
+
+const translateState = (state: string) => {
+  switch (state) {
+    case "ACTIVE":
+      return "활성"
+    case "INACTIVE":
+      return "비활성"
+    case "DELETED":
+      return "제거"
+    default:
+      return "-"
+  }
+}
+
+const roleMap = {
+  OWNER: "워크스페이스 소유자",
+  ADMIN: "워크스페이스 관리자",
+  MEMBER: "일반 멤버"
+} as const
+
+const reverseRoleMap = Object.fromEntries(
+  Object.entries(roleMap).map(([eng, kor]) => [kor, eng])
+)
+
+const roles = Object.values(roleMap)
+
+
 
 export const MemberRow = ({ member }: MemberRowProps) => {
   const [showRoleDropdown, setShowRoleDropdown] = useState(false)
-  const [currentRole, setCurrentRole] = useState(member.department)
-  const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null)
+  const [currentRole, setCurrentRole] = useState(translateRole(member.positionType))
+  const [activeDropdownId, setActiveDropdownId] = useState<number | null>(null)
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false)
 
-  // 드롭다운 참조 추가
   const dropdownRef = useRef<HTMLDivElement>(null)
   const actionButtonRef = useRef<HTMLButtonElement>(null)
+
+  const color = getColorFromString(member.email)
+  const joinedAt = formatDate(member.createdAt)
+  const updatedAt = formatDate(member.updatedAt)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
 
-      // 드롭다운 메뉴나 액션 버튼 외부를 클릭했는지 확인
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(target) &&
@@ -42,8 +84,8 @@ export const MemberRow = ({ member }: MemberRowProps) => {
     }
   }, [])
 
-  const toggleMemberDeleteDropdown = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation() // 이벤트 버블링 방지
+  const toggleMemberDeleteDropdown = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation()
     setShowRoleDropdown(false)
     setActiveDropdownId((prevId) => (prevId === id ? null : id))
   }
@@ -54,16 +96,22 @@ export const MemberRow = ({ member }: MemberRowProps) => {
     setActiveDropdownId(null)
   }
 
-  const handleRoleChange = (role: string) => {
-    setCurrentRole(role)
+  const handleRoleChange = (koreanRole: string) => {
+    setCurrentRole(koreanRole)
     setShowRoleDropdown(false)
+
+    const newPositionType = reverseRoleMap[koreanRole]
+
+    console.log("역할 변경:", newPositionType)
+    //여기서 API 호출
   }
 
+
   const openRemoveModal = (e: React.MouseEvent) => {
-    e.stopPropagation() // 이벤트 버블링 방지
+    e.stopPropagation()
     setIsRemoveModalOpen(true)
-    setActiveDropdownId(null) // 드롭다운 메뉴 닫기
-    console.log("Opening remove modal for:", member.name) // 디버깅용 로그
+    setActiveDropdownId(null)
+    console.log("Opening remove modal for:", member.name)
   }
 
   const closeRemoveModal = () => {
@@ -89,9 +137,9 @@ export const MemberRow = ({ member }: MemberRowProps) => {
       <S.Row>
         <S.Cell>
           <S.UserInfo>
-            <S.UserAvatar color={member.color}>{member.initial}</S.UserAvatar>
+            <S.UserAvatar color={color}>{member.name?.[0] ?? "?"}</S.UserAvatar>
             <S.UserName>
-              {member.name} [{member.id}]
+              {member.name} [{member.email.split("@")[0]}]
             </S.UserName>
           </S.UserInfo>
         </S.Cell>
@@ -104,7 +152,17 @@ export const MemberRow = ({ member }: MemberRowProps) => {
             {showRoleDropdown && (
               <S.RoleDropdownMenu className="dropdown-menu">
                 {roles.map((role) => (
-                  <S.RoleDropdownItem key={role} $active={currentRole === role} onClick={() => handleRoleChange(role)}>
+                  <S.RoleDropdownItem
+                    key={role}
+                    $active={translateRole(member.positionType) === role}
+                    onClick={() => {
+                      setCurrentRole(role)
+                      setShowRoleDropdown(false)
+                      handleRoleChange(role)
+                      // 서버로 positionType 업데이트하려면 여기에 reverseRoleMap 사용:
+                      // const newType = reverseRoleMap[role]
+                    }}
+                  >
                     {role}
                   </S.RoleDropdownItem>
                 ))}
@@ -112,9 +170,9 @@ export const MemberRow = ({ member }: MemberRowProps) => {
             )}
           </S.RoleContainer>
         </S.Cell>
-        <S.Cell $isCentered>{member.status}</S.Cell>
-        <S.Cell $isCentered>{member.registrationDate}</S.Cell>
-        <S.Cell $isCentered>{member.lastLoginDate}</S.Cell>
+        <S.Cell $isCentered>{translateState(member.state)}</S.Cell>
+        <S.Cell $isCentered>{joinedAt}</S.Cell>
+        <S.Cell $isCentered>{updatedAt}</S.Cell>
         <S.Cell $isCentered>
           <S.ActionButtonContainer>
             <S.ActionButton ref={actionButtonRef} onClick={(e) => toggleMemberDeleteDropdown(member.id, e)}>

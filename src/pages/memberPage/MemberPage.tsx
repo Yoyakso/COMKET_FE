@@ -10,43 +10,57 @@ import { getWorkspaceMembers } from "@/api/Member";
 export const MemberPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [members, setMembers] = useState<MemberData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [filteredMembers, setFilteredMembers] = useState<MemberData[]>([])
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        setIsLoading(true);
         const data = await getWorkspaceMembers();
         setMembers(data);
       } catch (error) {
         console.error("멤버 불러오기 실패:", error);
       } finally {
-        setIsLoading(false);
       }
     };
 
     fetchMembers();
   }, []);
 
+  useEffect(() => {
+    if (members.length > 0) {
+      const defaultRoles = ["owner", "admin", "member"]
+      const defaultStates = ["active", "inactive", "removed"]
+
+      handleFilter({ roles: defaultRoles, states: defaultStates })
+    }
+  }, [members])
+
   const handleNavigateMember = async () => {
     try {
-      console.log('프로젝트 멤버 조회');
-      setIsLoading(true);
       const data = await getWorkspaceMembers();
-
       console.log(data)
     } catch (error) {
-      console.log("프로젝트 멤버 조회 실패:", error);
       setMembers([]);
     } finally {
-      setIsLoading(false);
     }
   }
 
-  const filteredMembers = members.filter(
-    (member) =>
-      member.name.includes(searchQuery) || member.email.includes(searchQuery) || member.id.includes(searchQuery),
-  )
+  const handleFilter = ({ roles, states }: { roles: string[], states: string[] }) => {
+    const filtered = members.filter(member => {
+      const roleMatch = roles.includes(member.positionType.toLowerCase())
+      const stateMatch = states.includes(member.state.toLowerCase())
+      return roleMatch && stateMatch
+    })
+    setFilteredMembers(filtered)
+  }
+
+  const finalFilteredMembers = filteredMembers.filter(member => {
+    const nameMatch = member.name?.includes(searchQuery)
+    const emailMatch = member.email?.includes(searchQuery)
+    const idMatch = member.id !== undefined && member.id.toString().includes(searchQuery)
+
+    return nameMatch || emailMatch || idMatch
+  })
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
@@ -64,13 +78,11 @@ export const MemberPage = () => {
         </S.LNBContainer>
 
         <S.Content>
-          <MemberHeader memberCount={25} onSearch={handleSearch} />
-          {/* <MemberTable members={filteredMembers} /> */}
-          {isLoading ? (
-            <div>로딩 중...</div>
-          ) : (
-            <MemberTable members={filteredMembers} />
-          )}
+          <MemberHeader
+            memberCount={finalFilteredMembers.length}
+            onSearch={handleSearch}
+            onFilter={handleFilter} />
+          <MemberTable members={finalFilteredMembers} />
         </S.Content>
       </S.MainContainer>
     </S.PageContainer>

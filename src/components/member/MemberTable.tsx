@@ -8,7 +8,7 @@ interface MemberTableProps {
   members: MemberData[]
 }
 
-type SortField = "name" | "email" | "department" | "status" | "eliminateDate" | "lastLoginDate"
+type SortField = "name" | "email" | "positionType" | "state" | "updatedAt" | "createdAt"
 type SortDirection = "asc" | "desc"
 
 export const MemberTable = ({ members }: MemberTableProps) => {
@@ -17,10 +17,8 @@ export const MemberTable = ({ members }: MemberTableProps) => {
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      // 같은 필드를 다시 클릭하면 정렬 방향 전환
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
     } else {
-      // 다른 필드를 클릭하면 해당 필드로 오름차순 정렬
       setSortField(field)
       setSortDirection("asc")
     }
@@ -36,8 +34,8 @@ export const MemberTable = ({ members }: MemberTableProps) => {
   const sortedMembers = [...members].sort((a, b) => {
     if (!sortField) return 0
 
-    let valueA: string | number = ""
-    let valueB: string | number = ""
+    let valueA: string = ""
+    let valueB: string = ""
 
     switch (sortField) {
       case "name":
@@ -48,21 +46,21 @@ export const MemberTable = ({ members }: MemberTableProps) => {
         valueA = a.email
         valueB = b.email
         break
-      case "department":
-        valueA = a.department
-        valueB = b.department
+      case "positionType":
+        valueA = a.positionType
+        valueB = b.positionType
         break
-      case "status":
-        valueA = a.status
-        valueB = b.status
+      case "state":
+        valueA = a.state
+        valueB = b.state
         break
-      case "eliminateDate":
-        valueA = a.registrationDate
-        valueB = b.registrationDate
+      case "createdAt":
+        valueA = a.createdAt
+        valueB = b.createdAt
         break
-      case "lastLoginDate":
-        valueA = a.lastLoginDate
-        valueB = b.lastLoginDate
+      case "updatedAt":
+        valueA = a.updatedAt
+        valueB = b.updatedAt
         break
       default:
         return 0
@@ -94,28 +92,28 @@ export const MemberTable = ({ members }: MemberTableProps) => {
                 {getSortIcon("email")}
               </S.HeaderContent>
             </S.HeaderCell>
-            <S.HeaderCell onClick={() => handleSort("department")}>
+            <S.HeaderCell onClick={() => handleSort("positionType")}>
               <S.HeaderContent>
                 <span>역할</span>
-                {getSortIcon("department")}
+                {getSortIcon("positionType")}
               </S.HeaderContent>
             </S.HeaderCell>
-            <S.HeaderCell onClick={() => handleSort("status")}>
+            <S.HeaderCell onClick={() => handleSort("state")}>
               <S.HeaderContent>
                 <span>계정 상태</span>
-                {getSortIcon("status")}
+                {getSortIcon("state")}
               </S.HeaderContent>
             </S.HeaderCell>
-            <S.HeaderCell onClick={() => handleSort("eliminateDate")}>
+            <S.HeaderCell onClick={() => handleSort("updatedAt")}>
               <S.HeaderContent>
                 <span>비활성/제거 일자</span>
-                {getSortIcon("eliminateDate")}
+                {getSortIcon("updatedAt")}
               </S.HeaderContent>
             </S.HeaderCell>
-            <S.HeaderCell onClick={() => handleSort("lastLoginDate")}>
+            <S.HeaderCell onClick={() => handleSort("createdAt")}>
               <S.HeaderContent>
                 <span>참여 일자</span>
-                {getSortIcon("lastLoginDate")}
+                {getSortIcon("createdAt")}
               </S.HeaderContent>
             </S.HeaderCell>
             <S.HeaderCell>관리</S.HeaderCell>
