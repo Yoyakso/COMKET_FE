@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as S from './InviteCodePage.Style'
 
 import { InviteCode } from '@components/common/textInput/InviteCode'
@@ -11,6 +12,7 @@ import ValidIcon from '@/assets/icons/InviteCodeValid.svg?react'
 import ErrorIcon from '@assets/icons/InviteCodeError.svg?react'
 
 import { fetchWorkspaceByInviteCode } from '@/api/InviteCode';
+import { error } from 'console'
 
 const rotate = keyframes`
   0% { transform: rotate(0deg); }
@@ -24,6 +26,7 @@ const Spinner = styled(SpinnerIcon)`
 `
 
 export const InviteCodePage = () => {
+  const navigate = useNavigate()
   const [code, setCode] = useState<string>('')
   const [workspace, setWorkspace] = useState<DropdownOption | null>(null)
 
@@ -37,12 +40,6 @@ export const InviteCodePage = () => {
     errorType: 'none',
   })
 
-  const validateCode = (code: string): 'valid' | 'invalid' | 'expired' => {
-    if (code === '123456') return 'valid'
-    if (code === '000000') return 'expired'
-    return 'invalid'
-  }
-
   const handleCodeChange = (newCode: string) => {
     setCode(newCode)
     if (newCode.length < 6) {
@@ -51,6 +48,7 @@ export const InviteCodePage = () => {
         isLoading: false,
         isSuccess: false,
         errorType: 'none',
+
       })
     }
   }
@@ -100,10 +98,10 @@ export const InviteCodePage = () => {
           <S.InviteCodeWrapper>
             <InviteCode
               onComplete={handleComplete}
-              validate={validateCode}
               size="md"
               onStatusChange={(status) => setCodeStatus(status)}
               onChangeCode={handleCodeChange}
+              errorType={codeStatus.errorType}
             />
             {(codeStatus.isLoading || codeStatus.isSuccess || codeStatus.errorType !== 'none') && (
               <S.IconWrapper>
@@ -135,7 +133,15 @@ export const InviteCodePage = () => {
         <Button variant="blackOutlined" size="lg">
           이전
         </Button>
-        <Button variant="tealFilled" size="lg" disabled={!code || !workspace}>
+        <Button
+          variant="tealFilled"
+          size="lg"
+          disabled={!code || !workspace}
+          onClick={() => {
+            if (workspace && workspace.value) {
+              navigate(`/workspace/${workspace?.value}`)
+            }
+          }}>
           입장
         </Button>
       </S.ButtonWrapper>

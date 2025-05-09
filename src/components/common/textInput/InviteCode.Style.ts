@@ -4,7 +4,8 @@ import { color } from '@/styles/color'
 export type InputState = 'enable' | 'activated' | 'error' | 'activated-disabled'
 
 export const Wrapper = styled.div`
-
+  display: flex;
+  flex-direction: column;
 `
 
 export const InputRowWithIcon = styled.div`
@@ -81,4 +82,5 @@ export const HelperText = styled.p<{ $isError: boolean }>`
   margin-top: 4px;
   color: ${({ $isError }) => ($isError ? color.error : color.textSecondary)};
   transition: color 0.2s ease;
+
 `

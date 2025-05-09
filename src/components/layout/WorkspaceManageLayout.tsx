@@ -2,7 +2,6 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '../common/navBar/LocalNavBar';
-
 import * as S from './WorkspaceManageLayout.Style';
 
 
