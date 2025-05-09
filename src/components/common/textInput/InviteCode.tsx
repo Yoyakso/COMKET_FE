@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import * as S from './InviteCode.Style'
 
 export type InputState = 'enable' | 'activated' | 'error' | 'activated-disabled'
@@ -11,18 +11,20 @@ interface InviteCodeProps {
     isSuccess: boolean
     errorType: ErrorType
   }) => void
-  onChangeCode?: (code: string) => void 
+  onChangeCode?: (code: string) => void
   disabled?: boolean
   validate?: (code: string) => 'valid' | ErrorType
   size?: 'sm' | 'md'
+  errorType?: ErrorType
 }
 
 export const InviteCode = ({
   onComplete,
   onStatusChange,
-  onChangeCode, 
+  onChangeCode,
   disabled = false,
   validate,
+  errorType: externalErrorType,
   size = 'md',
 }: InviteCodeProps) => {
   const CODE_LENGTH = 6
@@ -33,6 +35,14 @@ export const InviteCode = ({
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
+  useEffect(() => {
+    if (externalErrorType && externalErrorType !== 'none') {
+      setErrorType(externalErrorType);
+      setIsLoading(false);
+      setIsSuccess(false);
+    }
+  }, [externalErrorType]);
+
   const errorMessage = {
     invalid: '잘못된 초대 코드입니다. 다시 확인 후 입력해 주세요.',
     expired: '만료된 초대 코드입니다. 다른 초대 코드를 입력해 주세요.',
@@ -42,8 +52,8 @@ export const InviteCode = ({
     disabled
       ? 'activated-disabled'
       : errorType !== 'none'
-      ? 'error'
-      : 'enable'
+        ? 'error'
+        : 'enable'
 
   const emitStatus = (status: {
     isLoading: boolean
@@ -61,7 +71,7 @@ export const InviteCode = ({
     setCodes(updated)
 
     const joinedCode = updated.join('')
-    onChangeCode?.(joinedCode) // ✅ 추가: 코드 변경시 부모에 알림
+    onChangeCode?.(joinedCode)
 
     const nextInput = inputRefs.current[index + 1]
     if (value && nextInput) nextInput.focus()
@@ -103,6 +113,7 @@ export const InviteCode = ({
       inputRefs.current[index - 1]?.focus()
     }
   }
+  console.log("🔥 errorType:", errorType)
 
   return (
     <S.Wrapper>

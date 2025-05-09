@@ -12,6 +12,7 @@ import ValidIcon from '@/assets/icons/InviteCodeValid.svg?react'
 import ErrorIcon from '@assets/icons/InviteCodeError.svg?react'
 
 import { fetchWorkspaceByInviteCode } from '@/api/InviteCode';
+import { error } from 'console'
 
 const rotate = keyframes`
   0% { transform: rotate(0deg); }
@@ -47,6 +48,7 @@ export const InviteCodePage = () => {
         isLoading: false,
         isSuccess: false,
         errorType: 'none',
+
       })
     }
   }
@@ -99,6 +101,7 @@ export const InviteCodePage = () => {
               size="md"
               onStatusChange={(status) => setCodeStatus(status)}
               onChangeCode={handleCodeChange}
+              errorType={codeStatus.errorType}
             />
             {(codeStatus.isLoading || codeStatus.isSuccess || codeStatus.errorType !== 'none') && (
               <S.IconWrapper>

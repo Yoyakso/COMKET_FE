@@ -7,9 +7,11 @@ import { color } from '@/styles/color';
 import { ImageUpload } from '@components/workspace/ImageUpload';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
 import { WorkspaceDelete } from '@/components/workspace/WorkspaceDelete';
+import { WorkspaceExit } from '@/components/workspace/WorkspaceExit';
 import { useParams } from 'react-router-dom';
 import { updateWorkspace } from '@/api/WorkspaceInfo';
 import { deleteWorkspace } from '@/api/DeleteWorkspace';
+import { ExitWorkspace } from '@/api/ExitWorkspace';
 import { useNavigate } from 'react-router-dom';
 
 export const WorkspaceInfoPage = () => {
@@ -24,6 +26,7 @@ export const WorkspaceInfoPage = () => {
   const [fileName, setFileName] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isExitModalOpen, setExitModalOpen] = useState(false);
 
   const isValid = description.trim() !== '';
   const navigate = useNavigate();
@@ -193,7 +196,7 @@ export const WorkspaceInfoPage = () => {
       )}
 
       <S.ButtonWrapper>
-        <Button variant='neutralOutlined' size='sm'>워크스페이스 나가기</Button>
+        <Button variant='neutralOutlined' size='sm' onClick={() => setExitModalOpen(true)}>워크스페이스 나가기</Button>
         <S.SubButtonWrapper>
           <Button variant='neutralOutlined' size='sm'>취소</Button>
           <Button
@@ -206,6 +209,33 @@ export const WorkspaceInfoPage = () => {
           </Button>
         </S.SubButtonWrapper>
       </S.ButtonWrapper>
+
+      {isExitModalOpen && (
+        <WorkspaceExit
+          isOwner={workspace?.role === 'OWNER'}
+          onClose={() => setExitModalOpen(false)}
+          onExit={async () => {
+            try {
+              const email = localStorage.getItem('userEmail'); // ← 반드시 로그인 시 저장되어 있어야 함
+              if (!email || !workspaceId) {
+                throw new Error('이메일 또는 워크스페이스 ID가 없습니다.');
+              }
+
+              await ExitWorkspace({ workspaceId, email }); // ← API 요청
+
+              localStorage.removeItem('workspaceId');
+              localStorage.removeItem('workspaceSlug');
+              localStorage.removeItem('workspaceName');
+
+              setExitModalOpen(false);
+              navigate('/workspace');
+            } catch (err) {
+              console.error('워크스페이스 나가기 실패:', err);
+              alert('워크스페이스 나가기에 실패했습니다.');
+            }
+          }}
+        />
+      )}
     </S.Container>
   );
 };
