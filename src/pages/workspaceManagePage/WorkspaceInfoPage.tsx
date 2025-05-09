@@ -215,8 +215,9 @@ export const WorkspaceInfoPage = () => {
           isOwner={workspace?.role === 'OWNER'}
           onClose={() => setExitModalOpen(false)}
           onExit={async () => {
+
             try {
-              const email = localStorage.getItem('userEmail'); // ← 반드시 로그인 시 저장되어 있어야 함
+              const email = localStorage.getItem('email');
               if (!email || !workspaceId) {
                 throw new Error('이메일 또는 워크스페이스 ID가 없습니다.');
               }
@@ -228,7 +229,10 @@ export const WorkspaceInfoPage = () => {
               localStorage.removeItem('workspaceName');
 
               setExitModalOpen(false);
-              navigate('/workspace');
+              navigate('/workspace', {
+                replace: true,
+              });
+              window.location.reload();
             } catch (err) {
               console.error('워크스페이스 나가기 실패:', err);
               alert('워크스페이스 나가기에 실패했습니다.');

@@ -1,9 +1,11 @@
 import { useState, useRef, type ChangeEvent } from "react"
+import * as S from "./profilePage.Style"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
-import * as S from "./ProfilePage.Style"
 import { X } from "lucide-react"
 import { POSITION_OPTIONS, DEPARTMENT_OPTIONS } from "@/constants/profileOptions"
+import { updateProfile } from "@/api/Member"
+import { uploadProfileImage } from "@/api/WorkspaceImage"
 
 interface ProfileData {
   name: string
@@ -70,9 +72,32 @@ export const ProfilePage = () => {
     console.log("취소 버튼 클릭")
   }
 
-  const handleSave = () => {
-    console.log("저장 버튼 클릭", profile)
-  }
+  const handleSave = async () => {
+    console.log("저장 버튼 클릭")
+
+    try {
+      let fileId: number | null = null;
+
+      // 1. 이미지 파일 있으면 업로드
+      if (profile.profileImageFile) {
+        const { fileId: uploadedId } = await uploadProfileImage(profile.profileImageFile, "MEMBER_PROFILE");
+        fileId = uploadedId;
+      }
+
+      // 2. 프로필 정보 업데이트
+      await updateProfile({
+        real_name: profile.name,
+        department: profile.department || "",
+        role: "팀원",
+        responsibility: "",
+        profile_file_id: fileId,
+      });
+      alert("프로필 수정 완료!");
+    } catch (error) {
+      console.error("저장 실패:", error);
+      alert("저장 중 오류가 발생했습니다.");
+    }
+  };
 
   // 프로필 이미지가 없을 경우 이니셜 표시
   const getInitial = () => {

@@ -47,3 +47,35 @@ export const getWorkspaceMembers = async () => {
     throw error;
   }
 };
+
+/**
+ * 내 프로필 정보 수정
+ */
+export interface UpdateProfileParams {
+  real_name: string;
+  department: string;
+  role: string;
+  responsibility: string;
+  profile_file_id: number | null;
+}
+
+export const updateProfile = async (params: UpdateProfileParams) => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("로그인 토큰이 없습니다.");
+  }
+
+  const response = await axios.patch(
+    `${BASE_URL}/api/v1/members/me`,
+    params,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    }
+  );
+
+  return response.data;
+};
