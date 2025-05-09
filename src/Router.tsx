@@ -12,7 +12,8 @@ import { WorkspaceManageLayout } from '@/components/layout/WorkspaceManageLayout
 import { WorkspaceInfoPage } from './pages/workspaceManagePage/WorkspaceInfoPage';
 import { InviteCodePage } from './pages/InviteCodePage/InviteCodePage';
 import { ProjectPage } from './pages/projectPage/ProjectPage';
-
+import { ProfilePage } from './pages/profilePage/ProfilePage';
+import { AccountInfoPage } from './pages/accountInfoPage/AccountInfoPage';
 
 export const Router = createBrowserRouter([
   {
@@ -75,6 +76,14 @@ export const Router = createBrowserRouter([
       {
         path: 'project',
         element: <ProjectPage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />
+      },
+      {
+        path: 'account',
+        element: <AccountInfoPage />
       }
     ],
   },

@@ -20,6 +20,7 @@ export const GoogleRedirect = () => {
           // 이미 가입된 유저
           localStorage.setItem("accessToken", result.accessToken)
           localStorage.setItem("nickName", result.name)
+          localStorage.setItem("email", result.email)
           alert("로그인 성공!")
           navigate("/workspace")
         } else if (result.email) {
