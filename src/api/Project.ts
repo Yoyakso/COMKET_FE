@@ -126,3 +126,102 @@ export const createProject = async (projectData: CreateProjectDto) => {
     throw error;
   }
 };
+
+export interface UpdateProjectDto {
+  name?: string;
+  description?: string;
+  isPublic?: boolean;
+  profile_file_id?: string;
+}
+
+/**
+ * 프로젝트 정보 수정 (이름, 설명, 공개 범위, 썸네일 등)
+ * @param workspaceName - 현재 워크스페이스의 이름
+ * @param projectId - 수정할 프로젝트의 ID
+ * @param updateData - 수정할 필드들 (name, description, isPublic)
+ */
+export const updateProjectInfo = async (
+  workspaceName: string,
+  projectId: number,
+  updateData: UpdateProjectDto
+) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) throw new Error("로그인 토큰이 없습니다.");
+
+    const response = await axios.patch(
+      `${BASE_URL}/api/v1/${workspaceName}/${projectId}/edit`,
+      updateData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("프로젝트 수정 성공:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("프로젝트 수정 실패:", error);
+    throw error;
+  }
+};
+
+/**
+ * 프로젝트 삭제
+ * @param workspaceName 
+ * @param projectId 
+ * @returns 
+ */
+export const deleteProject = async (workspaceName: string, projectId: number) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) throw new Error("로그인 토큰이 없습니다.");
+
+    const response = await axios.delete(
+      `${BASE_URL}/api/v1/${workspaceName}/${projectId}`,
+      // `${BASE_URL}/api/v1/${workspaceSlug}/${projectId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("프로젝트 삭제 성공");
+    return response.data;
+  } catch (error) {
+    console.error("프로젝트 삭제 실패:", error);
+    throw error;
+  }
+};
+
+
+/**
+ * 프로젝트 멤버 탈퇴
+ * @param workspaceName 
+ * @param projectId 
+ * @returns 
+ */
+export const leaveProject = async (workspaceName: string, projectId: number) => {
+  try {
+    const token = localStorage.getItem("accessToken")
+    if (!token) throw new Error("로그인 토큰이 없습니다.")
+
+    const response = await axios.delete(
+      `${BASE_URL}/api/v1/${workspaceName}/${projectId}/exit`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    console.log("프로젝트 탈퇴 성공")
+    return response.data
+  } catch (error) {
+    console.error("프로젝트 탈퇴 실패:", error)
+    throw error
+  }
+}
