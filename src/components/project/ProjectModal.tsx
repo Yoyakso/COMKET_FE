@@ -40,16 +40,13 @@ export const ProjectModal = ({
   const isViewMode = mode === "view" && !isEditing
   const isCreateMode = mode === "create"
 
-  // 모달 제목 설정
   const modalTitle = title || (isCreateMode ? "프로젝트 생성" : isViewMode ? "프로젝트 정보" : "프로젝트 수정")
 
-  // 컴포넌트가 마운트된 후에만 Portal 사용
   useEffect(() => {
     setIsMounted(true)
     return () => setIsMounted(false)
   }, [])
 
-  // ESC 키를 누르면 모달이 닫히도록 이벤트 리스너 추가
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -58,13 +55,10 @@ export const ProjectModal = ({
     }
 
     document.addEventListener("keydown", handleEscKey)
-
-    // 모달이 열릴 때 body에 스크롤 방지
     document.body.style.overflow = "hidden"
 
     return () => {
       document.removeEventListener("keydown", handleEscKey)
-      // 모달이 닫힐 때 body 스크롤 복원
       document.body.style.overflow = "auto"
     }
   }, [onClose])
@@ -101,7 +95,6 @@ export const ProjectModal = ({
     if (!onConfirm) return
 
     if (!projectName.trim()) {
-      // 프로젝트 이름은 필수 입력 항목
       return
     }
 

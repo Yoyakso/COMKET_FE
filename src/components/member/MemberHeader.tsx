@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import * as S from "./MemberHeader.Style"
 import { Search } from "../common/search/Search"
 import { InviteModal } from "../workspace/InviteModal"
@@ -7,16 +7,26 @@ import { Dropdown, type DropdownOption } from "@/components/common/dropdown/Drop
 interface MemberHeaderProps {
   memberCount: number
   onSearch: (query: string) => void
-  onFilter?: (selectedFilters: string[]) => void
+  onFilter?: (filters: { roles: string[]; states: string[] }) => void
 }
+
+const allFilterValues = [
+  "owner", "admin", "member",
+  "active", "inactive", "removed"
+]
 
 export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderProps) => {
   const [searchValue, setSearchValue] = useState("")
   const [isInviteModalOpen, setInviteModalOpen] = useState(false)
-  // const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([])
-
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(allFilterValues)
   const filterButtonRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const roles = allFilterValues.filter(v => ["owner", "admin", "member"].includes(v))
+    const states = allFilterValues.filter(v => ["active", "inactive", "removed"].includes(v))
+
+    onFilter?.({ roles, states })
+  }, [])
 
   const filterOptions: DropdownOption[] = [
     { label: "워크스페이스 소유자", value: "owner", groupName: "역할" },
@@ -29,8 +39,8 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
   ]
 
   const handleSearchChange = (value: string) => {
-    setSearchValue(value); // 입력 값을 상태로 설정
-    onSearch(value); // 부모 컴포넌트에 검색 쿼리 전달
+    setSearchValue(value);
+    onSearch(value);
   };
 
   const openInviteModal = () => {
@@ -40,16 +50,15 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
     setInviteModalOpen(false)
   }
 
-  // const toggleFilterDropdown = () => {
-  //   setIsFilterOpen(!isFilterOpen)
-  // }
-
   const handleFilterChange = (values: string | string[]) => {
-    if (Array.isArray(values)) {
-      setSelectedFilters(values)
-      if (onFilter) {
-        onFilter(values)
-      }
+    if (!Array.isArray(values)) return
+
+    setSelectedFilters(values)
+    const roles = values.filter(v => ["owner", "admin", "member"].includes(v))
+    const states = values.filter(v => ["active", "inactive", "removed"].includes(v))
+
+    if (onFilter) {
+      onFilter({ roles, states })
     }
   }
 
@@ -82,6 +91,8 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
                 onSearch={handleSearchChange}
                 defaultValue={searchValue}
                 disabled={false}
+                onChange={handleSearchChange}
+                value={searchValue}
               />
             </S.SearchInputWrapper>
           </S.SearchContainer>

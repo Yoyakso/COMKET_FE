@@ -46,13 +46,14 @@ export const NoResultsContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 200px;
-  background-color: #f8f9fa;
+  height: 100%;
+  background-color: ${color.basic0};
   border-radius: 8px;
   margin-top: 16px;
 `
 
 export const NoResultsText = styled.p`
   font-size: 16px;
-  color: #6c757d;
+  color: ${color.textSecondary};
+  text-align: center;
 `

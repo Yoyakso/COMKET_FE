@@ -1,9 +1,10 @@
 import styled from "styled-components"
 import { color } from "@/styles/color"
 
-export const Row = styled.tr`
+export const Row = styled.tr<{ $isDeleted?: boolean }>`
   border-bottom: 1px solid #E7EAF1;
-  
+    color: ${({ $isDeleted }) => ($isDeleted ? "#A0A0A0" : "inherit")};
+  opacity: ${({ $isDeleted }) => ($isDeleted ? 0.6 : 1)};
   &:hover {
     background-color: #F7F8FA;
   }

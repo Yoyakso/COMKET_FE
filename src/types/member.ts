@@ -1,11 +1,9 @@
 export interface MemberData {
-  id: string
+  id: number;
   name: string
   email: string
-  department: string
-  status: string
-  registrationDate: string
-  lastLoginDate: string
-  initial: string
-  color: string
+  positionType: "OWNER" | "ADMIN" | "MEMBER";
+  state: "ACTIVE" | "INACTIVE" | "DELETED";
+  createdAt: string;
+  updatedAt: string;
 }

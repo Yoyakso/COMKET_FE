@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import { ProjectHeader } from "@/components/project/ProjectHeader"
@@ -10,13 +10,17 @@ import type { ProjectData as ProjectTableData } from "@/types/project"
 import type { ProjectData } from "@/components/project/ProjectModal"
 import * as S from "./ProjectPage.Style"
 import { createProject, getAllProjects } from "@api/Project"
+import { formatDate } from "@utils/dateFormat"
 
 export const ProjectPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [viewingProject, setViewingProject] = useState<ProjectData | null>(null)
   const [projects, setProjects] = useState<ProjectTableData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    handleNavigateProject();
+  }, []);
 
   const filteredProjects = projects.filter(
     (project) =>
@@ -32,7 +36,6 @@ export const ProjectPage = () => {
   }
 
   const handleCreateProject = () => {
-    // 프로젝트 생성 모달 열기
     setShowCreateModal(true)
   }
 
@@ -42,32 +45,26 @@ export const ProjectPage = () => {
 
   const handleNavigateProject = async () => {
     try {
-      console.log('프로젝트 관리 조회');
-      setIsLoading(true);
       const data = await getAllProjects();
 
-      // 매핑
       const parsedProjects: ProjectTableData[] = data.map((project: any) => ({
         id: project.projectId,
         name: project.projectName,
         description: project.projectDescription,
-        tag: "", // 태그는 현재 응답에 없으므로 빈 문자열 처리
+        tag: "",
         visibility: project.isPublic ? "전체 공개" : "멤버 공개",
-        owner: "알 수 없음", // 응답에 owner 정보가 없다면 기본값
+        owner: "알 수 없음",
         createdBy: "알 수 없음",
         memberCount: 1, // 예시로 1명, 실제 백엔드에 따라 조정
-        createdAt: project.createTime?.split("T")[0] ?? new Date().toISOString().split("T")[0],
+        createdAt: formatDate(project.createTime),
       }));
 
       setProjects(parsedProjects);
     } catch (error) {
       console.error("프로젝트 조회 실패:", error);
       setProjects([]);
-    } finally {
-      setIsLoading(false);
     }
   };
-
 
   const handleViewProject = (projectId: string) => {
     // 프로젝트 ID로 프로젝트 찾기
@@ -77,7 +74,7 @@ export const ProjectPage = () => {
       setViewingProject({
         name: project.name,
         description: project.description,
-        tags: project.tag.split(", "), // 쉼표로 구분된 태그 문자열을 배열로 변환
+        tags: project.tag.split(", "),
         isPublic: project.visibility === "전체 공개",
       })
     }
@@ -103,9 +100,9 @@ export const ProjectPage = () => {
         tag: projectData.tags.join(", "),
         visibility: response.isPublic ? "전체 공개" : "멤버 공개",
         owner: "알 수 없음",
-        memberCount: 1,
+        memberCount: 1, // 예시로 1명, 실제 백엔드에 따라 조정
         createdBy: "알 수 없음",
-        createdAt: response.createTime?.split("T")[0] || new Date().toISOString().split("T")[0],
+        createdAt: formatDate(response.createTime),
       };
 
       setProjects([newProject, ...projects]);
@@ -115,7 +112,6 @@ export const ProjectPage = () => {
       throw error;
     }
   };
-
 
   const hasProjects = projects.length > 0
   const hasSearchResults = filteredProjects.length > 0
@@ -134,16 +130,16 @@ export const ProjectPage = () => {
         <S.Content>
           <ProjectHeader projectCount={projects.length} onSearch={handleSearch} onCreateProject={handleCreateProject} />
 
-          {/* 프로젝트가 없는 경우 빈 상태 UI 표시 */}
           {!hasProjects ? (
             <EmptyProject onCreateProject={handleCreateProject} />
           ) : !hasSearchResults ? (
-            // 프로젝트는 있지만 검색 결과가 없는 경우
             <S.NoResultsContainer>
-              <S.NoResultsText>검색 결과가 없습니다.</S.NoResultsText>
+              <S.NoResultsText>
+                검색 결과가 없습니다.<br />
+                입력한 검색어를 다시 한 번 확인해 주세요.
+              </S.NoResultsText>
             </S.NoResultsContainer>
           ) : (
-            // 프로젝트가 있고 검색 결과도 있는 경우 테이블 표시
             <ProjectTable projects={filteredProjects} onViewProject={handleViewProject} />
           )}
         </S.Content>
@@ -151,10 +147,7 @@ export const ProjectPage = () => {
 
       </S.MainContainer>
 
-      {/* 프로젝트 생성 모달 */}
       {showCreateModal && <CreateProjectModal onClose={handleCloseCreateModal} onConfirm={handleCreateProjectSubmit} />}
-
-      {/* 프로젝트 조회 모달 */}
       {viewingProject && <ViewProjectModal projectData={viewingProject} onClose={handleCloseViewModal} />}
     </S.PageContainer>
   )
