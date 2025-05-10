@@ -174,14 +174,14 @@ export const updateProjectInfo = async (
  * @param projectId 
  * @returns 
  */
-export const deleteProject = async (workspaceName: string, projectId: number) => {
+export const deleteProject = async (workspaceSlug: string, projectId: number) => {
   try {
     const token = localStorage.getItem("accessToken");
     if (!token) throw new Error("로그인 토큰이 없습니다.");
 
     const response = await axios.delete(
-      `${BASE_URL}/api/v1/${workspaceName}/${projectId}`,
-      // `${BASE_URL}/api/v1/${workspaceSlug}/${projectId}`,
+      // `${BASE_URL}/api/v1/${workspaceName}/${projectId}`,
+      `${BASE_URL}/api/v1/${workspaceSlug}/${projectId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
