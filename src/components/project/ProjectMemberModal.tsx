@@ -3,24 +3,16 @@ import ReactDOM from "react-dom"
 import * as S from "./ProjectMemberModal.Style"
 import { Search, ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react"
 import { AddProjectMemberModal } from "./AddProjectMemberModal"
-import { getProjectMembers, inviteProjectMembers } from "@/api/Project"
+import { getProjectMembers, editProjectMemberRole } from "@/api/Project"
 import { getWorkspaceMembers } from "@/api/Member"
-import type { Member } from "./AddProjectMemberModal"
+import { getColorFromString } from "@/utils/avatarColor"
 
-interface ProjectMember {
-  id: string
+export interface ProjectMember {
+  id: number
   email: string
   name: string
   position: string
   role: "프로젝트 관리자" | "일반 멤버"
-  initial: string
-  color: string
-}
-
-interface AddMember {
-  id: string
-  name?: string
-  email: string
   initial: string
   color: string
 }
@@ -30,12 +22,6 @@ interface ProjectMemberModalProps {
   projectName?: string
   onClose: () => void
   onSave?: () => Promise<void>
-}
-
-const getRandomColor = () => {
-  const colors = ["#4dabf7", "#748ffc", "#69db7c", "#ffa8a8", "#ffa94d", "#ffe066", "#63e6be", "#ff8787"]
-  const index = Math.floor(Math.random() * colors.length)
-  return colors[index]
 }
 
 export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", onClose, onSave }: ProjectMemberModalProps) => {
@@ -52,7 +38,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     name: string
     email: string
   }>>(new Map())
-
+  const [roleChanges, setRoleChanges] = useState<Record<string, "프로젝트 관리자" | "일반 멤버">>({})
 
   useEffect(() => {
     setIsMounted(true)
@@ -103,12 +89,12 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
         const mappedMembers: ProjectMember[] = data.map((m: any) => ({
           email: m.email,
-          id: m.memberId?.toString() ?? "unknown",
+          id: m.memberId ?? "unknown",
           name: m.name,
           position: "", // 현재 직무는 공백 상태
           role: m.positionType === "ADMIN" ? "프로젝트 관리자" : "일반 멤버", // 프로젝트 관리자인지는 어떻게 알지?
           initial: m.name?.charAt(0) || "?",
-          color: getRandomColor(),
+          color: getColorFromString(m.name),
         }))
 
         setMembers(mappedMembers)
@@ -136,7 +122,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
         members.forEach((m) => {
           memberMap.set(m.email, {
-            memberId: m.memberId,
+            memberId: m.workspaceMemberid,
             name: m.name,
             email: m.email,
           })
@@ -151,6 +137,9 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     fetchWorkspaceMembers()
   }, [])
 
+  const addMembersToList = (newMembers: ProjectMember[]) => {
+    setMembers((prev) => [...prev, ...newMembers])
+  }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
@@ -168,8 +157,13 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     setActiveRoleDropdown(null)
   }
 
-  const handleRoleChange = (memberId: string, role: "프로젝트 관리자" | "일반 멤버") => {
-    setMembers(members.map((member) => (member.id === memberId ? { ...member, role } : member)))
+  const handleRoleChange = (memberId: number, newRole: "프로젝트 관리자" | "일반 멤버") => {
+    setRoleChanges((prev) => ({ ...prev, [memberId]: newRole }))
+    setMembers((prev) =>
+      prev.map((member) =>
+        member.id === memberId ? { ...member, role: newRole } : member
+      )
+    )
     setActiveRoleDropdown(null)
   }
 
@@ -192,7 +186,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   const filteredMembers = members.filter(
     (member) =>
       member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      member.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.id.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.position.toLowerCase().includes(searchQuery.toLowerCase()),
   )
@@ -231,14 +225,28 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
   const handleSave = async () => {
     try {
-      if (onSave) {
-        await onSave()
-      }
+      const workspaceName = localStorage.getItem("workspaceName")
+      if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
+
+      const editPromises = Object.entries(roleChanges).map(([memberId, role]) => {
+        const positionType = role === "프로젝트 관리자" ? "ADMIN" : "MEMBER"
+        return editProjectMemberRole(workspaceName, projectId, {
+          projectMemberId: Number(memberId),
+          positionType,
+        })
+      })
+
+      await Promise.all(editPromises)
+      alert("역할 변경이 저장되었습니다.")
+      setRoleChanges({})
+      if (onSave) await onSave()
       onClose()
     } catch (error) {
-      console.error("멤버 저장 중 오류 발생:", error)
+      console.error("역할 변경 저장 실패:", error)
+      alert("역할 변경 저장 중 오류가 발생했습니다.")
     }
   }
+
 
   const openAddMemberModal = () => {
     setShowAddMemberModal(true)
@@ -246,44 +254,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
   const closeAddMemberModal = () => {
     setShowAddMemberModal(false)
-  }
-
-  const normalizeRole = (raw: string): "프로젝트 관리자" | "일반 멤버" => {
-    return raw === "MEMBER" ? "일반 멤버" : "프로젝트 관리자"
-  }
-
-  const handleAddMembers = async (
-    newMembers: Member[],
-    role: string,
-    memberIdList: number[]
-  ) => {
-    try {
-      const workspaceName = localStorage.getItem("workspaceName")
-      if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
-
-      const positionType = role === "프로젝트 관리자" ? "ADMIN" : "MEMBER"
-
-      await inviteProjectMembers(workspaceName, projectId, {
-        memberIdList,
-        positionType,
-      })
-
-      setMembers([
-        ...members,
-        ...newMembers.map((m) => ({
-          id: m.id,
-          name: m.name,
-          position: "",
-          role: normalizeRole(role),
-          initial: m.initial,
-          color: m.color,
-          email: m.email,
-        })),
-      ])
-
-    } catch (error) {
-      console.error("멤버 초대 실패:", error)
-    }
   }
 
   const modalContent = (
@@ -318,7 +288,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
             </S.TableHeader>
             <S.TableBody>
               {sortedMembers.map((member) => (
-                <S.Row key={member.id}>
+                <S.Row key={`${member.id}-${member.email}`}>
                   <S.Cell>
                     <S.UserInfo>
                       <S.Avatar $bgColor={member.color}>{member.initial}</S.Avatar>
@@ -329,11 +299,11 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
                   </S.Cell>
                   <S.Cell>{member.position}</S.Cell>
                   <S.Cell>
-                    <S.RoleSelector className="role-selector" onClick={(e) => toggleRoleDropdown(member.id, e)}>
+                    <S.RoleSelector className="role-selector" onClick={(e) => toggleRoleDropdown(member.id.toString(), e)}>
                       {member.role}
                       <ChevronDown size={16} />
 
-                      {activeRoleDropdown === member.id && (
+                      {activeRoleDropdown === member.id.toString() && (
                         <S.RoleDropdown className="role-dropdown">
                           <S.RoleOption
                             $active={member.role === "프로젝트 관리자"}
@@ -353,11 +323,11 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
                   </S.Cell>
                   <S.Cell>
                     <S.ActionButtonContainer>
-                      <S.ActionButton className="action-button" onClick={(e) => toggleActionMenu(member.id, e)}>
+                      <S.ActionButton className="action-button" onClick={(e) => toggleActionMenu(member.id.toString(), e)}>
                         <MoreHorizontal size={18} />
                       </S.ActionButton>
 
-                      {activeActionMenu === member.id && (
+                      {activeActionMenu === member.id.toString() && (
                         <S.ActionMenu className="action-menu">
                           <S.ActionMenuItem $danger>멤버 제거</S.ActionMenuItem>
                         </S.ActionMenu>
@@ -381,7 +351,13 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   return (
     <>
       {ReactDOM.createPortal(modalContent, document.body)}
-      {showAddMemberModal && <AddProjectMemberModal onClose={closeAddMemberModal} onAdd={handleAddMembers} memberMap={memberMap} />}
+      {showAddMemberModal &&
+        <AddProjectMemberModal
+          onClose={closeAddMemberModal}
+          memberMap={memberMap}
+          projectId={projectId}
+          onAddSuccess={addMembersToList}
+        />}
     </>
   )
 }

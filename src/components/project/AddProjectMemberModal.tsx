@@ -3,9 +3,12 @@ import ReactDOM from "react-dom"
 import * as S from "./AddProjectMemberModal.Style"
 import { ChevronDown, X } from "lucide-react"
 import { inviteProjectMembers } from "@/api/Project"
+import { getColorFromString } from "@/utils/avatarColor"
+import { toast } from "react-toastify"
+import type { ProjectMember } from "./ProjectMemberModal"
 
 export interface Member {
-  id: string
+  id: number
   name?: string
   email: string
   initial: string
@@ -14,11 +17,12 @@ export interface Member {
 
 interface AddProjectMemberModalProps {
   onClose: () => void
-  onAdd: (members: Member[], role: string, memberIdList: number[]) => Promise<void>
+  projectId: number
   memberMap: Map<string, { memberId: number; name: string; email: string }>
+  onAddSuccess: (newMembers: ProjectMember[]) => void
 }
 
-export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectMemberModalProps) => {
+export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSuccess }: AddProjectMemberModalProps) => {
   const [selectedMembers, setSelectedMembers] = useState<Member[]>([])
   const [emailInput, setEmailInput] = useState<string>("")
   const [role, setRole] = useState<string>("일반 멤버")
@@ -26,7 +30,6 @@ export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectM
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
-  // 컴포넌트가 마운트된 후에만 Portal 사용
   useEffect(() => {
     setIsMounted(true)
     return () => setIsMounted(false)
@@ -34,16 +37,10 @@ export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectM
 
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose()
-      }
+      if (event.key === "Escape") onClose()
     }
-
     document.addEventListener("keydown", handleEscKey)
-
-    return () => {
-      document.removeEventListener("keydown", handleEscKey)
-    }
+    return () => document.removeEventListener("keydown", handleEscKey)
   }, [onClose])
 
   useEffect(() => {
@@ -53,23 +50,17 @@ export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectM
         setIsRoleDropdownOpen(false)
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const toggleRoleDropdown = () => {
-    setIsRoleDropdownOpen(!isRoleDropdownOpen)
-  }
-
+  const toggleRoleDropdown = () => setIsRoleDropdownOpen(!isRoleDropdownOpen)
   const handleRoleSelect = (selectedRole: string) => {
     setRole(selectedRole)
     setIsRoleDropdownOpen(false)
   }
 
-  const removeMember = (memberId: string) => {
+  const removeMember = (memberId: number) => {
     setSelectedMembers(selectedMembers.filter((member) => member.id !== memberId))
   }
 
@@ -80,36 +71,41 @@ export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectM
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault()
-      addMember()
+      const email = emailInput.trim().replace(/,$/, "")
+      if (!email) return
+
+      const matched = memberMap.get(email)
+      if (!matched) {
+        alert("해당 이메일은 워크스페이스 멤버가 아닙니다.")
+        return
+      }
+
+      addMember(matched)
     }
   }
 
-  const addMember = () => {
-    const email = emailInput.trim().replace(/,$/, "")
-    if (!email) return
+  const addMember = (m: { memberId: number; name: string; email: string }) => {
+    console.log("✅ addMember called with:", m)
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      alert("유효한 이메일 주소를 입력해주세요.")
-      return
-    }
-
-    if (selectedMembers.some((member) => member.email === email)) {
+    if (selectedMembers.some((member) => member.email === m.email)) {
       alert("이미 추가된 이메일입니다.")
       return
     }
 
-    // 랜덤 색상 및 이니셜 생성
-    const colors = ["#748ffc", "#69db7c", "#63e6be", "#ffa8a8", "#ffa94d", "#ffe066"]
-    const randomColor = colors[Math.floor(Math.random() * colors.length)]
-    const initial = email.charAt(0).toUpperCase()
+    if (!m.memberId) {
+      alert("유효하지 않은 멤버입니다 (memberId 없음).")
+      return
+    }
 
-    // 새 멤버 추가
+    const initial = m.name?.charAt(0).toUpperCase() || m.email.charAt(0).toUpperCase()
+    const color = getColorFromString(m.email)
+
     const newMember: Member = {
-      id: `temp-${Date.now()}`, // 임시 ID
-      email,
+      id: m.memberId,
+      name: m.name,
+      email: m.email,
       initial,
-      color: randomColor,
+      color,
     }
 
     setSelectedMembers([...selectedMembers, newMember])
@@ -121,19 +117,42 @@ export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectM
 
     setIsSubmitting(true)
     try {
-      const memberIdList = selectedMembers
-        .map((m) => memberMap.get(m.email)?.memberId)
-        .filter((id): id is number => id !== undefined)
+      const workspaceName = localStorage.getItem("workspaceName")
+      if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
 
-      if (memberIdList.length === 0) {
-        alert("유효한 멤버가 없습니다.")
+      const workspaceMemberIdList = selectedMembers
+        .map((m) => m.id)
+        .filter((id): id is number => id !== null && id !== undefined)
+
+      if (workspaceMemberIdList.length === 0) {
+        alert("선택된 멤버의 ID가 없습니다.")
+        setIsSubmitting(false)
         return
       }
 
-      await onAdd(selectedMembers, role, memberIdList)
+      const positionType = role === "프로젝트 관리자" ? "ADMIN" : "MEMBER"
+
+      await inviteProjectMembers(workspaceName, projectId, {
+        workspaceMemberIdList,
+        positionType,
+      })
+
+      onAddSuccess(
+        selectedMembers.map((m) => ({
+          id: m.id,
+          email: m.email,
+          name: m.name ?? "",
+          position: "",
+          role: role === "프로젝트 관리자" ? "프로젝트 관리자" : "일반 멤버",
+          initial: m.initial,
+          color: m.color,
+        }))
+      )
+      toast.success("멤버 초대가 완료되었습니다.")
       onClose()
     } catch (error) {
-      console.error("멤버 추가 중 오류 발생:", error)
+      console.error("멤버 초대 실패:", error)
+      alert("멤버 초대 중 오류가 발생했습니다.")
     } finally {
       setIsSubmitting(false)
     }
@@ -149,9 +168,11 @@ export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectM
           <S.InputContainer>
             <S.MemberTagsContainer>
               {selectedMembers.map((member) => (
-                <S.MemberTag key={member.id}>
+                <S.MemberTag key={member.email}>
                   <S.MemberAvatar $bgColor={member.color}>{member.initial}</S.MemberAvatar>
-                  {member.name ? `${member.name} [${member.id}]` : member.email}
+                  <span>
+                    {member.name} [{member.email}]
+                  </span>
                   <S.RemoveButton onClick={() => removeMember(member.id)}>
                     <X size={16} />
                   </S.RemoveButton>
@@ -179,10 +200,7 @@ export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectM
 
               {isRoleDropdownOpen && (
                 <S.DropdownMenu className="role-dropdown">
-                  <S.DropdownItem
-                    $active={role === "프로젝트 관리자"}
-                    onClick={() => handleRoleSelect("프로젝트 관리자")}
-                  >
+                  <S.DropdownItem $active={role === "프로젝트 관리자"} onClick={() => handleRoleSelect("프로젝트 관리자")}>
                     프로젝트 관리자
                   </S.DropdownItem>
                   <S.DropdownItem $active={role === "일반 멤버"} onClick={() => handleRoleSelect("일반 멤버")}>
@@ -195,9 +213,7 @@ export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectM
         </S.FormRow>
 
         <S.ButtonContainer>
-          <S.CancelButton onClick={onClose} disabled={isSubmitting}>
-            취소
-          </S.CancelButton>
+          <S.CancelButton onClick={onClose} disabled={isSubmitting}>취소</S.CancelButton>
           <S.AddButton onClick={handleSubmit} disabled={isSubmitting || selectedMembers.length === 0}>
             {isSubmitting ? "추가 중..." : "추가"}
           </S.AddButton>
