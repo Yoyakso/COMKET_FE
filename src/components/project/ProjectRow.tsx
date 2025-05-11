@@ -162,7 +162,6 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
             <S.UserName>{project.owner}</S.UserName>
           </S.UserInfo>
         </S.Cell>
-        <S.Cell $isCentered>{project.memberCount}</S.Cell>
         <S.Cell>
           <S.UserInfo>
             <S.UserAvatar color={creatorAvatar.color}></S.UserAvatar>

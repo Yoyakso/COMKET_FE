@@ -141,12 +141,6 @@ export const ProjectTable = ({ projects, onViewProject, onDeleteProject }: Proje
                 {getSortIcon("owner")}
               </S.HeaderContent>
             </S.HeaderCell>
-            <S.HeaderCell onClick={() => handleSort("memberCount")}>
-              <S.HeaderContent>
-                <span>멤버 수</span>
-                {getSortIcon("memberCount")}
-              </S.HeaderContent>
-            </S.HeaderCell>
             <S.HeaderCell onClick={() => handleSort("createdBy")}>
               <S.HeaderContent>
                 <span>만든 사람</span>

@@ -61,16 +61,16 @@ export const ProjectPage = () => {
     try {
       const workspaceName = localStorage.getItem("workspaceName");
       const data = await getAllProjects(workspaceName);
+      console.log("data", data)
 
       const parsedProjects: ProjectTableData[] = data.map((project: any) => ({
         id: Number(project.projectId),
         name: project.projectName,
         description: project.projectDescription,
-        tag: (project.tags || []).join(", "),
+        tag: (project.projectTag || []).join(", "),
         visibility: project.isPublic ? "전체 공개" : "멤버 공개",
-        owner: "알 수 없음",
+        owner: project.adminId,
         createdBy: "알 수 없음",
-        memberCount: 1, // 예시로 1명, 실제 백엔드에 따라 조정
         createdAt: formatDate(project.createTime),
       }));
 
@@ -106,6 +106,7 @@ export const ProjectPage = () => {
         name: projectData.name,
         description: projectData.description,
         isPublic: projectData.isPublic,
+        tags: projectData.tags,
         profile_file_id: null,
       });
 
@@ -132,7 +133,6 @@ export const ProjectPage = () => {
         tags: updatedData.tags,
       });
 
-      // UI 갱신: 수정된 프로젝트만 갱신
       setProjects(prev =>
         prev.map(p =>
           p.id === projectId
@@ -147,7 +147,7 @@ export const ProjectPage = () => {
         )
       );
 
-      setViewingProject(null); // 모달 닫기
+      setViewingProject(null);
     } catch (err) {
       console.error("프로젝트 수정 실패:", err);
     }

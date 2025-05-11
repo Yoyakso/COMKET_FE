@@ -94,6 +94,7 @@ interface CreateProjectDto {
   name: string;
   description: string;
   isPublic: boolean;
+  tags: string[];
   profile_file_id: number | null;
 }
 
