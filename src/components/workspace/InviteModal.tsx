@@ -2,6 +2,9 @@ import { useState, useEffect } from "react"
 import ReactDOM from "react-dom"
 import * as S from "./InviteModal.Style"
 import { ChevronDown } from "@assets/icons"
+import { inviteWorkspaceMembers } from "@/api/Member"
+import { getColorFromString } from "@utils/avatarColor"
+import { toast } from "react-toastify"
 
 interface InviteType {
   id: string
@@ -14,18 +17,15 @@ interface InviteModalProps {
   onClose: () => void
 }
 
+type RoleType = "일반 멤버" | "워크스페이스 소유자" | "워크스페이스 관리자"
+
 export const InviteModal = ({ onClose }: InviteModalProps) => {
   const [email, setEmail] = useState<string>("")
-  const [invitees, setInvitees] = useState<InviteType[]>([
-    { id: "1", email: "simh3077@ajou.ac.kr", prefix: "조", color: "#8C9EFF" },
-    { id: "2", email: "won980630@ajou.co.kr", prefix: "원", color: "#69F0AE" },
-    { id: "3", email: "ka09023@ajou.co.kr", prefix: "오", color: "#64B5F6" },
-  ])
-  const [role, setRole] = useState<string>("일반 멤버")
+  const [invitees, setInvitees] = useState<InviteType[]>([])
+  const [role, setRole] = useState<RoleType>("일반 멤버")
   const [isRoleOpen, setIsRoleOpen] = useState<boolean>(false)
   const [generateLink, setGenerateLink] = useState<boolean>(false)
 
-  // ESC 키를 누르면 모달 닫힘
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -38,7 +38,6 @@ export const InviteModal = ({ onClose }: InviteModalProps) => {
 
     return () => {
       document.removeEventListener("keydown", handleEscKey)
-      // 모달이 닫힐 때 body 스크롤 복원
       document.body.style.overflow = "auto"
     }
   }, [onClose])
@@ -56,14 +55,12 @@ export const InviteModal = ({ onClose }: InviteModalProps) => {
   const addInvitee = () => {
     if (email.trim() === "") return
 
-    const colors = ["#8C9EFF", "#69F0AE", "#64B5F6", "#FFD54F", "#FF8A65"]
-    const prefixes = ["조", "원", "오", "김", "이"]
-
+    const trimmedEmail = email.trim()
     const newInvitee: InviteType = {
       id: Date.now().toString(),
-      email: email.trim(),
-      prefix: prefixes[Math.floor(Math.random() * prefixes.length)],
-      color: colors[Math.floor(Math.random() * colors.length)],
+      email: trimmedEmail,
+      prefix: trimmedEmail.charAt(0).toUpperCase(),
+      color: getColorFromString(trimmedEmail),
     }
 
     setInvitees([...invitees, newInvitee])
@@ -78,13 +75,61 @@ export const InviteModal = ({ onClose }: InviteModalProps) => {
     setIsRoleOpen(!isRoleOpen)
   }
 
-  const selectRole = (selectedRole: string) => {
+  const selectRole = (selectedRole: RoleType) => {
     setRole(selectedRole)
     setIsRoleOpen(false)
   }
 
   const toggleLinkGeneration = () => {
     setGenerateLink(!generateLink)
+  }
+
+  const mapRoleToPositionType = (role: RoleType): "ADMIN" | "OWNER" | "MEMBER" => {
+    switch (role) {
+      case "워크스페이스 소유자":
+        return "OWNER"
+      case "워크스페이스 관리자":
+        return "ADMIN"
+      default:
+        return "MEMBER"
+    }
+  }
+
+  const handleSendInvite = async () => {
+    if (invitees.length === 0) return alert("초대할 멤버를 입력하세요.")
+
+    try {
+      const memberEmailList = invitees.map((invitee) => invitee.email)
+      const workspaceId = Number(localStorage.getItem("workspaceId"))
+
+      await inviteWorkspaceMembers(workspaceId, {
+        memberEmailList,
+        positionType: mapRoleToPositionType(role),
+        state: "ACTIVE",
+      })
+
+      toast.success("초대가 완료되었습니다.")
+      onClose()
+    } catch (error: any) {
+      const code = error?.response?.data?.code
+      const message = error?.response?.data?.message || "알 수 없는 오류가 발생했습니다."
+
+      switch (code) {
+        case "CANNOT_FOUND_MEMBER":
+          alert("입력한 이메일에 해당하는 사용자를 찾을 수 없습니다.")
+          break
+        case "MEMBER_ALREADY_INVITED":
+          alert("이미 초대된 멤버가 포함되어 있습니다.")
+          break
+        case "INVALID_MEMBER_LIST":
+          alert("초대할 멤버 이메일이 비어 있습니다.")
+          break
+        default:
+          alert(`초대 중 오류 발생: ${message}`)
+      }
+
+      console.error("초대 실패:", error)
+    }
   }
 
   const ModalContent = (
@@ -125,8 +170,8 @@ export const InviteModal = ({ onClose }: InviteModalProps) => {
             {isRoleOpen && (
               <S.DropdownMenu>
                 <S.DropdownItem onClick={() => selectRole("일반 멤버")}>일반 멤버</S.DropdownItem>
-                <S.DropdownItem onClick={() => selectRole("관리자")}>관리자</S.DropdownItem>
-                <S.DropdownItem onClick={() => selectRole("편집자")}>편집자</S.DropdownItem>
+                <S.DropdownItem onClick={() => selectRole("워크스페이스 소유자")}>워크스페이스 소유자</S.DropdownItem>
+                <S.DropdownItem onClick={() => selectRole("워크스페이스 관리자")}>워크스페이스 관리자</S.DropdownItem>
               </S.DropdownMenu>
             )}
           </S.DropdownContainer>
@@ -150,12 +195,11 @@ export const InviteModal = ({ onClose }: InviteModalProps) => {
 
       <S.ButtonContainer>
         <S.CancelButton onClick={onClose}>취소</S.CancelButton>
-        <S.SendButton>보내기</S.SendButton>
+        <S.SendButton onClick={handleSendInvite}>보내기</S.SendButton>
       </S.ButtonContainer>
     </S.ModalContent>
   )
 
-  // Portal을 사용하여 모달을 body의 자식으로 렌더링
   return ReactDOM.createPortal(
     <S.ModalOverlay onClick={onClose}>{ModalContent}</S.ModalOverlay>,
     document.body,
