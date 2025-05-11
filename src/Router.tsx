@@ -12,7 +12,7 @@ import { WorkspaceManageLayout } from '@/components/layout/WorkspaceManageLayout
 import { WorkspaceInfoPage } from './pages/workspaceManagePage/WorkspaceInfoPage';
 import { InviteCodePage } from './pages/InviteCodePage/InviteCodePage';
 import { ProjectPage } from './pages/projectPage/ProjectPage';
-import { ProfilePage } from './pages/profilePage/ProfilePage';
+import { ProfilePage } from './pages/profilePage/profilePage';
 import { AccountInfoPage } from './pages/accountInfoPage/AccountInfoPage';
 
 export const Router = createBrowserRouter([

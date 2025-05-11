@@ -40,9 +40,9 @@ export function NavProfile({
       <S.AvatarContainer onClick={() => fileInputRef.current?.click()}>
         <S.Avatar>
           {image ? (
-            <S.AvatarImage src={image} alt={name} />
+            <S.AvatarImage src={image} alt={name ?? '프로필 이미지'} />
           ) : (
-            name.slice(0, 2) || "사용자"
+            name?.slice?.(0, 2) ?? "??"
           )}
         </S.Avatar>
         <S.AvatarOverlay className="avatar-overlay">

@@ -50,6 +50,8 @@ export const LocalNavBar = ({
     },
   ]
 
+  const userName = localStorage.getItem("nickName")
+
   return (
     <S.NavContainer $variant={variant}>
       {variant === "settings" && (
@@ -82,7 +84,7 @@ export const LocalNavBar = ({
       <S.Divider />
       <S.NavProfileContainer>
         <NavProfile
-          name="사용자"
+          name={userName}
           defaultImage=""
           status="온라인"
         />
