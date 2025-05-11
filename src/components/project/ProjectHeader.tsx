@@ -68,6 +68,8 @@ export const ProjectHeader = ({ projectCount, onSearch, onCreateProject, onFilte
                 onSearch={handleSearchChange}
                 defaultValue={searchValue}
                 disabled={false}
+                value={searchValue}
+                onChange={handleSearchChange}
               />
             </S.SearchInputWrapper>
           </S.SearchContainer>

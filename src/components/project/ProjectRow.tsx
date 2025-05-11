@@ -3,6 +3,8 @@ import * as S from "./ProjectRow.Style"
 import type { ProjectData } from "@/types/project"
 import { ChevronDown, DotIcon } from "@assets/icons"
 import { ProjectMemberModal } from "./ProjectMemberModal"
+import { RemoveProjectModal } from "./RemoveProjectModal"
+import { deleteProject } from "@/api/Project"
 
 interface ProjectRowProps {
   project: ProjectData
@@ -14,6 +16,7 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
   const [currentVisibility, setCurrentVisibility] = useState(project.visibility)
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null)
   const [showMemberModal, setShowMemberModal] = useState(false)
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false)
 
   const visibilityOptions = ["전체 공개", "멤버 공개"]
 
@@ -52,7 +55,7 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
 
   const handleVisibilityChange = (visibility: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    setCurrentVisibility(visibility)
+    setCurrentVisibility(visibility as '전체 공개' | '멤버 공개')
     setShowVisibilityDropdown(false)
   }
 
@@ -91,6 +94,33 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
 
   const ownerAvatar = getUserAvatar(project.owner)
   const creatorAvatar = getUserAvatar(project.createdBy)
+
+  const openRemoveModal = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setIsRemoveModalOpen(true)
+    setActiveDropdownId(null)
+  }
+
+  const closeRemoveModal = () => {
+    setIsRemoveModalOpen(false)
+  }
+
+  const handleRemoveProject = async () => {
+    try {
+      const workspaceName = localStorage.getItem("workspaceName")
+      if (!workspaceName) throw new Error("워크스페이스가 없습니다.")
+
+      // workspaceName 말고 Slug로 변경
+      const workspaceSlug = localStorage.getItem("workspaceSlug");
+      await deleteProject(workspaceSlug, Number(project.id))
+      setIsRemoveModalOpen(false)
+
+
+    } catch (error) {
+      console.error("프로젝트 제거 중 오류 발생:", error)
+      alert("프로젝트 삭제에 실패했습니다: " + (error?.response?.data?.message || error.message))
+    }
+  }
 
   return (
     <>
@@ -147,7 +177,7 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
               <S.DropdownMenu className="dropdown-menu">
                 <S.DropdownItem onClick={handleEditProject}>프로젝트 정보 수정</S.DropdownItem>
                 <S.DropdownItem onClick={handleManageMembers}>프로젝트 멤버 관리</S.DropdownItem>
-                <S.DropdownItem $danger onClick={(e) => e.stopPropagation()}>
+                <S.DropdownItem $danger onClick={openRemoveModal}>
                   프로젝트 삭제
                 </S.DropdownItem>
               </S.DropdownMenu>
@@ -155,9 +185,11 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
           </S.ActionButtonContainer>
         </S.Cell>
       </S.Row>
-      {/* 프로젝트 멤버 관리 모달 */}
       {showMemberModal && (
         <ProjectMemberModal projectName={project.name} onClose={closeMemberModal} onSave={handleSaveMembers} />
+      )}
+      {isRemoveModalOpen && (
+        <RemoveProjectModal onClose={closeRemoveModal} onConfirm={handleRemoveProject} projectId={Number(project.id)} />
       )}
     </>
   )
