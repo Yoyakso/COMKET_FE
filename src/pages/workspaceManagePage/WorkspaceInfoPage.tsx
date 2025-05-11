@@ -36,6 +36,7 @@ export const WorkspaceInfoPage = () => {
 
   const fetchWorkspaceInfo = async () => {
     try {
+
       const token = localStorage.getItem("accessToken");
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/workspaces?includePublic=false`,
@@ -57,15 +58,10 @@ export const WorkspaceInfoPage = () => {
       setDescription(target.description);
       setVisibility(target.isPublic ? 'public' : 'private');
       setImageUrl(target.profileFileUrl);
-      console.log("📡 서버에서 받은 profileFileUrl:", target.profileFileUrl);
 
       localStorage.setItem("workspaceId", target.id);
       localStorage.setItem("workspaceSlug", target.slug);
       localStorage.setItem("workspaceName", target.name);
-      console.log("✅ 프로필 URL:", target.profileFileUrl);
-      localStorage.setItem("workspaceImageUrl", target.profileFileUrl ?? "");
-      console.log("💾 저장된 값:", localStorage.getItem("workspaceImageUrl"));
-
 
     } catch (err) {
       console.error("워크스페이스 정보 불러오기 실패:", err);
@@ -73,7 +69,7 @@ export const WorkspaceInfoPage = () => {
   };
 
   useEffect(() => {
-
+    console.log('워크스페이스 정보:', workspace);
     if (workspaceSlug) fetchWorkspaceInfo();
   }, [workspaceSlug]);
 
@@ -90,7 +86,7 @@ export const WorkspaceInfoPage = () => {
     setProfileFileId(file_id);
     setFileName(file_name);
   };
-
+  console.log("프로파일아이디디q", profileFileId);
   const handleSave = async () => {
 
     if (!workspaceId || !description.trim()) return;
@@ -99,20 +95,20 @@ export const WorkspaceInfoPage = () => {
       await updateWorkspace(workspaceId, {
         name: workspace?.name,
         description,
-        isPublic: visibility === "public",
-        profile_file_id: profileFileId,
+        is_public: visibility === "public",
+        profile_file_id: profileFileId !== null ? Number(profileFileId) : null,
         state: "ACTIVE",
       });
 
-      console.log(imageUrl, "imageUrl");
+      console.log("프로파일아이디디", profileFileId);
       alert("저장되었습니다.");
-      window.location.reload();
 
       await fetchWorkspaceInfo();
 
     } catch (error) {
       console.error("저장 실패:", error);
       alert("저장 실패");
+      console.log("프로파일아이디디", profileFileId);
     }
   };
 
@@ -139,6 +135,7 @@ export const WorkspaceInfoPage = () => {
       }
     }
   };
+
 
   return (
     <S.Container>
@@ -233,7 +230,9 @@ export const WorkspaceInfoPage = () => {
 
       {isExitModalOpen && (
         <WorkspaceExit
+
           isOwner={workspace?.role === 'OWNER'}
+
           onClose={() => setExitModalOpen(false)}
           onExit={async () => {
 
