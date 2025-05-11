@@ -3,7 +3,7 @@ import { color } from "@/styles/color"
 
 export const Row = styled.tr`
   border-bottom: 1px solid #dee2e6;
-  
+  background-color: ${color.white}
   &:hover {
     background-color: #f8f9fa;
   }
@@ -12,13 +12,13 @@ export const Row = styled.tr`
 export const Cell = styled.td<{ $isCentered?: boolean }>`
   padding: 12px 16px;
   font-size: 13px;
-  color: ${color.textPrimary};
+  color: ${color.textHeading};
   white-space: nowrap;
   text-align: ${(props) => (props.$isCentered ? "center" : "left")};
 `
 
 export const Description = styled.div`
-  max-width: 300px;
+  max-width: 280px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -55,7 +55,7 @@ export const UserAvatar = styled.div<UserAvatarProps>`
   height: 28px;
   border-radius: 50%;
   background-color: ${(props) => props.color};
-  color: white;
+  color: ${color.white}
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,11 +76,6 @@ export const ActionButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  color: #adb5bd;
-  
-  &:hover {
-    color: #495057;
-  }
 `
 
 export const DropdownMenu = styled.div`
