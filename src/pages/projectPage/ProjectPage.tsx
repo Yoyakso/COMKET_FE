@@ -17,19 +17,33 @@ export const ProjectPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [viewingProject, setViewingProject] = useState<ProjectData | null>(null)
   const [projects, setProjects] = useState<ProjectTableData[]>([])
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
   useEffect(() => {
     handleNavigateProject();
   }, []);
 
-  const filteredProjects = projects.filter(
-    (project) =>
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch =
       (project.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (project.description || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (project.tag || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (project.owner || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (project.createdBy || "").toLowerCase().includes(searchQuery.toLowerCase())
-  )
+      (project.createdBy || "").toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesFilter = selectedFilters.every((filter) => {
+      if (filter === "public") return project.visibility === "전체 공개";
+      if (filter === "private") return project.visibility === "멤버 공개";
+      return project.tag.includes(filter); // 예시로 태그 필터 처리
+    });
+
+    return matchesSearch && matchesFilter;
+  });
+
+
+  const handleFilter = (filters: string[]) => {
+    setSelectedFilters(filters);
+  }
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
@@ -88,26 +102,16 @@ export const ProjectPage = () => {
 
   const handleCreateProjectSubmit = async (projectData: ProjectData) => {
     try {
-      const response = await createProject({
+      await createProject({
         name: projectData.name,
         description: projectData.description,
         isPublic: projectData.isPublic,
         profile_file_id: null,
       });
 
-      const newProject: ProjectTableData = {
-        id: response.projectId,
-        name: response.projectName,
-        description: response.projectDescription,
-        tag: projectData.tags.join(", "),
-        visibility: response.isPublic ? "전체 공개" : "멤버 공개",
-        owner: "알 수 없음",
-        memberCount: 1, // 예시로 1명, 실제 백엔드에 따라 조정
-        createdBy: "알 수 없음",
-        createdAt: formatDate(response.createTime),
-      };
-
-      setProjects([newProject, ...projects]);
+      await handleNavigateProject();
+      setSearchQuery("");
+      setSelectedFilters([]);
       setShowCreateModal(false);
     } catch (error) {
       console.error("프로젝트 생성 실패:", error);
@@ -168,7 +172,12 @@ export const ProjectPage = () => {
         </S.LNBContainer>
 
         <S.Content>
-          <ProjectHeader projectCount={projects.length} onSearch={handleSearch} onCreateProject={handleCreateProject} />
+          <ProjectHeader
+            projectCount={projects.length}
+            onSearch={handleSearch}
+            onCreateProject={handleCreateProject}
+            onFilter={handleFilter}
+          />
 
           {!hasProjects ? (
             <EmptyProject onCreateProject={handleCreateProject} />
