@@ -7,7 +7,7 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL
  * 프로젝트 목록 전체 조회
  * @returns 
  */
-export const getAllProjects = async () => {
+export const getAllProjects = async (workspaceName: string) => {
   try {
     const token = localStorage.getItem("accessToken");
     const workspaceName = localStorage.getItem("workspaceName");
@@ -174,14 +174,15 @@ export const updateProjectInfo = async (
  * @param projectId 
  * @returns 
  */
-export const deleteProject = async (workspaceSlug: string, projectId: number) => {
+export const deleteProject = async (workspaceName: string, projectId: number) => {
   try {
     const token = localStorage.getItem("accessToken");
     if (!token) throw new Error("로그인 토큰이 없습니다.");
+    const encodedWorkspaceName = encodeURIComponent(workspaceName);
+    console.log(encodedWorkspaceName)
 
     const response = await axios.delete(
-      // `${BASE_URL}/api/v1/${workspaceName}/${projectId}`,
-      `${BASE_URL}/api/v1/${workspaceSlug}/${projectId}`,
+      `${BASE_URL}/api/v1/${workspaceName}/${projectId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -225,3 +226,34 @@ export const leaveProject = async (workspaceName: string, projectId: number) => 
     throw error
   }
 }
+
+/**
+ * 프로젝트 멤버 조회
+ * @param workspaceName - 워크스페이스 이름
+ * @param projectId - 조회할 프로젝트 ID
+ * @returns 멤버 목록 배열
+ */
+export const getProjectMembers = async (workspaceName: string, projectId: number) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) throw new Error("로그인 토큰이 없습니다.");
+    if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.");
+
+    const encodedWorkspaceName = encodeURIComponent(workspaceName);
+
+    const response = await axios.get(
+      `${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}/members`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("프로젝트 멤버 조회 성공:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("프로젝트 멤버 조회 실패:", error);
+    throw error;
+  }
+};

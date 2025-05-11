@@ -3,9 +3,11 @@ import ReactDOM from "react-dom"
 import * as S from "./ProjectMemberModal.Style"
 import { Search, ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react"
 import { AddProjectMemberModal } from "./AddProjectMemberModal"
+import { getProjectMembers } from "@/api/Project"
 
 interface ProjectMember {
   id: string
+  email: string
   name: string
   position: string
   role: "프로젝트 관리자" | "일반 멤버"
@@ -22,120 +24,21 @@ interface AddMember {
 }
 
 interface ProjectMemberModalProps {
+  projectId: number
   projectName?: string
   onClose: () => void
   onSave?: () => Promise<void>
 }
 
-export const ProjectMemberModal = ({ projectName = "프로젝트", onClose, onSave }: ProjectMemberModalProps) => {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [members, setMembers] = useState<ProjectMember[]>([
-    {
-      id: "tph00300",
-      name: "이태희",
-      position: "PM/PO",
-      role: "프로젝트 관리자",
-      initial: "이",
-      color: "#4dabf7",
-    },
-    {
-      id: "simh3077",
-      name: "조민현",
-      position: "기획",
-      role: "프로젝트 관리자",
-      initial: "조",
-      color: "#748ffc",
-    },
-    {
-      id: "won980630",
-      name: "원해연",
-      position: "디자인",
-      role: "프로젝트 관리자",
-      initial: "원",
-      color: "#69db7c",
-    },
-    {
-      id: "ka09023",
-      name: "오유민",
-      position: "프론트엔드 개발",
-      role: "프로젝트 관리자",
-      initial: "오",
-      color: "#63e6be",
-    },
-    {
-      id: "chito",
-      name: "치토",
-      position: "백엔드 개발",
-      role: "일반 멤버",
-      initial: "치",
-      color: "#ffa8a8",
-    },
-    {
-      id: "yoojaesok",
-      name: "유재석",
-      position: "웹 개발",
-      role: "일반 멤버",
-      initial: "유",
-      color: "#ffa94d",
-    },
-    {
-      id: "parkmeyonsu",
-      name: "박명수",
-      position: "데이터 분석",
-      role: "일반 멤버",
-      initial: "박",
-      color: "#ffe066",
-    },
-    {
-      id: "jhd",
-      name: "정형돈",
-      position: "데이터 엔지니어링",
-      role: "일반 멤버",
-      initial: "정",
-      color: "#63e6be",
-    },
-    {
-      id: "norediron",
-      name: "노홍철",
-      position: "QA",
-      role: "일반 멤버",
-      initial: "노",
-      color: "#ff8787",
-    },
-    {
-      id: "lavieenrose",
-      name: "라미란",
-      position: "기타",
-      role: "일반 멤버",
-      initial: "라",
-      color: "#748ffc",
-    },
-    {
-      id: "tph00300_2",
-      name: "이태희",
-      position: "PM/PO",
-      role: "일반 멤버",
-      initial: "이",
-      color: "#4dabf7",
-    },
-    {
-      id: "simh3077_2",
-      name: "조민현",
-      position: "기획",
-      role: "일반 멤버",
-      initial: "조",
-      color: "#748ffc",
-    },
-    {
-      id: "won980630_2",
-      name: "원해연",
-      position: "디자인",
-      role: "일반 멤버",
-      initial: "원",
-      color: "#69db7c",
-    },
-  ])
+const getRandomColor = () => {
+  const colors = ["#4dabf7", "#748ffc", "#69db7c", "#ffa8a8", "#ffa94d", "#ffe066", "#63e6be", "#ff8787"]
+  const index = Math.floor(Math.random() * colors.length)
+  return colors[index]
+}
 
+export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", onClose, onSave }: ProjectMemberModalProps) => {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [members, setMembers] = useState<ProjectMember[]>([])
   const [activeRoleDropdown, setActiveRoleDropdown] = useState<string | null>(null)
   const [activeActionMenu, setActiveActionMenu] = useState<string | null>(null)
   const [sortField, setSortField] = useState<string | null>(null)
@@ -181,6 +84,35 @@ export const ProjectMemberModal = ({ projectName = "프로젝트", onClose, onSa
     }
   }, [])
 
+  useEffect(() => {
+    const fetchProjectMembers = async () => {
+      try {
+        const workspaceName = localStorage.getItem("workspaceName")
+        if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
+
+        const data = await getProjectMembers(workspaceName, projectId)
+        console.log("프로젝트 멤버 응답 데이터:", data)
+
+        const mappedMembers: ProjectMember[] = data.map((m: any) => ({
+          email: m.email,
+          id: m.memberId?.toString() ?? "unknown",
+          name: m.name,
+          position: "", // 현재 직무는 공백 상태
+          role: m.positionType === "ADMIN" ? "프로젝트 관리자" : "일반 멤버", // 프로젝트 관리자인지는 어떻게 알지?
+          initial: m.name?.charAt(0) || "?",
+          color: getRandomColor(),
+        }))
+
+        setMembers(mappedMembers)
+      } catch (error) {
+        console.error("프로젝트 멤버 불러오기 실패:", error)
+      }
+    }
+
+    fetchProjectMembers()
+  }, [projectId])
+
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }
@@ -218,11 +150,11 @@ export const ProjectMemberModal = ({ projectName = "프로젝트", onClose, onSa
     return sortDirection === "asc" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
   }
 
-  // 검색 및 정렬 적용
   const filteredMembers = members.filter(
     (member) =>
       member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.position.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
@@ -285,6 +217,7 @@ export const ProjectMemberModal = ({ projectName = "프로젝트", onClose, onSa
       // 새 멤버 추가 (실제로는 API 응답으로 받은 데이터를 사용)
       const addedMembers: ProjectMember[] = newMembers.map((member) => ({
         id: member.id,
+        email: member.email,
         name: member.name || member.email.split("@")[0],
         position: "미지정", // 기본 직무
         role: role === "프로젝트 관리자" ? "프로젝트 관리자" : "일반 멤버",
@@ -345,7 +278,7 @@ export const ProjectMemberModal = ({ projectName = "프로젝트", onClose, onSa
                     <S.UserInfo>
                       <S.Avatar $bgColor={member.color}>{member.initial}</S.Avatar>
                       <S.UserName>
-                        {member.name} [{member.id}]
+                        {member.name} [{member.email.split("@")[0]}]
                       </S.UserName>
                     </S.UserInfo>
                   </S.Cell>
@@ -381,7 +314,6 @@ export const ProjectMemberModal = ({ projectName = "프로젝트", onClose, onSa
 
                       {activeActionMenu === member.id && (
                         <S.ActionMenu className="action-menu">
-                          <S.ActionMenuItem>멤버 정보 보기</S.ActionMenuItem>
                           <S.ActionMenuItem $danger>멤버 제거</S.ActionMenuItem>
                         </S.ActionMenu>
                       )}
