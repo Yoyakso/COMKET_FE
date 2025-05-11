@@ -6,7 +6,8 @@ import { ChevronDown, ChevronUp } from "@assets/icons"
 
 interface ProjectTableProps {
   projects: ProjectData[]
-  onViewProject?: (projectId: string) => void
+  onViewProject?: (projectId: number) => void
+  onDeleteProject?: (projectId: number) => void
 }
 
 type SortField =
@@ -21,7 +22,7 @@ type SortField =
   | "createdAt"
 type SortDirection = "asc" | "desc"
 
-export const ProjectTable = ({ projects, onViewProject }: ProjectTableProps) => {
+export const ProjectTable = ({ projects, onViewProject, onDeleteProject }: ProjectTableProps) => {
   const [sortField, setSortField] = useState<SortField | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
 
@@ -140,12 +141,6 @@ export const ProjectTable = ({ projects, onViewProject }: ProjectTableProps) => 
                 {getSortIcon("owner")}
               </S.HeaderContent>
             </S.HeaderCell>
-            <S.HeaderCell onClick={() => handleSort("memberCount")}>
-              <S.HeaderContent>
-                <span>멤버 수</span>
-                {getSortIcon("memberCount")}
-              </S.HeaderContent>
-            </S.HeaderCell>
             <S.HeaderCell onClick={() => handleSort("createdBy")}>
               <S.HeaderContent>
                 <span>만든 사람</span>
@@ -163,7 +158,11 @@ export const ProjectTable = ({ projects, onViewProject }: ProjectTableProps) => 
         </S.TableHeader>
         <S.TableBody>
           {sortedProjects.map((project, index) => (
-            <ProjectRow key={`${project.id}-${index}`} project={project} onViewProject={onViewProject} />
+            <ProjectRow
+              key={`${project.id}-${index}`}
+              project={project}
+              onViewProject={onViewProject}
+              onDeleteProject={onDeleteProject} />
           ))}
         </S.TableBody>
       </S.Table>

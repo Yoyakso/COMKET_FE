@@ -5,13 +5,15 @@ import { ChevronDown, DotIcon } from "@assets/icons"
 import { ProjectMemberModal } from "./ProjectMemberModal"
 import { RemoveProjectModal } from "./RemoveProjectModal"
 import { deleteProject } from "@/api/Project"
+import { toast } from "react-toastify"
 
 interface ProjectRowProps {
   project: ProjectData
-  onViewProject?: (projectId: string) => void
+  onViewProject?: (projectId: number) => void
+  onDeleteProject?: (projectId: number) => void
 }
 
-export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
+export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectRowProps) => {
   const [showVisibilityDropdown, setShowVisibilityDropdown] = useState(false)
   const [currentVisibility, setCurrentVisibility] = useState(project.visibility)
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null)
@@ -37,7 +39,7 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
 
   const handleRowClick = () => {
     if (onViewProject) {
-      onViewProject(project.id)
+      onViewProject(Number(project.id))
     }
   }
 
@@ -62,7 +64,7 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
   const handleEditProject = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (onViewProject) {
-      onViewProject(project.id)
+      onViewProject(Number(project.id))
     }
     setActiveDropdownId(null)
   }
@@ -110,12 +112,13 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
       const workspaceName = localStorage.getItem("workspaceName")
       if (!workspaceName) throw new Error("워크스페이스가 없습니다.")
 
-      // workspaceName 말고 Slug로 변경
-      const workspaceSlug = localStorage.getItem("workspaceSlug");
-      await deleteProject(workspaceSlug, Number(project.id))
+      await deleteProject(workspaceName, Number(project.id))
       setIsRemoveModalOpen(false)
 
-
+      if (onDeleteProject) {
+        onDeleteProject(Number(project.id))
+      }
+      toast.success("프로젝트가 삭제되었습니다.")
     } catch (error) {
       console.error("프로젝트 제거 중 오류 발생:", error)
       alert("프로젝트 삭제에 실패했습니다: " + (error?.response?.data?.message || error.message))
@@ -159,7 +162,6 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
             <S.UserName>{project.owner}</S.UserName>
           </S.UserInfo>
         </S.Cell>
-        <S.Cell $isCentered>{project.memberCount}</S.Cell>
         <S.Cell>
           <S.UserInfo>
             <S.UserAvatar color={creatorAvatar.color}></S.UserAvatar>
@@ -169,11 +171,11 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
         <S.Cell>{project.createdAt}</S.Cell>
         <S.Cell $isCentered onClick={(e) => e.stopPropagation()}>
           <S.ActionButtonContainer>
-            <S.ActionButton onClick={(e) => toggleActionDropdown(project.id, e)}>
+            <S.ActionButton onClick={(e) => toggleActionDropdown(project.id.toString(), e)}>
               <DotIcon />
             </S.ActionButton>
 
-            {activeDropdownId === project.id && (
+            {activeDropdownId === project.id.toString() && (
               <S.DropdownMenu className="dropdown-menu">
                 <S.DropdownItem onClick={handleEditProject}>프로젝트 정보 수정</S.DropdownItem>
                 <S.DropdownItem onClick={handleManageMembers}>프로젝트 멤버 관리</S.DropdownItem>
@@ -186,7 +188,7 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
         </S.Cell>
       </S.Row>
       {showMemberModal && (
-        <ProjectMemberModal projectName={project.name} onClose={closeMemberModal} onSave={handleSaveMembers} />
+        <ProjectMemberModal projectId={Number(project.id)} projectName={project.name} onClose={closeMemberModal} onSave={handleSaveMembers} />
       )}
       {isRemoveModalOpen && (
         <RemoveProjectModal onClose={closeRemoveModal} onConfirm={handleRemoveProject} projectId={Number(project.id)} />

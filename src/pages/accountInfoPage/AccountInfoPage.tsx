@@ -1,8 +1,10 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import * as S from "./AccountInfoPage.Style"
 import { GoogleIcon } from "@assets/icons"
+import { logOut } from "@/api/Oauth"
 
 interface AccountInfoProps {
   email: string
@@ -11,13 +13,20 @@ interface AccountInfoProps {
 
 export const AccountInfoPage = () => {
   const [accountInfo] = useState<AccountInfoProps>({
-    email: "tph00300@ajou.co.kr",
+    email: localStorage.getItem("email"),
     loginMethod: "google",
   })
 
-  const handleLogout = () => {
-    console.log("로그아웃 처리")
-    //로그아웃 API 호출
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    try {
+      await logOut()
+      localStorage.removeItem("accessToken")
+      navigate("/login")
+    } catch (error) {
+      alert("로그아웃에 실패했습니다.")
+    }
   }
 
   const handleWithdraw = () => {

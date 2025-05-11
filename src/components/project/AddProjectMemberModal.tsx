@@ -2,8 +2,9 @@ import { useState, useEffect } from "react"
 import ReactDOM from "react-dom"
 import * as S from "./AddProjectMemberModal.Style"
 import { ChevronDown, X } from "lucide-react"
+import { inviteProjectMembers } from "@/api/Project"
 
-interface Member {
+export interface Member {
   id: string
   name?: string
   email: string
@@ -13,34 +14,13 @@ interface Member {
 
 interface AddProjectMemberModalProps {
   onClose: () => void
-  onAdd: (members: Member[], role: string) => Promise<void>
+  onAdd: (members: Member[], role: string, memberIdList: number[]) => Promise<void>
+  memberMap: Map<string, { memberId: number; name: string; email: string }>
 }
 
-export const AddProjectMemberModal = ({ onClose, onAdd }: AddProjectMemberModalProps) => {
-  const [selectedMembers, setSelectedMembers] = useState<Member[]>([
-    {
-      id: "simh3077",
-      name: "조민현",
-      email: "simh3077@ajou.co.kr",
-      initial: "조",
-      color: "#748ffc",
-    },
-    {
-      id: "won980630",
-      name: "원해연",
-      email: "won980630@ajou.co.kr",
-      initial: "원",
-      color: "#69db7c",
-    },
-    {
-      id: "ka09023",
-      email: "ka09023@ajou.co.kr",
-      initial: "오",
-      color: "#63e6be",
-    },
-  ])
+export const AddProjectMemberModal = ({ onClose, onAdd, memberMap }: AddProjectMemberModalProps) => {
+  const [selectedMembers, setSelectedMembers] = useState<Member[]>([])
   const [emailInput, setEmailInput] = useState<string>("")
-
   const [role, setRole] = useState<string>("일반 멤버")
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -52,7 +32,6 @@ export const AddProjectMemberModal = ({ onClose, onAdd }: AddProjectMemberModalP
     return () => setIsMounted(false)
   }, [])
 
-  // ESC 키를 누르면 모달이 닫히도록 이벤트 리스너 추가
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -67,7 +46,6 @@ export const AddProjectMemberModal = ({ onClose, onAdd }: AddProjectMemberModalP
     }
   }, [onClose])
 
-  // 클릭 이벤트 처리
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -95,12 +73,10 @@ export const AddProjectMemberModal = ({ onClose, onAdd }: AddProjectMemberModalP
     setSelectedMembers(selectedMembers.filter((member) => member.id !== memberId))
   }
 
-  // 이메일 입력 핸들러 추가
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmailInput(e.target.value)
   }
 
-  // 키 입력 핸들러 추가
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault()
@@ -108,19 +84,16 @@ export const AddProjectMemberModal = ({ onClose, onAdd }: AddProjectMemberModalP
     }
   }
 
-  // 멤버 추가 함수
   const addMember = () => {
-    const email = emailInput.trim().replace(/,$/, "") // 쉼표 제거
+    const email = emailInput.trim().replace(/,$/, "")
     if (!email) return
 
-    // 이메일 형식 검증 (간단한 검증)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       alert("유효한 이메일 주소를 입력해주세요.")
       return
     }
 
-    // 중복 체크
     if (selectedMembers.some((member) => member.email === email)) {
       alert("이미 추가된 이메일입니다.")
       return
@@ -148,7 +121,16 @@ export const AddProjectMemberModal = ({ onClose, onAdd }: AddProjectMemberModalP
 
     setIsSubmitting(true)
     try {
-      await onAdd(selectedMembers, role)
+      const memberIdList = selectedMembers
+        .map((m) => memberMap.get(m.email)?.memberId)
+        .filter((id): id is number => id !== undefined)
+
+      if (memberIdList.length === 0) {
+        alert("유효한 멤버가 없습니다.")
+        return
+      }
+
+      await onAdd(selectedMembers, role, memberIdList)
       onClose()
     } catch (error) {
       console.error("멤버 추가 중 오류 발생:", error)

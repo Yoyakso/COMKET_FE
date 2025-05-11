@@ -32,7 +32,7 @@ export const CreateWorkspacePage = () => {
       const name = localStorage.setItem('workspaceName', data.name);
       const slug = localStorage.setItem('workspaceSlug', data.slug);
 
-      navigate(`/workspace/${data.slug}`);
+      navigate(`/${data.slug}`);
 
     } catch (error: any) {
       const message = error.response?.data?.message || error.message || '';

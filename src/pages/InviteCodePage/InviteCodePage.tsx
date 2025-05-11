@@ -139,7 +139,7 @@ export const InviteCodePage = () => {
           disabled={!code || !workspace}
           onClick={() => {
             if (workspace && workspace.value) {
-              navigate(`/workspace/${workspace?.value}`)
+              navigate(`/${workspace?.value}`)
             }
           }}>
           입장
