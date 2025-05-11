@@ -86,3 +86,25 @@ export const checkVerificationCode = async (email: string, code: number) => {
     throw error;
   }
 }
+
+/**
+ * 로그아웃
+ * @returns 
+ */
+export const logOut = async () => {
+  try {
+    const token = localStorage.getItem("accessToken")
+    if (!token) throw new Error("로그인 토큰이 없습니다.")
+
+    const response = await axios.post(`${BASE_URL}/api/v1/auth/logout`, null, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("로그아웃 실패", error);
+    throw error;
+  }
+}

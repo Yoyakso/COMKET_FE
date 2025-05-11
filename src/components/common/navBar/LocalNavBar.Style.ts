@@ -16,6 +16,7 @@ export const NavContent = styled.div`
   overflow: auto;
   display: flex;
   flex-direction: column;
+  height: 100vh;
 `;
 
 export const SectionContainer = styled.div`

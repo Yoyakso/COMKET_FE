@@ -146,3 +146,40 @@ export const updateWorkspaceMember = async (
     throw error;
   }
 };
+
+export interface InviteMembersDto {
+  memberEmailList: string[]
+  positionType: "ADMIN" | "MEMBER" | "OWNER"
+  state: "ACTIVE" | "INACTIVE"
+}
+
+/**
+ * 워크스페이스 멤버 초대
+ * @param workspaceId 
+ * @param payload 
+ * @returns 
+ */
+export const inviteWorkspaceMembers = async (
+  workspaceId: number,
+  payload: InviteMembersDto
+) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) throw new Error("로그인 토큰이 없습니다.");
+
+    const response = await axios.post(
+      `${BASE_URL}/api/v1/workspaces/${workspaceId}/members`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    return response.data
+  } catch (error) {
+    console.error("워크스페이스 멤버 초대 실패:", error);
+    throw error;
+  }
+}

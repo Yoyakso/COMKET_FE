@@ -4,7 +4,7 @@ import * as S from "./WorkspaceSelector.Style"
 export const WorkspaceSelector = () => {
   const workspaceName = localStorage.getItem("workspaceName");
   const workspaceImageUrl = localStorage.getItem("workspaceImageUrl");
-
+  
   return (
     <S.Container>
       <S.LogoBox>
