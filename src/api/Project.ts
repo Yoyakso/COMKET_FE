@@ -179,10 +179,9 @@ export const deleteProject = async (workspaceName: string, projectId: number) =>
     const token = localStorage.getItem("accessToken");
     if (!token) throw new Error("로그인 토큰이 없습니다.");
     const encodedWorkspaceName = encodeURIComponent(workspaceName);
-    console.log(encodedWorkspaceName)
 
     const response = await axios.delete(
-      `${BASE_URL}/api/v1/${workspaceName}/${projectId}`,
+      `${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -197,7 +196,6 @@ export const deleteProject = async (workspaceName: string, projectId: number) =>
     throw error;
   }
 };
-
 
 /**
  * 프로젝트 멤버 탈퇴

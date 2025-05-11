@@ -5,13 +5,15 @@ import { ChevronDown, DotIcon } from "@assets/icons"
 import { ProjectMemberModal } from "./ProjectMemberModal"
 import { RemoveProjectModal } from "./RemoveProjectModal"
 import { deleteProject } from "@/api/Project"
+import { toast } from "react-toastify"
 
 interface ProjectRowProps {
   project: ProjectData
   onViewProject?: (projectId: number) => void
+  onDeleteProject?: (projectId: number) => void
 }
 
-export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
+export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectRowProps) => {
   const [showVisibilityDropdown, setShowVisibilityDropdown] = useState(false)
   const [currentVisibility, setCurrentVisibility] = useState(project.visibility)
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null)
@@ -113,7 +115,10 @@ export const ProjectRow = ({ project, onViewProject }: ProjectRowProps) => {
       await deleteProject(workspaceName, Number(project.id))
       setIsRemoveModalOpen(false)
 
-
+      if (onDeleteProject) {
+        onDeleteProject(Number(project.id))
+      }
+      toast.success("프로젝트가 삭제되었습니다.")
     } catch (error) {
       console.error("프로젝트 제거 중 오류 발생:", error)
       alert("프로젝트 삭제에 실패했습니다: " + (error?.response?.data?.message || error.message))

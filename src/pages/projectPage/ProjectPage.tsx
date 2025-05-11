@@ -148,8 +148,10 @@ export const ProjectPage = () => {
       console.error("프로젝트 수정 실패:", err);
     }
   };
-  console.log("🌟 viewingProject 값:", viewingProject);
 
+  const handleDeleteProject = (deletedId: number) => {
+    setProjects((prev) => prev.filter((project) => project.id !== deletedId))
+  }
 
   const hasProjects = projects.length > 0
   const hasSearchResults = filteredProjects.length > 0
@@ -178,7 +180,11 @@ export const ProjectPage = () => {
               </S.NoResultsText>
             </S.NoResultsContainer>
           ) : (
-            <ProjectTable projects={filteredProjects} onViewProject={handleViewProject} />
+            <ProjectTable
+              projects={filteredProjects}
+              onViewProject={handleViewProject}
+              onDeleteProject={handleDeleteProject}
+            />
           )}
         </S.Content>
 
