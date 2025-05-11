@@ -139,7 +139,16 @@ export const WorkspaceInfoPage = () => {
 
       <S.InfoGroup>
         <S.Label>워크스페이스 주소</S.Label>
-        <S.PlainText style={{ color: color.lightBlue600 }}>{workspace?.slug}</S.PlainText>
+        {workspace ? (
+          <S.PlainText style={{ color: color.lightBlue600 }}>
+            {`http://comket.co.kr/${workspace.slug}`}
+          </S.PlainText>
+        ) : (
+          <S.PlainText style={{ color: color.lightBlue600 }}>
+            로딩 중...
+          </S.PlainText>
+        )}
+
       </S.InfoGroup>
 
       <S.InfoGroup>
