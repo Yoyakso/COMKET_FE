@@ -1,10 +1,12 @@
 import { ChevronDown } from "@/assets/icons"
 import * as S from "./WorkspaceSelector.Style"
+import { fetchMyWorkspaces } from "@/api/Workspace";
 
 export const WorkspaceSelector = () => {
+
   const workspaceName = localStorage.getItem("workspaceName");
   const workspaceImageUrl = localStorage.getItem("workspaceImageUrl");
-  
+
   return (
     <S.Container>
       <S.LogoBox>
@@ -20,7 +22,7 @@ export const WorkspaceSelector = () => {
       </S.LogoBox>
 
       <S.TextBox>
-        <S.WorkspaceName>{workspaceName ?? "워크스페이스"}</S.WorkspaceName>
+        <S.WorkspaceName>{workspaceName ?? "workspace"}</S.WorkspaceName>
         <ChevronDown />
       </S.TextBox>
     </S.Container>
