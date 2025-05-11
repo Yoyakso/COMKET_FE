@@ -61,6 +61,7 @@ export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
                 file_name: result.fileName,
             });
 
+
             onClose();
         } catch (err) {
             console.error('이미지 업로드 실패:', err);

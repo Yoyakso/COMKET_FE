@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 export interface UpdateWorkspacePayload {
   name: string;
   description: string;
-  isPublic: boolean;
+  is_public: boolean;
   profile_file_id: number|null;
   state: 'ACTIVE' | 'INACTIVE' | 'DELETED';
 }
@@ -25,7 +25,7 @@ export const updateWorkspace = async (
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-     // withCredentials: true,
+     withCredentials: true,
     
     }
   );

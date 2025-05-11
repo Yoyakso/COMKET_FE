@@ -69,6 +69,20 @@ export const updateProfile = async (params: UpdateProfileParams) => {
   return response.data;
 };
 
+export const getMyProfile = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) throw new Error("로그인 토큰이 없습니다.");
+
+  const response = await axios.get(`${BASE_URL}/api/v1/members/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    withCredentials: true,
+  });
+
+  return response.data;
+};
+
 /**
  * 워크스페이스 멤버 삭제
  * @param workspaceId 

@@ -14,9 +14,11 @@ import { deleteWorkspace } from '@/api/DeleteWorkspace';
 import { ExitWorkspace } from '@/api/ExitWorkspace';
 import { useNavigate } from 'react-router-dom';
 
-export const WorkspaceInfoPage = () => {
-  const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
 
+
+export const WorkspaceInfoPage = () => {
+
+  const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
   const [workspaceId, setWorkspaceId] = useState<string>(''); // id 저장용
   const [workspace, setWorkspace] = useState<any>(null);
   const [description, setDescription] = useState('');
@@ -31,41 +33,43 @@ export const WorkspaceInfoPage = () => {
   const isValid = description.trim() !== '';
   const navigate = useNavigate();
 
-  useEffect(() => {
 
-    const fetchWorkspaceInfo = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/workspaces?includePublic=false`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+  const fetchWorkspaceInfo = async () => {
+    try {
 
-        const all = res.data;
-        const target = all.find((ws: any) => ws.slug === workspaceSlug);
-
-        if (!target) {
-          alert("해당 슬러그의 워크스페이스를 찾을 수 없습니다.");
-          return;
+      const token = localStorage.getItem("accessToken");
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/workspaces?includePublic=false`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
+      );
 
-        setWorkspace(target);
-        setWorkspaceId(target.id);
-        setDescription(target.description);
-        setVisibility(target.isPublic ? 'public' : 'private');
-        setImageUrl(target.profileFileUrl);
+      const all = res.data;
+      const target = all.find((ws: any) => ws.slug === workspaceSlug);
 
-        localStorage.setItem("workspaceId", target.id);
-        localStorage.setItem("workspaceSlug", target.slug);
-        localStorage.setItem("workspaceName", target.name);
-
-      } catch (err) {
-        console.error("워크스페이스 정보 불러오기 실패:", err);
+      if (!target) {
+        alert("해당 슬러그의 워크스페이스를 찾을 수 없습니다.");
+        return;
       }
-    };
 
+      setWorkspace(target);
+      setWorkspaceId(target.id);
+      setDescription(target.description);
+      setVisibility(target.isPublic ? 'public' : 'private');
+      setImageUrl(target.profileFileUrl);
+
+      localStorage.setItem("workspaceId", target.id);
+      localStorage.setItem("workspaceSlug", target.slug);
+      localStorage.setItem("workspaceName", target.name);
+
+    } catch (err) {
+      console.error("워크스페이스 정보 불러오기 실패:", err);
+    }
+  };
+
+  useEffect(() => {
+    console.log('워크스페이스 정보:', workspace);
     if (workspaceSlug) fetchWorkspaceInfo();
   }, [workspaceSlug]);
 
@@ -82,7 +86,7 @@ export const WorkspaceInfoPage = () => {
     setProfileFileId(file_id);
     setFileName(file_name);
   };
-
+  console.log("프로파일아이디디q", profileFileId);
   const handleSave = async () => {
 
     if (!workspaceId || !description.trim()) return;
@@ -91,16 +95,20 @@ export const WorkspaceInfoPage = () => {
       await updateWorkspace(workspaceId, {
         name: workspace?.name,
         description,
-        isPublic: visibility === "public",
-        profile_file_id: profileFileId,
+        is_public: visibility === "public",
+        profile_file_id: profileFileId !== null ? Number(profileFileId) : null,
         state: "ACTIVE",
       });
-      console.log("profileFileId", profileFileId);
+
+      console.log("프로파일아이디디", profileFileId);
       alert("저장되었습니다.");
+
+      await fetchWorkspaceInfo();
 
     } catch (error) {
       console.error("저장 실패:", error);
       alert("저장 실패");
+      console.log("프로파일아이디디", profileFileId);
     }
   };
 
@@ -128,6 +136,7 @@ export const WorkspaceInfoPage = () => {
     }
   };
 
+
   return (
     <S.Container>
       <S.Title>워크스페이스 정보</S.Title>
@@ -139,7 +148,16 @@ export const WorkspaceInfoPage = () => {
 
       <S.InfoGroup>
         <S.Label>워크스페이스 주소</S.Label>
-        <S.PlainText style={{ color: color.lightBlue600 }}>{workspace?.slug}</S.PlainText>
+        {workspace ? (
+          <S.PlainText style={{ color: color.lightBlue600 }}>
+            {`http://comket.co.kr/${workspace.slug}`}
+          </S.PlainText>
+        ) : (
+          <S.PlainText style={{ color: color.lightBlue600 }}>
+            로딩 중...
+          </S.PlainText>
+        )}
+
       </S.InfoGroup>
 
       <S.InfoGroup>
@@ -212,7 +230,9 @@ export const WorkspaceInfoPage = () => {
 
       {isExitModalOpen && (
         <WorkspaceExit
+
           isOwner={workspace?.role === 'OWNER'}
+
           onClose={() => setExitModalOpen(false)}
           onExit={async () => {
 
