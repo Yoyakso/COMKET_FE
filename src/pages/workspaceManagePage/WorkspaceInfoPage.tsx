@@ -14,9 +14,11 @@ import { deleteWorkspace } from '@/api/DeleteWorkspace';
 import { ExitWorkspace } from '@/api/ExitWorkspace';
 import { useNavigate } from 'react-router-dom';
 
-export const WorkspaceInfoPage = () => {
-  const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
 
+
+export const WorkspaceInfoPage = () => {
+
+  const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
   const [workspaceId, setWorkspaceId] = useState<string>(''); // id 저장용
   const [workspace, setWorkspace] = useState<any>(null);
   const [description, setDescription] = useState('');
@@ -31,40 +33,46 @@ export const WorkspaceInfoPage = () => {
   const isValid = description.trim() !== '';
   const navigate = useNavigate();
 
-  useEffect(() => {
 
-    const fetchWorkspaceInfo = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/workspaces?includePublic=false`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        const all = res.data;
-        const target = all.find((ws: any) => ws.slug === workspaceSlug);
-
-        if (!target) {
-          alert("해당 슬러그의 워크스페이스를 찾을 수 없습니다.");
-          return;
+  const fetchWorkspaceInfo = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/workspaces?includePublic=false`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
+      );
 
-        setWorkspace(target);
-        setWorkspaceId(target.id);
-        setDescription(target.description);
-        setVisibility(target.isPublic ? 'public' : 'private');
-        setImageUrl(target.profileFileUrl);
+      const all = res.data;
+      const target = all.find((ws: any) => ws.slug === workspaceSlug);
 
-        localStorage.setItem("workspaceId", target.id);
-        localStorage.setItem("workspaceSlug", target.slug);
-        localStorage.setItem("workspaceName", target.name);
-
-      } catch (err) {
-        console.error("워크스페이스 정보 불러오기 실패:", err);
+      if (!target) {
+        alert("해당 슬러그의 워크스페이스를 찾을 수 없습니다.");
+        return;
       }
-    };
+
+      setWorkspace(target);
+      setWorkspaceId(target.id);
+      setDescription(target.description);
+      setVisibility(target.isPublic ? 'public' : 'private');
+      setImageUrl(target.profileFileUrl);
+      console.log("📡 서버에서 받은 profileFileUrl:", target.profileFileUrl);
+
+      localStorage.setItem("workspaceId", target.id);
+      localStorage.setItem("workspaceSlug", target.slug);
+      localStorage.setItem("workspaceName", target.name);
+      console.log("✅ 프로필 URL:", target.profileFileUrl);
+      localStorage.setItem("workspaceImageUrl", target.profileFileUrl ?? "");
+      console.log("💾 저장된 값:", localStorage.getItem("workspaceImageUrl"));
+
+
+    } catch (err) {
+      console.error("워크스페이스 정보 불러오기 실패:", err);
+    }
+  };
+
+  useEffect(() => {
 
     if (workspaceSlug) fetchWorkspaceInfo();
   }, [workspaceSlug]);
@@ -95,8 +103,12 @@ export const WorkspaceInfoPage = () => {
         profile_file_id: profileFileId,
         state: "ACTIVE",
       });
-      console.log("profileFileId", profileFileId);
+
+      console.log(imageUrl, "imageUrl");
       alert("저장되었습니다.");
+      window.location.reload();
+
+      await fetchWorkspaceInfo();
 
     } catch (error) {
       console.error("저장 실패:", error);
