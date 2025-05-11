@@ -299,3 +299,47 @@ export const inviteProjectMembers = async (
     throw error
   }
 }
+
+interface EditProjectPayload {
+  name: string;
+  description: string;
+  isPublic: boolean;
+  tags: string[];
+  profile_file_id: number | null;
+}
+
+/**
+ * 프로젝트 정보 수정 API 호출
+ * @param workspaceName 워크스페이스 이름
+ * @param projectId 프로젝트 ID
+ * @param payload 수정할 프로젝트 데이터
+ */
+export const editProject = async (
+  workspaceName: string,
+  projectId: number,
+  payload: EditProjectPayload
+) => {
+  try {
+    const token = localStorage.getItem("accessToken")
+    if (!token) throw new Error("로그인 토큰이 없습니다.")
+    if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
+
+    const encodedWorkspaceName = encodeURIComponent(workspaceName)
+
+    const response = await axios.patch(
+      `${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}/edit`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("프로젝트 수정 실패:", error);
+    throw error;
+  }
+};

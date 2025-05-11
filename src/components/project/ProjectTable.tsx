@@ -6,7 +6,7 @@ import { ChevronDown, ChevronUp } from "@assets/icons"
 
 interface ProjectTableProps {
   projects: ProjectData[]
-  onViewProject?: (projectId: string) => void
+  onViewProject?: (projectId: number) => void
 }
 
 type SortField =

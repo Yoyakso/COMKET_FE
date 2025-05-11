@@ -9,7 +9,7 @@ import { ViewProjectModal } from "@/components/project/ViewProjectModal"
 import type { ProjectData as ProjectTableData } from "@/types/project"
 import type { ProjectData } from "@/components/project/ProjectModal"
 import * as S from "./ProjectPage.Style"
-import { createProject, getAllProjects } from "@api/Project"
+import { createProject, getAllProjects, editProject } from "@api/Project"
 import { formatDate } from "@utils/dateFormat"
 
 export const ProjectPage = () => {
@@ -45,13 +45,14 @@ export const ProjectPage = () => {
 
   const handleNavigateProject = async () => {
     try {
-      const data = await getAllProjects();
+      const workspaceName = localStorage.getItem("workspaceName");
+      const data = await getAllProjects(workspaceName);
 
       const parsedProjects: ProjectTableData[] = data.map((project: any) => ({
-        id: project.projectId,
+        id: Number(project.projectId),
         name: project.projectName,
         description: project.projectDescription,
-        tag: "",
+        tag: (project.tags || []).join(", "),
         visibility: project.isPublic ? "전체 공개" : "멤버 공개",
         owner: "알 수 없음",
         createdBy: "알 수 없음",
@@ -66,12 +67,13 @@ export const ProjectPage = () => {
     }
   };
 
-  const handleViewProject = (projectId: string) => {
+  const handleViewProject = (projectId: number) => {
+
     // 프로젝트 ID로 프로젝트 찾기
-    const project = projects.find((p) => p.id === projectId)
+    const project = projects.find((p) => Number(p.id) === projectId)
     if (project) {
-      // ProjectData 형식으로 변환
       setViewingProject({
+        id: Number(project.id),
         name: project.name,
         description: project.description,
         tags: project.tag.split(", "),
@@ -113,6 +115,42 @@ export const ProjectPage = () => {
     }
   };
 
+  const handleUpdateProjectSubmit = async (projectId: number, updatedData: ProjectData) => {
+    try {
+      const workspaceName = localStorage.getItem("workspaceName");
+      if (!workspaceName) throw new Error("워크스페이스 이름이 없습니다.");
+
+      await editProject(workspaceName, projectId, {
+        name: updatedData.name,
+        description: updatedData.description,
+        isPublic: updatedData.isPublic,
+        profile_file_id: null,
+        tags: updatedData.tags,
+      });
+
+      // UI 갱신: 수정된 프로젝트만 갱신
+      setProjects(prev =>
+        prev.map(p =>
+          p.id === projectId
+            ? {
+              ...p,
+              name: updatedData.name,
+              description: updatedData.description,
+              tag: updatedData.tags.join(", "),
+              visibility: updatedData.isPublic ? "전체 공개" : "멤버 공개",
+            }
+            : p
+        )
+      );
+
+      setViewingProject(null); // 모달 닫기
+    } catch (err) {
+      console.error("프로젝트 수정 실패:", err);
+    }
+  };
+  console.log("🌟 viewingProject 값:", viewingProject);
+
+
   const hasProjects = projects.length > 0
   const hasSearchResults = filteredProjects.length > 0
 
@@ -148,7 +186,14 @@ export const ProjectPage = () => {
       </S.MainContainer>
 
       {showCreateModal && <CreateProjectModal onClose={handleCloseCreateModal} onConfirm={handleCreateProjectSubmit} />}
-      {viewingProject && <ViewProjectModal projectData={viewingProject} onClose={handleCloseViewModal} />}
+      {viewingProject &&
+        <ViewProjectModal
+          projectId={viewingProject.id}
+          projectData={viewingProject}
+          isAdmin={true} // 🔑 실제론 로그인 유저와 비교해서 판단
+          onSubmit={handleUpdateProjectSubmit}
+          onClose={handleCloseViewModal}
+        />}
     </S.PageContainer>
   )
 }

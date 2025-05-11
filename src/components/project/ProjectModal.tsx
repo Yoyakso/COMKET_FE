@@ -7,6 +7,7 @@ import { Radio } from "@/components/common/radio/Radio"
 export type ProjectModalMode = "create" | "view" | "edit"
 
 export interface ProjectData {
+  id: number
   name: string
   description: string
   tags: string[]
@@ -19,11 +20,12 @@ interface ProjectModalProps {
   onClose: () => void
   onConfirm?: (projectData: ProjectData) => Promise<void>
   title?: string
+  onEditClick?: () => void; //관리자만
 }
 
 export const ProjectModal = ({
   mode,
-  initialData = { name: "", description: "", tags: [], isPublic: false },
+  initialData = { id: 0, name: "", description: "", tags: [], isPublic: false },
   onClose,
   onConfirm,
   title,
@@ -73,6 +75,7 @@ export const ProjectModal = ({
     }
   }
 
+
   const handleTagInputKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
     if (isViewMode) return
 
@@ -94,15 +97,28 @@ export const ProjectModal = ({
   const handleSubmit = async () => {
     if (!onConfirm) return
 
-    if (!projectName.trim()) {
+    const trimmedName = projectName.trim()
+    const trimmedDescription = projectDescription.trim()
+
+    if (!projectName.trim()) return
+
+    const isUnchanged =
+      trimmedName === initialData.name &&
+      trimmedDescription === initialData.description &&
+      JSON.stringify(tags) === JSON.stringify(initialData.tags) &&
+      isPublic === initialData.isPublic
+
+    if (isUnchanged) {
+      alert("변경된 내용이 없습니다.")
       return
     }
 
     setIsSubmitting(true)
     try {
       await onConfirm({
-        name: projectName.trim(),
-        description: projectDescription.trim(),
+        id: initialData.id,
+        name: trimmedName,
+        description: trimmedDescription,
         tags,
         isPublic,
       })
@@ -111,7 +127,6 @@ export const ProjectModal = ({
       if (mode === "view" && isEditing) {
         setIsEditing(false)
       } else {
-        // 생성 모드나 편집 모드였다면 모달 닫기
         onClose()
       }
     } catch (error) {
@@ -125,7 +140,10 @@ export const ProjectModal = ({
     setIsEditing(!isEditing)
   }
 
+  if (!isMounted) return null
+
   const modalContent = (
+
     <S.ModalOverlay onClick={onClose}>
       <S.ModalContent onClick={(e) => e.stopPropagation()}>
         <S.Title>{modalTitle}</S.Title>
@@ -243,5 +261,7 @@ export const ProjectModal = ({
     </S.ModalOverlay>
   )
 
-  return ReactDOM.createPortal(modalContent, document.body)
+  return isMounted
+    ? ReactDOM.createPortal(modalContent, document.body)
+    : null;
 }
