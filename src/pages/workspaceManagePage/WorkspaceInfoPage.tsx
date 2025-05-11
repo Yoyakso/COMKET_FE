@@ -69,7 +69,7 @@ export const WorkspaceInfoPage = () => {
   };
 
   useEffect(() => {
-    console.log('워크스페이스 정보:', workspace);
+
     if (workspaceSlug) fetchWorkspaceInfo();
   }, [workspaceSlug]);
 
@@ -100,15 +100,14 @@ export const WorkspaceInfoPage = () => {
         state: "ACTIVE",
       });
 
-      console.log("프로파일아이디디", profileFileId);
       alert("저장되었습니다.");
 
       await fetchWorkspaceInfo();
+      window.location.reload();
 
     } catch (error) {
       console.error("저장 실패:", error);
       alert("저장 실패");
-      console.log("프로파일아이디디", profileFileId);
     }
   };
 
