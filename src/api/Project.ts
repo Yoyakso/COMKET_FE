@@ -257,3 +257,45 @@ export const getProjectMembers = async (workspaceName: string, projectId: number
     throw error;
   }
 };
+
+interface InviteProjectMembersDto {
+  memberIdList: number[]
+  positionType: "ADMIN" | "MEMBER"
+}
+
+/**
+ * 프로젝트 멤버 초대
+ * @param workspaceName 워크스페이스 이름
+ * @param projectId 프로젝트 ID
+ * @param payload 초대할 멤버 ID 목록과 역할
+ */
+export const inviteProjectMembers = async (
+  workspaceName: string,
+  projectId: number,
+  payload: InviteProjectMembersDto
+) => {
+  try {
+    const token = localStorage.getItem("accessToken")
+    if (!token) throw new Error("로그인 토큰이 없습니다.")
+    if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
+
+    const encodedWorkspaceName = encodeURIComponent(workspaceName)
+
+    const response = await axios.post(
+      `${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}/members`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+
+    console.log("프로젝트 멤버 초대 성공:", response.data)
+    return response.data
+  } catch (error) {
+    console.error("프로젝트 멤버 초대 실패:", error)
+    throw error
+  }
+}

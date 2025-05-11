@@ -3,7 +3,9 @@ import ReactDOM from "react-dom"
 import * as S from "./ProjectMemberModal.Style"
 import { Search, ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react"
 import { AddProjectMemberModal } from "./AddProjectMemberModal"
-import { getProjectMembers } from "@/api/Project"
+import { getProjectMembers, inviteProjectMembers } from "@/api/Project"
+import { getWorkspaceMembers } from "@/api/Member"
+import type { Member } from "./AddProjectMemberModal"
 
 interface ProjectMember {
   id: string
@@ -45,6 +47,12 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const [mounted, setIsMounted] = useState(false)
   const [showAddMemberModal, setShowAddMemberModal] = useState(false)
+  const [memberMap, setMemberMap] = useState<Map<string, {
+    memberId: number
+    name: string
+    email: string
+  }>>(new Map())
+
 
   useEffect(() => {
     setIsMounted(true)
@@ -111,6 +119,37 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
     fetchProjectMembers()
   }, [projectId])
+
+  useEffect(() => {
+    const fetchWorkspaceMembers = async () => {
+      try {
+        const workspaceName = localStorage.getItem("workspaceName")
+        if (!workspaceName) throw new Error("워크스페이스 정보 없음")
+
+        const members = await getWorkspaceMembers()
+
+        const memberMap = new Map<string, {
+          memberId: number
+          name: string
+          email: string
+        }>()
+
+        members.forEach((m) => {
+          memberMap.set(m.email, {
+            memberId: m.memberId,
+            name: m.name,
+            email: m.email,
+          })
+        })
+
+        setMemberMap(memberMap)
+      } catch (error) {
+        console.error("워크스페이스 멤버 조회 실패:", error)
+      }
+    }
+
+    fetchWorkspaceMembers()
+  }, [])
 
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -209,37 +248,43 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     setShowAddMemberModal(false)
   }
 
-  const handleAddMembers = async (newMembers: AddMember[], role: string) => {
-    try {
-      // API 호출 시뮬레이션
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // 새 멤버 추가 (실제로는 API 응답으로 받은 데이터를 사용)
-      const addedMembers: ProjectMember[] = newMembers.map((member) => ({
-        id: member.id,
-        email: member.email,
-        name: member.name || member.email.split("@")[0],
-        position: "미지정", // 기본 직무
-        role: role === "프로젝트 관리자" ? "프로젝트 관리자" : "일반 멤버",
-        initial: member.initial,
-        color: member.color,
-      }))
-
-      // 중복 멤버 제외하고 추가
-      const existingIds = members.map((m) => m.id)
-      const uniqueNewMembers = addedMembers.filter((m) => !existingIds.includes(m.id))
-
-      setMembers([...members, ...uniqueNewMembers])
-
-      console.log(`${uniqueNewMembers.length}명의 멤버가 추가되었습니다.`)
-      return Promise.resolve()
-    } catch (error) {
-      console.error("멤버 추가 중 오류 발생:", error)
-      throw error
-    }
+  const normalizeRole = (raw: string): "프로젝트 관리자" | "일반 멤버" => {
+    return raw === "MEMBER" ? "일반 멤버" : "프로젝트 관리자"
   }
 
-  if (!mounted) return null
+  const handleAddMembers = async (
+    newMembers: Member[],
+    role: string,
+    memberIdList: number[]
+  ) => {
+    try {
+      const workspaceName = localStorage.getItem("workspaceName")
+      if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
+
+      const positionType = role === "프로젝트 관리자" ? "ADMIN" : "MEMBER"
+
+      await inviteProjectMembers(workspaceName, projectId, {
+        memberIdList,
+        positionType,
+      })
+
+      setMembers([
+        ...members,
+        ...newMembers.map((m) => ({
+          id: m.id,
+          name: m.name,
+          position: "",
+          role: normalizeRole(role),
+          initial: m.initial,
+          color: m.color,
+          email: m.email,
+        })),
+      ])
+
+    } catch (error) {
+      console.error("멤버 초대 실패:", error)
+    }
+  }
 
   const modalContent = (
     <S.ModalOverlay onClick={onClose}>
@@ -336,7 +381,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   return (
     <>
       {ReactDOM.createPortal(modalContent, document.body)}
-      {showAddMemberModal && <AddProjectMemberModal onClose={closeAddMemberModal} onAdd={handleAddMembers} />}
+      {showAddMemberModal && <AddProjectMemberModal onClose={closeAddMemberModal} onAdd={handleAddMembers} memberMap={memberMap} />}
     </>
   )
 }
