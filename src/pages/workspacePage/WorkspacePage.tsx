@@ -48,7 +48,7 @@ export const WorkspacePage = () => {
 
   const handleJoin = () => {
     if (selectedSlug) {
-      navigate(`/workspace/${selectedSlug}`);
+      navigate(`/${selectedSlug}`);
     }
   };
 

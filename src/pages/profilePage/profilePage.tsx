@@ -1,10 +1,10 @@
-import { useState, useRef, type ChangeEvent } from "react"
+import { useState, useRef, type ChangeEvent, useEffect } from "react"
 import * as S from "./profilePage.Style"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import { X } from "lucide-react"
 import { POSITION_OPTIONS, DEPARTMENT_OPTIONS } from "@/constants/profileOptions"
-import { updateProfile } from "@/api/Member"
+import { updateProfile, getMyProfile } from "@/api/Member"
 import { uploadProfileImage } from "@/api/WorkspaceImage"
 
 interface ProfileData {
@@ -19,8 +19,8 @@ interface ProfileData {
 
 export const ProfilePage = () => {
   const [profile, setProfile] = useState<ProfileData>({
-    name: "이태희",
-    email: "tph00300@ajou.co.kr",
+    name: "",
+    email: "",
     organization: "",
     position: "",
     department: "",
@@ -29,6 +29,22 @@ export const ProfilePage = () => {
   })
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const res = await getMyProfile();
+      setProfile({
+        name: res.real_name ?? "",
+        email: res.email ?? "",
+        organization: res.responsibility ?? "",
+        position: res.role ?? "",
+        department: res.department ?? "",
+        profileImage: res.profile_file_url ?? null,
+        profileImageFile: null,
+      });
+    };
+    fetchProfile();
+  }, []);
 
   const handleImageClick = () => {
     fileInputRef.current?.click()
@@ -74,6 +90,7 @@ export const ProfilePage = () => {
 
   const handleSave = async () => {
     console.log("저장 버튼 클릭")
+    console.log("📦 저장할 profile 상태값:", profile); // 여기 추가
 
     try {
       let fileId: number | null = null;
@@ -82,16 +99,31 @@ export const ProfilePage = () => {
       if (profile.profileImageFile) {
         const { fileId: uploadedId } = await uploadProfileImage(profile.profileImageFile, "MEMBER_PROFILE");
         fileId = uploadedId;
+        console.log("업로드된 파일 ID:", fileId);
       }
 
       // 2. 프로필 정보 업데이트
       await updateProfile({
         real_name: profile.name,
         department: profile.department || "",
-        role: "팀원",
-        responsibility: "",
+        role: profile.position || "",
+        responsibility: profile.organization || "",
         profile_file_id: fileId,
       });
+
+      const updated = await getMyProfile();
+      console.log("🔁 업데이트 후 프로필:", updated);
+
+      const payload = {
+        realName: profile.name,
+        department: profile.department || "",
+        role: profile.position || "",
+        responsibility: profile.organization || "",
+        profileFileId: fileId,
+      };
+
+      console.log("📡 전송될 payload:", payload);
+
       alert("프로필 수정 완료!");
     } catch (error) {
       console.error("저장 실패:", error);
@@ -182,7 +214,7 @@ export const ProfilePage = () => {
             <S.FormRow>
               <S.Label>직책</S.Label>
               <S.InputContainer>
-                <S.SelectInput name="position" value={profile.position} onChange={handleInputChange}>
+                <S.SelectInput name="position" value={profile.position ?? ""} onChange={handleInputChange}>
                   {POSITION_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value} disabled={option.disabled}>
                       {option.label}
@@ -217,3 +249,5 @@ export const ProfilePage = () => {
     </S.PageContainer>
   )
 }
+
+
