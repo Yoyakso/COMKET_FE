@@ -2,6 +2,7 @@ import type React from "react"
 import * as S from "./LocalNavBar.Style"
 import { InformationIcon, MemberIcon, PlanIcon, ListIcon, ProfileIcon, KeyIcon } from "@/assets/icons"
 import { NavProfile } from "./NavProfile"
+import { useParams } from "react-router-dom";
 
 export interface NavItem {
   id: string
@@ -30,7 +31,7 @@ export const LocalNavBar = ({
   onNavigateProject,
 }: NavigationBarProps) => {
 
-  const workspaceSlug = localStorage.getItem("workspaceSlug");
+  const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
 
   const sections: NavSection[] = [
     {
@@ -93,3 +94,4 @@ export const LocalNavBar = ({
     </S.NavContainer >
   )
 }
+

@@ -60,7 +60,9 @@ export const WorkspaceInfoPage = () => {
       setImageUrl(target.profileFileUrl);
 
       localStorage.setItem("workspaceId", target.id);
-      localStorage.setItem("workspaceSlug", target.slug);
+      if (!localStorage.getItem("workspaceSlug")) {
+        localStorage.setItem("workspaceSlug", target.slug);
+      }
       localStorage.setItem("workspaceName", target.name);
 
     } catch (err) {
@@ -86,7 +88,7 @@ export const WorkspaceInfoPage = () => {
     setProfileFileId(file_id);
     setFileName(file_name);
   };
-  console.log("프로파일아이디디q", profileFileId);
+
   const handleSave = async () => {
 
     if (!workspaceId || !description.trim()) return;
@@ -103,7 +105,6 @@ export const WorkspaceInfoPage = () => {
       alert("저장되었습니다.");
 
       await fetchWorkspaceInfo();
-      window.location.reload();
 
     } catch (error) {
       console.error("저장 실패:", error);
@@ -215,7 +216,7 @@ export const WorkspaceInfoPage = () => {
       <S.ButtonWrapper>
         <Button variant='neutralOutlined' size='sm' onClick={() => setExitModalOpen(true)}>워크스페이스 나가기</Button>
         <S.SubButtonWrapper>
-          <Button variant='neutralOutlined' size='sm'>취소</Button>
+          <Button variant='neutralOutlined' size='sm' onClick={() => navigate(-1)}>취소</Button>
           <Button
             variant={isValid ? 'tealFilled' : 'neutralFilled'}
             size="sm"
