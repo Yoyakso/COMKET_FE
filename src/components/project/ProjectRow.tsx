@@ -6,6 +6,7 @@ import { ProjectMemberModal } from "./ProjectMemberModal"
 import { RemoveProjectModal } from "./RemoveProjectModal"
 import { deleteProject } from "@/api/Project"
 import { toast } from "react-toastify"
+import { getColorFromString } from "@/utils/avatarColor"
 
 interface ProjectRowProps {
   project: ProjectData
@@ -86,16 +87,9 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
     return Promise.resolve()
   }
 
-  const getUserAvatar = (userName: string) => {
-    const colors = ["#4dabf7", "#748ffc", "#69db7c", "#ffa8a8", "#ffa94d", "#ffe066", "#63e6be", "#ff8787"]
-    const randomIndex = Math.floor(Math.random() * colors.length) // 랜덤 인덱스 생성
-    const color = colors[randomIndex]
-
-    return { color }
-  }
-
-  const ownerAvatar = getUserAvatar(project.owner)
-  const creatorAvatar = getUserAvatar(project.createdBy)
+  const ownerInitial = project.admin.charAt(0).toUpperCase()
+  const avatarColor = getColorFromString(project.admin)
+  const creatorAvatar = getColorFromString(project.createdBy)
 
   const openRemoveModal = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -158,13 +152,13 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
         </S.Cell>
         <S.Cell>
           <S.UserInfo>
-            <S.UserAvatar color={ownerAvatar.color}></S.UserAvatar>
-            <S.UserName>{project.owner}</S.UserName>
+            <S.UserAvatar color={avatarColor}></S.UserAvatar>
+            <S.UserName>{project.admin}</S.UserName>
           </S.UserInfo>
         </S.Cell>
         <S.Cell>
           <S.UserInfo>
-            <S.UserAvatar color={creatorAvatar.color}></S.UserAvatar>
+            <S.UserAvatar color={creatorAvatar}></S.UserAvatar>
             <S.UserName>{project.createdBy}</S.UserName>
           </S.UserInfo>
         </S.Cell>
