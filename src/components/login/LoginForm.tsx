@@ -6,6 +6,7 @@ import { TextInput } from "@/components/common/textInput/TextInput"
 import { CheckBox } from "../common/checkbox/CheckBox"
 import { COMKET2 } from "@/assets/icons"
 import { logIn } from "@api/Oauth"
+import { toast } from "react-toastify"
 
 export const LoginForm = () => {
   const [rememberEmail, setRememberEmail] = useState(false)
@@ -19,14 +20,10 @@ export const LoginForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log("로그인 시도")
-    console.log("이메일:", email)
-    console.log("비밀번호:", password)
-    console.log("이메일 기억하기:", rememberEmail)
 
     try {
       const data = await logIn({ email, password })
-      console.log("로그인 성공:", data)
+      toast.success("로그인 성공!")
       localStorage.setItem("accessToken", data.accessToken)
       localStorage.setItem("email", data.email)
       navigate('/workspace')
