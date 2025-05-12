@@ -14,6 +14,7 @@ import { InviteCodePage } from './pages/InviteCodePage/InviteCodePage';
 import { ProjectPage } from './pages/projectPage/ProjectPage';
 import { AccountInfoPage } from './pages/accountInfoPage/AccountInfoPage';
 import { ProfilePage } from './pages/profilePage/profilePage';
+import { TicketDashboardPage } from './pages/ticketDashboardPage/TicketDashboardPage';
 
 export const Router = createBrowserRouter([
   {
@@ -70,8 +71,6 @@ export const Router = createBrowserRouter([
           <WorkspaceManageLayout>
             <WorkspaceInfoPage />
           </WorkspaceManageLayout>)
-
-
       },
       {
         path: 'project',
@@ -84,7 +83,11 @@ export const Router = createBrowserRouter([
       {
         path: 'account',
         element: <AccountInfoPage />
-      }
+      },
+      {
+        path: "workspace/project/ticketdashboard",
+        element: <TicketDashboardPage />,
+      },
     ],
   },
 ]);
