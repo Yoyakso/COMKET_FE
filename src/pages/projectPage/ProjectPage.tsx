@@ -28,7 +28,7 @@ export const ProjectPage = () => {
       (project.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (project.description || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (project.tag || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (project.owner || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (project.admin || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (project.createdBy || "").toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesFilter = selectedFilters.every((filter) => {
@@ -69,11 +69,11 @@ export const ProjectPage = () => {
         description: project.projectDescription,
         tag: (project.projectTag || []).join(", "),
         visibility: project.isPublic ? "전체 공개" : "멤버 공개",
-        owner: project.adminId,
+        admin: project.adminInfo.name,
+        adminInfo: project.adminInfo,
         createdBy: "알 수 없음",
         createdAt: formatDate(project.createTime),
       }));
-
       setProjects(parsedProjects);
     } catch (error) {
       console.error("프로젝트 조회 실패:", error);

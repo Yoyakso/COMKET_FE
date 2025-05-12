@@ -136,40 +136,6 @@ export interface UpdateProjectDto {
 }
 
 /**
- * 프로젝트 정보 수정 (이름, 설명, 공개 범위, 썸네일 등)
- * @param workspaceName - 현재 워크스페이스의 이름
- * @param projectId - 수정할 프로젝트의 ID
- * @param updateData - 수정할 필드들 (name, description, isPublic)
- */
-export const updateProjectInfo = async (
-  workspaceName: string,
-  projectId: number,
-  updateData: UpdateProjectDto
-) => {
-  try {
-    const token = localStorage.getItem("accessToken");
-    if (!token) throw new Error("로그인 토큰이 없습니다.");
-
-    const response = await axios.patch(
-      `${BASE_URL}/api/v1/${workspaceName}/${projectId}/edit`,
-      updateData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    console.log("프로젝트 수정 성공:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("프로젝트 수정 실패:", error);
-    throw error;
-  }
-};
-
-/**
  * 프로젝트 삭제
  * @param workspaceName 
  * @param projectId 
@@ -227,6 +193,41 @@ export const leaveProject = async (workspaceName: string, projectId: number) => 
 }
 
 /**
+ * 프로젝트 멤버 삭제
+ * @param workspaceName 워크스페이스 이름
+ * @param projectId 프로젝트 ID
+ * @param projectMemberId 삭제할 프로젝트 멤버의 ID (쿼리 파라미터로 전달됨)
+ */
+export const deleteProjectMember = async (
+  workspaceName: string,
+  projectId: number,
+  projectMemberId: number
+) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) throw new Error("로그인 토큰이 없습니다.");
+
+    const response = await axios.delete(
+      `${BASE_URL}/api/v1/${workspaceName}/${projectId}/edit/members`,
+      {
+        params: {
+          projectMemberId,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("멤버 삭제 성공:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("멤버 삭제 실패:", error);
+    throw error;
+  }
+};
+
+/**
  * 프로젝트 멤버 조회
  * @param workspaceName - 워크스페이스 이름
  * @param projectId - 조회할 프로젝트 ID
@@ -258,7 +259,7 @@ export const getProjectMembers = async (workspaceName: string, projectId: number
 };
 
 interface InviteProjectMembersDto {
-  memberIdList: number[]
+  workspaceMemberIdList: number[]
   positionType: "ADMIN" | "MEMBER"
 }
 
@@ -342,3 +343,47 @@ export const editProject = async (
     throw error;
   }
 };
+
+interface EditProjectMemberDto {
+  projectMemberId: number;
+  positionType: "ADMIN" | "MEMBER";
+}
+
+/**
+ * 프로젝트 멤버 관리
+ * @param workspaceName
+ * @param projectId 
+ * @param payload 
+ * @returns 
+ */
+export const editProjectMemberRole = async (
+  workspaceName: string,
+  projectId: number,
+  payload: EditProjectMemberDto
+) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) throw new Error("로그인 토큰이 없습니다.");
+    if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.");
+
+    const encodedWorkspaceName = encodeURIComponent(workspaceName);
+
+    const response = await axios.patch(
+      `${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}/edit/members`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("역할 수정 성공:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("프로젝트 멤버 역할 수정 실패:", error);
+    throw error;
+  }
+};
+

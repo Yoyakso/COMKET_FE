@@ -11,6 +11,7 @@ export interface ProjectData {
   name: string
   description: string
   tags: string[]
+  ownerInfo?: []
   isPublic: boolean
 }
 
