@@ -72,8 +72,8 @@ export const ProjectTable = ({ projects, onViewProject, onDeleteProject }: Proje
         valueB = b.visibility
         break
       case "owner":
-        valueA = a.owner
-        valueB = b.owner
+        valueA = a.admin
+        valueB = b.admin
         break
       case "memberCount":
         valueA = a.memberCount
