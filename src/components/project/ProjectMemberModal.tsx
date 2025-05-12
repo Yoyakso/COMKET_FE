@@ -3,9 +3,10 @@ import ReactDOM from "react-dom"
 import * as S from "./ProjectMemberModal.Style"
 import { Search, ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react"
 import { AddProjectMemberModal } from "./AddProjectMemberModal"
-import { getProjectMembers, editProjectMemberRole } from "@/api/Project"
+import { getProjectMembers, editProjectMemberRole, deleteProjectMember } from "@/api/Project"
 import { getWorkspaceMembers } from "@/api/Member"
 import { getColorFromString } from "@/utils/avatarColor"
+import { toast } from "react-toastify"
 
 export interface ProjectMember {
   id: number
@@ -27,8 +28,8 @@ interface ProjectMemberModalProps {
 export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", onClose, onSave }: ProjectMemberModalProps) => {
   const [searchQuery, setSearchQuery] = useState("")
   const [members, setMembers] = useState<ProjectMember[]>([])
-  const [activeRoleDropdown, setActiveRoleDropdown] = useState<string | null>(null)
-  const [activeActionMenu, setActiveActionMenu] = useState<string | null>(null)
+  const [activeRoleDropdown, setActiveRoleDropdown] = useState<number | null>(null)
+  const [activeActionMenu, setActiveActionMenu] = useState<number | null>(null)
   const [sortField, setSortField] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const [mounted, setIsMounted] = useState(false)
@@ -64,6 +65,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
+
       if (!target.closest(".role-dropdown") && !target.closest(".role-selector")) {
         setActiveRoleDropdown(null)
       }
@@ -89,7 +91,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
         const mappedMembers: ProjectMember[] = data.map((m: any) => ({
           email: m.email,
-          id: m.memberId ?? "unknown",
+          id: m.projectMemberId,
           name: m.name,
           position: "", // 현재 직무는 공백 상태
           role: m.positionType === "ADMIN" ? "프로젝트 관리자" : "일반 멤버", // 프로젝트 관리자인지는 어떻게 알지?
@@ -145,13 +147,13 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     setSearchQuery(e.target.value)
   }
 
-  const toggleRoleDropdown = (memberId: string, e: React.MouseEvent) => {
+  const toggleRoleDropdown = (memberId: number, e: React.MouseEvent) => {
     e.stopPropagation()
     setActiveRoleDropdown(activeRoleDropdown === memberId ? null : memberId)
     setActiveActionMenu(null)
   }
 
-  const toggleActionMenu = (memberId: string, e: React.MouseEvent) => {
+  const toggleActionMenu = (memberId: number, e: React.MouseEvent) => {
     e.stopPropagation()
     setActiveActionMenu(activeActionMenu === memberId ? null : memberId)
     setActiveRoleDropdown(null)
@@ -220,6 +222,8 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     if (valueA > valueB) {
       return sortDirection === "asc" ? 1 : -1
     }
+
+
     return 0
   })
 
@@ -237,7 +241,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
       })
 
       await Promise.all(editPromises)
-      alert("역할 변경이 저장되었습니다.")
+      toast.success("역할 변경이 저장되었습니다.")
       setRoleChanges({})
       if (onSave) await onSave()
       onClose()
@@ -247,13 +251,34 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     }
   }
 
-
   const openAddMemberModal = () => {
     setShowAddMemberModal(true)
   }
 
   const closeAddMemberModal = () => {
     setShowAddMemberModal(false)
+  }
+
+  const handleDeleteMember = async (memberId: number) => {
+    try {
+      const workspaceName = localStorage.getItem("workspaceName")
+      if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
+
+      const response = await deleteProjectMember(workspaceName, projectId, memberId)
+      console.log(" 멤버 제거 API 응답:", response)
+
+      setMembers((prev) => prev.filter((m) => m.id !== memberId))
+      setActiveActionMenu(null)
+
+      toast.success("멤버가 성공적으로 제거되었습니다.")
+    } catch (error: any) {
+      console.error("멤버 제거 실패:", error)
+      if (error.response?.data?.code === "OWNER_EXCEPTION") {
+        alert("소유자는 삭제할 수 없습니다. 소유자 권한 이전이 필요합니다.")
+      } else {
+        alert("멤버 제거 중 오류가 발생했습니다.")
+      }
+    }
   }
 
   const modalContent = (
@@ -288,7 +313,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
             </S.TableHeader>
             <S.TableBody>
               {sortedMembers.map((member) => (
-                <S.Row key={`${member.id}-${member.email}`}>
+                <S.Row key={member.id}>
                   <S.Cell>
                     <S.UserInfo>
                       <S.Avatar $bgColor={member.color}>{member.initial}</S.Avatar>
@@ -299,11 +324,11 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
                   </S.Cell>
                   <S.Cell>{member.position}</S.Cell>
                   <S.Cell>
-                    <S.RoleSelector className="role-selector" onClick={(e) => toggleRoleDropdown(member.id.toString(), e)}>
+                    <S.RoleSelector className="role-selector" onClick={(e) => toggleRoleDropdown(member.id, e)}>
                       {member.role}
                       <ChevronDown size={16} />
 
-                      {activeRoleDropdown === member.id.toString() && (
+                      {activeRoleDropdown === member.id && (
                         <S.RoleDropdown className="role-dropdown">
                           <S.RoleOption
                             $active={member.role === "프로젝트 관리자"}
@@ -323,13 +348,19 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
                   </S.Cell>
                   <S.Cell>
                     <S.ActionButtonContainer>
-                      <S.ActionButton className="action-button" onClick={(e) => toggleActionMenu(member.id.toString(), e)}>
-                        <MoreHorizontal size={18} />
+                      <S.ActionButton
+                        className="action-button"
+                        onClick={(e) => toggleActionMenu(member.id, e)}
+                      >
+                        <MoreHorizontal size={18} style={{ pointerEvents: "none" }} />
                       </S.ActionButton>
 
-                      {activeActionMenu === member.id.toString() && (
+                      {activeActionMenu === member.id && (
                         <S.ActionMenu className="action-menu">
-                          <S.ActionMenuItem $danger>멤버 제거</S.ActionMenuItem>
+                          <S.ActionMenuItem
+                            $danger
+                            onClick={() => handleDeleteMember(member.id)}>
+                            멤버 제거</S.ActionMenuItem>
                         </S.ActionMenu>
                       )}
                     </S.ActionButtonContainer>
@@ -345,7 +376,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
           <S.SaveButton onClick={handleSave}>저장</S.SaveButton>
         </S.ButtonContainer>
       </S.ModalContent>
-    </S.ModalOverlay>
+    </S.ModalOverlay >
   )
 
   return (

@@ -262,20 +262,25 @@ export const ActionMenu = styled.div`
   position: absolute;
   top: 100%;
   right: 0;
-  min-width: 120px;
+  width: 90px;
+  height: 54px;
   background-color: white;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   margin-top: 4px;
   z-index: 10;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
 `
 
-export const ActionMenuItem = styled.div<{ $danger?: boolean }>`
+export const ActionMenuItem = styled.button<{ $danger?: boolean }>`
   padding: 8px 12px;
+  margin: 6px;
+  font-size: 14px;
   cursor: pointer;
   color: ${(props) => (props.$danger ? "#e53935" : "inherit")};
-  
+  background-color: ${color.white};
+  border: none;
   &:hover {
     background-color: ${(props) => (props.$danger ? "#ffebee" : "#f5f5f5")};
   }
