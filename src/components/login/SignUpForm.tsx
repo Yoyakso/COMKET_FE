@@ -4,6 +4,7 @@ import * as S from "./SignUpForm.Style"
 import { COMKET2 } from "@/assets/icons"
 import { CheckBox } from "../common/checkbox/CheckBox"
 import { checkVerificationCode, registerUser, sendVerificationCode } from "@api/Oauth"
+import { toast } from "react-toastify"
 
 export const SignUpForm = () => {
   const location = useLocation();
@@ -64,42 +65,42 @@ export const SignUpForm = () => {
 
   const handleSendVerification = async () => {
     if (!email) {
-      alert("이메일을 입력해 주세요.");
+      toast.error("이메일을 입력해 주세요.");
       return;
     }
 
     try {
       const res = await sendVerificationCode(email);
-      alert("인증번호가 발송되었습니다!");
+      toast.info("인증번호가 발송되었습니다!");
       console.log("이메일 인증 응답:", res);
     } catch (err) {
-      alert("인증번호 발송에 실패했습니다. 이메일 주소를 확인해주세요.");
+      toast.error("인증번호 발송에 실패했습니다. 이메일 주소를 확인해주세요.");
     }
   };
 
   const handleCheckVerification = async () => {
     if (!code) {
-      alert("코드를 입력해 주세요.");
+      toast.error("인증번호를 입력해 주세요.");
     }
 
     try {
-      const res = await checkVerificationCode(email, Number(code));
-      console.log("인증번호 검증", res);
+      await checkVerificationCode(email, Number(code));
+      toast.success("인증번호 검증에 성공했습니다.");
       setIsVerificationChecked(true);
     } catch (err) {
-      alert("인증번호 검증에 실패했습니다. 인증번호를 확인해주세요.")
+      toast.error("인증번호 검증에 실패했습니다. 인증번호를 확인해주세요.")
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (password !== confirmPassword) {
-      alert("비밀번호가 일치하지 않습니다.");
+      toast.error("비밀번호가 일치하지 않습니다.");
       return;
     }
 
     if (!agreements.service || !agreements.privacy) {
-      alert("필수 약관에 동의해주세요.");
+      toast.info("필수 약관에 동의해주세요.");
       return;
     }
 
@@ -111,10 +112,10 @@ export const SignUpForm = () => {
       });
 
       console.log("회원가입 성공:", res);
-      alert("회원가입 완료!");
+      toast.success("회원가입이 완료되었습니다.")
       navigate("/signup/complete");
     } catch (err) {
-      alert("회원가입 실패! 다시 시도해주세요.");
+      toast.error("회원가입에 실패했습니다. 다시 시도해주세요.");
     }
   }
 

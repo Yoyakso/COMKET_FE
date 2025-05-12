@@ -1,25 +1,37 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import * as S from "./LoginForm.Style"
 import { OauthLoginButton } from "./OauthLoginButton"
 import { TextInput } from "@/components/common/textInput/TextInput"
 import { CheckBox } from "../common/checkbox/CheckBox"
 import { COMKET2 } from "@/assets/icons"
+import { logIn } from "@api/Oauth"
+import { toast } from "react-toastify"
 
 export const LoginForm = () => {
   const [rememberEmail, setRememberEmail] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const navigate = useNavigate()
 
   const handleCheckboxChange = () => {
     setRememberEmail(!rememberEmail)
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log("로그인 시도")
-    console.log("이메일:", email)
-    console.log("비밀번호:", password)
-    console.log("이메일 기억하기:", rememberEmail)
+
+    try {
+      const data = await logIn({ email, password })
+      toast.success("로그인 성공!")
+      localStorage.setItem("accessToken", data.accessToken)
+      localStorage.setItem("email", data.email)
+      navigate('/workspace')
+
+    } catch (error) {
+      console.error("로그인 실패:", error)
+      alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.")
+    }
   }
 
   return (

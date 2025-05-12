@@ -69,7 +69,7 @@ export const ProjectPage = () => {
         description: project.projectDescription,
         tag: (project.projectTag || []).join(", "),
         visibility: project.isPublic ? "전체 공개" : "멤버 공개",
-        owner: project.adminId,
+        owner: project.adminId, // 백에서 owner에 대한 정보 전체를 넘겨줄 예정
         createdBy: "알 수 없음",
         createdAt: formatDate(project.createTime),
       }));
