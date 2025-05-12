@@ -89,15 +89,17 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
         const data = await getProjectMembers(workspaceName, projectId)
         console.log("프로젝트 멤버 응답 데이터:", data)
 
-        const mappedMembers: ProjectMember[] = data.map((m: any) => ({
-          email: m.email,
-          id: m.projectMemberId,
-          name: m.name,
-          position: "", // 현재 직무는 공백 상태
-          role: m.positionType === "ADMIN" ? "프로젝트 관리자" : "일반 멤버", // 프로젝트 관리자인지는 어떻게 알지?
-          initial: m.name?.charAt(0) || "?",
-          color: getColorFromString(m.name),
-        }))
+        const mappedMembers: ProjectMember[] = data
+          .filter((m: any) => m.state === "ACTIVE")
+          .map((m: any) => ({
+            email: m.email,
+            id: m.projectMemberId,
+            name: m.name,
+            position: "", // 현재 직무는 공백 상태
+            role: m.positionType === "ADMIN" ? "프로젝트 관리자" : "일반 멤버", // 프로젝트 관리자인지는 어떻게 알지?
+            initial: m.name?.charAt(0) || "?",
+            color: getColorFromString(m.name),
+          }))
 
         setMembers(mappedMembers)
       } catch (error) {

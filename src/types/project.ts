@@ -4,7 +4,8 @@ export interface ProjectData {
   description: string
   tag: string
   visibility: "전체 공개" | "멤버 공개";
-  owner: string
+  admin: string
+  adminInfo: []
   memberCount: number
   createdBy: string
   createdAt: string
