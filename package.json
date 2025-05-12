@@ -18,7 +18,8 @@
     "react-easy-crop": "^5.4.1",
     "react-router-dom": "^6.22.2",
     "react-toastify": "^11.0.5",
-    "styled-components": "^6.1.17"
+    "styled-components": "^6.1.17",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
