@@ -41,7 +41,14 @@ export const Label = styled.label`
   line-height: 48px;
 `;
 
-export const CustomInput = styled.input`
+export const NameInputWrapper = styled.div<{ $isError: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid ${({ $isError }) => ($isError ? color.error : color.textPlaceholder24)};
+`;
+
+export const NameInput = styled.input`
   width: 520px;
   height: 48px;
   padding: 0 12px;
@@ -56,13 +63,13 @@ export const CustomInput = styled.input`
   }
 `;
 
-export const URLInputGroup = styled.div`
+export const InputGroupWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
 `;
 
-export const CustomInputBox = styled.div<{ $isError: boolean }>`
+export const InputBox = styled.div<{ $isError: boolean }>`
   display: flex;
   height: 48px;
   width: 520px;
@@ -81,7 +88,7 @@ export const Prefix = styled.div`
   color: ${color.textPlaceholder70};
 `;
 
-export const StyledInput = styled.input`
+export const CustomInput = styled.input`
   flex: 1;
   padding: 0 12px;
   border: none;

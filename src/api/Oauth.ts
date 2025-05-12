@@ -27,6 +27,36 @@ export const googleLogin = async (code: string) => {
 }
 
 /**
+ * 직접 로그인
+ * @param param
+ * @returns 
+ */
+export const logIn = async ({
+  email,
+  password,
+}: {
+  email: string
+  password: string
+}) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/api/v1/auth/login`, {
+      email,
+      password,
+    })
+
+    const { accessToken } = response.data
+    if (accessToken) {
+      localStorage.setItem("accessToken", accessToken)
+    }
+
+    return response.data
+  } catch (error) {
+    console.error("로그인 실패:", error)
+    throw error
+  }
+}
+
+/**
  * 이메일로 회원가입하기
  * @param email 사용자가 입력한 이메일
  * @param password 사용자가 입력한 비밀번호

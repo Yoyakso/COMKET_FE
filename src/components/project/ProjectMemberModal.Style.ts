@@ -52,6 +52,7 @@ export const HeaderSection = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
+  margin-left: 20px;
 `
 
 export const MemberCount = styled.div`
@@ -115,7 +116,7 @@ export const AddButton = styled.button`
 `
 
 export const TableContainer = styled.div`
-  border: 1px solid #e0e0e0;
+  border-bottom: 1px solid #CFD5E4;
   border-radius: 8px;
   margin-bottom: 24px;
   flex: 1;
@@ -127,7 +128,7 @@ export const Table = styled.table`
 `
 
 export const TableHeader = styled.thead`
-  background-color: #f5f5f5;
+  background-color: ${color.white}
 `
 
 export const HeaderRow = styled.tr`
@@ -139,7 +140,7 @@ export const HeaderCell = styled.th`
   text-align: left;
   font-size: 14px;
   font-weight: 600;
-  color: #616161;
+  color: ${color.textHeading}
   cursor: pointer;
   
   &:last-child {
@@ -172,7 +173,7 @@ export const Row = styled.tr`
 export const Cell = styled.td`
   padding: 12px 16px;
   font-size: 14px;
-  color: #212529;
+  color: ${color.textPrimary};
   vertical-align: middle;
   
   &:last-child {
@@ -209,12 +210,12 @@ export const RoleSelector = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  border: 1px solid #e0e0e0;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
   
   &:hover {
-    background-color: #f5f5f5;
+    background-color: #F7F8FA;
   }
 `
 
@@ -261,20 +262,25 @@ export const ActionMenu = styled.div`
   position: absolute;
   top: 100%;
   right: 0;
-  min-width: 120px;
+  width: 90px;
+  height: 54px;
   background-color: white;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   margin-top: 4px;
   z-index: 10;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
 `
 
-export const ActionMenuItem = styled.div<{ $danger?: boolean }>`
+export const ActionMenuItem = styled.button<{ $danger?: boolean }>`
   padding: 8px 12px;
+  margin: 6px;
+  font-size: 14px;
   cursor: pointer;
   color: ${(props) => (props.$danger ? "#e53935" : "inherit")};
-  
+  background-color: ${color.white};
+  border: none;
   &:hover {
     background-color: ${(props) => (props.$danger ? "#ffebee" : "#f5f5f5")};
   }

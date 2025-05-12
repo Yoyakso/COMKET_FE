@@ -130,7 +130,7 @@ export const InviteCodePage = () => {
       </S.FormSection>
 
       <S.ButtonWrapper>
-        <Button variant="blackOutlined" size="lg">
+        <Button size="lg" variant="neutralOutlined" onClick={() => navigate(-1)}>
           이전
         </Button>
         <Button
