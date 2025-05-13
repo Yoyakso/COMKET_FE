@@ -1,18 +1,17 @@
 import { ChevronDown } from "@/assets/icons"
 import * as S from "./WorkspaceSelector.Style"
-import { fetchMyWorkspaces } from "@/api/Workspace";
+import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 export const WorkspaceSelector = () => {
-
-  const workspaceName = localStorage.getItem("workspaceName");
-  const workspaceImageUrl = localStorage.getItem("workspaceImageUrl");
+  const workspaceName = useWorkspaceStore((s) => s.workspaceName)
+  const profileFileUrl = useWorkspaceStore((s) => s.profileFileUrl)
 
   return (
     <S.Container>
       <S.LogoBox>
-        {workspaceImageUrl ? (
+        {profileFileUrl ? (
           <img
-            src={workspaceImageUrl}
+            src={profileFileUrl}
             alt="워크스페이스 이미지"
             style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'cover' }}
           />

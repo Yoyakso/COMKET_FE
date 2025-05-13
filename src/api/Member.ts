@@ -7,11 +7,9 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
  * 워크스페이스 멤버 전체 조회
  *
  */
-export const getWorkspaceMembers = async () => {
+export const getWorkspaceMembers = async (workspaceId) => {
   try {
     const token = localStorage.getItem("accessToken");
-    const workspaceId = localStorage.getItem("workspaceId");
-
     if (!token) throw new Error("로그인 토큰이 없습니다.");
     if (!workspaceId) throw new Error("워크스페이스 정보가 없습니다.");
 
@@ -85,8 +83,9 @@ export const getMyProfile = async () => {
 
 /**
  * 워크스페이스 멤버 삭제
- * @param workspaceId 
- * @param targetMemberEmail 
+ * @param workspaceId 해당 워크스페이스 Id
+ * @param targetMemberEmail 삭제하고자 하는 사용자의 email
+ * @returns
  */
 export const deleteWorkspaceMember = async (
   workspaceId: number,
@@ -94,6 +93,8 @@ export const deleteWorkspaceMember = async (
 ) => {
   try {
     const token = localStorage.getItem("accessToken")
+    if (!token) throw new Error("로그인 토큰이 없습니다.");
+    if (!workspaceId) throw new Error("워크스페이스 정보가 없습니다.");
 
     await axios.delete(`${BASE_URL}/api/v1/workspaces/${workspaceId}/members`, {
       params: { targetMemberEmail },
