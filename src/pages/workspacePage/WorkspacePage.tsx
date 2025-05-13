@@ -29,6 +29,17 @@ export const WorkspacePage = () => {
           label: ws.name,
           value: ws.slug,
         }));
+        const slugSet = new Set();
+        const duplicated = [];
+
+        formatted.forEach((opt) => {
+          if (slugSet.has(opt.value)) {
+            duplicated.push(opt.value);
+          }
+          slugSet.add(opt.value);
+        });
+
+        console.log("🚨 duplicated slugs:", duplicated);
 
         setOptions(formatted);
         if (formatted.length > 0) {

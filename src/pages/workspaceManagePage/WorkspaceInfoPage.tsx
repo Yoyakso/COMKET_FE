@@ -91,7 +91,6 @@ export const WorkspaceInfoPage = () => {
       });
       toast.success("저장되었습니다.");
       await fetchWorkspaceInfo();
-      window.location.reload();
 
     } catch (error) {
       toast.error("저장 실패하였습니다.");
@@ -195,7 +194,7 @@ export const WorkspaceInfoPage = () => {
       <S.ButtonWrapper>
         <Button variant='neutralOutlined' size='sm' onClick={() => setExitModalOpen(true)}>워크스페이스 나가기</Button>
         <S.SubButtonWrapper>
-          <Button variant='neutralOutlined' size='sm'>취소</Button>
+          <Button variant='neutralOutlined' size='sm' onClick={() => navigate(-1)}>취소</Button>
           <Button
             variant={isValid ? 'tealFilled' : 'neutralFilled'}
             size="sm"
