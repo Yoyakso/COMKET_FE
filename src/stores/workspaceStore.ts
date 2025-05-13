@@ -6,7 +6,7 @@ interface WorkspaceState {
   workspaceName: string
   workspaceSlug: string
   workspaceId: number | null
-  profileFileUrl: string // 현재 저장된 프로필 이미지 url 값
+  profileFileUrl: string
 
   // 값을 설정(업데이트)하는 함수
   setWorkspaceStore: (args: {
@@ -62,6 +62,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         workspaceName: state.workspaceName,
         workspaceSlug: state.workspaceSlug,
         workspaceId: state.workspaceId,
+        profileFileUrl: state.profileFileUrl,
       }),
     }
   )

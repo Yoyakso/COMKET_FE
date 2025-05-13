@@ -17,7 +17,6 @@ import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { toast } from 'react-toastify';
 
 export const WorkspaceInfoPage = () => {
-
   const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
   const workspaceId = useWorkspaceStore((s) => s.workspaceId);
   const workspaceName = useWorkspaceStore((s) => s.workspaceName);
@@ -38,19 +37,16 @@ export const WorkspaceInfoPage = () => {
 
   const fetchWorkspaceInfo = async () => {
     try {
-
       const res = await fetchMyWorkspaces();
       const target = res.find((ws: any) => ws.slug === workspaceSlug);
 
       if (!target) {
-        alert("해당 주소의 워크스페이스를 찾을 수 없습니다.");
+        toast.error("해당 주소의 워크스페이스를 찾을 수 없습니다.");
         return;
       }
-
       setWorkspace(target);
       setDescription(target.description);
       setVisibility(target.isPublic ? 'public' : 'private')
-      console.log(target)
       localStorage.setItem("workspaceSlug", target.slug);
 
       setWorkspaceStore({
@@ -59,14 +55,12 @@ export const WorkspaceInfoPage = () => {
         workspaceId: target.id,
         profileFileUrl: target.profileFileUrl
       })
-
     } catch (err) {
       console.error("워크스페이스 정보 불러오기 실패:", err);
     }
   };
 
   useEffect(() => {
-
     if (workspaceSlug) fetchWorkspaceInfo();
   }, [workspaceSlug]);
 
@@ -95,9 +89,7 @@ export const WorkspaceInfoPage = () => {
         profile_file_id: profileFileId !== null ? Number(profileFileId) : null,
         state: "ACTIVE",
       });
-
       toast.success("저장되었습니다.");
-
       await fetchWorkspaceInfo();
       window.location.reload();
 
@@ -109,15 +101,12 @@ export const WorkspaceInfoPage = () => {
   const handleDeleteWorkspace = async () => {
     try {
       if (!workspaceId) return;
-
       await deleteWorkspace(workspaceId.toString());
       toast.success('워크스페이스가 삭제되었습니다.');
 
       useWorkspaceStore.getState().clearWorkspace()
-
       setDeleteModalOpen(false);
-
-      navigate('/workspace'); // 삭제 후 워크스페이스 목록 페이지로 이동
+      navigate('/workspace');
     } catch (error: any) {
       console.error('삭제 실패:', error);
       if (error?.response?.status === 403) {
@@ -148,7 +137,6 @@ export const WorkspaceInfoPage = () => {
             로딩 중...
           </S.PlainText>
         )}
-
       </S.InfoGroup>
 
       <S.InfoGroup>
@@ -259,4 +247,3 @@ export const WorkspaceInfoPage = () => {
 function long(profileFileId: string): string {
   throw new Error('Function not implemented.');
 }
-
