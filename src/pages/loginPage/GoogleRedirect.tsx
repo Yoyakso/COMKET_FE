@@ -6,7 +6,6 @@ import * as S from "./GoogleRedirect.Style"
 export const GoogleRedirect = () => {
   const navigate = useNavigate()
   const code = new URL(window.location.href).searchParams.get("code")
-  console.log("구글 리디렉션 코드:", code)
 
   useEffect(() => {
     if (!code) return
@@ -21,7 +20,6 @@ export const GoogleRedirect = () => {
           localStorage.setItem("accessToken", result.accessToken)
           localStorage.setItem("nickName", result.name)
           localStorage.setItem("email", result.email)
-          alert("로그인 성공!")
           navigate("/workspace")
         } else if (result.email) {
           // 신규 유저
@@ -61,7 +59,6 @@ export const GoogleRedirect = () => {
               break
           }
         } else {
-          alert("네트워크 오류가 발생했습니다. 다시 시도해주세요.")
           navigate("/login")
         }
       }

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from 'react';
 import * as S from './WorkspaceInfoPage.Style';
 import { Button } from '@/components/common/button/Button';
 import { Radio } from '@/components/common/radio/Radio';
@@ -12,18 +11,21 @@ import { useParams } from 'react-router-dom';
 import { updateWorkspace } from '@/api/WorkspaceInfo';
 import { deleteWorkspace } from '@/api/DeleteWorkspace';
 import { ExitWorkspace } from '@/api/ExitWorkspace';
+import { fetchMyWorkspaces } from '@api/Workspace';
 import { useNavigate } from 'react-router-dom';
-
-
+import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { toast } from 'react-toastify';
 
 export const WorkspaceInfoPage = () => {
 
   const { workspaceSlug } = useParams<{ workspaceSlug: string }>();
-  const [workspaceId, setWorkspaceId] = useState<string>(''); // id 저장용
+  const workspaceId = useWorkspaceStore((s) => s.workspaceId);
+  const workspaceName = useWorkspaceStore((s) => s.workspaceName);
+  const profileFileUrl = useWorkspaceStore((s) => s.profileFileUrl);
+  const setProfileFileUrl = useWorkspaceStore((s) => s.setProfileFileUrl);
   const [workspace, setWorkspace] = useState<any>(null);
   const [description, setDescription] = useState('');
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [profileFileId, setProfileFileId] = useState<number | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -32,36 +34,31 @@ export const WorkspaceInfoPage = () => {
 
   const isValid = description.trim() !== '';
   const navigate = useNavigate();
-
+  const { setWorkspaceStore } = useWorkspaceStore.getState()
 
   const fetchWorkspaceInfo = async () => {
     try {
 
-      const token = localStorage.getItem("accessToken");
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/workspaces?includePublic=false`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const all = res.data;
-      const target = all.find((ws: any) => ws.slug === workspaceSlug);
+      const res = await fetchMyWorkspaces();
+      const target = res.find((ws: any) => ws.slug === workspaceSlug);
 
       if (!target) {
-        alert("해당 슬러그의 워크스페이스를 찾을 수 없습니다.");
+        alert("해당 주소의 워크스페이스를 찾을 수 없습니다.");
         return;
       }
 
       setWorkspace(target);
-      setWorkspaceId(target.id);
       setDescription(target.description);
-      setVisibility(target.isPublic ? 'public' : 'private');
-      setImageUrl(target.profileFileUrl);
-
-      localStorage.setItem("workspaceId", target.id);
+      setVisibility(target.isPublic ? 'public' : 'private')
+      console.log(target)
       localStorage.setItem("workspaceSlug", target.slug);
-      localStorage.setItem("workspaceName", target.name);
+
+      setWorkspaceStore({
+        workspaceName: target.name,
+        workspaceSlug: target.slug,
+        workspaceId: target.id,
+        profileFileUrl: target.profileFileUrl
+      })
 
     } catch (err) {
       console.error("워크스페이스 정보 불러오기 실패:", err);
@@ -82,17 +79,16 @@ export const WorkspaceInfoPage = () => {
     file_url: string;
     file_name: string;
   }) => {
-    setImageUrl(file_url);
     setProfileFileId(file_id);
     setFileName(file_name);
+    setProfileFileUrl(file_url);
   };
-  console.log("프로파일아이디디q", profileFileId);
+
   const handleSave = async () => {
 
     if (!workspaceId || !description.trim()) return;
     try {
-      const token = localStorage.getItem("accessToken");
-      await updateWorkspace(workspaceId, {
+      await updateWorkspace(workspaceId.toString(), {
         name: workspace?.name,
         description,
         is_public: visibility === "public",
@@ -100,14 +96,13 @@ export const WorkspaceInfoPage = () => {
         state: "ACTIVE",
       });
 
-      alert("저장되었습니다.");
+      toast.success("저장되었습니다.");
 
       await fetchWorkspaceInfo();
       window.location.reload();
 
     } catch (error) {
-      console.error("저장 실패:", error);
-      alert("저장 실패");
+      toast.error("저장 실패하였습니다.");
     }
   };
 
@@ -115,12 +110,10 @@ export const WorkspaceInfoPage = () => {
     try {
       if (!workspaceId) return;
 
-      await deleteWorkspace(workspaceId);
-      alert('워크스페이스가 삭제되었습니다.');
+      await deleteWorkspace(workspaceId.toString());
+      toast.success('워크스페이스가 삭제되었습니다.');
 
-      localStorage.removeItem('workspaceId');
-      localStorage.removeItem('workspaceSlug');
-      localStorage.removeItem('workspaceName');
+      useWorkspaceStore.getState().clearWorkspace()
 
       setDeleteModalOpen(false);
 
@@ -128,13 +121,12 @@ export const WorkspaceInfoPage = () => {
     } catch (error: any) {
       console.error('삭제 실패:', error);
       if (error?.response?.status === 403) {
-        alert('삭제 권한이 없습니다. OWNER만 삭제할 수 있습니다.');
+        toast.error('삭제 권한이 없습니다. OWNER만 삭제할 수 있습니다.');
       } else {
-        alert('워크스페이스 삭제에 실패했습니다.');
+        toast.error('워크스페이스 삭제에 실패했습니다.');
       }
     }
   };
-
 
   return (
     <S.Container>
@@ -142,7 +134,7 @@ export const WorkspaceInfoPage = () => {
 
       <S.InfoGroup>
         <S.Label>워크스페이스 이름</S.Label>
-        <S.PlainText>{workspace?.name}</S.PlainText>
+        <S.PlainText>{workspaceName}</S.PlainText>
       </S.InfoGroup>
 
       <S.InfoGroup>
@@ -172,7 +164,7 @@ export const WorkspaceInfoPage = () => {
         <S.Label>대표 이미지</S.Label>
         <S.PhotoWrapper>
           <S.Photo>
-            {imageUrl ? <img src={imageUrl} alt="대표 이미지" width={120} height={120} /> : <S.ImagePlaceholder><DropdownIcon /></S.ImagePlaceholder>}
+            {profileFileUrl ? <img src={profileFileUrl} alt="대표 이미지" width={120} height={120} /> : <S.ImagePlaceholder><DropdownIcon /></S.ImagePlaceholder>}
           </S.Photo>
           <S.PhotoUploader>
             <Button onClick={() => setModalOpen(true)} variant="neutralOutlined" size="xs" style={{ width: '120px' }}>
@@ -241,7 +233,9 @@ export const WorkspaceInfoPage = () => {
                 throw new Error('이메일 또는 워크스페이스 ID가 없습니다.');
               }
 
-              await ExitWorkspace({ workspaceId, email }); // ← API 요청
+              await ExitWorkspace({
+                workspaceId: workspaceId.toString(), email
+              }); // ← API 요청
 
               localStorage.removeItem('workspaceId');
               localStorage.removeItem('workspaceSlug');

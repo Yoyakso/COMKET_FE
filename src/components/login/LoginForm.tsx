@@ -18,6 +18,7 @@ export const LoginForm = () => {
     setRememberEmail(!rememberEmail)
   }
 
+  // 현재 구글 로그인 버튼을 누른 경우에도 logIn요청 감 수정 필요
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -30,7 +31,7 @@ export const LoginForm = () => {
 
     } catch (error) {
       console.error("로그인 실패:", error)
-      alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.")
+      throw error
     }
   }
 
