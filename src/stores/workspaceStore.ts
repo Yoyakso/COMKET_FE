@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 interface WorkspaceState {
   // 전역으로 관리할 값들
@@ -23,34 +24,45 @@ interface WorkspaceState {
 }
 
 export const useWorkspaceStore = create<WorkspaceState>()(
-  (set) => ({
-    // 초기값
-    workspaceName: "",
-    workspaceSlug: "",
-    workspaceId: null,
-    profileFileUrl: "",
+  persist(
+    (set) => ({
+      // 초기값
+      workspaceName: "",
+      workspaceSlug: "",
+      workspaceId: null,
+      profileFileUrl: "",
 
-    // 전체 상태를 한 번에 설정할 수 있는 함수
-    setWorkspaceStore: ({ workspaceName, workspaceSlug, workspaceId, profileFileUrl }) =>
-      set({
-        workspaceName,
-        workspaceSlug,
-        workspaceId,
-        profileFileUrl
+      // 전체 상태를 한 번에 설정할 수 있는 함수
+      setWorkspaceStore: ({ workspaceName, workspaceSlug, workspaceId, profileFileUrl }) =>
+        set({
+          workspaceName,
+          workspaceSlug,
+          workspaceId,
+          profileFileUrl
+        }),
+
+      // 전체 상태를 초기화하는 함수
+      clearWorkspace: () =>
+        set({
+          workspaceName: "",
+          workspaceSlug: "",
+          workspaceId: null,
+          profileFileUrl: ""
+        }),
+
+      // 이미지 URL만 개별적으로 업데이트할 수 있는 함수
+      setProfileFileUrl: (url: string) =>
+        set({
+          profileFileUrl: url
+        })
+    }),
+    {
+      name: "workspace-storage",
+      partialize: (state) => ({
+        workspaceName: state.workspaceName,
+        workspaceSlug: state.workspaceSlug,
+        workspaceId: state.workspaceId,
       }),
-
-    // 전체 상태를 초기화하는 함수
-    clearWorkspace: () =>
-      set({
-        workspaceName: "",
-        workspaceSlug: "",
-        workspaceId: null,
-        profileFileUrl: ""
-      }),
-
-    // 이미지 URL만 개별적으로 업데이트할 수 있는 함수
-    setProfileFileUrl: (url: string) =>
-      set({
-        profileFileUrl: url
-      })
-  }))
+    }
+  )
+)
