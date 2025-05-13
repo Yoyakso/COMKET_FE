@@ -1,7 +1,8 @@
 import * as S from "./PriorityBadge.Style";
+import type { Priority } from "@components/ticket/TicketFilter";
 
 interface PriorityBadgeProps {
-    priority: "HIGH" | "MEDIUM" | "LOW";
+    priority: Priority;
 }
 
 export const PriorityBadge = ({ priority }: PriorityBadgeProps) => {

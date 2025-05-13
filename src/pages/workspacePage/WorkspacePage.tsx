@@ -11,7 +11,7 @@ export const WorkspacePage = () => {
 
   const [options, setOptions] = useState<DropdownOption[]>([]);
   const [selectedSlug, setSelectedSlug] = useState<string>("");
-  const [selectedId, setSelectedId] = useState<string>("");
+
 
 
   interface Workspace {

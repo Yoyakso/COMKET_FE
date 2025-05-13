@@ -1,30 +1,37 @@
 import styled from "styled-components";
 import { color } from "@/styles/color";
-
 export const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 32px 40px;
-  background-color: #f9fafb;
+  padding: 24px;
 `;
 
 export const Header = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 `;
 
-export const Title = styled.h2`
-  font-size: 24px;
-  font-weight: bold;
-  color: ${color.textHeading};
+export const TitleGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  gap: 5px;
+
 `;
 
+export const Title = styled.h1`
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 27px;
+  color: ${color.textPrimary};
+
+`
 export const Description = styled.p`
   font-size: 14px;
-  color: ${color.textSecondary};
-  line-height: 1.5;
+  font-weight: 400;
+  line-height: 22px;
+  color:${color.textTertiary};
+
+
 `;
 
 export const Actions = styled.div`
@@ -33,22 +40,40 @@ export const Actions = styled.div`
   align-items: center;
 `;
 
-export const FilterBox = styled.div`
-  font-size: 14px;
-  color: ${color.textLabel};
+export const ViewTabs = styled.div`
+  display: flex;
+  gap: 8px;
 `;
 
-export const CreateButton = styled.button`
-  background-color: ${color.primary};
-  color: #fff;
+export const ViewTabBar = styled.div`
+  display: flex;
+  height: 48px;
+  gap: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-left: 24px;
+`;
+
+export const ViewTab = styled.button<{ $active?: boolean }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 140px;
+  gap: 2px;
+  padding: 0px 16px ;
   font-size: 14px;
-  padding: 8px 16px;
-  border-radius: 8px;
   font-weight: 500;
-  cursor: pointer;
+  color: ${color.textHeading};
   border: none;
+  background: none;
+  border-bottom: 2px solid ${({ $active }) => ($active ? `${color.teal500}` : "transparent")};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    stroke-width: 1.8;
+  }
 
   &:hover {
-    background-color: ${color.primaryHover};
+    color: ${color.teal500};
   }
 `;

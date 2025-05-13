@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { color } from "@/styles/color";
 
 const getStatusStyle = (status: string) => {
   switch (status) {

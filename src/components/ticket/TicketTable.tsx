@@ -1,14 +1,18 @@
-// src/pages/TicketDashboard/components/TicketTable.tsx
-import { MOCK_TICKETS } from "@/constants/ticketData";
 import { TicketRow } from "./TicketRow";
 import * as S from "./TicketTable.Style";
+import { Ticket } from "@/types/ticket";
 
-export const TicketTable = () => {
+interface TicketTableProps {
+    tickets: Ticket[];
+}
+
+export const TicketTable = ({ tickets }: TicketTableProps) => {
     return (
         <S.TableWrapper>
             <S.Table>
                 <S.TableHeader>
                     <S.HeaderRow>
+                        <S.HeaderCell></S.HeaderCell>
                         <S.HeaderCell></S.HeaderCell>
                         <S.HeaderCell>티켓 ID</S.HeaderCell>
                         <S.HeaderCell>티켓</S.HeaderCell>
@@ -24,7 +28,7 @@ export const TicketTable = () => {
                 </S.TableHeader>
 
                 <S.TableBody>
-                    {MOCK_TICKETS.map((ticket) => (
+                    {tickets.map((ticket) => (
                         <TicketRow key={ticket.id} ticket={ticket} />
                     ))}
                 </S.TableBody>

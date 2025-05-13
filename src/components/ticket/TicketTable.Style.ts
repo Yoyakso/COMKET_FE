@@ -7,7 +7,9 @@ export const TableWrapper = styled.div`
   overflow-x: auto;
   background-color: #ffffff;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  border-top: 1px solid ${color.textPlaceholder24};
+  border-bottom: 1px solid ${color.textPlaceholder24};
+
 `;
 
 export const Table = styled.table`
@@ -17,7 +19,7 @@ export const Table = styled.table`
 `;
 
 export const TableHeader = styled.thead`
-  background-color: #f8f9fa;
+  background-color: ${color.white};
 `;
 
 export const HeaderRow = styled.tr`
