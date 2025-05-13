@@ -1,6 +1,10 @@
 import {create} from 'zustand';
 import type {Priority, Status, TicketType} from '@/types/filter';
+import type {Ticket} from '@/types/ticket';
+import { MOCK_TICKETS } from '@/constants/ticketData';
 
+
+//필터-> useState로 관리하는게 좋을듯
 interface TicketFilterStore {
     selectedPriorities: Priority[];
     selectedStatuses: Status[];
@@ -45,4 +49,38 @@ export const TicketFilterStore = create<TicketFilterStore>((set, get) => ({
     selectedStatuses: [],
     selectedTypes: []
   }),
+}));
+
+
+//우선순위 변경 드롭다운
+interface TicketDropdownStore {
+  tickets: Ticket[];
+  openDropdown: { ticketId: number; field: "priority" | "status" } | null;
+  setOpenDropdown: (
+    dropdown: { ticketId: number; field: "priority" | "status" } | null
+  ) => void;
+  updateTicketPriority: (ticketId: number, newPriority: Priority) => void;
+  updateTicketStatus: (ticketId: number, newStatus: Status) => void;
+}
+
+export const useTicketStore = create<TicketDropdownStore>((set) => ({
+  tickets: MOCK_TICKETS,
+
+  openDropdown: null,
+
+  setOpenDropdown: (dropdown) => set({ openDropdown: dropdown }),
+  
+  updateTicketPriority: (ticketId, newPriority) =>
+    set((state) => ({
+      tickets: state.tickets.map((t) =>
+        t.id === ticketId ? { ...t, priority: newPriority } : t
+      ),
+    })),
+
+  updateTicketStatus: (ticketId, newStatus) =>
+    set((state) => ({
+      tickets: state.tickets.map((t) =>
+        t.id === ticketId ? { ...t, status: newStatus } : t
+      ),
+    })),
 }));

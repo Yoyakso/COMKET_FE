@@ -1,7 +1,7 @@
 import * as S from "./TicketListView.Style";
 import { TicketTable } from "@/components/ticket/TicketTable";
 import { TicketToolbar } from "@/components/ticket/TicketToolbar";
-import { TicketFilterStore } from "../ticket/TicketFilter";
+import { TicketFilterStore } from "../ticket/Ticket";
 import { MOCK_TICKETS } from "@/constants/ticketData";
 
 

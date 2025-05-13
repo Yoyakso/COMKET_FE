@@ -15,7 +15,7 @@ export const TableCell = styled.td`
   color: ${color.textPrimary};
   font-size: 14px;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: visible;
   text-overflow: ellipsis;
   vertical-align: middle;
 `;

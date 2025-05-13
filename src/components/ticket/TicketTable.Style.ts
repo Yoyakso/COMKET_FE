@@ -4,6 +4,7 @@ import { color } from "@/styles/color";
 
 export const TableWrapper = styled.div`
   width: 100%;
+  height: 100%;
   overflow-x: auto;
   background-color: #ffffff;
   border-radius: 6px;
@@ -40,3 +41,16 @@ export const HeaderCell = styled.th`
 `;
 
 export const TableBody = styled.tbody``;
+
+
+export const SortableHeader = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+
+  svg {
+    transition: transform 0.2s ease;
+  }
+
+`;

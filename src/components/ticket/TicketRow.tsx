@@ -5,8 +5,12 @@ import { PriorityBadge } from "./PriorityBadge";
 import { StatusBadge } from "./StatusBadge";
 import { Ticket } from "@/types/ticket";
 import { CheckBox } from "../common/checkbox/CheckBox";
-import { ChevronRight, ChevronDown, MessageSquare, CornerDownRight } from 'lucide-react';
+import { ChevronRight, ChevronDown, MessageSquare } from 'lucide-react';
 import { TypeBadge } from "./TypeBadge";
+import { useTicketStore } from "@/components/ticket/Ticket";
+import { PriorityDropdown } from "./PriorityDropdown";
+import { StatusDropdown } from "./StatusDropdown";
+
 
 interface TicketRowProps {
     ticket: Ticket;
@@ -18,6 +22,14 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
 
     const toggleExpand = () => setIsExpanded(prev => !prev);
     const hasSubtickets = ticket.subtickets?.length > 0;
+
+    const {
+        // openDropdown, // Removed as it does not exist on TicketDropdownStore
+        // setOpenDropdown, // Removed as it does not exist on TicketDropdownStore
+        updateTicketPriority,
+    } = useTicketStore();
+
+    const isPriorityOpen = false; // Adjust logic if necessary
 
     return (
         <>
@@ -52,8 +64,12 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
                 </S.TableCell>
                 <S.TableCell><TypeBadge type={ticket.type} /></S.TableCell>
                 <S.TableCell><AvatarWithName user={ticket.assignee} /></S.TableCell>
-                <S.TableCell><PriorityBadge priority={ticket.priority} /></S.TableCell>
-                <S.TableCell><StatusBadge status={ticket.status} /></S.TableCell>
+                <S.TableCell>
+                    <PriorityDropdown
+                        ticketId={ticket.id}
+                    />
+                </S.TableCell>
+                <S.TableCell><StatusDropdown ticketId={ticket.id} /></S.TableCell>
                 <S.TableCell>{ticket.startDate}</S.TableCell>
                 <S.TableCell>{ticket.endDate}</S.TableCell>
                 <S.TableCell>{ticket.subticketCount}</S.TableCell>

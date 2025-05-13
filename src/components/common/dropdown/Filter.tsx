@@ -6,7 +6,7 @@ import * as S from "@/components/common/dropdown/Filter.Style";
 import { useState } from "react";
 import { PRIORITY, STATUS, TYPE } from "@/constants/filterData";
 import type { Priority, Status, TicketType } from "@/types/filter";
-import { TicketFilterStore } from "@/components/ticket/TicketFilter";
+import { TicketFilterStore } from "@/components/ticket/Ticket";
 
 export const Filter = () => {
 

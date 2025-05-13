@@ -1,5 +1,5 @@
 import * as S from "./PriorityBadge.Style";
-import type { Priority } from "@components/ticket/TicketFilter";
+import type { Priority } from "@/types/filter";
 
 interface PriorityBadgeProps {
     priority: Priority;
