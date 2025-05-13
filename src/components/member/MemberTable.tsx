@@ -33,11 +33,16 @@ export const MemberTable = ({ members, onUpdateMember }: MemberTableProps) => {
   }
 
   const sortedMembers = [...members].sort((a, b) => {
-    if (!sortField) return 0
+    const isDeletedA = a.state === "DELETED";
+    const isDeletedB = b.state === "DELETED";
 
-    let valueA: string = ""
-    let valueB: string = ""
+    if (isDeletedA && !isDeletedB) return 1;
+    if (!isDeletedA && isDeletedB) return -1;
 
+    if (!sortField) return 0;
+
+    let valueA = "";
+    let valueB = "";
     switch (sortField) {
       case "name":
         valueA = a.name
@@ -52,9 +57,9 @@ export const MemberTable = ({ members, onUpdateMember }: MemberTableProps) => {
         valueB = b.positionType
         break
       case "state":
-        valueA = a.state
-        valueB = b.state
-        break
+        valueA = a.state;
+        valueB = b.state;
+        break;
       case "createdAt":
         valueA = a.createdAt
         valueB = b.createdAt

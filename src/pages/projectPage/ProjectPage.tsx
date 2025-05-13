@@ -147,7 +147,6 @@ export const ProjectPage = () => {
             : p
         )
       );
-
       setViewingProject(null);
     } catch (err) {
       console.error("프로젝트 수정 실패:", err);
@@ -179,26 +178,16 @@ export const ProjectPage = () => {
             onCreateProject={handleCreateProject}
             onFilter={handleFilter}
           />
-
           {!hasProjects ? (
             <EmptyProject onCreateProject={handleCreateProject} />
-          ) : !hasSearchResults ? (
-            <S.NoResultsContainer>
-              <S.NoResultsText>
-                검색 결과가 없습니다.<br />
-                입력한 검색어를 다시 한 번 확인해 주세요.
-              </S.NoResultsText>
-            </S.NoResultsContainer>
-          ) : (
+          ) : hasSearchResults ? (
             <ProjectTable
               projects={filteredProjects}
               onViewProject={handleViewProject}
               onDeleteProject={handleDeleteProject}
             />
-          )}
+          ) : null}
         </S.Content>
-
-
       </S.MainContainer>
 
       {showCreateModal && <CreateProjectModal onClose={handleCloseCreateModal} onConfirm={handleCreateProjectSubmit} />}

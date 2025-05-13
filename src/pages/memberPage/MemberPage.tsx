@@ -6,6 +6,7 @@ import { MemberTable } from "@/components/member/MemberTable";
 import { MemberData } from "@/types/member";
 import * as S from "./MemberPage.Style";
 import { getWorkspaceMembers } from "@/api/Member";
+import { useWorkspaceStore } from "@/stores/workspaceStore";
 
 export const MemberPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
@@ -13,17 +14,19 @@ export const MemberPage = () => {
   const [filteredMembers, setFilteredMembers] = useState<MemberData[]>([])
   const [activeFilter, setActiveFilter] = useState<{ roles: string[], states: string[] }>({
     roles: ["owner", "admin", "member"],
-    states: ["active", "inactive", "removed"],
+    states: ["active", "inactive", "deleted"],
   });
+  const workspaceId = useWorkspaceStore((state) => state.workspaceId)
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const data = await getWorkspaceMembers();
+        const data = await getWorkspaceMembers(workspaceId);
+        console.log(data)
         setMembers(data);
       } catch (error) {
         console.error("멤버 불러오기 실패:", error);
-      } finally {
+        throw error
       }
     };
 
@@ -33,7 +36,7 @@ export const MemberPage = () => {
   useEffect(() => {
     if (members.length > 0) {
       const defaultRoles = ["owner", "admin", "member"]
-      const defaultStates = ["active", "inactive", "removed"]
+      const defaultStates = ["active", "inactive", "deleted"]
 
       handleFilter({ roles: defaultRoles, states: defaultStates })
     }
@@ -41,11 +44,9 @@ export const MemberPage = () => {
 
   const handleNavigateMember = async () => {
     try {
-      const data = await getWorkspaceMembers();
-      console.log(data)
+      await getWorkspaceMembers(workspaceId);
     } catch (error) {
       setMembers([]);
-    } finally {
     }
   }
 
@@ -78,7 +79,6 @@ export const MemberPage = () => {
     );
     setMembers(updated);
 
-    // 변경된 members에 대해 현재 필터를 재적용
     const { roles, states } = activeFilter
     const reFiltered = updated.filter(member =>
       roles.includes(member.positionType.toLowerCase()) &&
@@ -86,7 +86,6 @@ export const MemberPage = () => {
     );
     setFilteredMembers(reFiltered);
   };
-
 
   return (
     <S.PageContainer>
