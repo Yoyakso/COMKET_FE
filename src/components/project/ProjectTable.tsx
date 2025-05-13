@@ -28,10 +28,8 @@ export const ProjectTable = ({ projects, onViewProject, onDeleteProject }: Proje
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      // 같은 필드를 다시 클릭하면 정렬 방향 전환
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
     } else {
-      // 다른 필드를 클릭하면 해당 필드로 오름차순 정렬
       setSortField(field)
       setSortDirection("asc")
     }
@@ -139,12 +137,6 @@ export const ProjectTable = ({ projects, onViewProject, onDeleteProject }: Proje
               <S.HeaderContent>
                 <span>관리자</span>
                 {getSortIcon("owner")}
-              </S.HeaderContent>
-            </S.HeaderCell>
-            <S.HeaderCell onClick={() => handleSort("createdBy")}>
-              <S.HeaderContent>
-                <span>만든 사람</span>
-                {getSortIcon("createdBy")}
               </S.HeaderContent>
             </S.HeaderCell>
             <S.HeaderCell onClick={() => handleSort("createdAt")}>
