@@ -3,10 +3,9 @@ import { PriorityBadge } from "@components/ticket/PriorityBadge";
 import { StatusBadge } from "@/components/ticket/StatusBadge";
 import { TypeBadge } from "@/components/ticket/TypeBadge";
 import * as S from "@/components/common/dropdown/Filter.Style";
-import { useState } from "react";
 import { PRIORITY, STATUS, TYPE } from "@/constants/filterData";
-import type { Priority, Status, TicketType } from "@/types/filter";
 import { TicketFilterStore } from "@/components/ticket/Ticket";
+import { RefreshCcwDot } from "lucide-react"
 
 export const Filter = () => {
 
@@ -17,6 +16,7 @@ export const Filter = () => {
     toggleSelectedPriorities,
     toggleSelectedStatuses,
     toggleSelectedTypes,
+    reset,
   } = TicketFilterStore();
 
   return (
@@ -74,6 +74,10 @@ export const Filter = () => {
           ))}
         </S.FilterSection>
       </S.FilterGroup>
+
+      <S.ButtonBox>
+        <S.ResetButton onClick={reset}><RefreshCcwDot width={'14px'} height={'14px'} />초기화</S.ResetButton>
+      </S.ButtonBox>
 
     </S.Wrapper>
   );

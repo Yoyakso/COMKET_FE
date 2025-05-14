@@ -5,10 +5,32 @@ import { color } from "@/styles/color";
 export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 10px;
   width: 100%;
   max-width: 428px;
  
+`;
+
+export const ButtonBox = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+export const ResetButton = styled.button`
+  background: none;
+  border: none;
+  color: ${color.textPlaceholder70};
+  font-size: 14px;
+  font-weight: 500;
+  padding: 4px 8px;
+  min-height: 28px;
+  line-height: 20px;
+  cursor: pointer;
+
+  &:hover {
+    color: ${color.textPrimary};
+    text-decoration: underline;
+  }
 `;
 
 export const FilterGroup = styled.div`
@@ -16,7 +38,7 @@ export const FilterGroup = styled.div`
   flex-direction: column;
   gap: 16px;
   border-bottom: 1px solid ${color.textPlaceholder24};
-  padding-bottom: 16px;
+  padding: 20px 0px;
 `;
 
 
@@ -26,11 +48,10 @@ export const Title = styled.div`
 `;
 
 export const FilterSection = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  max-width: 100%;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); // 정확히 3열
+  gap: 10px 24px;
+  width: 100%;
 `;
 
 export const FilterItem = styled.div`

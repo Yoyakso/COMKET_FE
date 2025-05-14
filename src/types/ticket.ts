@@ -17,6 +17,7 @@ export interface Ticket {
   endDate: string;
   subticketCount: number;
   subtickets?: Ticket[];
+  parentId?: number;
   writer: {
     name: string;
     nickname: string;

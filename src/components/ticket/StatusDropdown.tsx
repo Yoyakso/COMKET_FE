@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTicketStore } from "@/components/ticket/Ticket";
+import { TicketDropdownStore } from "@/components/ticket/Ticket";
 import { OutsideClick } from "@/utils/OutsideClick";
 import * as S from "./StatusDropdown.Style";
 import type { Status } from "@/types/filter";
@@ -24,7 +24,7 @@ export const StatusDropdown = ({ ticketId }: { ticketId: number }) => {
         openDropdown,
         setOpenDropdown,
         updateTicketStatus,
-    } = useTicketStore();
+    } = TicketDropdownStore();
 
     const ticket = tickets.find((t) => t.id === ticketId);
     const currentStatus = ticket?.status ?? "TODO";
@@ -68,11 +68,11 @@ export const StatusDropdown = ({ ticketId }: { ticketId: number }) => {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        $color={STATUS_COLORS[hovered ?? currentStatus]}
                     >
                         {options.map((s) => (
                             <S.Option
                                 key={s}
+                                $color={STATUS_COLORS[s]}
                                 onMouseEnter={() => setHovered(s)}
                                 onMouseLeave={() => setHovered(null)}
                                 onClick={() => handleSelect(s)}

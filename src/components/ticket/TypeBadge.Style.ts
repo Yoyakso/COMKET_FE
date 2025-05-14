@@ -5,10 +5,9 @@ export const Badge = styled.span`
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   color: ${color.textSecondary};
-  background-color:${color.white};
   min-width: 60px;
   text-align: center;
-  display: inline-block;
+ 
 `;

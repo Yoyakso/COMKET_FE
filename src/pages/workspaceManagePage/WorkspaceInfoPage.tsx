@@ -106,6 +106,7 @@ export const WorkspaceInfoPage = () => {
 
       await fetchWorkspaceInfo();
 
+
     } catch (error) {
       console.error("저장 실패:", error);
       alert("저장 실패");

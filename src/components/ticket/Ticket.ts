@@ -4,7 +4,7 @@ import type {Ticket} from '@/types/ticket';
 import { MOCK_TICKETS } from '@/constants/ticketData';
 
 
-//필터-> useState로 관리하는게 좋을듯
+// 필터링된 티켓을 저장하는 스토어
 interface TicketFilterStore {
     selectedPriorities: Priority[];
     selectedStatuses: Status[];
@@ -12,6 +12,7 @@ interface TicketFilterStore {
     toggleSelectedPriorities: (priorities:Priority) => void;
     toggleSelectedStatuses: (statuses: Status) => void;
     toggleSelectedTypes: (types: TicketType) => void;
+    reset: () => void;
 
 }
 
@@ -52,7 +53,9 @@ export const TicketFilterStore = create<TicketFilterStore>((set, get) => ({
 }));
 
 
-//우선순위 변경 드롭다운
+
+
+//우선순위-우선순위드롭다운, (상태,유형)-벌크드롭다운 변경 드롭다운
 interface TicketDropdownStore {
   tickets: Ticket[];
   openDropdown: { ticketId: number; field: "priority" | "status" } | null;
@@ -61,15 +64,17 @@ interface TicketDropdownStore {
   ) => void;
   updateTicketPriority: (ticketId: number, newPriority: Priority) => void;
   updateTicketStatus: (ticketId: number, newStatus: Status) => void;
+   updateManyTicketStatus: (ticketIds: number[], newStatus: Status) => void;
+  updateManyTicketType: (ticketIds: number[], newType: TicketType) => void;
 }
 
-export const useTicketStore = create<TicketDropdownStore>((set) => ({
+export const TicketDropdownStore = create<TicketDropdownStore>((set) => ({
   tickets: MOCK_TICKETS,
 
   openDropdown: null,
 
   setOpenDropdown: (dropdown) => set({ openDropdown: dropdown }),
-  
+
   updateTicketPriority: (ticketId, newPriority) =>
     set((state) => ({
       tickets: state.tickets.map((t) =>
@@ -81,6 +86,21 @@ export const useTicketStore = create<TicketDropdownStore>((set) => ({
     set((state) => ({
       tickets: state.tickets.map((t) =>
         t.id === ticketId ? { ...t, status: newStatus } : t
+      ),
+    })),
+
+    
+  updateManyTicketStatus: (ticketIds, newStatus) =>
+    set((state) => ({
+      tickets: state.tickets.map((t) =>
+        ticketIds.includes(t.id) ? { ...t, status: newStatus } : t
+      ),
+    })),
+
+  updateManyTicketType: (ticketIds, newType) =>
+    set((state) => ({
+      tickets: state.tickets.map((t) =>
+        ticketIds.includes(t.id) ? { ...t, type: newType } : t
       ),
     })),
 }));

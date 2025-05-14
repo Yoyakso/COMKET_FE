@@ -7,29 +7,24 @@ import { Ticket } from "@/types/ticket";
 import { CheckBox } from "../common/checkbox/CheckBox";
 import { ChevronRight, ChevronDown, MessageSquare } from 'lucide-react';
 import { TypeBadge } from "./TypeBadge";
-import { useTicketStore } from "@/components/ticket/Ticket";
 import { PriorityDropdown } from "./PriorityDropdown";
 import { StatusDropdown } from "./StatusDropdown";
 
 
+
 interface TicketRowProps {
     ticket: Ticket;
+    isChecked: (id: number) => boolean;
+    onCheckToggle: (id: number, parentId?: number) => void;
+    toggleWithSubtickets?: (ticket: Ticket) => void;
 }
 
-export const TicketRow = ({ ticket }: TicketRowProps) => {
-    const [isChecked, setIsChecked] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
+export const TicketRow = ({ ticket, isChecked, onCheckToggle, toggleWithSubtickets }: TicketRowProps) => {
 
+    const [isExpanded, setIsExpanded] = useState(false);
     const toggleExpand = () => setIsExpanded(prev => !prev);
     const hasSubtickets = ticket.subtickets?.length > 0;
 
-    const {
-        // openDropdown, // Removed as it does not exist on TicketDropdownStore
-        // setOpenDropdown, // Removed as it does not exist on TicketDropdownStore
-        updateTicketPriority,
-    } = useTicketStore();
-
-    const isPriorityOpen = false; // Adjust logic if necessary
 
     return (
         <>
@@ -46,8 +41,12 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
                     <CheckBox
                         $variant="primary"
                         size="md"
-                        checked={isChecked}
-                        onChange={() => setIsChecked(!isChecked)}
+                        checked={isChecked(ticket.id)}
+                        onChange={() =>
+                            hasSubtickets
+                                ? toggleWithSubtickets(ticket) // 상위 클릭 시 → 상위+하위 전체 체크/해제
+                                : onCheckToggle(ticket.id, ticket.parentId) // 하위 클릭 시 → 연동된 단일 토글
+                        }
                     />
                 </S.TableCell>
                 <S.TableCell>{ticket.id}</S.TableCell>
@@ -69,7 +68,9 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
                         ticketId={ticket.id}
                     />
                 </S.TableCell>
-                <S.TableCell><StatusDropdown ticketId={ticket.id} /></S.TableCell>
+                <S.TableCell>
+                    <StatusDropdown ticketId={ticket.id} />
+                </S.TableCell>
                 <S.TableCell>{ticket.startDate}</S.TableCell>
                 <S.TableCell>{ticket.endDate}</S.TableCell>
                 <S.TableCell>{ticket.subticketCount}</S.TableCell>
@@ -83,8 +84,8 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
                         <CheckBox
                             $variant="primary"
                             size="md"
-                            checked={isChecked}
-                            onChange={() => setIsChecked(!isChecked)}
+                            checked={isChecked(sub.id)}
+                            onChange={() => onCheckToggle(sub.id, ticket.id)}
                         />
                     </S.SubticketCell>
                     <S.SubticketCell>{sub.id}</S.SubticketCell>
@@ -101,8 +102,12 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
                     </S.SubticketCell>
                     <S.SubticketCell><TypeBadge type={sub.type} /></S.SubticketCell>
                     <S.SubticketCell><AvatarWithName user={sub.assignee} /></S.SubticketCell>
-                    <S.SubticketCell><PriorityBadge priority={sub.priority} /></S.SubticketCell>
-                    <S.SubticketCell><StatusBadge status={sub.status} /></S.SubticketCell>
+                    <S.SubticketCell>
+                        <PriorityDropdown ticketId={sub.id} />
+                    </S.SubticketCell>
+                    <S.SubticketCell>
+                        <StatusDropdown ticketId={sub.id} />
+                    </S.SubticketCell>
                     <S.SubticketCell>{sub.startDate}</S.SubticketCell>
                     <S.SubticketCell>{sub.endDate}</S.SubticketCell>
                     <S.SubticketCell>-</S.SubticketCell>

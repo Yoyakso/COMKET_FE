@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTicketStore } from "@/components/ticket/Ticket";
+import { TicketDropdownStore } from "@/components/ticket/Ticket";
 import { PRIORITY_COLORS } from "./PriorityDropdown.Style";
 import * as S from "./PriorityDropdown.Style";
 import { OutsideClick } from "@/utils/OutsideClick";
@@ -15,7 +15,7 @@ export const PriorityDropdown = ({ ticketId }: { ticketId: number }) => {
         openDropdown,
         setOpenDropdown,
         updateTicketPriority,
-    } = useTicketStore();
+    } = TicketDropdownStore();
 
     const ticket = tickets.find((t) => t.id === ticketId);
     const currentPriority = ticket?.priority ?? "LOW";

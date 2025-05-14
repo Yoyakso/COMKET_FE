@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
 import * as S from './ImageUpload.Style';
 import { Button } from '@/components/common/button/Button';
-import { getCroppedImg } from '@/utils/image/getCroppedImg';
+import { getCroppedImg } from '@/utils/getCroppedImg';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
 import { uploadProfileImage, type UploadResponse } from '@/api/WorkspaceImage';
 

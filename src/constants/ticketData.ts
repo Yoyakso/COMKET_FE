@@ -1,6 +1,7 @@
-import { Ticket } from "@/types/ticket"; // 경로는 프로젝트 기준으로 조정
+import { Ticket } from "@/types/ticket";
+import { addParentIdToSubtickets } from "@/utils/addParentIdToSubtickets";
 
-export const MOCK_TICKETS: Ticket[] = [
+export const MOCK_TICKETS: Ticket[] = addParentIdToSubtickets([
   {
     id: 1,
     title: "메인페이지 리팩토링",
@@ -139,4 +140,4 @@ export const MOCK_TICKETS: Ticket[] = [
       email: "jhdddd@gamil.com",
     },
   },
-];
+]);

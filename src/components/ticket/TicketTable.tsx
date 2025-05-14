@@ -3,6 +3,7 @@ import { TicketRow } from "./TicketRow";
 import * as S from "./TicketTable.Style";
 import { Ticket } from "@/types/ticket";
 import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react"
+import { TicketSelection } from "@/hooks/TicketSelection";
 
 const sortIcons = ({ active, direction }: { active: boolean; direction: 'asc' | 'desc' }) => {
     if (!active)
@@ -18,9 +19,16 @@ interface TicketTableProps {
 
 export const TicketTable = ({ tickets }: TicketTableProps) => {
 
-
     const [sortKey, setSortKey] = useState<keyof Ticket | null>(null);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+    const {
+        selectedIds,
+        isSelected,
+        toggleSingle,
+        toggleWithSubtickets,
+    } = TicketSelection(tickets);
+
 
     const handleSort = (key: keyof Ticket) => {
         if (sortKey === key) {
@@ -75,6 +83,12 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
                             </S.SortableHeader>
                         </S.HeaderCell>
 
+                        <S.HeaderCell onClick={() => handleSort("assignee")}>
+                            <S.SortableHeader>
+                                담당자 {sortIcons({ active: sortKey === "assignee", direction: sortOrder })}
+                            </S.SortableHeader>
+                        </S.HeaderCell>
+
                         <S.HeaderCell onClick={() => handleSort("priority")}>
                             <S.SortableHeader>
                                 우선순위 {sortIcons({ active: sortKey === "priority", direction: sortOrder })}
@@ -115,7 +129,13 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
 
                 <S.TableBody>
                     {sortedTickets.map((ticket) => (
-                        <TicketRow key={ticket.id} ticket={ticket} />
+                        <TicketRow
+                            key={ticket.id}
+                            ticket={ticket}
+                            isChecked={isSelected}
+                            onCheckToggle={toggleSingle}
+                            toggleWithSubtickets={toggleWithSubtickets}
+                        />
                     ))}
                 </S.TableBody>
             </S.Table>
