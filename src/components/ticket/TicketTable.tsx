@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TicketRow } from "./TicketRow";
 import * as S from "./TicketTable.Style";
 import { Ticket } from "@/types/ticket";
 import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react"
-import { TicketSelection } from "@/hooks/TicketSelection";
+import { TicketSelectionStore } from "@/components/ticket/TicketSelectionStore";
+
 
 const sortIcons = ({ active, direction }: { active: boolean; direction: 'asc' | 'desc' }) => {
     if (!active)
@@ -15,6 +16,9 @@ const sortIcons = ({ active, direction }: { active: boolean; direction: 'asc' | 
 
 interface TicketTableProps {
     tickets: Ticket[];
+    selectedIds: number[];
+    toggleSingle: (id: number, parentId?: number) => void;
+    toggleWithSubtickets?: (ticket: Ticket) => void;
 }
 
 export const TicketTable = ({ tickets }: TicketTableProps) => {
@@ -24,11 +28,14 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
 
     const {
         selectedIds,
-        isSelected,
         toggleSingle,
         toggleWithSubtickets,
-    } = TicketSelection(tickets);
+        setInitialTickets
+    } = TicketSelectionStore();
 
+    useEffect(() => {
+        setInitialTickets(tickets);
+    }, [tickets]);
 
     const handleSort = (key: keyof Ticket) => {
         if (sortKey === key) {
@@ -132,7 +139,7 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
                         <TicketRow
                             key={ticket.id}
                             ticket={ticket}
-                            isChecked={isSelected}
+                            isChecked={(id) => selectedIds.includes(id)}
                             onCheckToggle={toggleSingle}
                             toggleWithSubtickets={toggleWithSubtickets}
                         />

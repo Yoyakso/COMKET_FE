@@ -64,8 +64,9 @@ interface TicketDropdownStore {
   ) => void;
   updateTicketPriority: (ticketId: number, newPriority: Priority) => void;
   updateTicketStatus: (ticketId: number, newStatus: Status) => void;
-   updateManyTicketStatus: (ticketIds: number[], newStatus: Status) => void;
+  updateManyTicketStatus: (ticketIds: number[], newStatus: Status) => void;
   updateManyTicketType: (ticketIds: number[], newType: TicketType) => void;
+  deleteManyTicket: (ticketIds: number[]) => void;
 }
 
 export const TicketDropdownStore = create<TicketDropdownStore>((set) => ({
@@ -103,4 +104,10 @@ export const TicketDropdownStore = create<TicketDropdownStore>((set) => ({
         ticketIds.includes(t.id) ? { ...t, type: newType } : t
       ),
     })),
+
+    deleteManyTicket: (ticketIds) =>
+    set((state) => ({
+      tickets: state.tickets.filter((t) => !ticketIds.includes(t.id)), 
+    })),
+
 }));

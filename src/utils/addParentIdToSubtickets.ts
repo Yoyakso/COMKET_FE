@@ -8,7 +8,7 @@ export function addParentIdToSubtickets(tickets: Ticket[]): Ticket[] {
   const process = (ticket: Ticket, parentId?: number): Ticket => {
     const newTicket: Ticket = {
       ...ticket,
-      parentId, // ✅ parentId 삽입
+      parentId,
       subtickets: ticket.subtickets?.map((sub) => process(sub, ticket.id)),
     };
     return newTicket;

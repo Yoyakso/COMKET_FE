@@ -1,15 +1,15 @@
 import * as S from "./TicketListView.Style";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { TicketTable } from "@/components/ticket/TicketTable";
 import { TicketToolbar } from "@/components/ticket/TicketToolbar";
 import { TicketFilterStore, TicketDropdownStore } from "../ticket/Ticket";
+import { TicketSelectionStore } from "@/components/ticket/TicketSelectionStore";
 import { MOCK_TICKETS } from "@/constants/ticketData";
 import { TicketType, Status } from "@/types/filter";
 
 
-export const TicketListView = () => {
 
-    const [selectedTicketIds, setSelectedTicketIds] = useState<number[]>([]);
+export const TicketListView = () => {
 
     const {
         selectedPriorities,
@@ -18,11 +18,25 @@ export const TicketListView = () => {
     } = TicketFilterStore();
 
     const {
+        tickets,
         updateManyTicketType,
         updateManyTicketStatus,
+        deleteManyTicket,
     } = TicketDropdownStore();
 
-    const filteredTickets = MOCK_TICKETS.filter((ticket) => {
+    const {
+        selectedIds,
+        toggleSingle,
+        toggleWithSubtickets,
+        clearSelection,
+        setInitialTickets,
+    } = TicketSelectionStore();
+
+    useEffect(() => {
+        setInitialTickets(tickets);
+    }, [tickets]);
+
+    const filteredTickets = tickets.filter((ticket) => {
         const isPriorityMatch = selectedPriorities.length === 0 || selectedPriorities.includes(ticket.priority);
         const isStatusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(ticket.status);
         const isTypeMatch = selectedTypes.length === 0 || selectedTypes.includes(ticket.type);
@@ -32,18 +46,19 @@ export const TicketListView = () => {
     return (
         <S.Wrapper>
             <TicketToolbar
-                selectedTicketIds={selectedTicketIds}
+                selectedTicketIds={selectedIds}
                 onDeleteTickets={() => {
-                    // deleteManyTickets(selectedTicketIds)
+                    deleteManyTicket(selectedIds)
+                    clearSelection();
                 }}
-                onChangeType={(type: TicketType) => {
-                    updateManyTicketType(selectedTicketIds, type);
-                }}
-                onChangeStatus={(status: Status) => {
-                    updateManyTicketStatus(selectedTicketIds, status);
-                }}
+                onChangeType={(type) => updateManyTicketType(selectedIds, type as TicketType)}
+                onChangeStatus={(status) => updateManyTicketStatus(selectedIds, status as Status)}
             />
-            <TicketTable tickets={filteredTickets} />
+            <TicketTable
+                tickets={filteredTickets}
+                selectedIds={selectedIds}
+                toggleSingle={toggleSingle}
+                toggleWithSubtickets={toggleWithSubtickets} />
         </S.Wrapper>
     );
 };

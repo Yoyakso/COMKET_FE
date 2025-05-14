@@ -3,16 +3,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { OutsideClick } from "@/utils/OutsideClick";
 import * as S from "./BulkDropdown.Style";
 
-interface BulkDropdownProps {
+interface BulkDropdownProps<T extends string = string> {
     field: "type" | "status";
     selectedValue: string;
     ticketIds: number[];
-    options: string[];
-    onSelect: (value: string) => void;
-    getColor?: (value: string) => string;
+    options: readonly T[];
+    onSelect: (value: T) => void;
+    getColor?: (value: T) => string;
 }
 
-export const BulkDropdown = ({
+export const BulkDropdown = <T extends string = string>({
     field,
     selectedValue,
     ticketIds,
