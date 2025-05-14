@@ -6,6 +6,8 @@ import { RemoveMemberModal } from "./RemoveMemberModal"
 import { getColorFromString } from "@/utils/avatarColor"
 import { formatDate } from "@/utils/dateFormat"
 import { deleteWorkspaceMember, updateWorkspaceMember } from "@/api/Member"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
+import { toast } from "react-toastify"
 
 interface MemberRowProps {
   member: MemberData
@@ -56,6 +58,8 @@ export const MemberRow = ({ member, onUpdateMember }: MemberRowProps) => {
   const [activeDropdownId, setActiveDropdownId] = useState<number | null>(null)
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false)
 
+  const workspaceId = useWorkspaceStore((state) => state.workspaceId)
+
   const dropdownRef = useRef<HTMLDivElement>(null)
   const actionButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -102,9 +106,6 @@ export const MemberRow = ({ member, onUpdateMember }: MemberRowProps) => {
     setShowRoleDropdown(false)
 
     try {
-      const workspaceId = Number(localStorage.getItem("workspaceId"));
-      if (!workspaceId) throw new Error("워크스페이스 ID가 없습니다")
-
       await updateWorkspaceMember(workspaceId, {
         workspace_member_email: member.email,
         position_type: newPositionType as "OWNER" | "ADMIN" | "MEMBER",
@@ -112,9 +113,10 @@ export const MemberRow = ({ member, onUpdateMember }: MemberRowProps) => {
       });
       console.log(`역할이 ${newPositionType}로 변경됨`);
       onUpdateMember(member.email, newPositionType as "OWNER" | "ADMIN" | "MEMBER");
+      toast.success("역할 변경이 완료됐습니다.")
     } catch (error) {
       console.error("역할 변경 실패:", error);
-      alert("역할 변경에 실패했습니다: " + (error?.response?.data?.message || error.message));
+      toast.error("역할 변경에 실패했습니다. 다시 시도해주세요")
     }
   };
 
@@ -131,17 +133,12 @@ export const MemberRow = ({ member, onUpdateMember }: MemberRowProps) => {
 
   const handleRemoveMember = async () => {
     try {
-      const workspaceId = Number(localStorage.getItem("workspaceId"))
-      if (!workspaceId) throw new Error("워크스페이스 ID가 없습니다.")
-
       await deleteWorkspaceMember(workspaceId, member.email)
       console.log(`멤버 ${member.name}(${member.email}) 제거 완료`)
+      toast.success("멤버 제거를 완료했습니다.")
       setIsRemoveModalOpen(false)
-
-
     } catch (error) {
-      console.error("멤버 제거 중 오류 발생:", error)
-      alert("멤버 삭제에 실패했습니다: " + (error?.response?.data?.message || error.message))
+      toast.error("멤버 제거에 실패했습니다.")
     }
   }
 

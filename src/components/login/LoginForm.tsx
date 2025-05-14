@@ -7,17 +7,20 @@ import { CheckBox } from "../common/checkbox/CheckBox"
 import { COMKET2 } from "@/assets/icons"
 import { logIn } from "@api/Oauth"
 import { toast } from "react-toastify"
+import { useUserStore } from "@/stores/userStore";
 
 export const LoginForm = () => {
   const [rememberEmail, setRememberEmail] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
+  const { setUserState } = useUserStore();
 
   const handleCheckboxChange = () => {
     setRememberEmail(!rememberEmail)
   }
 
+  // 현재 구글 로그인 버튼을 누른 경우에도 logIn요청 감 수정 필요
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -25,12 +28,17 @@ export const LoginForm = () => {
       const data = await logIn({ email, password })
       toast.success("로그인 성공!")
       localStorage.setItem("accessToken", data.accessToken)
-      localStorage.setItem("email", data.email)
+      setUserState({
+        email: data.email,
+        name: data.name,
+        memberId: data.memberId,
+        loginPlatformInfo: data.loginPlatformInfo
+      });
       navigate('/workspace')
 
     } catch (error) {
       console.error("로그인 실패:", error)
-      alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.")
+      throw error
     }
   }
 

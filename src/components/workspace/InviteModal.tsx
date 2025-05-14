@@ -5,6 +5,7 @@ import { ChevronDown } from "@assets/icons"
 import { inviteWorkspaceMembers } from "@/api/Member"
 import { getColorFromString } from "@utils/avatarColor"
 import { toast } from "react-toastify"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 interface InviteType {
   id: string
@@ -25,6 +26,7 @@ export const InviteModal = ({ onClose }: InviteModalProps) => {
   const [role, setRole] = useState<RoleType>("일반 멤버")
   const [isRoleOpen, setIsRoleOpen] = useState<boolean>(false)
   const [generateLink, setGenerateLink] = useState<boolean>(false)
+  const workspaceId = useWorkspaceStore((state) => state.workspaceId)
 
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
@@ -96,11 +98,10 @@ export const InviteModal = ({ onClose }: InviteModalProps) => {
   }
 
   const handleSendInvite = async () => {
-    if (invitees.length === 0) return alert("초대할 멤버를 입력하세요.")
+    if (invitees.length === 0) return toast.error("초대할 멤버를 입력하세요.")
 
     try {
       const memberEmailList = invitees.map((invitee) => invitee.email)
-      const workspaceId = Number(localStorage.getItem("workspaceId"))
 
       await inviteWorkspaceMembers(workspaceId, {
         memberEmailList,
@@ -127,8 +128,7 @@ export const InviteModal = ({ onClose }: InviteModalProps) => {
         default:
           alert(`초대 중 오류 발생: ${message}`)
       }
-
-      console.error("초대 실패:", error)
+      throw error
     }
   }
 

@@ -5,6 +5,7 @@ import { Radio } from '@/components/common/radio/Radio';
 import { Button } from '@/components/common/button/Button';
 import { workspaceCreate } from '@/api/CreateWorkspace';
 import { toast } from 'react-toastify';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
 
 export const CreateWorkspacePage = () => {
   const [workspaceName, setWorkspaceName] = useState('');
@@ -19,6 +20,7 @@ export const CreateWorkspacePage = () => {
   const isNameValid = workspaceName.trim().length >= 2;
   const isURLValid = /^[a-z0-9-]+$/.test(workspaceURL);
   const isFormValid = isNameValid && isURLValid;
+  const { setWorkspaceStore } = useWorkspaceStore.getState();
 
   const handleCreateWorkspace = async () => {
 
@@ -34,8 +36,12 @@ export const CreateWorkspacePage = () => {
         profile_file_id: null,
       });
 
-      localStorage.setItem('workspaceName', data.name);
-      localStorage.setItem('workspaceSlug', data.slug);
+      setWorkspaceStore({
+        workspaceName: data.name,
+        workspaceSlug: data.slug,
+        workspaceId: data.id,
+        profileFileUrl: data.profileFileUrl
+      })
 
       navigate(`/${data.slug}`);
     } catch (error: any) {

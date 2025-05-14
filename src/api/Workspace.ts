@@ -2,7 +2,6 @@ import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-
 /**
  * 워크스페이스 목록 조회
  * @returns 
@@ -14,13 +13,12 @@ export const fetchMyWorkspaces = async () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      withCredentials: true, 
+      withCredentials: true,
     });
 
-    return response.data; 
+    return response.data;
   } catch (error) {
     console.error("워크스페이스 API 오류:", error);
     throw error;
   }
 };
-

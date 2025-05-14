@@ -10,7 +10,6 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL
 export const getAllProjects = async (workspaceName: string) => {
   try {
     const token = localStorage.getItem("accessToken");
-    const workspaceName = localStorage.getItem("workspaceName");
 
     if (!token) throw new Error("로그인 토큰이 없습니다.");
     if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.");
@@ -100,14 +99,16 @@ interface CreateProjectDto {
 
 /**
  * 프로젝트 생성
- * @param projectData 
- * @returns 
+ * @param workspaceName 워크스페이스 이름 (path param으로 사용)
+ * @param projectData 생성할 프로젝트 데이터
+ * @returns 생성된 프로젝트 정보
  */
-export const createProject = async (projectData: CreateProjectDto) => {
+export const createProject = async (
+  workspaceName: string,
+  projectData: CreateProjectDto
+) => {
   try {
     const token = localStorage.getItem("accessToken");
-    const workspaceName = localStorage.getItem("workspaceName");
-
     if (!token) throw new Error("로그인 토큰이 없습니다.");
     if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.");
 
@@ -137,9 +138,9 @@ export interface UpdateProjectDto {
 
 /**
  * 프로젝트 삭제
- * @param workspaceName 
- * @param projectId 
- * @returns 
+ * @param workspaceName 워크스페이스 식별자 (slug)
+ * @param projectId 삭제할 프로젝트 ID
+ * @returns
  */
 export const deleteProject = async (workspaceName: string, projectId: number) => {
   try {

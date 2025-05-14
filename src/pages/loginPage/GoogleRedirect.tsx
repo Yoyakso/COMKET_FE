@@ -2,11 +2,13 @@ import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { googleLogin } from "@/api/Oauth"
 import * as S from "./GoogleRedirect.Style"
+import { useUserStore } from "@/stores/userStore";
+import { toast } from "react-toastify";
 
 export const GoogleRedirect = () => {
   const navigate = useNavigate()
   const code = new URL(window.location.href).searchParams.get("code")
-  console.log("구글 리디렉션 코드:", code)
+  const { setUserState } = useUserStore();
 
   useEffect(() => {
     if (!code) return
@@ -14,18 +16,20 @@ export const GoogleRedirect = () => {
     const fetchData = async () => {
       try {
         const result = await googleLogin(code)
-        console.log("구글 로그인 결과:", result)
 
         if (result.accessToken && result.name) {
           // 이미 가입된 유저
           localStorage.setItem("accessToken", result.accessToken)
-          localStorage.setItem("nickName", result.name)
-          localStorage.setItem("email", result.email)
-          alert("로그인 성공!")
+          setUserState({
+            email: result.email,
+            name: result.name,
+            memberId: result.memberId,
+            loginPlatformInfo: result.loginPlatformInfo
+          });
           navigate("/workspace")
         } else if (result.email) {
           // 신규 유저
-          alert("회원가입이 필요한 사용자입니다.")
+          toast.info("회원가입이 필요한 사용자입니다.")
           navigate("/signup", { state: { email: result.email } })
         }
 
@@ -61,7 +65,6 @@ export const GoogleRedirect = () => {
               break
           }
         } else {
-          alert("네트워크 오류가 발생했습니다. 다시 시도해주세요.")
           navigate("/login")
         }
       }
