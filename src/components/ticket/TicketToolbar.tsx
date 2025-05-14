@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as S from './TicketToolbar.Style';
 import { Filter } from '@/components/common/dropdown/Filter';
-import { TextInput } from '@/components/common/textInput/TextInput';
+import { Search } from '@/components/common/search/Search';
 import { SlidersHorizontal } from 'lucide-react';
 import { TicketFilterStore } from '@/components/ticket/Ticket';
 import { BulkDropdown } from '@components/common/dropdown/BulkDropdown'; // ✅ 새로 만든 드롭다운
@@ -15,6 +15,8 @@ interface TicketToolbarProps {
     onDeleteTickets: () => void; //삭제 핸들러 (부모에서 전달)
     onChangeType: (newType: string) => void;
     onChangeStatus: (newStatus: string) => void;
+    searchValue: string;
+    setSearchValue: (value: string) => void;
 }
 
 export const TicketToolbar = ({
@@ -22,8 +24,9 @@ export const TicketToolbar = ({
     onDeleteTickets,
     onChangeType,
     onChangeStatus,
+    searchValue,
+    setSearchValue,
 }: TicketToolbarProps) => {
-    const [searchValue, setSearchValue] = useState('');
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const { selectedPriorities, selectedStatuses, selectedTypes } = TicketFilterStore();
@@ -54,7 +57,6 @@ export const TicketToolbar = ({
                     ticketIds={selectedTicketIds}
                     options={STATUS}
                     onSelect={(value) => {
-                        console.log("📌 상태 변경:", selectedTicketIds, value);
                         onChangeStatus(value);
                     }}
                     getColor={(status) => STATUS_COLORS[status]}
@@ -77,12 +79,12 @@ export const TicketToolbar = ({
 
 
                 <S.SearchBox>
-                    <TextInput
-                        value={searchValue}
-                        onChange={setSearchValue}
-                        placeholder="티켓 검색"
+                    <Search
                         size="md"
-                        state="enable"
+                        variant="outlined"
+                        placeholder="티켓 검색"
+                        onSearch={(value) => setSearchValue(value)}
+                        onClear={() => setSearchValue("")}
                     />
                 </S.SearchBox>
             </S.RightSection>

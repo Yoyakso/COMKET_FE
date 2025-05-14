@@ -36,11 +36,14 @@ export const TicketListView = () => {
         setInitialTickets(tickets);
     }, [tickets]);
 
+    const [searchValue, setSearchValue] = useState("");
+
     const filteredTickets = tickets.filter((ticket) => {
         const isPriorityMatch = selectedPriorities.length === 0 || selectedPriorities.includes(ticket.priority);
         const isStatusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(ticket.status);
         const isTypeMatch = selectedTypes.length === 0 || selectedTypes.includes(ticket.type);
-        return isPriorityMatch && isStatusMatch && isTypeMatch;
+        const isSearchMatch = ticket.title.toLowerCase().includes(searchValue.toLowerCase());
+        return isPriorityMatch && isStatusMatch && isTypeMatch && isSearchMatch;
     });
 
     return (
@@ -53,6 +56,8 @@ export const TicketListView = () => {
                 }}
                 onChangeType={(type) => updateManyTicketType(selectedIds, type as TicketType)}
                 onChangeStatus={(status) => updateManyTicketStatus(selectedIds, status as Status)}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
             />
             <TicketTable
                 tickets={filteredTickets}
