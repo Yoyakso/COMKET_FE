@@ -20,6 +20,7 @@ export const TicketSelectionStore = create<TicketSelectionState>((set, get) => (
 
   toggleSingle: (id, parentId) => {
     set((state) => {
+
       const isChecked = state.selectedIds.includes(id);
       let updated = isChecked
         ? state.selectedIds.filter((v) => v !== id)
@@ -29,20 +30,26 @@ export const TicketSelectionStore = create<TicketSelectionState>((set, get) => (
         updated = updated.filter((v) => v !== parentId);
       }
 
-      if (!isChecked && parentId) {
-        const parentTicket = ticketsSnapshot.find(t => t.id === parentId);
-        const allSubIds = parentTicket?.subtickets?.map(s => s.id) ?? [];
-        const allSelected = allSubIds.every(subId => subId === id || state.selectedIds.includes(subId));
-        if (allSelected) {
-          updated = [...updated, parentId];
-        }
-      }
+      // if (!isChecked && parentId) {
+      //   const parentTicket = ticketsSnapshot.find(t => t.id === parentId);
+      //   const allSubIds = parentTicket?.subtickets?.map(s => s.id) ?? [];
+      //   const allSelected = allSubIds.every(subId => subId === id || state.selectedIds.includes(subId));
+      //   if (allSelected) {
+      //     updated = [...updated, parentId];
+      //   }
+      // }
 
-      if (isChecked && !parentId) {
-        const ticket = ticketsSnapshot.find(t => t.id === id);
-        const subIds = ticket?.subtickets?.map(s => s.id) ?? [];
-        updated = updated.filter((v) => !subIds.includes(v));
-      }
+      // if (isChecked && !parentId) {
+      //   const ticket = ticketsSnapshot.find(t => t.id === id);
+      //   const subIds = ticket?.subtickets?.map(s => s.id) ?? [];
+      //   updated = updated.filter((v) => !subIds.includes(v));
+      // }
+
+      // if (!isChecked && !parentId) {
+      //   const ticket = ticketsSnapshot.find(t => t.id === id);
+      //   const subIds = ticket?.subtickets?.map(s => s.id) ?? [];
+      //   updated = [...updated, ...subIds];
+      // }
 
       return { selectedIds: updated };
     });

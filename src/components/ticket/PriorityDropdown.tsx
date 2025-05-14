@@ -6,6 +6,15 @@ import * as S from "./PriorityDropdown.Style";
 import { OutsideClick } from "@/utils/OutsideClick";
 import type { Priority } from "@/types/filter";
 
+const findTicketById = (tickets: any[], id: number) => {
+    for (const t of tickets) {
+        if (t.id === id) return t;
+        const found = t.subtickets?.find((st: any) => st.id === id);
+        if (found) return found;
+    }
+    return undefined;
+};
+
 export const PriorityDropdown = ({ ticketId }: { ticketId: number }) => {
     const ref = useRef<HTMLDivElement>(null);
     const [hovered, setHovered] = useState<Priority | null>(null);
@@ -17,7 +26,7 @@ export const PriorityDropdown = ({ ticketId }: { ticketId: number }) => {
         updateTicketPriority,
     } = TicketDropdownStore();
 
-    const ticket = tickets.find((t) => t.id === ticketId);
+    const ticket = findTicketById(tickets, ticketId);
     const currentPriority = ticket?.priority ?? "LOW";
     const isOpen =
         openDropdown?.ticketId === ticketId &&

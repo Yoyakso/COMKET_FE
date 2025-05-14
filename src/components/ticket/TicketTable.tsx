@@ -16,9 +16,10 @@ const sortIcons = ({ active, direction }: { active: boolean; direction: 'asc' | 
 
 interface TicketTableProps {
     tickets: Ticket[];
-    selectedIds: number[];
-    toggleSingle: (id: number, parentId?: number) => void;
+    selectedIds?: number[];
+    toggleSingle?: (id: number) => void;
     toggleWithSubtickets?: (ticket: Ticket) => void;
+
 }
 
 export const TicketTable = ({ tickets }: TicketTableProps) => {

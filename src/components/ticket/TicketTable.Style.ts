@@ -1,4 +1,3 @@
-// src/pages/TicketDashboard/components/TicketTable.style.ts
 import styled from "styled-components";
 import { color } from "@/styles/color";
 

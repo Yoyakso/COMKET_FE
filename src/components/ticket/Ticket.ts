@@ -2,6 +2,7 @@ import {create} from 'zustand';
 import type {Priority, Status, TicketType} from '@/types/filter';
 import type {Ticket} from '@/types/ticket';
 import { MOCK_TICKETS } from '@/constants/ticketData';
+import { updateNestedTickets, deleteNestedTickets } from '@/utils/ticketUtills';
 
 
 // 필터링된 티켓을 저장하는 스토어
@@ -78,36 +79,36 @@ export const TicketDropdownStore = create<TicketDropdownStore>((set) => ({
 
   updateTicketPriority: (ticketId, newPriority) =>
     set((state) => ({
-      tickets: state.tickets.map((t) =>
-        t.id === ticketId ? { ...t, priority: newPriority } : t
+      tickets: updateNestedTickets(state.tickets, (t) =>
+      t.id === ticketId ? { ...t, priority: newPriority } : t
       ),
     })),
 
   updateTicketStatus: (ticketId, newStatus) =>
     set((state) => ({
-      tickets: state.tickets.map((t) =>
-        t.id === ticketId ? { ...t, status: newStatus } : t
+      tickets: updateNestedTickets(state.tickets, (t) =>
+      t.id === ticketId ? { ...t, status: newStatus } : t
       ),
     })),
 
     
   updateManyTicketStatus: (ticketIds, newStatus) =>
     set((state) => ({
-      tickets: state.tickets.map((t) =>
-        ticketIds.includes(t.id) ? { ...t, status: newStatus } : t
+      tickets: updateNestedTickets(state.tickets, (t) =>
+      ticketIds.includes(t.id) ? { ...t, status: newStatus } : t
       ),
     })),
 
   updateManyTicketType: (ticketIds, newType) =>
     set((state) => ({
-      tickets: state.tickets.map((t) =>
-        ticketIds.includes(t.id) ? { ...t, type: newType } : t
+      tickets: updateNestedTickets(state.tickets, (t) =>
+      ticketIds.includes(t.id) ? { ...t, type: newType } : t
       ),
     })),
 
-    deleteManyTicket: (ticketIds) =>
+  deleteManyTicket: (ticketIds) =>
     set((state) => ({
-      tickets: state.tickets.filter((t) => !ticketIds.includes(t.id)), 
+    tickets: deleteNestedTickets(state.tickets, ticketIds), 
     })),
 
 }));

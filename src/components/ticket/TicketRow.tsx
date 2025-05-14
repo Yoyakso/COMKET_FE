@@ -16,15 +16,15 @@ interface TicketRowProps {
     ticket: Ticket;
     isChecked: (id: number) => boolean;
     onCheckToggle: (id: number, parentId?: number) => void;
-    toggleWithSubtickets?: (ticket: Ticket) => void;
+    toggleWithSubtickets: (Ticket: Ticket) => void;
 }
 
-export const TicketRow = ({ ticket, isChecked, onCheckToggle, toggleWithSubtickets }: TicketRowProps) => {
+export const TicketRow = ({ ticket, isChecked, onCheckToggle }: TicketRowProps) => {
 
     const [isExpanded, setIsExpanded] = useState(false);
+
     const toggleExpand = () => setIsExpanded(prev => !prev);
     const hasSubtickets = ticket.subtickets?.length > 0;
-
 
     return (
         <>
@@ -42,11 +42,7 @@ export const TicketRow = ({ ticket, isChecked, onCheckToggle, toggleWithSubticke
                         $variant="primary"
                         size="md"
                         checked={isChecked(ticket.id)}
-                        onChange={() =>
-                            hasSubtickets
-                                ? toggleWithSubtickets(ticket) // 상위 클릭 시 → 상위+하위 전체 체크/해제
-                                : onCheckToggle(ticket.id, ticket.parentId) // 하위 클릭 시 → 연동된 단일 토글
-                        }
+                        onChange={() => onCheckToggle(ticket.id)}
                     />
                 </S.TableCell>
                 <S.TableCell>{ticket.id}</S.TableCell>

@@ -15,6 +15,15 @@ export const STATUS_COLORS: Record<Status, string> = {
     BACKLOG: "#6B7280",
 };
 
+const findTicketById = (tickets: any[], id: number) => {
+    for (const t of tickets) {
+        if (t.id === id) return t;
+        const found = t.subtickets?.find((st: any) => st.id === id);
+        if (found) return found;
+    }
+    return undefined;
+};
+
 export const StatusDropdown = ({ ticketId }: { ticketId: number }) => {
     const ref = useRef<HTMLDivElement>(null);
     const [hovered, setHovered] = useState<Status | null>(null);
@@ -26,7 +35,7 @@ export const StatusDropdown = ({ ticketId }: { ticketId: number }) => {
         updateTicketStatus,
     } = TicketDropdownStore();
 
-    const ticket = tickets.find((t) => t.id === ticketId);
+    const ticket = findTicketById(tickets, ticketId);
     const currentStatus = ticket?.status ?? "TODO";
     const isOpen =
         openDropdown?.ticketId === ticketId && openDropdown.field === "status";
