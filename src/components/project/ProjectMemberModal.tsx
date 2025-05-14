@@ -8,6 +8,7 @@ import { getWorkspaceMembers } from "@/api/Member"
 import { getColorFromString } from "@/utils/avatarColor"
 import { toast } from "react-toastify"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
+import { RemoveProjectMemberModal } from "./RemoveProjectMemberModal"
 
 export interface ProjectMember {
   id: number
@@ -43,6 +44,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   const [roleChanges, setRoleChanges] = useState<Record<string, "프로젝트 관리자" | "일반 멤버">>({})
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
   const workspaceId = useWorkspaceStore((state) => state.workspaceId)
+  const [removeTarget, setRemoveTarget] = useState<ProjectMember | null>(null)
 
   useEffect(() => {
     setIsMounted(true)
@@ -236,7 +238,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
       })
 
       await Promise.all(editPromises)
-      toast.success("역할 변경이 저장되었습니다.")
+      toast.success("역할이 저장되었습니다.")
       setRoleChanges({})
       if (onSave) await onSave()
       onClose()
@@ -254,26 +256,25 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     setShowAddMemberModal(false)
   }
 
-  const handleDeleteMember = async (memberId: number) => {
+  const confirmRemoveMember = async () => {
+    if (!removeTarget || !workspaceName) return
     try {
-      if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
-
-      const response = await deleteProjectMember(workspaceName, projectId, memberId)
-      console.log(" 멤버 제거 API 응답:", response)
-
-      setMembers((prev) => prev.filter((m) => m.id !== memberId))
+      await deleteProjectMember(workspaceName, projectId, removeTarget.id)
+      setMembers((prev) => prev.filter((m) => m.id !== removeTarget.id))
       setActiveActionMenu(null)
-
       toast.success("멤버가 성공적으로 제거되었습니다.")
+      setRemoveTarget(null)
     } catch (error: any) {
       console.error("멤버 제거 실패:", error)
       if (error.response?.data?.code === "OWNER_EXCEPTION") {
-        alert("소유자는 삭제할 수 없습니다. 소유자 권한 이전이 필요합니다.")
+        toast.error("소유자는 삭제할 수 없습니다. 소유자 권한 이전이 필요합니다.")
       } else {
-        alert("멤버 제거 중 오류가 발생했습니다.")
+        toast.error("멤버 제거 중 오류가 발생했습니다.")
       }
+      setRemoveTarget(null)
     }
   }
+
 
   const modalContent = (
     <S.ModalOverlay onClick={onClose}>
@@ -353,7 +354,9 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
                         <S.ActionMenu className="action-menu">
                           <S.ActionMenuItem
                             $danger
-                            onClick={() => handleDeleteMember(member.id)}>
+                            // onClick={() => handleDeleteMember(member.id)}
+                            onClick={() => setRemoveTarget(member)}
+                          >
                             멤버 제거</S.ActionMenuItem>
                         </S.ActionMenu>
                       )}
@@ -371,6 +374,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
         </S.ButtonContainer>
       </S.ModalContent>
     </S.ModalOverlay >
+
   )
 
   return (
@@ -382,7 +386,15 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
           memberMap={memberMap}
           projectId={projectId}
           onAddSuccess={addMembersToList}
-        />}
+        />
+      }
+      {removeTarget && (
+        <RemoveProjectMemberModal
+          onClose={() => setRemoveTarget(null)}
+          onConfirm={confirmRemoveMember}
+          memberName={removeTarget.name}
+        />
+      )}
     </>
   )
 }
