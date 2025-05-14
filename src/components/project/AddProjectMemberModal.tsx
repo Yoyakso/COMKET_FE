@@ -31,6 +31,7 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
+  const [suggestions, setSuggestions] = useState<Member[]>([])
 
   useEffect(() => {
     setIsMounted(true)
@@ -55,6 +56,32 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (!emailInput) {
+      setSuggestions([])
+      return
+    }
+
+    const filtered = Array.from(memberMap.values())
+      .filter(
+        (m) =>
+          m.email.includes(emailInput) &&
+          !selectedMembers.some((s) => s.email === m.email)
+      )
+      .slice(0, 5) // 최대 5개
+
+    const suggestionList: Member[] = filtered.map((m) => ({
+      id: m.memberId,
+      name: m.name,
+      email: m.email,
+      initial: m.name?.charAt(0).toUpperCase() || m.email.charAt(0).toUpperCase(),
+      color: getColorFromString(m.email),
+    }))
+
+    setSuggestions(suggestionList)
+
+  }, [emailInput, memberMap, selectedMembers])
 
   const toggleRoleDropdown = () => setIsRoleDropdownOpen(!isRoleDropdownOpen)
   const handleRoleSelect = (selectedRole: string) => {
@@ -184,6 +211,27 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
                 onChange={handleEmailChange}
                 onKeyDown={handleKeyDown}
               />
+              {suggestions.length > 0 && (
+                <S.SuggestionList>
+                  {suggestions.map((s) => (
+                    <S.SuggestionItem
+                      key={s.email}
+                      onClick={() =>
+                        addMember({
+                          memberId: s.id,
+                          name: s.name || "",
+                          email: s.email,
+                        })
+                      }
+                    >
+                      <S.SuggestionAvatar $bgColor={s.color}>
+                        {s.initial}
+                      </S.SuggestionAvatar>
+                      <span>{s.name} [{s.email}]</span>
+                    </S.SuggestionItem>
+                  ))}
+                </S.SuggestionList>
+              )}
             </S.MemberTagsContainer>
           </S.InputContainer>
         </S.FormRow>
