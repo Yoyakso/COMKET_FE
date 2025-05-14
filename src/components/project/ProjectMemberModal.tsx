@@ -42,6 +42,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   }>>(new Map())
   const [roleChanges, setRoleChanges] = useState<Record<string, "프로젝트 관리자" | "일반 멤버">>({})
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
+  const workspaceId = useWorkspaceStore((state) => state.workspaceId)
 
   useEffect(() => {
     setIsMounted(true)
@@ -54,7 +55,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
         onClose()
       }
     }
-
     document.addEventListener("keydown", handleEscKey)
     document.body.style.overflow = "hidden"
 
@@ -86,7 +86,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     const fetchProjectMembers = async () => {
       try {
         const data = await getProjectMembers(workspaceName, projectId)
-        console.log("프로젝트 멤버 응답 데이터:", data)
 
         const mappedMembers: ProjectMember[] = data
           .filter((m: any) => m.state === "ACTIVE")
@@ -102,7 +101,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
         setMembers(mappedMembers)
       } catch (error) {
-        console.error("프로젝트 멤버 불러오기 실패:", error)
+        console.error("프로젝트 멤버 불러오기 실패!!!!!:", error)
         throw error
       }
     }
@@ -113,8 +112,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   useEffect(() => {
     const fetchWorkspaceMembers = async () => {
       try {
-        const members = await getWorkspaceMembers(workspaceName)
-
+        const members = await getWorkspaceMembers(workspaceId)
         const memberMap = new Map<string, {
           memberId: number
           name: string
@@ -227,7 +225,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
   const handleSave = async () => {
     try {
-      const workspaceName = localStorage.getItem("workspaceName")
       if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
 
       const editPromises = Object.entries(roleChanges).map(([memberId, role]) => {
@@ -259,7 +256,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
   const handleDeleteMember = async (memberId: number) => {
     try {
-      const workspaceName = localStorage.getItem("workspaceName")
       if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
 
       const response = await deleteProjectMember(workspaceName, projectId, memberId)

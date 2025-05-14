@@ -6,6 +6,7 @@ import { inviteProjectMembers } from "@/api/Project"
 import { getColorFromString } from "@/utils/avatarColor"
 import { toast } from "react-toastify"
 import type { ProjectMember } from "./ProjectMemberModal"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 export interface Member {
   id: number
@@ -29,6 +30,7 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const workspaceName = useWorkspaceStore((state) => state.workspaceName)
 
   useEffect(() => {
     setIsMounted(true)
@@ -85,15 +87,13 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
   }
 
   const addMember = (m: { memberId: number; name: string; email: string }) => {
-    console.log("✅ addMember called with:", m)
-
     if (selectedMembers.some((member) => member.email === m.email)) {
-      alert("이미 추가된 이메일입니다.")
+      toast.error("이미 추가된 이메일입니다.")
       return
     }
 
     if (!m.memberId) {
-      alert("유효하지 않은 멤버입니다 (memberId 없음).")
+      toast.error("유효하지 않은 멤버입니다.")
       return
     }
 
@@ -117,7 +117,6 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
 
     setIsSubmitting(true)
     try {
-      const workspaceName = localStorage.getItem("workspaceName")
       if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
 
       const workspaceMemberIdList = selectedMembers
@@ -125,7 +124,7 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
         .filter((id): id is number => id !== null && id !== undefined)
 
       if (workspaceMemberIdList.length === 0) {
-        alert("선택된 멤버의 ID가 없습니다.")
+        toast.error("선택된 멤버가 없습니다.")
         setIsSubmitting(false)
         return
       }
@@ -152,7 +151,7 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
       onClose()
     } catch (error) {
       console.error("멤버 초대 실패:", error)
-      alert("멤버 초대 중 오류가 발생했습니다.")
+      toast.error("멤버 초대 중 오류가 발생했습니다.")
     } finally {
       setIsSubmitting(false)
     }
