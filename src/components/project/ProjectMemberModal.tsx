@@ -7,6 +7,7 @@ import { getProjectMembers, editProjectMemberRole, deleteProjectMember } from "@
 import { getWorkspaceMembers } from "@/api/Member"
 import { getColorFromString } from "@/utils/avatarColor"
 import { toast } from "react-toastify"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 export interface ProjectMember {
   id: number
@@ -40,6 +41,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     email: string
   }>>(new Map())
   const [roleChanges, setRoleChanges] = useState<Record<string, "프로젝트 관리자" | "일반 멤버">>({})
+  const workspaceName = useWorkspaceStore((state) => state.workspaceName)
 
   useEffect(() => {
     setIsMounted(true)
@@ -83,9 +85,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   useEffect(() => {
     const fetchProjectMembers = async () => {
       try {
-        const workspaceName = localStorage.getItem("workspaceName")
-        if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
-
         const data = await getProjectMembers(workspaceName, projectId)
         console.log("프로젝트 멤버 응답 데이터:", data)
 
@@ -96,7 +95,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
             id: m.projectMemberId,
             name: m.name,
             position: "", // 현재 직무는 공백 상태
-            role: m.positionType === "ADMIN" ? "프로젝트 관리자" : "일반 멤버", // 프로젝트 관리자인지는 어떻게 알지?
+            role: m.positionType === "MEMBER" ? "일반 멤버" : "프로젝트 관리자",
             initial: m.name?.charAt(0) || "?",
             color: getColorFromString(m.name),
           }))
@@ -104,6 +103,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
         setMembers(mappedMembers)
       } catch (error) {
         console.error("프로젝트 멤버 불러오기 실패:", error)
+        throw error
       }
     }
 
@@ -113,10 +113,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   useEffect(() => {
     const fetchWorkspaceMembers = async () => {
       try {
-        const workspaceName = localStorage.getItem("workspaceName")
-        if (!workspaceName) throw new Error("워크스페이스 정보 없음")
-
-        const members = await getWorkspaceMembers()
+        const members = await getWorkspaceMembers(workspaceName)
 
         const memberMap = new Map<string, {
           memberId: number
@@ -224,7 +221,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     if (valueA > valueB) {
       return sortDirection === "asc" ? 1 : -1
     }
-
 
     return 0
   })

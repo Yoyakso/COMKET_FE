@@ -7,6 +7,7 @@ import { RemoveProjectModal } from "./RemoveProjectModal"
 import { deleteProject } from "@/api/Project"
 import { toast } from "react-toastify"
 import { getColorFromString } from "@/utils/avatarColor"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 interface ProjectRowProps {
   project: ProjectData
@@ -20,8 +21,9 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null)
   const [showMemberModal, setShowMemberModal] = useState(false)
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false)
-
   const visibilityOptions = ["전체 공개", "멤버 공개"]
+
+  const workspaceName = useWorkspaceStore((state) => state.workspaceName)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -87,7 +89,6 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
     return Promise.resolve()
   }
 
-  const ownerInitial = project.admin.charAt(0).toUpperCase()
   const avatarColor = getColorFromString(project.admin)
   const creatorAvatar = getColorFromString(project.createdBy)
 
@@ -103,7 +104,6 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
 
   const handleRemoveProject = async () => {
     try {
-      const workspaceName = localStorage.getItem("workspaceName")
       if (!workspaceName) throw new Error("워크스페이스가 없습니다.")
 
       await deleteProject(workspaceName, Number(project.id))
@@ -154,12 +154,6 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
           <S.UserInfo>
             <S.UserAvatar color={avatarColor}></S.UserAvatar>
             <S.UserName>{project.admin}</S.UserName>
-          </S.UserInfo>
-        </S.Cell>
-        <S.Cell>
-          <S.UserInfo>
-            <S.UserAvatar color={creatorAvatar}></S.UserAvatar>
-            <S.UserName>{project.createdBy}</S.UserName>
           </S.UserInfo>
         </S.Cell>
         <S.Cell>{project.createdAt}</S.Cell>

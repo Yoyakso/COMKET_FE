@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import {color} from '@styles/color'
+import { color } from '@styles/color'
 
 export const Container = styled.div`
 
@@ -70,7 +70,6 @@ export const DescriptionInput = styled.input`
     border-color: ${color.primary};
   }
 `;
-
 
 export const RadioWrapper = styled.div`
   display: flex;

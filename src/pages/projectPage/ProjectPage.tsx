@@ -11,6 +11,7 @@ import type { ProjectData } from "@/components/project/ProjectModal"
 import * as S from "./ProjectPage.Style"
 import { createProject, getAllProjects, editProject } from "@api/Project"
 import { formatDate } from "@utils/dateFormat"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 export const ProjectPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
@@ -19,9 +20,14 @@ export const ProjectPage = () => {
   const [projects, setProjects] = useState<ProjectTableData[]>([])
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
+  const workspaceName = useWorkspaceStore((state) => state.workspaceName)
+
   useEffect(() => {
-    handleNavigateProject();
-  }, []);
+    if (workspaceName) {
+      handleNavigateProject()
+    }
+  }, [workspaceName])
+
 
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
@@ -34,12 +40,11 @@ export const ProjectPage = () => {
     const matchesFilter = selectedFilters.every((filter) => {
       if (filter === "public") return project.visibility === "전체 공개";
       if (filter === "private") return project.visibility === "멤버 공개";
-      return project.tag.includes(filter); // 예시로 태그 필터 처리
+      return project.tag.includes(filter);
     });
 
     return matchesSearch && matchesFilter;
   });
-
 
   const handleFilter = (filters: string[]) => {
     setSelectedFilters(filters);
@@ -59,7 +64,6 @@ export const ProjectPage = () => {
 
   const handleNavigateProject = async () => {
     try {
-      const workspaceName = localStorage.getItem("workspaceName");
       const data = await getAllProjects(workspaceName);
       console.log("data", data)
 
@@ -82,8 +86,6 @@ export const ProjectPage = () => {
   };
 
   const handleViewProject = (projectId: number) => {
-
-    // 프로젝트 ID로 프로젝트 찾기
     const project = projects.find((p) => Number(p.id) === projectId)
     if (project) {
       setViewingProject({
@@ -102,7 +104,7 @@ export const ProjectPage = () => {
 
   const handleCreateProjectSubmit = async (projectData: ProjectData) => {
     try {
-      await createProject({
+      await createProject(workspaceName, {
         name: projectData.name,
         description: projectData.description,
         isPublic: projectData.isPublic,
@@ -122,7 +124,6 @@ export const ProjectPage = () => {
 
   const handleUpdateProjectSubmit = async (projectId: number, updatedData: ProjectData) => {
     try {
-      const workspaceName = localStorage.getItem("workspaceName");
       if (!workspaceName) throw new Error("워크스페이스 이름이 없습니다.");
 
       await editProject(workspaceName, projectId, {
@@ -146,7 +147,6 @@ export const ProjectPage = () => {
             : p
         )
       );
-
       setViewingProject(null);
     } catch (err) {
       console.error("프로젝트 수정 실패:", err);
@@ -178,26 +178,16 @@ export const ProjectPage = () => {
             onCreateProject={handleCreateProject}
             onFilter={handleFilter}
           />
-
           {!hasProjects ? (
             <EmptyProject onCreateProject={handleCreateProject} />
-          ) : !hasSearchResults ? (
-            <S.NoResultsContainer>
-              <S.NoResultsText>
-                검색 결과가 없습니다.<br />
-                입력한 검색어를 다시 한 번 확인해 주세요.
-              </S.NoResultsText>
-            </S.NoResultsContainer>
-          ) : (
+          ) : hasSearchResults ? (
             <ProjectTable
               projects={filteredProjects}
               onViewProject={handleViewProject}
               onDeleteProject={handleDeleteProject}
             />
-          )}
+          ) : null}
         </S.Content>
-
-
       </S.MainContainer>
 
       {showCreateModal && <CreateProjectModal onClose={handleCloseCreateModal} onConfirm={handleCreateProjectSubmit} />}
@@ -205,7 +195,7 @@ export const ProjectPage = () => {
         <ViewProjectModal
           projectId={viewingProject.id}
           projectData={viewingProject}
-          isAdmin={true} // 🔑 실제론 로그인 유저와 비교해서 판단
+          isAdmin={true}
           onSubmit={handleUpdateProjectSubmit}
           onClose={handleCloseViewModal}
         />}

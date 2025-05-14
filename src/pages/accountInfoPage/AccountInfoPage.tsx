@@ -1,37 +1,32 @@
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import * as S from "./AccountInfoPage.Style"
 import { GoogleIcon } from "@assets/icons"
 import { logOut } from "@/api/Oauth"
-
-interface AccountInfoProps {
-  email: string
-  loginMethod: "google" | "email" | "kakao"
-}
+import { toast } from "react-toastify"
+import { useUserStore } from "@/stores/userStore"
 
 export const AccountInfoPage = () => {
-  const [accountInfo] = useState<AccountInfoProps>({
-    email: localStorage.getItem("email"),
-    loginMethod: "google",
-  })
-
+  const email = useUserStore((state) => state.email)
+  const loginMethod = useUserStore((state) => state.loginPlatformInfo)
+  const { clearUser } = useUserStore()
   const navigate = useNavigate()
 
   const handleLogout = async () => {
     try {
       await logOut()
-      localStorage.removeItem("accessToken")
+      clearUser()
+      toast.success("로그아웃 되었습니다.")
       navigate("/login")
     } catch (error) {
-      alert("로그아웃에 실패했습니다.")
+      toast.error("로그아웃에 실패했습니다.")
     }
   }
 
   const handleWithdraw = () => {
     if (window.confirm("정말로 탈퇴하시겠습니까? 모든 데이터가 삭제되며 복구할 수 없습니다.")) {
-      console.log("회원 탈퇴 처리")
+      toast.success("탈퇴 처리되었습니다.")
       //회원 탈퇴 API 호출
     }
   }
@@ -53,7 +48,7 @@ export const AccountInfoPage = () => {
           <S.Section>
             <S.SectionTitle>이메일</S.SectionTitle>
             <S.SectionContent>
-              <S.EmailText>{accountInfo.email}</S.EmailText>
+              <S.EmailText>{email}</S.EmailText>
             </S.SectionContent>
           </S.Section>
 
@@ -64,7 +59,7 @@ export const AccountInfoPage = () => {
             <S.SectionContent>
               <S.LoginMethodContainer>
                 <S.LoginMethodInfo>
-                  {accountInfo.loginMethod === "google" && (
+                  {loginMethod === "GOOGLE" && (
                     <>
                       <GoogleIcon width={16} height={16} />
                       <S.LoginMethodText>Google 계정으로 로그인</S.LoginMethodText>
