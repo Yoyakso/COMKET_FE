@@ -4,7 +4,7 @@ import type { ProjectData } from "@/types/project"
 import { ChevronDown, DotIcon } from "@assets/icons"
 import { ProjectMemberModal } from "./ProjectMemberModal"
 import { RemoveProjectModal } from "./RemoveProjectModal"
-import { deleteProject } from "@/api/Project"
+import { deleteProject, editProject } from "@/api/Project"
 import { toast } from "react-toastify"
 import { getColorFromString } from "@/utils/avatarColor"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
@@ -21,7 +21,7 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null)
   const [showMemberModal, setShowMemberModal] = useState(false)
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false)
-  const visibilityOptions = ["전체 공개", "멤버 공개"]
+  const visibilityOptions = ["전체 공개", "멤버 공개"] as const
 
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
 
@@ -58,11 +58,31 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
     setActiveDropdownId(null)
   }
 
-  const handleVisibilityChange = (visibility: string, e: React.MouseEvent) => {
+  const handleVisibilityChange = async (
+    visibility: "전체 공개" | "멤버 공개",
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation()
-    setCurrentVisibility(visibility as '전체 공개' | '멤버 공개')
-    setShowVisibilityDropdown(false)
+
+    try {
+      const isPublic = visibility === "전체 공개"
+      setCurrentVisibility(visibility)
+      setShowVisibilityDropdown(false)
+
+      await editProject(workspaceName, Number(project.id), {
+        name: project.name,
+        description: project.description,
+        isPublic,
+        tags: project.tag ? [project.tag] : [],
+        profile_file_id: null,
+      })
+      toast.success("공개 범위가 변경되었습니다.")
+    } catch (err) {
+      console.error("공개범위 변경 실패:", err)
+      toast.error("공개 범위 변경에 실패했습니다.")
+    }
   }
+
 
   const handleEditProject = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -83,14 +103,12 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
   }
 
   const handleSaveMembers = async () => {
-    // 여기에 멤버 저장 로직 구현
     console.log("멤버 저장 로직 실행")
     await new Promise((resolve) => setTimeout(resolve, 1000)) // 저장 시뮬레이션
     return Promise.resolve()
   }
 
   const avatarColor = getColorFromString(project.admin)
-  const creatorAvatar = getColorFromString(project.createdBy)
 
   const openRemoveModal = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -152,7 +170,7 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
         </S.Cell>
         <S.Cell>
           <S.UserInfo>
-            <S.UserAvatar color={avatarColor}></S.UserAvatar>
+            <S.UserAvatar color={avatarColor}>{project.admin?.charAt(0).toUpperCase() ?? "?"}</S.UserAvatar>
             <S.UserName>{project.admin}</S.UserName>
           </S.UserInfo>
         </S.Cell>
