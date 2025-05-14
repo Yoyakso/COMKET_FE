@@ -8,6 +8,7 @@ interface UserState {
   name: string
   memberId: number
   loginPlatformInfo: string
+  profileFileUrl: string
 
   // 유저 상태 값을 설정(업데이트)하는 함수
   setUserState: (args: {
@@ -15,10 +16,17 @@ interface UserState {
     name: string
     memberId: number
     loginPlatformInfo: string
+    profileFileUrl: string
   }) => void
 
   // 유저 상태를 초기화하는 함수
   clearUser: () => void
+
+  // 유저 프로필을 업데이트하는 함수 (소속, 직책, 직무 추가 필요)
+  setProfileInfo: (args: {
+    name: string
+    profileFileUrl: string
+  }) => void
 }
 
 // 전역 상태 생성
@@ -30,14 +38,16 @@ export const useUserStore = create<UserState>()(
       name: "",
       memberId: 0,
       loginPlatformInfo: "",
+      profileFileUrl: "",
 
       // 유저 상태를 업데이트하는 함수
-      setUserState: ({ email, name, memberId, loginPlatformInfo }) =>
+      setUserState: ({ email, name, memberId, loginPlatformInfo, profileFileUrl }) =>
         set({
           email,
           name,
           memberId,
           loginPlatformInfo,
+          profileFileUrl,
         }),
 
       // 유저 상태를 초기화하는 함수
@@ -47,6 +57,14 @@ export const useUserStore = create<UserState>()(
           name: "",
           memberId: 0,
           loginPlatformInfo: "",
+          profileFileUrl: "",
+        }),
+
+      // 유저 프로필을 업데이트하는 함수 (소속, 직책, 직무 추가 필요)
+      setProfileInfo: ({ name, profileFileUrl }) =>
+        set({
+          name,
+          profileFileUrl,
         }),
     }),
     {
@@ -56,6 +74,7 @@ export const useUserStore = create<UserState>()(
         name: state.name,
         memberId: state.memberId,
         loginPlatformInfo: state.loginPlatformInfo,
+        profileFileUrl: state.profileFileUrl
       }),
     }
   )
