@@ -20,11 +20,10 @@ interface ProfileData {
 }
 
 export const ProfilePage = () => {
-  const {
-    name: globalName,
-    email: globalEmail,
-    profileFileUrl: globalProfileImage
-  } = useUserStore();
+  const globalName = useUserStore((s) => s.name)
+  const globalEmail = useUserStore((s) => s.email)
+  const globalProfileImage = useUserStore((s) => s.profileFileUrl)
+  const setProfileInfo = useUserStore((s) => s.setProfileInfo)
   const [profile, setProfile] = useState<ProfileData>({
     name: globalName,
     email: globalEmail,
@@ -34,26 +33,19 @@ export const ProfilePage = () => {
     profileImage: globalProfileImage || null,
     profileImageFile: null,
   });
-  const { setProfileInfo } = useUserStore.getState();
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // 전역 상태 반영
-  useEffect(() => {
-    if (globalName && globalEmail) {
-      setProfile((prev) => ({
-        ...prev,
-        name: globalName,
-        email: globalEmail,
-        profileImage: globalProfileImage || null,
-      }));
-    }
-  }, [globalName, globalEmail, globalProfileImage]);
-
-  // 최신 프로필 정보 fetch
   useEffect(() => {
     const fetchLatestProfile = async () => {
       try {
         const res = await getMyProfile();
+
+        // 전역 상태 동기화
+        setProfileInfo({
+          name: res.realName ?? "",
+          profileFileUrl: res.profileFileUrl ?? "",
+        });
+
         setProfile({
           name: res.realName ?? "",
           email: res.email ?? "",
@@ -68,7 +60,7 @@ export const ProfilePage = () => {
       }
     };
     fetchLatestProfile();
-  }, []);
+  }, [setProfileInfo]);
 
 
   const handleImageClick = () => {

@@ -3,7 +3,7 @@ import { color } from "@/styles/color";
 import type { UserStatus } from "./NavProfile"
 
 export const ProfileContainer = styled.div`
-  width: 110px;
+  width: 150px;
   height: 48px;
   display: flex;
   align-items: center;
@@ -73,6 +73,7 @@ export const UserStatusContainer = styled.div`
   color: ${color.textLabel};
   display: flex;
   align-items: center;
+  margin-top: 5px;
 `
 
 export const StatusIndicator = styled.span<{ $status: UserStatus }>`
