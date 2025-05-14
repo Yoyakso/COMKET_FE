@@ -3,7 +3,9 @@ import { color } from "@/styles/color"
 
 export const Row = styled.tr<{ $isDeleted?: boolean }>`
   border-bottom: 1px solid #E7EAF1;
-    color: ${({ $isDeleted }) => ($isDeleted ? "#A0A0A0" : "inherit")};
+  opacity: ${({ $isDeleted }) => ($isDeleted ? 0.5 : 1)};
+  pointer-events: ${({ $isDeleted }) => ($isDeleted ? "none" : "auto")};
+  color: ${({ $isDeleted }) => ($isDeleted ? "#A0A0A0" : "inherit")};
   opacity: ${({ $isDeleted }) => ($isDeleted ? 0.6 : 1)};
   &:hover {
     background-color: #F7F8FA;

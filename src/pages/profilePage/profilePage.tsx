@@ -32,6 +32,22 @@ export const ProfilePage = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
+
+      const cached = localStorage.getItem("profile");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        setProfile({
+          name: parsed.realName ?? "",
+          email: parsed.email ?? "",
+          organization: parsed.responsibility ?? "",
+          position: parsed.role ?? "",
+          department: parsed.department ?? "",
+          profileImage: parsed.profileFileUrl ?? null,
+          profileImageFile: null,
+        });
+        return;
+      }
+
       const res = await getMyProfile();
       setProfile({
         name: res.real_name ?? "",
@@ -112,17 +128,8 @@ export const ProfilePage = () => {
       });
 
       const updated = await getMyProfile();
-      console.log("🔁 업데이트 후 프로필:", updated);
-
-      const payload = {
-        realName: profile.name,
-        department: profile.department || "",
-        role: profile.position || "",
-        responsibility: profile.organization || "",
-        profileFileId: fileId,
-      };
-
-      console.log("📡 전송될 payload:", payload);
+      console.log("업데이트된 프로필:", updated);
+      localStorage.setItem("profile", JSON.stringify(updated));
 
       alert("프로필 수정 완료!");
     } catch (error) {

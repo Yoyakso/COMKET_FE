@@ -2,6 +2,7 @@ import type React from "react"
 import * as S from "./LocalNavBar.Style"
 import { InformationIcon, MemberIcon, PlanIcon, ListIcon, ProfileIcon, KeyIcon } from "@/assets/icons"
 import { NavProfile } from "./NavProfile"
+import { useUserStore } from "@/stores/userStore"
 
 export interface NavItem {
   id: string
@@ -29,7 +30,7 @@ export const LocalNavBar = ({
   onNavigateMember,
   onNavigateProject,
 }: NavigationBarProps) => {
-
+  const name = useUserStore((state) => state.name)
   const workspaceSlug = localStorage.getItem("workspaceSlug");
 
   const sections: NavSection[] = [
@@ -85,7 +86,7 @@ export const LocalNavBar = ({
       <S.Divider />
       <S.NavProfileContainer>
         <NavProfile
-          name="사용자"
+          name={name}
           defaultImage=""
           status="온라인"
         />
