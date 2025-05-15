@@ -5,7 +5,6 @@ import { TypeBadge } from "@/components/ticket/TypeBadge";
 import * as S from "@/components/common/dropdown/Filter.Style";
 import { PRIORITY, STATUS, TYPE } from "@/constants/filterData";
 import { TicketFilterStore } from "@/components/ticket/Ticket";
-import { RefreshCcwDot } from "lucide-react"
 
 export const Filter = () => {
 
@@ -76,7 +75,7 @@ export const Filter = () => {
       </S.FilterGroup>
 
       <S.ButtonBox>
-        <S.ResetButton onClick={reset}><RefreshCcwDot width={'14px'} height={'14px'} />초기화</S.ResetButton>
+        <S.ResetButton onClick={reset}>초기화</S.ResetButton>
       </S.ButtonBox>
 
     </S.Wrapper>

@@ -82,8 +82,4 @@ export const SubticketCell = styled.td`
     width: 1px;
     background-color: ${color.teal500};
   }
-
-  &:nth-child(3) {
-    padding-left: 48px;
-  }
 `;

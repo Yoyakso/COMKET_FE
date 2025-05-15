@@ -1,14 +1,13 @@
 import * as S from "./TicketRow.Style";
 import { useState } from "react";
 import { AvatarWithName } from "./AvatarWithName";
-import { PriorityBadge } from "./PriorityBadge";
-import { StatusBadge } from "./StatusBadge";
 import { Ticket } from "@/types/ticket";
 import { CheckBox } from "../common/checkbox/CheckBox";
 import { ChevronRight, ChevronDown, MessageSquare } from 'lucide-react';
 import { TypeBadge } from "./TypeBadge";
 import { PriorityDropdown } from "./PriorityDropdown";
 import { StatusDropdown } from "./StatusDropdown";
+
 
 
 

@@ -5,6 +5,7 @@ import { PRIORITY_COLORS } from "./PriorityDropdown.Style";
 import * as S from "./PriorityDropdown.Style";
 import { OutsideClick } from "@/utils/OutsideClick";
 import type { Priority } from "@/types/filter";
+import { PortalDropdown } from "@/utils/PortalDropdown";
 
 const findTicketById = (tickets: any[], id: number) => {
     for (const t of tickets) {
@@ -54,7 +55,7 @@ export const PriorityDropdown = ({ ticketId }: { ticketId: number }) => {
             </S.Wrapper>
 
             <AnimatePresence>
-                {isOpen && (
+                {isOpen && (<PortalDropdown triggerRef={ref}>
                     <S.MorphDropdown
                         as={motion.div}
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -74,6 +75,7 @@ export const PriorityDropdown = ({ ticketId }: { ticketId: number }) => {
                             </S.Option>
                         ))}
                     </S.MorphDropdown>
+                </PortalDropdown>
                 )}
             </AnimatePresence>
         </S.Positioner>

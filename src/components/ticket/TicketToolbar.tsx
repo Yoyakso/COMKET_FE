@@ -46,7 +46,6 @@ export const TicketToolbar = ({
                     ticketIds={selectedTicketIds}
                     options={TYPE}
                     onSelect={(value) => {
-                        console.log("🎨 유형 변경:", selectedTicketIds, value);
                         onChangeType(value);
                     }}
                 />

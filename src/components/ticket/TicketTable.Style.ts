@@ -26,11 +26,17 @@ export const HeaderRow = styled.tr`
   border-bottom: 1px solid #dee2e6;
 `;
 
-export const HeaderCell = styled.th`
-  padding: 12px 20px;
+export const HeaderCell = styled.th<{ $width?: number }>`
+  width: ${({ $width }) => ($width ? `${$width}px` : 'auto')};
+  min-width: 40px;
+  max-width: 1000px;
+  padding: 12px 8px;
   text-align: left;
   color: ${color.textLabel};
   font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
   cursor: default;
 
@@ -41,6 +47,15 @@ export const HeaderCell = styled.th`
 
 export const TableBody = styled.tbody``;
 
+export const HeaderContent = styled.div`
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+`;
 
 export const SortableHeader = styled.div`
   display: inline-flex;
@@ -52,4 +67,18 @@ export const SortableHeader = styled.div`
     transition: transform 0.2s ease;
   }
 
+`;
+
+export const Resizer = styled.div`
+  position: absolute;
+  right: -4px;
+  top: 0;
+  height: 100%;
+  width: 12px;
+  cursor: col-resize;
+  z-index: 10;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
 `;

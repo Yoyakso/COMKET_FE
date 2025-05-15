@@ -40,9 +40,10 @@ export const FilterButton = styled.button`
 export const FilterMenu = styled.div`
   position: absolute;
   top: 100%;
-  right: 50%;
+  right: 10%;
   width: 450px;
   background-color: white;
+  opacity: 0.95;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
