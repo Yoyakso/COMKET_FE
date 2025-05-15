@@ -8,10 +8,7 @@ import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
 import { WorkspaceDelete } from '@/components/workspace/WorkspaceDelete';
 import { WorkspaceExit } from '@/components/workspace/WorkspaceExit';
 import { useParams } from 'react-router-dom';
-import { updateWorkspace } from '@/api/WorkspaceInfo';
-import { deleteWorkspace } from '@/api/DeleteWorkspace';
-import { ExitWorkspace } from '@/api/ExitWorkspace';
-import { fetchMyWorkspaces } from '@api/Workspace';
+import { fetchMyWorkspaces, updateWorkspace, deleteWorkspace, exitWorkspace } from '@api/Workspace';
 import { useNavigate } from 'react-router-dom';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { toast } from 'react-toastify';
@@ -221,7 +218,7 @@ export const WorkspaceInfoPage = () => {
                 throw new Error('이메일 또는 워크스페이스 ID가 없습니다.');
               }
 
-              await ExitWorkspace({
+              await exitWorkspace({
                 workspaceId: workspaceId.toString(), email
               }); // ← API 요청
 

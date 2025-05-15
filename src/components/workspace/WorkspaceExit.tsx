@@ -1,4 +1,3 @@
-import React from 'react';
 import * as S from './WorkspaceExit.Style';
 import { Button } from '@/components/common/button/Button';
 

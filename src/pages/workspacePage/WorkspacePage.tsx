@@ -4,7 +4,6 @@ import { Button } from "@/components/common/button/Button";
 import { Dropdown, DropdownOption } from "@/components/common/dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import { fetchMyWorkspaces } from "@/api/Workspace";
-import { useUserStore } from "@/stores/userStore";
 
 export const WorkspacePage = () => {
 

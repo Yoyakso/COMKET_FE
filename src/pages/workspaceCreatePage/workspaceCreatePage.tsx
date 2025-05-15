@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as S from './workspaceCreatePage.Style';
 import { Radio } from '@/components/common/radio/Radio';
 import { Button } from '@/components/common/button/Button';
-import { workspaceCreate } from '@/api/CreateWorkspace';
+import { workspaceCreate } from '@/api/Workspace'
 import { toast } from 'react-toastify';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 

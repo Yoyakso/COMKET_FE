@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import * as S from './WorkspaceDelete.Style';
 import { Button } from '@/components/common/button/Button';
-import SpinnerIcon from '@/assets/icons/ImageUploadSpinner.svg';
 
 interface WorkspaceDeleteProps {
     onClose: () => void;

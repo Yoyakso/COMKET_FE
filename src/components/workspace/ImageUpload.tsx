@@ -4,7 +4,7 @@ import * as S from './ImageUpload.Style';
 import { Button } from '@/components/common/button/Button';
 import { getCroppedImg } from '@/utils/getCroppedImg';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
-import { uploadProfileImage, type UploadResponse } from '@/api/WorkspaceImage';
+import { uploadProfileImage, type UploadResponse } from '@/api/Workspace';
 
 
 interface ImageUploadProps {

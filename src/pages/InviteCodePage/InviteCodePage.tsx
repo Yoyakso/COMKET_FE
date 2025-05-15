@@ -1,17 +1,14 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as S from './InviteCodePage.Style'
-
 import { InviteCode } from '@components/common/textInput/InviteCode'
 import { Button } from '@components/common/button/Button'
 import { Dropdown, DropdownOption } from '@/components/common/dropdown/Dropdown'
-
 import styled, { keyframes } from 'styled-components'
 import SpinnerIcon from '@assets/icons/InviteCodeSpinner.svg?react'
 import ValidIcon from '@/assets/icons/InviteCodeValid.svg?react'
 import ErrorIcon from '@assets/icons/InviteCodeError.svg?react'
-
-import { fetchWorkspaceByInviteCode } from '@/api/InviteCode';
+import { fetchWorkspaceByInviteCode } from '@/api/Workspace';
 import { error } from 'console'
 
 const rotate = keyframes`
