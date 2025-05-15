@@ -1,7 +1,8 @@
 import * as S from "./StatusBadge.Style";
+import type { Status } from "@/types/filter";
 
 interface StatusBadgeProps {
-    status: "TODO" | "IN_PROGRESS" | "DONE" | "HOLD" | "DROP" | "BACKLOG";
+    status: Status;
 }
 
 export const StatusBadge = ({ status }: StatusBadgeProps) => {

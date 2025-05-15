@@ -51,20 +51,20 @@ interface UserAvatarProps {
 }
 
 export const UserAvatar = styled.div<UserAvatarProps>`
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background-color: ${(props) => props.color};
-  color: ${color.white}
+  color: ${color.white};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 14px;
 `
 
 export const UserName = styled.div`
-  font-weight: 500;
+  font-weight: 400;
 `
 
 export const ActionButtonContainer = styled.div`

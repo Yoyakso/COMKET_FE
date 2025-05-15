@@ -4,20 +4,18 @@ import { Button } from "@/components/common/button/Button";
 import { Dropdown, DropdownOption } from "@/components/common/dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import { fetchMyWorkspaces } from "@/api/Workspace";
+import { useUserStore } from "@/stores/userStore";
 
 export const WorkspacePage = () => {
 
   const navigate = useNavigate();
-
   const [options, setOptions] = useState<DropdownOption[]>([]);
   const [selectedSlug, setSelectedSlug] = useState<string>("");
-  const [selectedId, setSelectedId] = useState<string>("");
-
 
   interface Workspace {
     id: string;
     name: string;
-    slug: string; // Added slug property
+    slug: string;
   }
 
   useEffect(() => {
@@ -129,7 +127,6 @@ export const WorkspacePage = () => {
         )}
       </S.Card>
     </S.Container>
-
   );
 };
 

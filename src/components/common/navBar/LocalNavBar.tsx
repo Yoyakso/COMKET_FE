@@ -31,6 +31,7 @@ export const LocalNavBar = ({
   onNavigateProject,
 }: NavigationBarProps) => {
   const name = useUserStore((state) => state.name)
+  const profileImg = useUserStore((state) => state.profileFileUrl)
   const workspaceSlug = localStorage.getItem("workspaceSlug");
 
   const sections: NavSection[] = [
@@ -87,7 +88,7 @@ export const LocalNavBar = ({
       <S.NavProfileContainer>
         <NavProfile
           name={name}
-          defaultImage=""
+          defaultImage={profileImg}
           status="온라인"
         />
       </S.NavProfileContainer>

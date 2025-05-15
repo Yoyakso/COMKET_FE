@@ -1,11 +1,12 @@
-// src/components/ticket/AvatarWithName.tsx
 import * as S from "./AvatarWithName.Style";
+import { getColorFromString } from "@/utils/avatarColor";
 
 interface AvatarWithNameProps {
     user: {
         name: string;
         nickname: string;
         profileUrl?: string;
+        email: string;
     };
 }
 
@@ -15,9 +16,11 @@ export const AvatarWithName = ({ user }: AvatarWithNameProps) => {
     return (
         <S.Container>
             {user.profileUrl ? (
-                <S.AvatarImage src={user.profileUrl} alt={`${user.name}의 프로필`} />
+                <S.AvatarImage src={user.profileUrl} alt={`${user.email}의 프로필`} width={'20px'} height={'20px'} />
             ) : (
-                <S.AvatarFallback>{firstLetter}</S.AvatarFallback>
+                <S.AvatarFallback style={{ backgroundColor: getColorFromString(user.email), width: '20px', height: '20px' }}>
+                    {firstLetter}
+                </S.AvatarFallback>
             )}
             <S.TextGroup>
                 <S.Name>{user.name}</S.Name>
@@ -26,3 +29,5 @@ export const AvatarWithName = ({ user }: AvatarWithNameProps) => {
         </S.Container>
     );
 };
+
+// 

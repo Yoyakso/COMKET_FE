@@ -2,13 +2,9 @@ import styled from 'styled-components'
 import { color } from '@styles/color'
 
 export const Container = styled.div`
-
   display: flex;
-  min-width: 1080px;
   flex-direction: column;
-  align-items: flex-start;
-  flex:1 0 0;
-  align-self: stretch;
+  height: 100vh;
   background-color: ${color.white};
 `;
 

@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { color } from "@/styles/color";
 
 const getStatusStyle = (status: string) => {
   switch (status) {
@@ -43,6 +44,7 @@ export const Badge = styled.span<{ $status: string }>`
   font-size: 12px;
   font-weight: 500;
   min-width: 80px;
+  white-space: nowrap;      // 줄바꿈 방지
   text-align: center;
   ${props => getStatusStyle(props.$status)}
 `;
