@@ -1,7 +1,8 @@
 import * as S from "./PriorityBadge.Style";
+import type { Priority } from "@/types/filter";
 
 interface PriorityBadgeProps {
-    priority: "HIGH" | "MEDIUM" | "LOW";
+    priority: Priority;
 }
 
 export const PriorityBadge = ({ priority }: PriorityBadgeProps) => {

@@ -1,23 +1,45 @@
 import * as S from "./TicketDashboardPage.Style";
-import { TicketTable } from "@/components/ticket/TicketTable";
+import { useState } from "react";
+import { TicketListView } from "@/components/ticketView/TicketListView";
+import { TicketBoardView } from "@/components/ticketView/TicketBoardView";
+import { ListChecks, Rows2, Plus } from 'lucide-react'
+import { Button } from "@components/common/button/Button";
 
 export const TicketDashboardPage = () => {
+    const [viewType, setViewType] = useState<"list" | "board">("list");
+
     return (
         <S.Wrapper>
-            {/* 헤더 */}
             <S.Header>
-                <S.Title>COMKET_통합</S.Title>
-                <S.Description>
-                    프로젝트 설명입니다. 프로젝트 설명입니다. 프로젝트 설명입니다. 프로젝트 설명입니다. 프로젝트 설명입니다.
-                </S.Description>
-                <S.Actions>
-                    <S.FilterBox>티켓 목록 | 멤버</S.FilterBox>
-                    <S.CreateButton>+ 티켓 생성</S.CreateButton>
-                </S.Actions>
+                <S.TitleGroup>
+                    <div style={{ width: "calc(100% - 100px)" }}>
+                        <S.Title>COMKET_통합</S.Title>
+                        <S.Description>
+                            프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다
+                        </S.Description>
+                    </div>
+                    <Button size='md' variant="tealFilled">
+                        <span style={{ marginRight: '4px' }}>
+                            <Plus width={'14px'} height={'14px'} />
+                        </span>
+                        티켓 생성
+                    </Button>
+                </S.TitleGroup>
+
+                <S.ViewTabBar>
+                    <S.ViewTab $active={viewType === "list"} onClick={() => setViewType("list")}>
+                        <ListChecks size={16} />
+                        <span>목록</span>
+                    </S.ViewTab>
+                    <S.ViewTab $active={viewType === "board"} onClick={() => setViewType("board")}>
+                        <Rows2 size={16} />
+                        <span>보드</span>
+                    </S.ViewTab>
+
+                </S.ViewTabBar>
             </S.Header>
 
-            {/* 테이블 */}
-            <TicketTable />
+            {viewType === "list" ? <TicketListView /> : <TicketBoardView />}
         </S.Wrapper>
     );
 };

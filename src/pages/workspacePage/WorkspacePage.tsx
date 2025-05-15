@@ -127,7 +127,6 @@ export const WorkspacePage = () => {
         )}
       </S.Card>
     </S.Container>
-
   );
 };
 

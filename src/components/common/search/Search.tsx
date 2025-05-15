@@ -20,6 +20,7 @@ interface SearchProps {
   className?: string
   defaultValue?: string
   onSearch?: (value: string) => void
+  placeholder?: string
 
   // ✅ 외부 상태 제어용 props
   value?: string
@@ -35,6 +36,7 @@ export const Search = ({
   disabled = false,
   state,
   className,
+  placeholder,
   value,
   onChange,
   onClear,
@@ -105,7 +107,7 @@ export const Search = ({
         <S.StyledInput
           value={inputValue}
           onChange={handleInputChange}
-          placeholder="검색어를 입력하세요"
+          placeholder={placeholder}
           disabled={isDisabled}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}

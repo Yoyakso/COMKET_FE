@@ -92,6 +92,7 @@ export const WorkspaceInfoPage = () => {
       toast.success("저장되었습니다.");
       await fetchWorkspaceInfo();
 
+
     } catch (error) {
       toast.error("저장 실패하였습니다.");
     }

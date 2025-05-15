@@ -1,20 +1,21 @@
 import styled, { css } from "styled-components";
+import { color } from "@/styles/color";
 
 const getColor = (priority: string) => {
   switch (priority) {
     case "HIGH":
       return css`
-        background-color: #FF4D4F;
+        background-color:rgb(250, 80, 74);
         color: white;
       `;
     case "MEDIUM":
       return css`
-        background-color: #FAAD14;
+        background-color:rgb(255, 169, 39);
         color: white;
       `;
     case "LOW":
       return css`
-        background-color: #52C41A;
+        background-color: #18D9A0;
         color: white;
       `;
     default:
