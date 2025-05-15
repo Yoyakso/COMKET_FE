@@ -26,12 +26,12 @@ export const HeaderRow = styled.tr`
   border-bottom: 1px solid #dee2e6;
 `;
 
-export const HeaderCell = styled.th<{ $width?: number }>`
+export const HeaderCell = styled.th<{ $width?: number , $align?: "left"|"center" }>`
   width: ${({ $width }) => ($width ? `${$width}px` : 'auto')};
+  text-align: ${({ $align }) => ($align ?? 'left')};
   min-width: 40px;
   max-width: 1000px;
   padding: 12px 8px;
-  text-align: left;
   color: ${color.textLabel};
   font-weight: 500;
   position: relative;
@@ -47,9 +47,11 @@ export const HeaderCell = styled.th<{ $width?: number }>`
 
 export const TableBody = styled.tbody``;
 
-export const HeaderContent = styled.div`
+export const HeaderContent = styled.div<{ $align?: "left" | "center"}>`
   display: flex;
   align-items: center;
+   justify-content: ${({ $align }) =>
+    $align === "center" ? "center" : "flex-start"};
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

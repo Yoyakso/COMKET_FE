@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TicketDropdownStore } from "@/components/ticket/Ticket";
 import { OutsideClick } from "@/utils/OutsideClick";
+import { PortalDropdown } from "@/utils/PortalDropdown";
 import * as S from "./StatusDropdown.Style";
 import type { Status } from "@/types/filter";
 
@@ -71,25 +72,27 @@ export const StatusDropdown = ({ ticketId }: { ticketId: number }) => {
 
             <AnimatePresence>
                 {isOpen && (
-                    <S.MorphDropdown
-                        as={motion.div}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        {options.map((s) => (
-                            <S.Option
-                                key={s}
-                                $color={STATUS_COLORS[s]}
-                                onMouseEnter={() => setHovered(s)}
-                                onMouseLeave={() => setHovered(null)}
-                                onClick={() => handleSelect(s)}
-                            >
-                                {s.replace("_", " ")}
-                            </S.Option>
-                        ))}
-                    </S.MorphDropdown>
+                    <PortalDropdown triggerRef={ref}>
+                        <S.MorphDropdown
+                            as={motion.div}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            {options.map((s) => (
+                                <S.Option
+                                    key={s}
+                                    $color={STATUS_COLORS[s]}
+                                    onMouseEnter={() => setHovered(s)}
+                                    onMouseLeave={() => setHovered(null)}
+                                    onClick={() => handleSelect(s)}
+                                >
+                                    {s.replace("_", " ")}
+                                </S.Option>
+                            ))}
+                        </S.MorphDropdown>
+                    </PortalDropdown>
                 )}
             </AnimatePresence>
         </S.Positioner >

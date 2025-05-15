@@ -39,7 +39,6 @@ export const Wrapper = styled.div<{ $color: string }>`
 export const MorphDropdown = styled(motion.div)`
   position: absolute;
   top: 85%;
-  left: 50%;
   transform: translateX(-50%);
   margin-top: 6px;
   background-color:rgba(255, 255, 255, 0.95); 

@@ -4,8 +4,8 @@ import { TicketTable } from "@/components/ticket/TicketTable";
 import { TicketToolbar } from "@/components/ticket/TicketToolbar";
 import { TicketFilterStore, TicketDropdownStore } from "../ticket/Ticket";
 import { TicketSelectionStore } from "@/components/ticket/TicketSelectionStore";
-import { MOCK_TICKETS } from "@/constants/ticketData";
 import { TicketType, Status } from "@/types/filter";
+import { Ticket } from "@/types/ticket";
 
 
 
@@ -45,6 +45,7 @@ export const TicketListView = () => {
         const isSearchMatch = ticket.title.toLowerCase().includes(searchValue.toLowerCase());
         return isPriorityMatch && isStatusMatch && isTypeMatch && isSearchMatch;
     });
+
 
     return (
         <S.Wrapper>

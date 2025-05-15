@@ -58,12 +58,12 @@ export const TicketRow = ({ ticket, isChecked, onCheckToggle }: TicketRowProps) 
                 </S.TableCell>
                 <S.TableCell><TypeBadge type={ticket.type} /></S.TableCell>
                 <S.TableCell><AvatarWithName user={ticket.assignee} /></S.TableCell>
-                <S.TableCell>
+                <S.TableCell $align="center" >
                     <PriorityDropdown
                         ticketId={ticket.id}
                     />
                 </S.TableCell>
-                <S.TableCell>
+                <S.TableCell $align="center">
                     <StatusDropdown ticketId={ticket.id} />
                 </S.TableCell>
                 <S.TableCell>{ticket.startDate}</S.TableCell>
@@ -97,10 +97,10 @@ export const TicketRow = ({ ticket, isChecked, onCheckToggle }: TicketRowProps) 
                     </S.SubticketCell>
                     <S.SubticketCell><TypeBadge type={sub.type} /></S.SubticketCell>
                     <S.SubticketCell><AvatarWithName user={sub.assignee} /></S.SubticketCell>
-                    <S.SubticketCell>
+                    <S.SubticketCell $align="center">
                         <PriorityDropdown ticketId={sub.id} />
                     </S.SubticketCell>
-                    <S.SubticketCell>
+                    <S.SubticketCell $align="center">
                         <StatusDropdown ticketId={sub.id} />
                     </S.SubticketCell>
                     <S.SubticketCell>{sub.startDate}</S.SubticketCell>

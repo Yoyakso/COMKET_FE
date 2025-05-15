@@ -10,10 +10,11 @@ export const TableRow = styled.tr`
   }
 `;
 
-export const TableCell = styled.td`
+export const TableCell = styled.td<{ $align?: 'left' | 'center' | 'right' }>`
   padding: 12px 20px;
   color: ${color.textPrimary};
   font-size: 14px;
+  text-align: ${({ $align }) => $align ?? 'left'};
   white-space: nowrap;
   overflow: visible;
   text-overflow: ellipsis;
@@ -66,10 +67,11 @@ export const ThreadIcon = styled.div`
   background-color: #fafafa;
 `;
 
-export const SubticketCell = styled.td`
+export const SubticketCell = styled.td <{ $align?: 'left' | 'center' | 'right' }>`
   padding: 12px 20px;
   color: ${color.textPrimary};
   font-size: 14px;
+  text-align: ${({ $align }) => $align ?? 'left'};
   vertical-align: middle;
   position: relative;
 

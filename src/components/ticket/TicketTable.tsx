@@ -35,6 +35,8 @@ const MIN_WIDTHS = {
     writer: 100,
 };
 
+const PRIORITY_ORDER = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+
 const sortIcons = ({ active, direction }: { active: boolean; direction: 'asc' | 'desc' }) => {
     if (!active) return <ChevronsUpDown size={16} />;
     return direction === 'asc' ? <ChevronUp size={16} color='#18D9A0' /> : <ChevronDown size={16} color='#18D9A0' />;
@@ -81,12 +83,35 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
         const aValue = a[sortKey];
         const bValue = b[sortKey];
 
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
-            return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        // 우선순위 특수 처리
+        if (sortKey === "priority") {
+            const aPriority = aValue as keyof typeof PRIORITY_ORDER;
+            const bPriority = bValue as keyof typeof PRIORITY_ORDER;
+            return sortOrder === "asc"
+                ? PRIORITY_ORDER[aPriority] - PRIORITY_ORDER[bPriority]
+                : PRIORITY_ORDER[bPriority] - PRIORITY_ORDER[aPriority];
+        }
+        // 담당자/작성자 name 기준 정렬
+        if (sortKey === 'assignee' || sortKey === 'writer') {
+            const aName = (aValue as { name?: string })?.name ?? "";
+            const bName = (bValue as { name?: string })?.name ?? "";
+            return sortOrder === 'asc'
+                ? aName.localeCompare(bName)
+                : bName.localeCompare(aName);
         }
 
+        // 기본 string
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return sortOrder === 'asc'
+                ? aValue.localeCompare(bValue)
+                : bValue.localeCompare(aValue);
+        }
+
+        // 숫자
         if (typeof aValue === 'number' && typeof bValue === 'number') {
-            return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+            return sortOrder === 'asc'
+                ? aValue - bValue
+                : bValue - aValue;
         }
 
         return 0;
@@ -120,19 +145,19 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
         document.removeEventListener("mouseup", handleMouseUp);
     };
 
-    const headers: { key: keyof typeof INITIAL_WIDTHS; label: string; resizable?: boolean; sortable?: boolean }[] = [
-        { key: 'expander', label: '', resizable: true, sortable: false },
-        { key: 'checkbox', label: '', resizable: true, sortable: false },
-        { key: 'id', label: '티켓 ID', resizable: true, sortable: true },
-        { key: 'title', label: '티켓', resizable: true, sortable: true },
-        { key: 'type', label: '유형', resizable: true, sortable: true },
-        { key: 'assignee', label: '담당자', resizable: true, sortable: true },
-        { key: 'priority', label: '우선순위', resizable: true, sortable: true },
-        { key: 'status', label: '상태', resizable: true, sortable: true },
-        { key: 'startDate', label: '시작일', resizable: true, sortable: true },
-        { key: 'dueDate', label: '마감일', resizable: true, sortable: true },
-        { key: 'subticketCount', label: '하위 티켓', resizable: true, sortable: true },
-        { key: 'writer', label: '작성자', resizable: true, sortable: true },
+    const headers: { key: keyof typeof INITIAL_WIDTHS; label: string; resizable?: boolean; sortable?: boolean; align?: "left" | "center"; }[] = [
+        { key: 'expander', label: '', resizable: true, sortable: false, align: "center" },
+        { key: 'checkbox', label: '', resizable: true, sortable: false, align: "center" },
+        { key: 'id', label: '티켓 ID', resizable: true, sortable: true, align: "center" },
+        { key: 'title', label: '티켓', resizable: true, sortable: true, align: "left" },
+        { key: 'type', label: '유형', resizable: true, sortable: true, align: "center" },
+        { key: 'assignee', label: '담당자', resizable: true, sortable: true, align: "left" },
+        { key: 'priority', label: '우선순위', resizable: true, sortable: true, align: "center" },
+        { key: 'status', label: '상태', resizable: true, sortable: true, align: "center" },
+        { key: 'startDate', label: '시작일', resizable: true, sortable: true, align: "center" },
+        { key: 'dueDate', label: '마감일', resizable: true, sortable: true, align: "center" },
+        { key: 'subticketCount', label: '하위 티켓', resizable: true, sortable: true, align: "center" },
+        { key: 'writer', label: '작성자', resizable: true, sortable: true, align: "left" },
     ];
 
     return (
@@ -140,13 +165,14 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
             <S.Table>
                 <S.TableHeader>
                     <S.HeaderRow>
-                        {headers.map(({ key, label, resizable, sortable }) => (
+                        {headers.map(({ key, label, resizable, sortable, align }) => (
                             <S.HeaderCell
                                 key={key}
+                                $align={align}
                                 style={{ width: columnWidths[key] }}
                                 onClick={sortable ? () => handleSort(key as keyof Ticket) : undefined}
                             >
-                                <S.HeaderContent>
+                                <S.HeaderContent $align={align}>
                                     {sortable ? (
                                         <S.SortableHeader>
                                             {label} {sortIcons({ active: sortKey === key, direction: sortOrder })}
