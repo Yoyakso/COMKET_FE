@@ -6,6 +6,8 @@ import { X } from "lucide-react"
 import { POSITION_OPTIONS, DEPARTMENT_OPTIONS } from "@/constants/profileOptions"
 import { updateProfile, getMyProfile } from "@/api/Member"
 import { uploadProfileImage } from "@/api/WorkspaceImage"
+import { useUserStore } from "@/stores/userStore"
+import { toast } from "react-toastify"
 
 interface ProfileData {
   name: string
@@ -18,49 +20,48 @@ interface ProfileData {
 }
 
 export const ProfilePage = () => {
+  const globalName = useUserStore((s) => s.name)
+  const globalEmail = useUserStore((s) => s.email)
+  const globalProfileImage = useUserStore((s) => s.profileFileUrl)
+  const setProfileInfo = useUserStore((s) => s.setProfileInfo)
   const [profile, setProfile] = useState<ProfileData>({
-    name: "",
-    email: "",
+    name: globalName,
+    email: globalEmail,
     organization: "",
     position: "",
     department: "",
-    profileImage: null,
+    profileImage: globalProfileImage || null,
     profileImageFile: null,
-  })
-
+  });
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchLatestProfile = async () => {
+      try {
+        const res = await getMyProfile();
 
-      const cached = localStorage.getItem("profile");
-      if (cached) {
-        const parsed = JSON.parse(cached);
+        // 전역 상태 동기화
+        setProfileInfo({
+          name: res.realName ?? "",
+          profileFileUrl: res.profileFileUrl ?? "",
+        });
+
         setProfile({
-          name: parsed.realName ?? "",
-          email: parsed.email ?? "",
-          organization: parsed.responsibility ?? "",
-          position: parsed.role ?? "",
-          department: parsed.department ?? "",
-          profileImage: parsed.profileFileUrl ?? null,
+          name: res.realName ?? "",
+          email: res.email ?? "",
+          organization: res.responsibility ?? "",
+          position: res.role ?? "",
+          department: res.department ?? "",
+          profileImage: res.profileFileUrl ?? null,
           profileImageFile: null,
         });
-        return;
+      } catch (err) {
+        console.error("프로필 정보 불러오기 실패", err);
       }
-
-      const res = await getMyProfile();
-      setProfile({
-        name: res.real_name ?? "",
-        email: res.email ?? "",
-        organization: res.responsibility ?? "",
-        position: res.role ?? "",
-        department: res.department ?? "",
-        profileImage: res.profile_file_url ?? null,
-        profileImageFile: null,
-      });
     };
-    fetchProfile();
-  }, []);
+    fetchLatestProfile();
+  }, [setProfileInfo]);
+
 
   const handleImageClick = () => {
     fileInputRef.current?.click()
@@ -105,20 +106,15 @@ export const ProfilePage = () => {
   }
 
   const handleSave = async () => {
-    console.log("저장 버튼 클릭")
-    console.log("📦 저장할 profile 상태값:", profile); // 여기 추가
-
     try {
       let fileId: number | null = null;
 
-      // 1. 이미지 파일 있으면 업로드
       if (profile.profileImageFile) {
         const { fileId: uploadedId } = await uploadProfileImage(profile.profileImageFile, "MEMBER_PROFILE");
         fileId = uploadedId;
         console.log("업로드된 파일 ID:", fileId);
       }
 
-      // 2. 프로필 정보 업데이트
       await updateProfile({
         real_name: profile.name,
         department: profile.department || "",
@@ -128,17 +124,18 @@ export const ProfilePage = () => {
       });
 
       const updated = await getMyProfile();
-      console.log("업데이트된 프로필:", updated);
-      localStorage.setItem("profile", JSON.stringify(updated));
+      setProfileInfo({
+        name: updated.realName,
+        profileFileUrl: updated.profileFileUrl ?? "",
+      })
 
-      alert("프로필 수정 완료!");
+      toast.success("프로필 수정이 완료되었습니다.");
     } catch (error) {
       console.error("저장 실패:", error);
-      alert("저장 중 오류가 발생했습니다.");
+      toast.error("프로필 저장에 실패했습니다.");
     }
   };
 
-  // 프로필 이미지가 없을 경우 이니셜 표시
   const getInitial = () => {
     return profile.name ? profile.name.charAt(0) : "?"
   }

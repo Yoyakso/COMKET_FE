@@ -1,6 +1,6 @@
-import { useState, useRef, type ChangeEvent } from "react"
+import { useState, useEffect } from "react"
 import * as S from "./NavProfile.Style"
-import UploadIcon from "@/assets/icons/UploadIcon.svg?react"
+import { useUserStore } from "@/stores/userStore"
 
 export type UserStatus = "온라인" | "오프라인" | "자리 비움" | "다른 용무 중"
 
@@ -15,40 +15,24 @@ export function NavProfile({
   name,
   defaultImage,
   status,
-  onImageChange,
 }: NavProfileProps) {
   const [image, setImage] = useState(defaultImage)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const profileImg = useUserStore((state) => state.profileFileUrl)
 
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const newImage = event.target.result as string
-          setImage(newImage)
-          onImageChange?.(newImage)
-        }
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+  useEffect(() => {
+    if (profileImg) setImage(profileImg)
+  }, [profileImg])
 
   return (
     <S.ProfileContainer>
-      <S.AvatarContainer onClick={() => fileInputRef.current?.click()}>
+      <S.AvatarContainer>
         <S.Avatar>
-          {image ? (
-            <S.AvatarImage src={image} alt={name ?? '프로필 이미지'} />
+          {profileImg || image ? (
+            <S.AvatarImage src={profileImg || image} alt={name ?? '프로필 이미지'} />
           ) : (
             name?.slice?.(0, 2) ?? "??"
           )}
         </S.Avatar>
-        <S.AvatarOverlay className="avatar-overlay">
-          <UploadIcon />
-        </S.AvatarOverlay>
-        <S.FileInput ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} />
       </S.AvatarContainer>
 
       <S.UserInfo>
