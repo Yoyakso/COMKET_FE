@@ -100,7 +100,7 @@ export const MemberPage = () => {
 
         <S.Content>
           <MemberHeader
-            memberCount={finalFilteredMembers.length}
+            memberCount={finalFilteredMembers.filter(m => m.state !== "DELETED").length}
             onSearch={handleSearch}
             onFilter={handleFilter} />
           <MemberTable members={finalFilteredMembers} onUpdateMember={handleMemberUpdate} />

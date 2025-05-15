@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 import * as S from "./ProjectModal.Style"
 import { Chip } from "@/components/common/chip/Chip"
 import { Radio } from "@/components/common/radio/Radio"
+import { toast } from "react-toastify"
 
 export type ProjectModalMode = "create" | "view" | "edit"
 
@@ -39,7 +40,7 @@ export const ProjectModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isEditing, setIsEditing] = useState(mode === "edit")
-
+  const [isComposing, setIsComposing] = useState(false)
   const isViewMode = mode === "view" && !isEditing
   const isCreateMode = mode === "create"
 
@@ -76,14 +77,10 @@ export const ProjectModal = ({
     }
   }
 
-
   const handleTagInputKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
-    if (isViewMode) return
+    if (isViewMode || isComposing) return
 
-    if (e.key === "Enter") {
-      e.preventDefault()
-      handleAddTag()
-    } else if (e.key === "," || e.key === " ") {
+    if (e.key === "Enter" || e.key === "," || e.key === " ") {
       e.preventDefault()
       handleAddTag()
     }
@@ -110,7 +107,7 @@ export const ProjectModal = ({
       isPublic === initialData.isPublic
 
     if (isUnchanged) {
-      alert("변경된 내용이 없습니다.")
+      toast.info("변경된 내용이 없습니다.")
       return
     }
 
@@ -124,7 +121,6 @@ export const ProjectModal = ({
         isPublic,
       })
 
-      // 편집 모드였다면 보기 모드로 전환
       if (mode === "view" && isEditing) {
         setIsEditing(false)
       } else {
@@ -144,7 +140,6 @@ export const ProjectModal = ({
   if (!isMounted) return null
 
   const modalContent = (
-
     <S.ModalOverlay onClick={onClose}>
       <S.ModalContent onClick={(e) => e.stopPropagation()}>
         <S.Title>{modalTitle}</S.Title>
@@ -200,6 +195,8 @@ export const ProjectModal = ({
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleTagInputKeyDown}
                   onBlur={handleAddTag}
+                  onCompositionStart={() => setIsComposing(true)}
+                  onCompositionEnd={() => setIsComposing(false)}
                 />
               </S.TagContainer>
             )}

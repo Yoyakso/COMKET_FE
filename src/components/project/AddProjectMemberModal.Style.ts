@@ -95,6 +95,7 @@ export const MemberTagsContainer = styled.div`
   flex-wrap: wrap;
   gap: 8px;
   align-items: flex-start;
+  position: relative;
 `
 
 export const MemberTag = styled.div`
@@ -225,4 +226,48 @@ export const AddButton = styled.button`
     background-color: ${color.primaryDisabled};
     color: ${color.textTertiary}
   }
+`
+
+export const SuggestionList = styled.ul`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin-top: 4px;
+  padding: 0;
+  list-style: none;
+  background-color: white;
+  border: 1px solid ${color.basic100};
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+`
+
+export const SuggestionItem = styled.li`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: ${color.textPrimary};
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${color.basic100};
+  }
+`
+
+export const SuggestionAvatar = styled.div<{ $bgColor: string }>`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: ${(props) => props.$bgColor};
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `

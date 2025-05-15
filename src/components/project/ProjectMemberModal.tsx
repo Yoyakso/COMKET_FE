@@ -8,6 +8,7 @@ import { getWorkspaceMembers } from "@/api/Member"
 import { getColorFromString } from "@/utils/avatarColor"
 import { toast } from "react-toastify"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
+import { RemoveProjectMemberModal } from "./RemoveProjectMemberModal"
 
 export interface ProjectMember {
   id: number
@@ -42,6 +43,8 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   }>>(new Map())
   const [roleChanges, setRoleChanges] = useState<Record<string, "프로젝트 관리자" | "일반 멤버">>({})
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
+  const workspaceId = useWorkspaceStore((state) => state.workspaceId)
+  const [removeTarget, setRemoveTarget] = useState<ProjectMember | null>(null)
 
   useEffect(() => {
     setIsMounted(true)
@@ -54,7 +57,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
         onClose()
       }
     }
-
     document.addEventListener("keydown", handleEscKey)
     document.body.style.overflow = "hidden"
 
@@ -86,7 +88,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     const fetchProjectMembers = async () => {
       try {
         const data = await getProjectMembers(workspaceName, projectId)
-        console.log("프로젝트 멤버 응답 데이터:", data)
 
         const mappedMembers: ProjectMember[] = data
           .filter((m: any) => m.state === "ACTIVE")
@@ -102,7 +103,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
         setMembers(mappedMembers)
       } catch (error) {
-        console.error("프로젝트 멤버 불러오기 실패:", error)
+        console.error("프로젝트 멤버 불러오기 실패!!!!!:", error)
         throw error
       }
     }
@@ -113,8 +114,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
   useEffect(() => {
     const fetchWorkspaceMembers = async () => {
       try {
-        const members = await getWorkspaceMembers(workspaceName)
-
+        const members = await getWorkspaceMembers(workspaceId)
         const memberMap = new Map<string, {
           memberId: number
           name: string
@@ -227,7 +227,6 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
 
   const handleSave = async () => {
     try {
-      const workspaceName = localStorage.getItem("workspaceName")
       if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
 
       const editPromises = Object.entries(roleChanges).map(([memberId, role]) => {
@@ -239,7 +238,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
       })
 
       await Promise.all(editPromises)
-      toast.success("역할 변경이 저장되었습니다.")
+      toast.success("역할이 저장되었습니다.")
       setRoleChanges({})
       if (onSave) await onSave()
       onClose()
@@ -257,27 +256,25 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
     setShowAddMemberModal(false)
   }
 
-  const handleDeleteMember = async (memberId: number) => {
+  const confirmRemoveMember = async () => {
+    if (!removeTarget || !workspaceName) return
     try {
-      const workspaceName = localStorage.getItem("workspaceName")
-      if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
-
-      const response = await deleteProjectMember(workspaceName, projectId, memberId)
-      console.log(" 멤버 제거 API 응답:", response)
-
-      setMembers((prev) => prev.filter((m) => m.id !== memberId))
+      await deleteProjectMember(workspaceName, projectId, removeTarget.id)
+      setMembers((prev) => prev.filter((m) => m.id !== removeTarget.id))
       setActiveActionMenu(null)
-
       toast.success("멤버가 성공적으로 제거되었습니다.")
+      setRemoveTarget(null)
     } catch (error: any) {
       console.error("멤버 제거 실패:", error)
       if (error.response?.data?.code === "OWNER_EXCEPTION") {
-        alert("소유자는 삭제할 수 없습니다. 소유자 권한 이전이 필요합니다.")
+        toast.error("소유자는 삭제할 수 없습니다. 소유자 권한 이전이 필요합니다.")
       } else {
-        alert("멤버 제거 중 오류가 발생했습니다.")
+        toast.error("멤버 제거 중 오류가 발생했습니다.")
       }
+      setRemoveTarget(null)
     }
   }
+
 
   const modalContent = (
     <S.ModalOverlay onClick={onClose}>
@@ -357,7 +354,9 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
                         <S.ActionMenu className="action-menu">
                           <S.ActionMenuItem
                             $danger
-                            onClick={() => handleDeleteMember(member.id)}>
+                            // onClick={() => handleDeleteMember(member.id)}
+                            onClick={() => setRemoveTarget(member)}
+                          >
                             멤버 제거</S.ActionMenuItem>
                         </S.ActionMenu>
                       )}
@@ -375,6 +374,7 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
         </S.ButtonContainer>
       </S.ModalContent>
     </S.ModalOverlay >
+
   )
 
   return (
@@ -386,7 +386,15 @@ export const ProjectMemberModal = ({ projectId, projectName = "프로젝트", on
           memberMap={memberMap}
           projectId={projectId}
           onAddSuccess={addMembersToList}
-        />}
+        />
+      }
+      {removeTarget && (
+        <RemoveProjectMemberModal
+          onClose={() => setRemoveTarget(null)}
+          onConfirm={confirmRemoveMember}
+          memberName={removeTarget.name}
+        />
+      )}
     </>
   )
 }

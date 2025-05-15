@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import * as S from "./MemberRow.Style"
 import type { MemberData } from "@/types/member"
 import { ChevronDown, DotIcon } from "@assets/icons"
-import { RemoveMemberModal } from "./RemoveMemberModal"
+import { RemoveWorkspaceMemberModal } from "./RemoveWorkspaceMemberModal"
 import { getColorFromString } from "@/utils/avatarColor"
 import { formatDate } from "@/utils/dateFormat"
 import { deleteWorkspaceMember, updateWorkspaceMember } from "@/api/Member"
@@ -199,7 +199,7 @@ export const MemberRow = ({ member, onUpdateMember }: MemberRowProps) => {
       </S.Row>
 
       {isRemoveModalOpen && (
-        <RemoveMemberModal onClose={closeRemoveModal} onConfirm={handleRemoveMember} memberName={member.name} />
+        <RemoveWorkspaceMemberModal onClose={closeRemoveModal} onConfirm={handleRemoveMember} memberName={member.name} />
       )}
     </>
   )
