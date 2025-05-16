@@ -68,43 +68,44 @@ export const Wrapper = styled.div`
 `
 
 export const Container = styled.div<{
-  size: DropdownSize
-  variant: DropdownVariant
+  $size: DropdownSize
+  $variant: DropdownVariant
 }>`
   display: flex;
   align-items: center;
   border-radius: 4px;
   position: relative;
-  ${({ size }) => sizeStyles[size]}
-  ${({ variant }) => containerVariants[variant]}
-  cursor: ${({ variant }) =>
-    variant === 'disabled' || variant === 'activated-disabled'
+  ${({ $size }) => sizeStyles[$size]}
+  ${({ $variant }) => containerVariants[$variant]}
+  cursor: ${({ $variant }) =>
+    $variant === 'disabled' || $variant === 'activated-disabled'
       ? 'not-allowed'
       : 'pointer'};
 `
 
 export const TextBox = styled.div<{
-  size: DropdownSize
-  variant: DropdownVariant
+  $size: DropdownSize
+  $variant: DropdownVariant
 }>`
   flex: 1;
   padding-left: 2px;
-  color: ${({ variant }) => textColors[variant]};
+  color: ${({ $variant }) => textColors[$variant]};
+  ${({ $size }) => sizeStyles[$size]}
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 `
 
 export const IconLeft = styled.span<{
-  size: DropdownSize
-  variant: DropdownVariant
+  $size: DropdownSize
+  $variant: DropdownVariant
 }>`
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 8px;
-  width: ${({ size }) => (size === 'sm' ? '20px' : '24px')};
-  height: ${({ size }) => (size === 'sm' ? '20px' : '24px')};
+  width: ${({ $size }) => ($size === 'sm' ? '20px' : '24px')};
+  height: ${({ $size }) => ($size === 'sm' ? '20px' : '24px')};
 
   svg {
     width: 100%;
@@ -113,16 +114,16 @@ export const IconLeft = styled.span<{
 `
 
 export const IconRight = styled.span<{
-  size: DropdownSize
-  variant: DropdownVariant
+  $size: DropdownSize
+  $variant: DropdownVariant
 }>`
   position: absolute;
   right: 10px;
   display: flex;
   align-items: center;
   pointer-events: none;
-  width: ${({ size }) => (size === 'sm' ? '16px' : '18px')};
-  height: ${({ size }) => (size === 'sm' ? '16px' : '18px')};
+  width: ${({ $size }) => ($size === 'sm' ? '16px' : '18px')};
+  height: ${({ $size }) => ($size === 'sm' ? '16px' : '18px')};
 
   svg {
     width: 100%;
@@ -130,7 +131,7 @@ export const IconRight = styled.span<{
   }
 `
 
-export const OptionList = styled.ul<{ size: DropdownSize }>`
+export const OptionList = styled.ul<{ $size: DropdownSize }>`
   position: absolute;
   top: calc(100% + 4px);
   width: 100%;
@@ -164,10 +165,10 @@ export const OptionList = styled.ul<{ size: DropdownSize }>`
 `
 
 export const OptionItem = styled.li<{
-  size: DropdownSize
+  $size: DropdownSize
   selected?: boolean
 }>`
-  ${({ size }) => sizeStyles[size]};
+  ${({ $size }) => sizeStyles[$size]};
   padding: 0 12px;
   display: flex;
   align-items: center;
@@ -179,8 +180,8 @@ export const OptionItem = styled.li<{
   &:hover {
     background-color: ${color.basic100};
   }
-
 `
+
 
 export const OptionItemContent = styled.div`
   display: flex;

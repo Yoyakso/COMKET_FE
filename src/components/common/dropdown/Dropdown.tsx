@@ -35,23 +35,12 @@ interface Props {
   selectedValues?: string[]
   onChange: (v: string | string[]) => void
   placeholder: string
-  size: DropdownSize
-  variant: DropdownVariant
+  size?: DropdownSize
+  variant?: DropdownVariant
   iconLeft?: boolean
   type?: DropdownOptionType
 }
 
-/**
- * @param options - 드롭다운 옵션
- * @param value - 선택된 값 (single-text, single-image)
- * @param selectedValues - 선택된 값 (multi-check, group-check)
- * @param onChange - 선택된 값 변경 핸들러
- * @param placeholder - 선택되지 않은 상태에서 보여줄 텍스트
- * @param size - 드롭다운 크기 (sm, md)
- * @param variant - 드롭다운 스타일
- * @param iconLeft - 왼쪽 아이콘 여부
- * @param type - 옵션 렌더링 타입
- */
 export const Dropdown = ({
   options,
   value,
@@ -100,7 +89,7 @@ export const Dropdown = ({
     return (
       <S.OptionItem
         key={o.value}
-        size={size}
+        $size={size}
         selected={isSelected}
         onClick={() =>
           isMulti ? handleMultiSelect(o.value) : handleSingleSelect(o.value)
@@ -125,12 +114,12 @@ export const Dropdown = ({
   return (
     <S.Wrapper ref={ref}>
       <S.Container
-        size={size}
-        variant={variant}
+        $size={size}
+        $variant={variant}
         onClick={() => !isDisabled && setOpen(prev => !prev)}
       >
         {iconLeft && !isChip && (
-          <S.IconLeft size={size} variant={variant}>
+          <S.IconLeft $size={size} $variant={variant}>
             <DropdownIcon />
           </S.IconLeft>
         )}
@@ -144,7 +133,7 @@ export const Dropdown = ({
                 return (
                   <Chip
                     key={v}
-                    variant="lightTeal"
+                    $variant="lightTeal"
                     $styleType={isDisabled ? 'disabled' : 'filled'}
                     size={size}
                     onClose={() =>
@@ -159,7 +148,7 @@ export const Dropdown = ({
             </S.ChipContainer>
           ) : (
             <Chip
-              variant="lightTeal"
+              $variant="lightTeal"
               $styleType={isDisabled ? 'disabled' : 'filled'}
               size={size}
               onClose={() => !isDisabled && onChange('')}
@@ -168,18 +157,18 @@ export const Dropdown = ({
             </Chip>
           )
         ) : (
-          <S.TextBox size={size} variant={variant}>
+          <S.TextBox $size={size} $variant={variant}>
             {selectedText}
           </S.TextBox>
         )}
 
-        <S.IconRight size={size} variant={variant}>
+        <S.IconRight $size={size} $variant={variant}>
           {open ? <ChevronUp /> : <ChevronDown />}
         </S.IconRight>
       </S.Container>
 
       {open && (
-        <S.OptionList size={size}>
+        <S.OptionList $size={size}>
           {type === 'group-check'
             ? [...new Set(options.map(o => o.groupName))].map(group => (
               <S.GroupBlock key={group}>
