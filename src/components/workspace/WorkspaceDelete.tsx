@@ -30,7 +30,7 @@ export const WorkspaceDelete = ({ onClose, onDelete }: WorkspaceDeleteProps) => 
                 <S.ButtonGroup>
                     <Button
                         style={{ width: '224px' }}
-                        variant="neutralOutlined"
+                        $variant="neutralOutlined"
                         size="md"
                         onClick={onClose}
                         disabled={isLoading}
@@ -39,7 +39,7 @@ export const WorkspaceDelete = ({ onClose, onDelete }: WorkspaceDeleteProps) => 
                     </Button>
                     <Button
                         style={{ width: '224px' }}
-                        variant="negativeFilled"
+                        $variant="negativeFilled"
                         size="md"
                         onClick={handleDelete}
                         disabled={isLoading}

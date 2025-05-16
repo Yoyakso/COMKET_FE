@@ -132,12 +132,12 @@ export const CreateWorkspacePage = () => {
       </S.FormSection>
 
       <S.ButtonWrapper>
-        <Button size="lg" variant="neutralOutlined" onClick={() => navigate(-1)}>
+        <Button size="lg" $variant="neutralOutlined" onClick={() => navigate(-1)}>
           이전
         </Button>
         <Button
           size="lg"
-          variant="tealFilled"
+          $variant="tealFilled"
           disabled={!isFormValid}
           onClick={handleCreateWorkspace}
         >

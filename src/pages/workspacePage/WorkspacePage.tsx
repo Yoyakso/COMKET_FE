@@ -82,10 +82,10 @@ export const WorkspacePage = () => {
               <S.Line />
             </S.DividerBox>
 
-            <S.FullWidthButton variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
+            <S.FullWidthButton $variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
               워크스페이스 생성
             </S.FullWidthButton>
-            <S.FullWidthButton variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
+            <S.FullWidthButton $variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
               초대 코드로 입장
             </S.FullWidthButton>
           </>
@@ -105,7 +105,7 @@ export const WorkspacePage = () => {
                 variant="activated"
                 iconLeft
               />
-              <Button variant="neutralFilled" size="md" onClick={handleJoin}>
+              <Button $variant="neutralFilled" size="md" onClick={handleJoin}>
                 참여
               </Button>
             </S.WorkspaceRow>
@@ -117,10 +117,10 @@ export const WorkspacePage = () => {
             </S.DividerBox>
 
 
-            <S.FullWidthButton variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
+            <S.FullWidthButton $variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
               워크스페이스 생성
             </S.FullWidthButton>
-            <S.FullWidthButton variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
+            <S.FullWidthButton $variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
               초대 코드로 입장
             </S.FullWidthButton>
           </>

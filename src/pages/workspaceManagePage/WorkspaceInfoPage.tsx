@@ -152,7 +152,7 @@ export const WorkspaceInfoPage = () => {
             {profileFileUrl ? <img src={profileFileUrl} alt="대표 이미지" width={120} height={120} /> : <S.ImagePlaceholder><DropdownIcon /></S.ImagePlaceholder>}
           </S.Photo>
           <S.PhotoUploader>
-            <Button onClick={() => setModalOpen(true)} variant="neutralOutlined" size="xs" style={{ width: '120px' }}>
+            <Button onClick={() => setModalOpen(true)} $variant="neutralOutlined" size="xs" style={{ width: '120px' }}>
               사진 선택
             </Button>
             {isModalOpen && (
@@ -178,7 +178,7 @@ export const WorkspaceInfoPage = () => {
         <S.Label>워크스페이스 삭제</S.Label>
         <S.DeleteWrapper>
           <S.DeleteText>삭제 시 워크스페이스의 프로젝트와 티켓, 파일 등 모든 데이터가 삭제됩니다.</S.DeleteText>
-          <Button variant="neutralOutlined" size="xs" onClick={() => setDeleteModalOpen(true)}>삭제하기</Button>
+          <Button $variant="neutralOutlined" size="xs" onClick={() => setDeleteModalOpen(true)}>삭제하기</Button>
         </S.DeleteWrapper>
       </S.InfoGroup>
 
@@ -190,11 +190,11 @@ export const WorkspaceInfoPage = () => {
       )}
 
       <S.ButtonWrapper>
-        <Button variant='neutralOutlined' size='sm' onClick={() => setExitModalOpen(true)}>워크스페이스 나가기</Button>
+        <Button $variant='neutralOutlined' size='sm' onClick={() => setExitModalOpen(true)}>워크스페이스 나가기</Button>
         <S.SubButtonWrapper>
-          <Button variant='neutralOutlined' size='sm' onClick={() => navigate(-1)}>취소</Button>
+          <Button $variant='neutralOutlined' size='sm' onClick={() => navigate(-1)}>취소</Button>
           <Button
-            variant={isValid ? 'tealFilled' : 'neutralFilled'}
+            $variant={isValid ? 'tealFilled' : 'neutralFilled'}
             size="sm"
             disabled={!isValid}
             onClick={handleSave}

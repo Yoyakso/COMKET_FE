@@ -115,7 +115,7 @@ export const InviteCodePage = () => {
           <S.DropdownWrapper>
             <Dropdown
               size="sm"
-              variant={workspace ? 'activated-disabled' : 'disabled'}
+              $variant={workspace ? 'activated-disabled' : 'disabled'}
               options={workspace ? [workspace] : []}
               type='single-image'
               value={workspace?.value}
@@ -127,11 +127,11 @@ export const InviteCodePage = () => {
       </S.FormSection>
 
       <S.ButtonWrapper>
-        <Button size="lg" variant="neutralOutlined" onClick={() => navigate(-1)}>
+        <Button size="lg" $variant="neutralOutlined" onClick={() => navigate(-1)}>
           이전
         </Button>
         <Button
-          variant="tealFilled"
+          $variant="tealFilled"
           size="lg"
           disabled={!code || !workspace}
           onClick={() => {

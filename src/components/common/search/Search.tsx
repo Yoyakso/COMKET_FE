@@ -13,7 +13,7 @@ export type SearchState =
   | 'activated-disabled'
 
 interface SearchProps {
-  variant: 'filled' | 'outlined'
+  $variant: 'filled' | 'outlined'
   size: 'sm' | 'md' | 'lg'
   disabled?: boolean
   $state?: SearchState
@@ -29,7 +29,7 @@ interface SearchProps {
 }
 
 export const Search = ({
-  variant,
+  $variant,
   size,
   defaultValue = '',
   onSearch,
@@ -92,13 +92,13 @@ export const Search = ({
 
   return (
     <S.Container
-      variant={variant}
+      $variant={$variant}
       size={size}
       $state={computedState}
       className={className}
     >
       <S.TextBox
-        variant={variant}
+        $variant={$variant}
         size={size}
         $state={computedState}
         onMouseEnter={() => setHovered(true)}

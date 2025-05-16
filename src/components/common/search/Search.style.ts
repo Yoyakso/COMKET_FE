@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components'
 import { color } from '@/styles/color'
 
 export const Container = styled.div<{
-  variant: string
+  $variant: string
   size: string
   $state: string
 }>`
@@ -32,7 +32,7 @@ const sizeStyles: Record<string, ReturnType<typeof css>> = {
 }
 
 export const TextBox = styled.div<{
-  variant: string
+  $variant: string
   size: string
   $state: string
 }>`
@@ -48,7 +48,7 @@ export const TextBox = styled.div<{
 
   ${({ size }) => sizeStyles[size]}
 
-  ${({ variant, $state }) => {
+  ${({ $variant, $state }) => {
     const isDisabled = $state === 'disable' || $state === 'activated-disabled'
     const isFocus = $state === 'focused'
     const isTyping = $state === 'typing'
@@ -57,13 +57,13 @@ export const TextBox = styled.div<{
 
     const baseColor = isDisabled
       ? color.textPlaceholder32
-      : variant === 'filled'
+      : $variant === 'filled'
       ? color.textPlaceholder16
       : color.white
 
     const borderColor = isDisabled
       ? 'none'
-      : variant === 'outlined'
+      : $variant === 'outlined'
       ? `1px solid ${
           isHover || isFocus || isTyping
             ? color.basic1000

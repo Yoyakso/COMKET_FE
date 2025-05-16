@@ -52,7 +52,7 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
 
       {variant === "workspace" && (
         <S.SearchContainter>
-          <Search variant="filled" size="md" onSearch={(test) => console.log("검색키워드:", test)} ></Search>
+          <Search $variant="filled" size="md" onSearch={(test) => console.log("검색키워드:", test)} ></Search>
         </S.SearchContainter>
       )}
 

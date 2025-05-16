@@ -37,15 +37,15 @@ export const WorkspaceExit = ({ isOwner, onClose, onExit }: Props) => {
 
                 <S.ButtonGroup>
                     {isOwner ? (
-                        <Button onClick={onClose} variant='tealFilled' size='md' style={{ width: '496px' }}>
+                        <Button onClick={onClose} $variant='tealFilled' size='md' style={{ width: '496px' }}>
                             확인
                         </Button>
                     ) : (
                         <>
-                            <Button onClick={onClose} variant="neutralOutlined" size="md" style={{ width: '244px' }} >
+                            <Button onClick={onClose} $variant="neutralOutlined" size="md" style={{ width: '244px' }} >
                                 취소
                             </Button>
-                            <Button onClick={onExit} variant='negativeFilled' size='md' style={{ width: '244px' }}>
+                            <Button onClick={onExit} $variant='negativeFilled' size='md' style={{ width: '244px' }}>
                                 나가기
                             </Button>
                         </>

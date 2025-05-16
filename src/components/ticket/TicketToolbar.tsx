@@ -80,7 +80,7 @@ export const TicketToolbar = ({
                 <S.SearchBox>
                     <Search
                         size="md"
-                        variant="outlined"
+                        $variant="outlined"
                         placeholder="티켓 검색"
                         onSearch={(value) => setSearchValue(value)}
                         onClear={() => setSearchValue("")}

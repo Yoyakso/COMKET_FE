@@ -18,7 +18,7 @@ export type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl"
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode
-  variant: ButtonStyle
+  $variant: ButtonStyle
   size: ButtonSize
   withIcon?: boolean
 }
@@ -32,9 +32,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
  * @param props - 나머지 버튼 속성들
  * @returns 
  */
-export const Button = ({ children, variant, size, withIcon, ...props }: ButtonProps) => {
+export const Button = ({ children, $variant, size, withIcon, ...props }: ButtonProps) => {
   return (
-    <S.ButtonContainer $variant={variant} size={size} disabled={props.disabled} {...props}>
+    <S.ButtonContainer $variant={$variant} size={size} disabled={props.disabled} {...props}>
       {withIcon && <S.IconWrapper><PlusIcon /></S.IconWrapper>}
       {children}
       {withIcon && <S.IconWrapper><PlusIcon /></S.IconWrapper>}

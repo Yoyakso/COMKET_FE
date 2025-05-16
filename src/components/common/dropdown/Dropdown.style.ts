@@ -87,6 +87,9 @@ export const TextBox = styled.div<{
   $size: DropdownSize
   $variant: DropdownVariant
 }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex: 1;
   padding-left: 2px;
   color: ${({ $variant }) => textColors[$variant]};

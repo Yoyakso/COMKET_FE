@@ -114,9 +114,9 @@ export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
                 />
 
                 <S.ButtonWrapper>
-                    <Button variant="neutralOutlined" size="md" onClick={onClose}>취소</Button>
+                    <Button $variant="neutralOutlined" size="md" onClick={onClose}>취소</Button>
                     <Button
-                        variant={imageSrc ? "tealFilled" : "neutralOutlined"}
+                        $variant={imageSrc ? "tealFilled" : "neutralOutlined"}
                         size="md"
                         onClick={handleUpload}
                         disabled={!imageSrc}

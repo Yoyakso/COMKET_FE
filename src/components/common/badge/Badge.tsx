@@ -16,8 +16,8 @@ export type BadgeSize = "lg" | "md"
 export type BadgeShape = "sqaure" | "rounded"
 
 export interface BadgeProps {
-  variant: BadgeVariant
-  styleType: BadgeStyleType
+  $variant: BadgeVariant
+  $styleType: BadgeStyleType
   size: BadgeSize
   shape: BadgeShape
   icon?: React.ReactElement
@@ -26,8 +26,8 @@ export interface BadgeProps {
 }
 
 export const Badge = ({
-  variant,
-  styleType,
+  $variant,
+  $styleType,
   size,
   shape,
   icon,
@@ -35,8 +35,8 @@ export const Badge = ({
   className,
 }: BadgeProps) => {
 
-  const isOutlinedAllowed = variant === "black" || variant === "neutral"
-  const resolvedStyleType = styleType === "outlined" && !isOutlinedAllowed ? "filled" : styleType
+  const isOutlinedAllowed = $variant === "black" || $variant === "neutral"
+  const resolvedStyleType = $styleType === "outlined" && !isOutlinedAllowed ? "filled" : $styleType
 
   // 아이콘 색상 동적 처리 (SVGR 사용 시 fill/currentColor 사용)
   const iconColor = resolvedStyleType === "outlined" ? "black" : "white"
@@ -45,10 +45,10 @@ export const Badge = ({
 
   return (
     <S.BadgeContainer
-      variant={variant}
-      styleType={styleType}
-      size={size}
-      shape={shape}
+      $variant={$variant}
+      $styleType={$styleType}
+      $size={size}
+      $shape={shape}
       className={className}
     >
       {size === "lg" && coloredIcon && <S.IconWrapper>{coloredIcon}</S.IconWrapper>}

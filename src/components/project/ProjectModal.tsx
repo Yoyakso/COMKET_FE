@@ -175,7 +175,7 @@ export const ProjectModal = ({
             {isViewMode ? (
               <S.TagContainer>
                 {tags.map((tag) => (
-                  <Chip $styleType="filled" key={tag} variant="lightTeal" size="sm">
+                  <Chip $styleType="filled" key={tag} $variant="lightTeal" size="sm">
                     {tag}
                   </Chip>
                 ))}
@@ -184,7 +184,7 @@ export const ProjectModal = ({
             ) : (
               <S.TagContainer>
                 {tags.map((tag) => (
-                  <Chip $styleType="filled" key={tag} variant="lightTeal" size="sm" onClose={() => handleRemoveTag(tag)}>
+                  <Chip $styleType="filled" key={tag} $variant="lightTeal" size="sm" onClose={() => handleRemoveTag(tag)}>
                     {tag}
                   </Chip>
                 ))}

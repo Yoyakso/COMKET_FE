@@ -36,7 +36,7 @@ interface Props {
   onChange: (v: string | string[]) => void
   placeholder: string
   size?: DropdownSize
-  variant?: DropdownVariant
+  $variant?: DropdownVariant
   iconLeft?: boolean
   type?: DropdownOptionType
 }
@@ -48,15 +48,15 @@ export const Dropdown = ({
   onChange,
   placeholder,
   size = 'md',
-  variant = 'none',
+  $variant = 'none',
   iconLeft,
   type = 'single-text',
 }: Props) => {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  const isDisabled = variant === 'disabled' || variant === 'activated-disabled'
-  const isChip = variant === 'activated-chip' && (value || selectedValues.length > 0)
+  const isDisabled = $variant === 'disabled' || $variant === 'activated-disabled'
+  const isChip = $variant === 'activated-chip' && (value || selectedValues.length > 0)
   const isMulti = type === 'multi-check' || type === 'group-check'
 
   const selectedText = isMulti
@@ -115,11 +115,11 @@ export const Dropdown = ({
     <S.Wrapper ref={ref}>
       <S.Container
         $size={size}
-        $variant={variant}
+        $variant={$variant}
         onClick={() => !isDisabled && setOpen(prev => !prev)}
       >
         {iconLeft && !isChip && (
-          <S.IconLeft $size={size} $variant={variant}>
+          <S.IconLeft $size={size} $variant={$variant}>
             <DropdownIcon />
           </S.IconLeft>
         )}
@@ -157,12 +157,12 @@ export const Dropdown = ({
             </Chip>
           )
         ) : (
-          <S.TextBox $size={size} $variant={variant}>
+          <S.TextBox $size={size} $variant={$variant}>
             {selectedText}
           </S.TextBox>
         )}
 
-        <S.IconRight $size={size} $variant={variant}>
+        <S.IconRight $size={size} $variant={$variant}>
           {open ? <ChevronUp /> : <ChevronDown />}
         </S.IconRight>
       </S.Container>
