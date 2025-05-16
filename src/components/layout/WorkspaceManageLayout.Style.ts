@@ -20,7 +20,9 @@ export const Body = styled.div`
 `;
 
 export const Sidebar = styled.div`
-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
+
 `;
 
 export const ContentWrapper = styled.div`

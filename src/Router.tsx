@@ -77,7 +77,7 @@ export const Router = createBrowserRouter([
           </WorkspaceManageLayout>)
       },
       {
-        path: 'project',
+        path: ':workspaceSlug/project',
         element: <ProjectPage />,
       },
       {

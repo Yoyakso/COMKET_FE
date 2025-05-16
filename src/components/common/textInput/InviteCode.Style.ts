@@ -33,7 +33,7 @@ const sizeStyles = {
   `,
 } as const
 
-export const InputBox = styled.input<{ state: InputState; size: 'sm' | 'md' }>`
+export const InputBox = styled.input<{ $state: InputState; size: 'sm' | 'md' }>`
   text-align: center;
   border-radius: 4px;
   font-weight: 500;
@@ -41,8 +41,8 @@ export const InputBox = styled.input<{ state: InputState; size: 'sm' | 'md' }>`
 
   ${({ size }) => sizeStyles[size]}
 
-  ${({ state }) => {
-    switch (state) {
+  ${({ $state }) => {
+    switch ($state) {
       case 'enable':
         return css`
           background-color: ${color.white};

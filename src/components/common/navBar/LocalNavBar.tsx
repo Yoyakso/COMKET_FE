@@ -3,6 +3,8 @@ import * as S from "./LocalNavBar.Style"
 import { InformationIcon, MemberIcon, PlanIcon, ListIcon, ProfileIcon, KeyIcon } from "@/assets/icons"
 import { NavProfile } from "./NavProfile"
 import { useUserStore } from "@/stores/userStore"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
+
 
 export interface NavItem {
   id: string
@@ -32,7 +34,9 @@ export const LocalNavBar = ({
 }: NavigationBarProps) => {
   const name = useUserStore((state) => state.name)
   const profileImg = useUserStore((state) => state.profileFileUrl)
-  const workspaceSlug = localStorage.getItem("workspaceSlug");
+  const workspaceSlug = useWorkspaceStore((state) => state.workspaceSlug)
+  console.log("workspaceSlug:", workspaceSlug)
+
 
   const sections: NavSection[] = [
     {

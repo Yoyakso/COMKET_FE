@@ -13,9 +13,7 @@ export const WorkspaceManageLayout = ({ children }: { children: React.ReactNode 
       <GlobalNavBar variant="workspace" />
 
       <S.Body>
-        <S.Sidebar>
-          <LocalNavBar variant="settings" />
-        </S.Sidebar>
+        <LocalNavBar variant="settings" />
         <S.ContentWrapper>
           {children}
           <Outlet />

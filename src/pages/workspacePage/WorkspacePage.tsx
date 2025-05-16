@@ -36,11 +36,12 @@ export const WorkspacePage = () => {
           slugSet.add(opt.value);
         });
 
-        console.log("🚨 duplicated slugs:", duplicated);
+        console.log("duplicated slugs:", duplicated);
 
         setOptions(formatted);
         if (formatted.length > 0) {
           setSelectedSlug(formatted[0].value);
+          console.log("selected slug:", formatted[0].value);
         }
         console.log(data);
       } catch (err) {
@@ -56,7 +57,7 @@ export const WorkspacePage = () => {
 
   const handleJoin = () => {
     if (selectedSlug) {
-      navigate(`/${selectedSlug}`);
+      navigate(`/${selectedSlug}/project`);
     }
   };
 

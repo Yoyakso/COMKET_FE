@@ -6,7 +6,7 @@ import * as S from './Search.style'
 export type SearchState =
   | 'enable'
   | 'hover'
-  | 'focus'
+  | 'focused'
   | 'typing'
   | 'activated'
   | 'disable'
@@ -16,13 +16,13 @@ interface SearchProps {
   variant: 'filled' | 'outlined'
   size: 'sm' | 'md' | 'lg'
   disabled?: boolean
-  state?: SearchState
+  $state?: SearchState
   className?: string
   defaultValue?: string
   onSearch?: (value: string) => void
   placeholder?: string
 
-  // ✅ 외부 상태 제어용 props
+  //외부 상태 제어용 props
   value?: string
   onChange?: (value: string) => void
   onClear?: () => void
@@ -34,7 +34,7 @@ export const Search = ({
   defaultValue = '',
   onSearch,
   disabled = false,
-  state,
+  $state,
   className,
   placeholder,
   value,
@@ -50,8 +50,8 @@ export const Search = ({
 
   const computedState: SearchState = useMemo(
     () =>
-      state
-        ? state
+      $state
+        ? $state
         : disabled
           ? 'disable'
           : inputValue && focused
@@ -59,11 +59,11 @@ export const Search = ({
             : inputValue && !focused
               ? 'activated'
               : focused
-                ? 'focus'
+                ? 'focused'
                 : hovered
                   ? 'hover'
                   : 'enable',
-    [state, inputValue, focused, hovered, disabled]
+    [$state, inputValue, focused, hovered, disabled]
   )
 
   const isClearVisible = ['typing', 'activated'].includes(computedState) && inputValue
@@ -94,13 +94,13 @@ export const Search = ({
     <S.Container
       variant={variant}
       size={size}
-      state={computedState}
+      $state={computedState}
       className={className}
     >
       <S.TextBox
         variant={variant}
         size={size}
-        state={computedState}
+        $state={computedState}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
