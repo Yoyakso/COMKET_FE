@@ -35,10 +35,9 @@ export const getAllProjects = async (workspaceName: string) => {
  * @param projectId
  * @returns 
  */
-export const getProjectById = async (projectId: string): Promise<ProjectData> => {
+export const getProjectById = async (workspaceName: string, projectId: string): Promise<ProjectData> => {
   try {
     const token = localStorage.getItem("accessToken");
-    const workspaceName = localStorage.getItem("workspaceName");
 
     if (!token) throw new Error("로그인 토큰이 없습니다.");
     if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.");
@@ -51,8 +50,20 @@ export const getProjectById = async (projectId: string): Promise<ProjectData> =>
         },
       }
     );
+    const raw = response.data;
 
-    return response.data;
+    return {
+      id: raw.projectId,
+      name: raw.projectName,
+      description: raw.projectDescription,
+      tag: (raw.projectTag || []).join(", "),
+      visibility: raw.isPublic ? "전체 공개" : "멤버 공개",
+      admin: raw.adminInfo.name,
+      adminInfo: [raw.adminInfo],
+      memberCount: 0,
+      createdBy: raw.adminInfo.email,
+      createdAt: raw.createTime,
+    };
   } catch (error) {
     console.error(`프로젝트(${projectId}) 조회 실패:`, error);
     throw error;
