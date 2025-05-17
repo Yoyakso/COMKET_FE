@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {color} from '@/styles/color';
+import { color } from '@/styles/color';
 
 export const Overlay = styled.div`
   position: fixed;
@@ -61,5 +61,3 @@ export const ButtonGroup = styled.div`
   gap: 12px;
   width: 100%;
 `;
-
-

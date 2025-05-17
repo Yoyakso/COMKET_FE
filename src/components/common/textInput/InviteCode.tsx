@@ -113,7 +113,7 @@ export const InviteCode = ({
       inputRefs.current[index - 1]?.focus()
     }
   }
-  console.log("🔥 errorType:", errorType)
+  console.log("errorType:", errorType)
 
   return (
     <S.Wrapper>
@@ -131,8 +131,8 @@ export const InviteCode = ({
               ref={(el) => {
                 inputRefs.current[i] = el
               }}
-              state={getState(code)}
-              size={size}
+              $state={getState(code)}
+              $size={size}
               disabled={disabled}
               readOnly={disabled}
             />

@@ -13,7 +13,7 @@ type TextInputProps = {
   onRemove?: () => void;
   type?: 'default' | 'password';
   size?: 'sm' | 'md';
-  state?:
+  $state?:
   | 'enable'
   | 'hover'
   | 'focus'
@@ -32,14 +32,15 @@ export const TextInput = ({
   onChange,
   onRemove,
   type,
-  size,
-  state,
+  size = 'md',
+  $state,
   placeholder = '입력하시오',
   helperText,
 }: TextInputProps) => {
   const [focused, setFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const safeState = $state ?? 'enable'; // ✅ 기본값 설정
   const isPassword = type === 'password';
   const showSecureIcons = isPassword && value;
 
@@ -48,17 +49,17 @@ export const TextInput = ({
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   return (
-    <S.Container size={size} state={state}>
-      <S.InputBox size={size} state={state} focused={focused}>
+    <S.Container size={size} $state={safeState}>
+      <S.InputBox size={size} $state={safeState} $focused={focused}>
         <S.StyledInput
-          type={isPassword && !showPassword ? 'text' : 'text'} // 모두 text로 처리
+          type={isPassword && !showPassword ? 'text' : 'text'}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          disabled={state === 'disabled'}
-          $state={state}
+          disabled={safeState === 'disabled'}
+          $state={safeState}
           style={
             isPassword && !showPassword
               ? {
@@ -78,7 +79,6 @@ export const TextInput = ({
           </S.FakeInput>
         )}
 
-
         {showSecureIcons && (
           <>
             <S.Clear2Button
@@ -89,35 +89,45 @@ export const TextInput = ({
             >
               <ClearIcon />
             </S.Clear2Button>
-            <S.EyeButton type="button" size={size} onClick={togglePasswordVisibility}>
+            <S.EyeButton
+              type="button"
+              size={size}
+              onClick={togglePasswordVisibility}
+            >
               {showPassword ? <EyeOnIcon /> : <EyeOffIcon />}
             </S.EyeButton>
           </>
         )}
 
-        {!isPassword && value && state !== 'registered' && state !== 'activated' && (
-          <S.ClearButton
-            type="button"
-            size={size}
-            onClick={handleClear}
-            aria-label="입력 초기화"
-          >
-            <CloseIcon />
-          </S.ClearButton>
-        )}
+        {!isPassword &&
+          value &&
+          safeState !== 'registered' &&
+          safeState !== 'activated' && (
+            <S.ClearButton
+              type="button"
+              size={size}
+              onClick={handleClear}
+              aria-label="입력 초기화"
+            >
+              <CloseIcon />
+            </S.ClearButton>
+          )}
 
-        {!isPassword && state !== 'registered' && state !== 'activated' && (
-          <S.RemoveButton
-            type="button"
-            size={size}
-            onClick={handleRemove}
-            aria-label="입력창 제거"
-          >
-            <CloseIcon />
-          </S.RemoveButton>
-        )}
+        {!isPassword &&
+          safeState !== 'registered' &&
+          safeState !== 'activated' && (
+            <S.RemoveButton
+              type="button"
+              size={size}
+              onClick={handleRemove}
+              aria-label="입력창 제거"
+            >
+              <CloseIcon />
+            </S.RemoveButton>
+          )}
       </S.InputBox>
-      {!!helperText && <S.HelperText $state={state}>{helperText}</S.HelperText>}
+
+      {!!helperText && <S.HelperText $state={safeState}>{helperText}</S.HelperText>}
     </S.Container>
   );
 };

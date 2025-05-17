@@ -124,7 +124,7 @@ const DisabledStyle = css`
  `
 
 interface ButtonContainerProps {
-  variant: ButtonStyle
+  $variant: ButtonStyle
   size: ButtonSize
   disabled?: boolean
 }
@@ -139,7 +139,7 @@ export const ButtonContainer = styled.button<ButtonContainerProps>`
    
    ${(props) => Size[props.size]}
    
-   ${(props) => (props.disabled ? DisabledStyle : ActiveStyle[props.variant])}
+   ${(props) => (props.disabled ? DisabledStyle : ActiveStyle[props.$variant])}
  `
 
 export const IconWrapper = styled.span`

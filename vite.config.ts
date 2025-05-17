@@ -5,7 +5,12 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), svgr(), VitePWA({
+  plugins: [react({
+      babel: {
+        plugins: [["babel-plugin-styled-components", { displayName: true }]],
+      },
+    }
+  ), svgr(), VitePWA({
     registerType: 'autoUpdate',
     injectRegister: false,
 

@@ -18,7 +18,7 @@ export const TicketDashboardPage = () => {
                             프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다
                         </S.Description>
                     </div>
-                    <Button size='md' variant="tealFilled">
+                    <Button size='md' $variant="tealFilled">
                         <span style={{ marginRight: '4px' }}>
                             <Plus width={'14px'} height={'14px'} />
                         </span>

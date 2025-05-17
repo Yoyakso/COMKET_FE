@@ -42,7 +42,7 @@ export const Router = createBrowserRouter([
         element: <SignUpCompletePage />,
       },
       {
-        path: 'member',
+        path: ':workspaceSlug/member',
         element: <MemberPage />,
       },
 
@@ -51,14 +51,16 @@ export const Router = createBrowserRouter([
         element: (
           <WorkspaceLayout>
             <WorkspacePage />
-          </WorkspaceLayout>),
+          </WorkspaceLayout>
+        ),
       },
       {
         path: 'invitecode',
         element: (
           <WorkspaceLayout>
             <InviteCodePage />
-          </WorkspaceLayout>),
+          </WorkspaceLayout>
+        ),
       },
       {
         path: 'workspace/create',
@@ -69,27 +71,29 @@ export const Router = createBrowserRouter([
         ),
       },
       {
-
-        path: ':workspaceSlug',
-        element: (
-          <WorkspaceManageLayout>
-            <WorkspaceInfoPage />
-          </WorkspaceManageLayout>)
+        path: ':workspaceSlug/settings',
+        element: <WorkspaceManageLayout />,
+        children: [
+          {
+            index: true,
+            element: <WorkspaceInfoPage />,
+          },
+        ],
       },
       {
-        path: 'project',
+        path: ':workspaceSlug/project',
         element: <ProjectPage />,
       },
       {
         path: 'profile',
-        element: <ProfilePage />
+        element: <ProfilePage />,
       },
       {
         path: 'account',
-        element: <AccountInfoPage />
+        element: <AccountInfoPage />,
       },
       {
-        path: "workspace/project/ticketdashboard",
+        path: 'workspace/project/ticketdashboard',
         element: <TicketDashboardPage />,
       },
     ],
