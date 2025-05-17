@@ -2,15 +2,15 @@ import styled, { css } from 'styled-components'
 import { color } from '@/styles/color'
 
 export const Container = styled.div<{
-  variant: string
+  $variant: string
   size: string
-  state: string
+  $state: string
 }>`
   display: flex;
   flex-direction: column;
   width: 100%;
-  opacity: ${({ state }) =>
-    state === 'disable' || state === 'activated-disabled' ? 0.5 : 1};
+  opacity: ${({ $state }) =>
+    $state === 'disable' || $state === 'activated-disabled' ? 0.5 : 1};
 `
 
 const sizeStyles: Record<string, ReturnType<typeof css>> = {
@@ -32,9 +32,9 @@ const sizeStyles: Record<string, ReturnType<typeof css>> = {
 }
 
 export const TextBox = styled.div<{
-  variant: string
+  $variant: string
   size: string
-  state: string
+  $state: string
 }>`
   display: flex;
   align-items: center;
@@ -48,22 +48,22 @@ export const TextBox = styled.div<{
 
   ${({ size }) => sizeStyles[size]}
 
-  ${({ variant, state }) => {
-    const isDisabled = state === 'disable' || state === 'activated-disabled'
-    const isFocus = state === 'focus'
-    const isTyping = state === 'typing'
-    const isHover = state === 'hover'
-    const isActivated = state === 'activated'
+  ${({ $variant, $state }) => {
+    const isDisabled = $state === 'disable' || $state === 'activated-disabled'
+    const isFocus = $state === 'focused'
+    const isTyping = $state === 'typing'
+    const isHover = $state === 'hover'
+    const isActivated = $state === 'activated'
 
     const baseColor = isDisabled
       ? color.textPlaceholder32
-      : variant === 'filled'
+      : $variant === 'filled'
       ? color.textPlaceholder16
       : color.white
 
     const borderColor = isDisabled
       ? 'none'
-      : variant === 'outlined'
+      : $variant === 'outlined'
       ? `1px solid ${
           isHover || isFocus || isTyping
             ? color.basic1000

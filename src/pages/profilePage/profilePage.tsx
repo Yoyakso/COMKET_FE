@@ -5,7 +5,7 @@ import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import { X } from "lucide-react"
 import { POSITION_OPTIONS, DEPARTMENT_OPTIONS } from "@/constants/profileOptions"
 import { updateProfile, getMyProfile } from "@/api/Member"
-import { uploadProfileImage } from "@/api/WorkspaceImage"
+import { uploadProfileImage } from "@/api/Workspace"
 import { useUserStore } from "@/stores/userStore"
 import { toast } from "react-toastify"
 

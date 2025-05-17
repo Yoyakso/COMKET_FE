@@ -21,6 +21,9 @@ interface WorkspaceState {
 
   // 새로운 이미지 url을 상태에 저장하는 함수
   setProfileFileUrl: (url: string) => void;
+
+  //워크스페이스 slug를 상태에 저장하는 함수
+  setWorkspaceSlug: (slug: string) => void;
 }
 
 export const useWorkspaceStore = create<WorkspaceState>()(
@@ -54,8 +57,15 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       setProfileFileUrl: (url: string) =>
         set({
           profileFileUrl: url
+        }),
+
+      // 워크스페이스 slug만 개별적으로 업데이트할 수 있는 함수
+      setWorkspaceSlug: (slug: string) =>
+        set({
+          workspaceSlug: slug
         })
-    }),
+        
+      }),
     {
       name: "workspace-storage",
       partialize: (state) => ({

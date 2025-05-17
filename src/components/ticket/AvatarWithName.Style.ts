@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
@@ -17,7 +17,7 @@ export const AvatarFallback = styled.div`
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: #A9B4C2;
+  background-color: #a9b4c2;
   color: white;
   font-size: 12px;
   display: flex;
@@ -34,10 +34,10 @@ export const TextGroup = styled.div`
 
 export const Name = styled.span`
   font-size: 14px;
-  color: #1A1A1A;
+  color: #1a1a1a;
 `;
 
 export const Nickname = styled.span`
   font-size: 12px;
-  color: #A9A9A9;
+  color: #a9a9a9;
 `;

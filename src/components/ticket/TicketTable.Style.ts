@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { color } from "@/styles/color";
+import styled from 'styled-components';
+import { color } from '@/styles/color';
 
 export const TableWrapper = styled.div`
   width: 100%;
@@ -9,7 +9,6 @@ export const TableWrapper = styled.div`
   border-radius: 6px;
   border-top: 1px solid ${color.textPlaceholder24};
   border-bottom: 1px solid ${color.textPlaceholder24};
-
 `;
 
 export const Table = styled.table`
@@ -26,9 +25,9 @@ export const HeaderRow = styled.tr`
   border-bottom: 1px solid #dee2e6;
 `;
 
-export const HeaderCell = styled.th<{ $width?: number , $align?: "left"|"center" }>`
+export const HeaderCell = styled.th<{ $width?: number; $align?: 'left' | 'center' }>`
   width: ${({ $width }) => ($width ? `${$width}px` : 'auto')};
-  text-align: ${({ $align }) => ($align ?? 'left')};
+  text-align: ${({ $align }) => $align ?? 'left'};
   min-width: 40px;
   max-width: 1000px;
   padding: 12px 8px;
@@ -47,11 +46,10 @@ export const HeaderCell = styled.th<{ $width?: number , $align?: "left"|"center"
 
 export const TableBody = styled.tbody``;
 
-export const HeaderContent = styled.div<{ $align?: "left" | "center"}>`
+export const HeaderContent = styled.div<{ $align?: 'left' | 'center' }>`
   display: flex;
   align-items: center;
-   justify-content: ${({ $align }) =>
-    $align === "center" ? "center" : "flex-start"};
+  justify-content: ${({ $align }) => ($align === 'center' ? 'center' : 'flex-start')};
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -68,7 +66,6 @@ export const SortableHeader = styled.div`
   svg {
     transition: transform 0.2s ease;
   }
-
 `;
 
 export const Resizer = styled.div`

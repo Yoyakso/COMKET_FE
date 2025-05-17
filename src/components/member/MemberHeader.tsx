@@ -77,7 +77,7 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
                   onChange={handleFilterChange}
                   placeholder="필터"
                   size="sm"
-                  variant={selectedFilters.length > 0 ? "activated" : "none"}
+                  $variant={selectedFilters.length > 0 ? "activated" : "none"}
                   type="group-check"
                   iconLeft={true}
                 />
@@ -85,8 +85,8 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
             </S.FilterButtonContainer>
             <S.SearchInputWrapper>
               <Search
-                state="enable"
-                variant="outlined"
+                $state="enable"
+                $variant="outlined"
                 size="sm"
                 onSearch={handleSearchChange}
                 defaultValue={searchValue}

@@ -1,12 +1,12 @@
-import styled from "styled-components";
-import { motion } from "framer-motion";
-import type { Priority } from "@/types/filter";
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import type { Priority } from '@/types/filter';
 
 // 색상 맵
 export const PRIORITY_COLORS: Record<Priority, string> = {
-  HIGH: "hsla(0, 100.00%, 65.90%, 0.95)",
-  MEDIUM: "rgba(255, 214, 8, 0.95)",
-  LOW: "rgba(42, 220, 167, 0.95)",
+  HIGH: 'hsla(0, 100.00%, 65.90%, 0.95)',
+  MEDIUM: 'rgba(255, 214, 8, 0.95)',
+  LOW: 'rgba(42, 220, 167, 0.95)',
 };
 
 export const Positioner = styled.div`
@@ -29,7 +29,6 @@ export const Wrapper = styled.div<{ $color: string }>`
   cursor: pointer;
   z-index: 1;
 `;
-
 
 export const MorphDropdown = styled(motion.div)<{ $color: string }>`
   position: absolute;

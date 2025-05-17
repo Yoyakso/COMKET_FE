@@ -1,33 +1,59 @@
-import { color } from '@/styles/color';
-import styled from 'styled-components';
+import styled from "styled-components"
+import { color } from "@/styles/color"
 
-export const Wrapper = styled.div`
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-`;
-
-export const Header = styled.header`
+export const PageContainer = styled.div`
   display: flex;
-  align-items: center;
-`;
-
-export const Body = styled.div`
+  flex-direction: column;
   height: 100vh;
-  display: flex;
-  flex: 1;
-  flex-direction: row;
-`;
+  min-width: 100%;
+`
 
-export const Sidebar = styled.div`
-height: 100vh;
-`;
+export const GNBContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+`
 
-export const ContentWrapper = styled.div`
-  flex: 1;
+export const MainContainer = styled.div`
   display: flex;
-  justify-content: flex-start;    // 세로 방향 정렬 (column 기준)
-  align-items: flex-start;        // 가로 정렬
+  height: 100%;
+  padding-top: 72px;
+`
+
+export const LNBContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  height: calc(100vh - 72px);
+  z-index: 90;
+`
+
+export const Content = styled.div`
+  flex: 1;
+  margin-left: 260px;
   padding: 32px 48px;
-  flex-direction: column;         // 콘텐츠가 세로로 쌓인다면 필수
-`;
+  box-sizing: border-box;
+  height: calc(100vh - 72px);
+  overflow: auto;
+  background-color: ${color.white};
+`
+
+export const NoResultsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: ${color.basic0};
+  border-radius: 8px;
+  margin-top: 16px;
+`
+
+export const NoResultsText = styled.p`
+  font-size: 16px;
+  color: ${color.textSecondary};
+  text-align: center;
+`
