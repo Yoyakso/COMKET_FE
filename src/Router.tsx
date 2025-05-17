@@ -93,7 +93,7 @@ export const Router = createBrowserRouter([
         element: <AccountInfoPage />,
       },
       {
-        path: 'workspace/project/ticketdashboard',
+        path: "/:projectId/tickets",
         element: <TicketDashboardPage />,
       },
     ],

@@ -1,5 +1,6 @@
 import * as S from "./TicketDashboardPage.Style";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { TicketListView } from "@/components/ticketView/TicketListView";
 import { TicketBoardView } from "@/components/ticketView/TicketBoardView";
 import { ListChecks, Rows2, Plus } from 'lucide-react';
@@ -14,6 +15,7 @@ export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<"list" | "board">("list");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const { projectId } = useParams<{ projectId: string }>();
 
   const handleCreateTicket = () => {
     setIsModalOpen(true);
@@ -89,12 +91,12 @@ export const TicketDashboardPage = () => {
 
         {isModalOpen && (
           <CreateTicketModal
+            projectId={Number(projectId)}
+            projectName={"프로젝트 이름 조회 필요"}
             onClose={() => setIsModalOpen(false)}
-            onSubmit={(data) => {
-              console.log("등록된 티켓:", data);
-              setIsModalOpen(false);
-            }}
+            onSubmit={handleCreateTicket}
           />
+
         )}
 
         {selectedTicket && (

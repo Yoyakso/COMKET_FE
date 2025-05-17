@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom";
 import * as S from "./ProjectRow.Style"
 import type { ProjectData } from "@/types/project"
 import { ChevronDown, DotIcon } from "@assets/icons"
@@ -22,7 +23,7 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
   const [showMemberModal, setShowMemberModal] = useState(false)
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false)
   const visibilityOptions = ["전체 공개", "멤버 공개"] as const
-
+  const navigate = useNavigate();
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
 
   useEffect(() => {
@@ -41,9 +42,7 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
   }, [])
 
   const handleRowClick = () => {
-    if (onViewProject) {
-      onViewProject(Number(project.id))
-    }
+    navigate(`/${project.id}/tickets`);
   }
 
   const toggleActionDropdown = (id: string, e: React.MouseEvent) => {
@@ -82,7 +81,6 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
       toast.error("공개 범위 변경에 실패했습니다.")
     }
   }
-
 
   const handleEditProject = (e: React.MouseEvent) => {
     e.stopPropagation()
