@@ -13,6 +13,7 @@ import * as S from "./ProjectPage.Style"
 import { createProject, getAllProjects, editProject } from "@api/Project"
 import { formatDate } from "@utils/dateFormat"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
+import { useInitializeWorkspace } from "@/hooks/useWorkspace"
 import { toast } from "react-toastify"
 
 export const ProjectPage = () => {
