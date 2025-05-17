@@ -45,8 +45,8 @@ export const LocalNavBar = ({
       items: [
         { id: "workspace_information", label: "워크스페이스 설정", href: `/${workspaceSlug}`, icon: <InformationIcon /> },
         { id: "plan", label: "플랜 관리", href: "/", icon: <PlanIcon /> },
-        { id: "member", label: "멤버 관리", href: "/member", icon: <MemberIcon />, onClick: onNavigateMember, },
-        { id: "list", label: "프로젝트 관리", href: "/project", icon: <ListIcon />, onClick: onNavigateProject, },
+        { id: "member", label: "멤버 관리", href: `/member`, icon: <MemberIcon />, onClick: onNavigateMember, },
+        { id: "list", label: "프로젝트 관리", href: `/${workspaceSlug}/project`, icon: <ListIcon />, onClick: onNavigateProject, },
       ],
     },
     {

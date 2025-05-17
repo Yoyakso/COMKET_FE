@@ -76,6 +76,25 @@ export const workspaceCreate = async (params: WorkspaceCreateParams) => {
 };
 
 /**
+ * 워크스페이스 슬러그로 조회
+ * @param slug - 워크스페이스 슬러그
+ * @returns 워크스페이스 정보 (id, name, slug, profileFileUrl 등)
+ */
+
+export const fetchWorkspaceBySlug = async (slug: string) => {
+  const token = localStorage.getItem("accessToken");
+
+  const response = await axios.get(`${BASE_URL}/api/v1/workspaces/slug/${slug}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    withCredentials: true,
+  });
+
+  return response.data;
+};
+
+/**
  * 워크스페이스 초대코드
  * @param inviteCode 
  * @returns 
@@ -103,7 +122,7 @@ export interface UploadResponse {
 }
 
 /**
- * 프로필 이미지 업로드드
+ * 프로필 이미지 업로드
  * @param file - 업로드할 이미지 파일
  * @param category - 파일 카테고리 (WORKSPACE_PROFILE | MEMBER_PROFILE | PROJECT_PROFILE)
  * @returns 서버로부터 받은 파일 정보 (file_id, file_url 등)

@@ -4,12 +4,15 @@ import { Button } from "@/components/common/button/Button";
 import { Dropdown, DropdownOption } from "@/components/common/dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import { fetchMyWorkspaces } from "@/api/Workspace";
+import { useWorkspaceStore } from "@/stores/workspaceStore";
+
 
 export const WorkspacePage = () => {
 
   const navigate = useNavigate();
   const [options, setOptions] = useState<DropdownOption[]>([]);
   const [selectedSlug, setSelectedSlug] = useState<string>("");
+  const { setWorkspaceSlug } = useWorkspaceStore.getState();
 
   interface Workspace {
     id: string;
@@ -26,17 +29,6 @@ export const WorkspacePage = () => {
           label: ws.name,
           value: ws.slug,
         }));
-        const slugSet = new Set();
-        const duplicated = [];
-
-        formatted.forEach((opt) => {
-          if (slugSet.has(opt.value)) {
-            duplicated.push(opt.value);
-          }
-          slugSet.add(opt.value);
-        });
-
-        console.log("duplicated slugs:", duplicated);
 
         setOptions(formatted);
         if (formatted.length > 0) {
@@ -57,6 +49,7 @@ export const WorkspacePage = () => {
 
   const handleJoin = () => {
     if (selectedSlug) {
+      setWorkspaceSlug(selectedSlug);
       navigate(`/${selectedSlug}/project`);
     }
   };
@@ -82,12 +75,12 @@ export const WorkspacePage = () => {
               <S.Line />
             </S.DividerBox>
 
-            <S.FullWidthButton $variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
+            <Button $variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
               워크스페이스 생성
-            </S.FullWidthButton>
-            <S.FullWidthButton $variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
+            </Button>
+            <Button $variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
               초대 코드로 입장
-            </S.FullWidthButton>
+            </Button>
           </>
         ) : (
           <>
@@ -102,7 +95,7 @@ export const WorkspacePage = () => {
                 }}
                 placeholder="워크스페이스 선택"
                 size="md"
-                variant="activated"
+                $variant="activated"
                 iconLeft
               />
               <Button $variant="neutralFilled" size="md" onClick={handleJoin}>
@@ -117,12 +110,12 @@ export const WorkspacePage = () => {
             </S.DividerBox>
 
 
-            <S.FullWidthButton $variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
+            <Button $variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
               워크스페이스 생성
-            </S.FullWidthButton>
-            <S.FullWidthButton $variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
+            </Button>
+            <Button $variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
               초대 코드로 입장
-            </S.FullWidthButton>
+            </Button>
           </>
         )}
       </S.Card>

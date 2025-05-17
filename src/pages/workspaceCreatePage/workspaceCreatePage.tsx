@@ -11,16 +11,13 @@ export const CreateWorkspacePage = () => {
   const [workspaceName, setWorkspaceName] = useState('');
   const [workspaceURL, setWorkspaceURL] = useState('');
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
-
   const [nameError, setNameError] = useState('');
   const [slugError, setSlugError] = useState('');
-
   const navigate = useNavigate();
-
   const isNameValid = workspaceName.trim().length >= 2;
   const isURLValid = /^[a-z0-9-]+$/.test(workspaceURL);
   const isFormValid = isNameValid && isURLValid;
-  const { setWorkspaceStore } = useWorkspaceStore.getState();
+  const { setWorkspaceStore } = useWorkspaceStore();
 
   const handleCreateWorkspace = async () => {
 
@@ -43,7 +40,7 @@ export const CreateWorkspacePage = () => {
         profileFileUrl: data.profileFileUrl
       })
 
-      navigate(`/${data.slug}`);
+      navigate(`/${data.slug}/project`);
     } catch (error: any) {
       const code = error.response?.data?.code;
       const message = error.response?.data?.message || '오류가 발생했습니다.';
