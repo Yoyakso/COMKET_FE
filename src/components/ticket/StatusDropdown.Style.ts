@@ -1,22 +1,20 @@
-import styled from "styled-components";
-import { motion } from "framer-motion";
-import type { Status } from "@/types/filter";
-import { color } from "@/styles/color";
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import type { Status } from '@/types/filter';
+import { color } from '@/styles/color';
 
-// 상태별 색상 맵
 export const STATUS_COLORS: Record<Status, string> = {
-  TODO: "#9CA3AF",
-  IN_PROGRESS: "#3B82F6",
-  DONE: "#10B981",
-  HOLD: "#F59E0B",
-  DROP: "#EF4444",
-  BACKLOG: "#6B7280",
+  TODO: '#9CA3AF',
+  IN_PROGRESS: '#3B82F6',
+  DONE: '#10B981',
+  HOLD: '#F59E0B',
+  DROP: '#EF4444',
+  BACKLOG: '#6B7280',
 };
 
 export const Positioner = styled.div`
   position: relative;
   display: inline-block;
-
 `;
 
 export const Wrapper = styled.div<{ $color: string }>`
@@ -41,7 +39,7 @@ export const MorphDropdown = styled(motion.div)`
   top: 85%;
   transform: translateX(-50%);
   margin-top: 6px;
-  background-color:rgba(255, 255, 255, 0.95); 
+  background-color: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
   padding: 6px 0;
   min-width: 64px;
@@ -63,7 +61,7 @@ export const Option = styled.div<{ $color: string }>`
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: ${({ $color }) => $color}22; 
-    color: ${({ $color }) => $color}; 
+    background-color: ${({ $color }) => $color}22;
+    color: ${({ $color }) => $color};
   }
 `;

@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { color } from "@/styles/color";
+import styled from 'styled-components';
+import { color } from '@/styles/color';
 
 export const Wrapper = styled.div`
   display: flex;
@@ -11,11 +11,10 @@ export const Wrapper = styled.div`
 `;
 
 export const RightSection = styled.div`
-  display: flex;  
+  display: flex;
   align-items: center;
   gap: 16px;
-  
-  `
+`;
 
 export const FilterBox = styled.div`
   position: relative;
@@ -66,13 +65,11 @@ export const FilterBadge = styled.div`
   justify-content: center;
 `;
 
-
 export const BulkActionBox = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
 `;
-
 
 export const BulkButton = styled.button`
   padding: 6px 12px;
