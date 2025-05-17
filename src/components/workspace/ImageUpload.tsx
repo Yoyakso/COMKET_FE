@@ -5,7 +5,6 @@ import { Button } from '@/components/common/button/Button';
 import { getCroppedImg } from '@/utils/getCroppedImg';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
 import { uploadProfileImage, type UploadResponse } from '@/api/Workspace';
-import { debounce } from 'lodash.debounce';
 
 interface ImageUploadProps {
   onClose: () => void;
