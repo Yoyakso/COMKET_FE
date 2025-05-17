@@ -86,6 +86,7 @@ export const EditorWrapper = styled.div`
 `
 
 export const SelectField = styled.div`
+  position: relative;
   flex: 1;
   height: 40px;
   padding: 0 12px;
@@ -95,10 +96,6 @@ export const SelectField = styled.div`
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  
-  &:hover {
-    border-color: #aaa;
-  }
 `
 
 export const SelectText = styled.span`
@@ -285,3 +282,36 @@ export const SubmitButton = styled.button`
     color: white;
   }
 `
+
+export const DropdownMenu = styled.ul`
+  position: absolute;
+  top: 42px;
+  left: 0;
+  background: white;
+  border: 1px solid ${color.basic0};
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 4px 0;
+  width: 100%;
+  z-index: 999;
+  list-style: none;
+`;
+
+export const DropdownItem = styled.li`
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: ${color.textPrimary};
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: ${color.basic100};
+  }
+
+  & > svg,
+  & > span {
+    margin-right: 8px;
+  }
+`;

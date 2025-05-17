@@ -44,7 +44,7 @@ export const TicketRow = ({ ticket, isChecked, onCheckToggle, onTicketClick }: T
           />
         </S.TableCell>
         <S.TableCell>{ticket.id}</S.TableCell>
-        <S.TableCell>
+        <S.TableCell onClick={() => onTicketClick?.(ticket)} style={{ cursor: "pointer" }}>
           <S.TicketTitleGroup>
             {ticket.title}
             {ticket.threadCount > 0 && (
