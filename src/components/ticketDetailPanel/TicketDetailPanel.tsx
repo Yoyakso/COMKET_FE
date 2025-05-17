@@ -263,12 +263,12 @@ export const TicketDetailPanel = ({ ticket, onClose, onNavigate }: TicketDetailP
 
       <S.PanelFooter>
         <S.Button $variant="outline" $size="sm" onClick={() => onNavigate?.("prev")}>
-          <ChevronLeft className="h-4 w-4 mr-1" />
+          <ChevronLeft width={16} height={16} />
           이전
         </S.Button>
         <S.Button $variant="outline" $size="sm" onClick={() => onNavigate?.("next")}>
           다음
-          <ChevronRight className="h-4 w-4 ml-1" />
+          <ChevronRight width={16} height={16} />
         </S.Button>
       </S.PanelFooter>
     </S.PanelContainer>

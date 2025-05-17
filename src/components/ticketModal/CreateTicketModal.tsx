@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { ChevronDown } from "lucide-react"
-import { MarkdownEditor } from "@components/common/markdownEditor/markdownEditor"
+import { MarkdownEditor } from "@components/common/markdownEditor/MarkdownEditor"
 import * as S from "./CreateTicketModal.Style"
 import { PriorityBadge } from "../ticket/PriorityBadge"
 import { StatusBadge } from "../ticket/StatusBadge"

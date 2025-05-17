@@ -13,6 +13,7 @@ export const PanelContainer = styled.div`
   display: flex;
   flex-direction: column;
   z-index: 50;
+  margin-top: 72px;
 `
 
 export const PanelHeader = styled.div`

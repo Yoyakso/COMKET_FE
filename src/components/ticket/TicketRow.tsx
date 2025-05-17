@@ -4,18 +4,20 @@ import { AvatarWithName } from './AvatarWithName';
 import { Ticket } from '@/types/ticket';
 import { CheckBox } from '../common/checkbox/CheckBox';
 import { ChevronRight, ChevronDown, MessageSquare } from 'lucide-react';
-import { TypeBadge } from './TypeBadge';
-import { PriorityDropdown } from './PriorityDropdown';
-import { StatusDropdown } from './StatusDropdown';
+import { TypeBadge } from "./TypeBadge";
+import { PriorityDropdown } from "./PriorityDropdown";
+import { StatusDropdown } from "./StatusDropdown";
 
 interface TicketRowProps {
   ticket: Ticket;
   isChecked: (id: number) => boolean;
   onCheckToggle: (id: number, parentId?: number) => void;
   toggleWithSubtickets: (Ticket: Ticket) => void;
+  onTicketClick?: (ticket: Ticket) => void;
 }
 
-export const TicketRow = ({ ticket, isChecked, onCheckToggle }: TicketRowProps) => {
+export const TicketRow = ({ ticket, isChecked, onCheckToggle, onTicketClick }: TicketRowProps) => {
+
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => setIsExpanded(prev => !prev);

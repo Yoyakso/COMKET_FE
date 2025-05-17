@@ -1,13 +1,23 @@
-import * as S from './TicketListView.Style';
-import { useState, useMemo, useEffect } from 'react';
-import { TicketTable } from '@/components/ticket/TicketTable';
-import { TicketToolbar } from '@/components/ticket/TicketToolbar';
-import { TicketFilterStore, TicketDropdownStore } from '../ticket/Ticket';
-import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
-import { TicketType, Status } from '@/types/filter';
+import * as S from "./TicketListView.Style";
+import { useState, useMemo, useEffect } from "react";
+import { TicketTable } from "@/components/ticket/TicketTable";
+import { TicketToolbar } from "@/components/ticket/TicketToolbar";
+import { TicketFilterStore, TicketDropdownStore } from "../ticket/Ticket";
+import { TicketSelectionStore } from "@/components/ticket/TicketSelectionStore";
+import { TicketType, Status } from "@/types/filter";
+import { Ticket } from "@/types/ticket";
 
-export const TicketListView = () => {
-  const { selectedPriorities, selectedStatuses, selectedTypes } = TicketFilterStore();
+interface TicketListViewProps {
+  onTicketClick: (ticket: Ticket) => void
+}
+
+export const TicketListView = ({ onTicketClick }: TicketListViewProps) => {
+
+  const {
+    selectedPriorities,
+    selectedStatuses,
+    selectedTypes,
+  } = TicketFilterStore();
 
   const { tickets, updateManyTicketType, updateManyTicketStatus, deleteManyTicket } =
     TicketDropdownStore();
@@ -35,11 +45,11 @@ export const TicketListView = () => {
       <TicketToolbar
         selectedTicketIds={selectedIds}
         onDeleteTickets={() => {
-          deleteManyTicket(selectedIds);
+          deleteManyTicket(selectedIds)
           clearSelection();
         }}
-        onChangeType={type => updateManyTicketType(selectedIds, type as TicketType)}
-        onChangeStatus={status => updateManyTicketStatus(selectedIds, status as Status)}
+        onChangeType={(type) => updateManyTicketType(selectedIds, type as TicketType)}
+        onChangeStatus={(status) => updateManyTicketStatus(selectedIds, status as Status)}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
       />
@@ -48,7 +58,7 @@ export const TicketListView = () => {
         selectedIds={selectedIds}
         toggleSingle={toggleSingle}
         toggleWithSubtickets={toggleWithSubtickets}
-      />
+        onTicketClick={onTicketClick} />
     </S.Wrapper>
   );
 };
