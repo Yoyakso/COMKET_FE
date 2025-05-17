@@ -45,7 +45,6 @@ export const TicketDashboardPage = () => {
 
                     </S.ViewTabBar>
                 </S.Header>
-
                 {viewType === "list" ? <TicketListView /> : <TicketBoardView />}
             </S.Wrapper>
             {isModalOpen && (

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { color } from "@/styles/color";
-import { Button } from "@/components/common/button/Button";
+import { Button} from "@/components/common/button/Button";
 
 export const Container = styled.div`
   height: 100vh;
@@ -53,11 +53,6 @@ export const Line = styled.div`
 
 export const DividerText = styled.span`
   white-space: nowrap;
-`;
-
-export const FullWidthButton = styled(Button)`
-  width: 100% !important;
-  height: 56px;
 `;
 
 export const WorkspaceRow = styled.div`

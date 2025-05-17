@@ -11,10 +11,7 @@ export interface CropArea {
  * @returns - 크롭된 이미지의 Blob 객체
  */
 
-export const getCroppedImg = async (
-  imageSrc: string,
-  crop: CropArea
-): Promise<File> => {
+export const getCroppedImg = async (imageSrc: string, crop: CropArea): Promise<File> => {
   const image = await createImage(imageSrc);
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -23,24 +20,14 @@ export const getCroppedImg = async (
 
   canvas.width = crop.width;
   canvas.height = crop.height;
-  ctx.drawImage(
-    image,
-    crop.x,
-    crop.y,
-    crop.width,
-    crop.height,
-    0,
-    0,
-    crop.width,
-    crop.height
-  );
+  ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, crop.width, crop.height);
 
   return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
+    canvas.toBlob(blob => {
       if (!blob) return reject(new Error('Canvas is empty'));
-      const file = new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' });
+      const file = new File([blob], 'cropped_image.png', { type: 'image/png' });
       resolve(file);
-    }, 'image/jpeg');
+    }, 'image/png');
   });
 };
 
@@ -48,7 +35,7 @@ const createImage = (url: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.addEventListener('load', () => resolve(image));
-    image.addEventListener('error', (err) => reject(err));
+    image.addEventListener('error', err => reject(err));
     image.src = url;
     image.crossOrigin = 'anonymous';
   });

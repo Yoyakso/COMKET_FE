@@ -65,28 +65,28 @@ const backgroundStyles = {
 };
 
 const borderStyles = (
-  variant: CheckBoxVariant,
+  $variant: CheckBoxVariant,
   visualState: CheckBoxVisualState,
   interactionState: CheckBoxInteractionState
 ): string =>
-  variant === "disabled" ? `1px solid ${color.textPlaceholder24}` :
-    variant === "error" && visualState !== "unchecked" ? "none" :
+  $variant === "disabled" ? `1px solid ${color.textPlaceholder24}` :
+    $variant === "error" && visualState !== "unchecked" ? "none" :
       visualState === "checked" || visualState === "indeterminate" ? "none" :
-        variant === "error" ? `1px solid ${color.error}` :
+        $variant === "error" ? `1px solid ${color.error}` :
           interactionState === "hp"
             ? `1px solid ${{
               primary: color.teal400,
               indigo: color.indigo400,
               black: color.basic900,
-            }[variant] || color.teal400}`
+            }[$variant] || color.teal400}`
             : `1px solid ${color.textPlaceholder24}`;
 
 const iconColorStyles = (
-  variant: CheckBoxVariant,
+  $variant: CheckBoxVariant,
   visualState: CheckBoxVisualState,
   interactionState: CheckBoxInteractionState
 ): string =>
-  variant === "disabled" ? color.textPlaceholder24 :
+  $variant === "disabled" ? color.textPlaceholder24 :
     visualState === "unchecked" ? "transparent" :
       color.white;
 

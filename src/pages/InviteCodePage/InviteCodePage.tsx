@@ -1,57 +1,54 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import * as S from './InviteCodePage.Style'
-
-import { InviteCode } from '@components/common/textInput/InviteCode'
-import { Button } from '@components/common/button/Button'
-import { Dropdown, DropdownOption } from '@/components/common/dropdown/Dropdown'
-
-import styled, { keyframes } from 'styled-components'
-import SpinnerIcon from '@assets/icons/InviteCodeSpinner.svg?react'
-import ValidIcon from '@/assets/icons/InviteCodeValid.svg?react'
-import ErrorIcon from '@assets/icons/InviteCodeError.svg?react'
-
-import { fetchWorkspaceByInviteCode } from '@/api/InviteCode';
-import { error } from 'console'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import * as S from './InviteCodePage.Style';
+import { InviteCode } from '@components/common/textInput/InviteCode';
+import { Button } from '@components/common/button/Button';
+import { Dropdown, DropdownOption } from '@/components/common/dropdown/Dropdown';
+import styled, { keyframes } from 'styled-components';
+import SpinnerIcon from '@assets/icons/InviteCodeSpinner.svg?react';
+import ValidIcon from '@/assets/icons/InviteCodeValid.svg?react';
+import ErrorIcon from '@assets/icons/InviteCodeError.svg?react';
+import { fetchWorkspaceByInviteCode } from '@/api/Workspace';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { toast } from 'react-toastify';
 
 const rotate = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-`
+`;
 
 const Spinner = styled(SpinnerIcon)`
   animation: ${rotate} 1s linear infinite;
   width: 20px;
   height: 20px;
-`
+`;
 
 export const InviteCodePage = () => {
-  const navigate = useNavigate()
-  const [code, setCode] = useState<string>('')
-  const [workspace, setWorkspace] = useState<DropdownOption | null>(null)
+  const navigate = useNavigate();
+  const [code, setCode] = useState<string>('');
+  const [workspace, setWorkspace] = useState<DropdownOption | null>(null);
 
   const [codeStatus, setCodeStatus] = useState<{
-    isLoading: boolean
-    isSuccess: boolean
-    errorType: 'none' | 'invalid' | 'expired'
+    isLoading: boolean;
+    isSuccess: boolean;
+    errorType: 'none' | 'invalid' | 'expired';
   }>({
     isLoading: false,
     isSuccess: false,
     errorType: 'none',
-  })
+  });
 
   const handleCodeChange = (newCode: string) => {
-    setCode(newCode)
+    setCode(newCode);
     if (newCode.length < 6) {
-      setWorkspace(null)
+      setWorkspace(null);
       setCodeStatus({
         isLoading: false,
         isSuccess: false,
         errorType: 'none',
-
-      })
+      });
     }
-  }
+  };
 
   const handleComplete = async (enteredCode: string) => {
     setCode(enteredCode);
@@ -86,6 +83,40 @@ export const InviteCodePage = () => {
     }
   };
 
+  const handleJoin = async () => {
+    try {
+      const data = await fetchWorkspaceByInviteCode(code);
+      useWorkspaceStore.getState().setWorkspaceStore({
+        workspaceName: data.name,
+        workspaceSlug: data.slug,
+        workspaceId: data.id,
+        profileFileUrl: data.profileFileUrl ?? '',
+      });
+      navigate(`/${data.slug}/project`);
+    } catch (error) {
+      toast.error('해당 초대코드의 워크스페이스를 조회할 수 없습니다다.');
+      console.error('조회 실패:', error);
+    }
+    // const { email } = useUserStore.getState();
+    // if (!email) {
+    //   alert('이메일이 없습니다.');
+    //   return;
+    // }
+
+    //   await inviteWorkspaceMembers(data.id, {
+    //     memberEmailList: [email],
+    //     positionType: 'MEMBER',
+    //     state: 'ACTIVE',
+    //   });
+    // } catch (error) {
+    //   if (axios.isAxiosError(error)) {
+    //     console.error('응답 상태:', error.response?.status);
+    //     console.error('응답 메시지:', error.response?.data);
+    //   }
+    //   toast.error('입장 실패되었습니다.');
+    //   console.error('입장 실패:', error);
+    // }
+  };
   return (
     <S.Container>
       <S.Header>
@@ -99,7 +130,7 @@ export const InviteCodePage = () => {
             <InviteCode
               onComplete={handleComplete}
               size="md"
-              onStatusChange={(status) => setCodeStatus(status)}
+              onStatusChange={status => setCodeStatus(status)}
               onChangeCode={handleCodeChange}
               errorType={codeStatus.errorType}
             />
@@ -112,17 +143,18 @@ export const InviteCodePage = () => {
             )}
           </S.InviteCodeWrapper>
         </S.InviteCodeGroup>
+        <div></div>
 
         <S.DropdownGroup>
           <S.Label>워크스페이스</S.Label>
           <S.DropdownWrapper>
             <Dropdown
               size="sm"
-              variant={workspace ? 'activated-disabled' : 'disabled'}
+              $variant={workspace ? 'activated-disabled' : 'disabled'}
               options={workspace ? [workspace] : []}
-              type='single-image'
+              type="single-image"
               value={workspace?.value}
-              onChange={() => { }}
+              onChange={() => {}}
               placeholder=""
             />
           </S.DropdownWrapper>
@@ -130,21 +162,22 @@ export const InviteCodePage = () => {
       </S.FormSection>
 
       <S.ButtonWrapper>
-        <Button size="lg" variant="neutralOutlined" onClick={() => navigate(-1)}>
+        <Button size="lg" $variant="neutralOutlined" onClick={() => navigate(-1)}>
           이전
         </Button>
         <Button
-          variant="tealFilled"
+          $variant="tealFilled"
           size="lg"
           disabled={!code || !workspace}
           onClick={() => {
             if (workspace && workspace.value) {
-              navigate(`/${workspace?.value}`)
+              handleJoin();
             }
-          }}>
+          }}
+        >
           입장
         </Button>
       </S.ButtonWrapper>
     </S.Container>
-  )
-}
+  );
+};

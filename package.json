@@ -34,6 +34,7 @@
     "@typescript-eslint/parser": "^8.32.0",
     "@vite-pwa/assets-generator": "^0.2.6",
     "@vitejs/plugin-react": "^4.2.1",
+    "babel-plugin-styled-components": "^2.1.4",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-react": "^7.37.5",

@@ -14,20 +14,19 @@ let ticketsSnapshot: Ticket[] = []; // 내부 티켓 참조용
 export const TicketSelectionStore = create<TicketSelectionState>((set, get) => ({
   selectedIds: [],
 
-  setInitialTickets: (tickets) => {
+  setInitialTickets: tickets => {
     ticketsSnapshot = tickets;
   },
 
   toggleSingle: (id, parentId) => {
-    set((state) => {
-
+    set(state => {
       const isChecked = state.selectedIds.includes(id);
       let updated = isChecked
-        ? state.selectedIds.filter((v) => v !== id)
+        ? state.selectedIds.filter(v => v !== id)
         : [...state.selectedIds, id];
 
       if (isChecked && parentId) {
-        updated = updated.filter((v) => v !== parentId);
+        updated = updated.filter(v => v !== parentId);
       }
 
       // if (!isChecked && parentId) {
@@ -55,13 +54,13 @@ export const TicketSelectionStore = create<TicketSelectionState>((set, get) => (
     });
   },
 
-  toggleWithSubtickets: (ticket) => {
-    set((state) => {
-      const allIds = [ticket.id, ...(ticket.subtickets?.map((s) => s.id) ?? [])];
-      const isAllSelected = allIds.every((id) => state.selectedIds.includes(id));
+  toggleWithSubtickets: ticket => {
+    set(state => {
+      const allIds = [ticket.id, ...(ticket.subtickets?.map(s => s.id) ?? [])];
+      const isAllSelected = allIds.every(id => state.selectedIds.includes(id));
 
       if (isAllSelected) {
-        return { selectedIds: state.selectedIds.filter((id) => !allIds.includes(id)) };
+        return { selectedIds: state.selectedIds.filter(id => !allIds.includes(id)) };
       } else {
         return { selectedIds: Array.from(new Set([...state.selectedIds, ...allIds])) };
       }

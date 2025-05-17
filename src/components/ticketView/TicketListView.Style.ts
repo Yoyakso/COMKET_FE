@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { color } from "@/styles/color";
+import styled from 'styled-components';
+import { color } from '@/styles/color';
 
 export const Wrapper = styled.div`
   display: flex;
@@ -7,5 +7,3 @@ export const Wrapper = styled.div`
   padding: 32px 40px;
   background-color: ${color.white};
 `;
-
-

@@ -1,18 +1,18 @@
 import styled, { css } from 'styled-components';
 import { color } from '@/styles/color';
 
-export const Container = styled.div<{ size: string; state: string }>`
+export const Container = styled.div<{ size: string; $state: string }>`
   display: flex;
   flex-direction: column;
   width: 100%;
   background-color: ${color.white};
-  opacity: ${({ state }) => (state === 'disabled' ? 0.5 : 1)};
+  opacity: ${({ $state }) => ($state === 'disabled' ? 0.5 : 1)};
 `;
 
 export const InputBox = styled.div<{
   size: string;
-  state: string;
-  focused: boolean;
+  $state: string;
+  $focused: boolean;
 }>`
   position: relative;
   display: flex;
@@ -32,27 +32,27 @@ export const InputBox = styled.div<{
           padding: 10px 15px;
         `};
 
-  ${({ state, focused }) => css`
+  ${({ $state, $focused }) => css`
     border: 1px solid
-      ${state === 'enable'
+      ${$state === 'enable'
         ? color.textPlaceholder24
-        : state === 'hover'
+        : $state === 'hover'
         ? color.basic1000
-        : state === 'focus' || focused
+        : $state === 'focus' || $focused
         ? color.basic1000
-        : state === 'typing'
+        : $state === 'typing'
         ? color.basic1000
-        : state === 'activated'
+        : $state === 'activated'
         ? color.textPlaceholder24
-        : state === 'success'
+        : $state === 'success'
         ? color.success
-        : state === 'error'
+        : $state === 'error'
         ? color.error
-        : state === 'disabled' || state === 'registered'
+        : $state === 'disabled' || $state === 'registered'
         ? 'none'
         : color.textPlaceholder24};
 
-    background-color: ${state === 'disabled'
+    background-color: ${$state === 'disabled'
       ? color.textPlaceholder32
       : color.white};
   `}

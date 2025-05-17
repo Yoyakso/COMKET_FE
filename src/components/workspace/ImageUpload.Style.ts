@@ -12,7 +12,7 @@ export const Container = styled.div`
 `;
 
 export const Modal = styled.div`
-  width: 480px;
+  width: 720px;
   background-color: ${color.white};
   border-radius: 12px;
   padding: 40px;
@@ -30,15 +30,15 @@ export const Title = styled.h2`
 
 export const ImageCropRow = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  flex-direction: row;
+  gap: 8px;
   align-items: flex-start;
+  justify-content: space-evenly;
 `;
 
 export const ImageBox = styled.div`
-  width: 100%;
-  height: 200px;
-  background-color: ${color.textPlaceholder16};
+  width: 350px;
+  height: 350px;
   border-radius: 8px;
   position: relative;
   overflow: hidden;
@@ -77,8 +77,8 @@ export const SpinnerWrapper = styled.div`
 
 export const Placeholder = styled.div`
   width: 100%;
-  height: 200px;
-  background-color: ${color.textPlaceholder16};
+  height: 400px;
+  background-color: ${color.basic100};
   border-radius: 8px;
 `;
 
@@ -88,32 +88,31 @@ export const FileInput = styled.input`
 
 export const PreviewGroup = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  width: 100%;
+  gap: 20px;
 `;
 
 export const PreviewLabel = styled.span`
-  width: 89px;
-  height: 48px;
   font-size: 14px;
   color: ${color.textPrimary};
 `;
 
 export const PreviewWrapper = styled.div`
-  background-color: ${color.basic100};
-  border-radius:4px;
+  border-radius: 4px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 12px;
-
+  gap: 8px;
 `;
 
 export const PreviewPlaceholder = styled.div`
   display: flex;
-  width: 120px;
-  height: 120px;
+  width: 200px;
+  height: 200px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -121,12 +120,19 @@ export const PreviewPlaceholder = styled.div`
   border-radius: 4px;
   background-color: ${color.basic100};
 
-   svg{
+  svg {
     width: 60px;
     height: 60px;
-    }
+  }
 `;
 
+export const PreviewImage = styled.img`
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px dotted ${color.basic1000};
+`;
 
 export const ButtonWrapper = styled.div`
   display: flex;

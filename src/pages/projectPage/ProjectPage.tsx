@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useParams } from "react-router-dom"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import { ProjectHeader } from "@/components/project/ProjectHeader"
@@ -12,6 +13,7 @@ import * as S from "./ProjectPage.Style"
 import { createProject, getAllProjects, editProject } from "@api/Project"
 import { formatDate } from "@utils/dateFormat"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
+import { useInitializeWorkspace } from "@/hooks/useWorkspace"
 
 export const ProjectPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
@@ -19,7 +21,7 @@ export const ProjectPage = () => {
   const [viewingProject, setViewingProject] = useState<ProjectData | null>(null)
   const [projects, setProjects] = useState<ProjectTableData[]>([])
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-
+  useInitializeWorkspace();
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as S from './workspaceCreatePage.Style';
 import { Radio } from '@/components/common/radio/Radio';
 import { Button } from '@/components/common/button/Button';
-import { workspaceCreate } from '@/api/CreateWorkspace';
+import { workspaceCreate } from '@/api/Workspace'
 import { toast } from 'react-toastify';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 
@@ -11,16 +11,13 @@ export const CreateWorkspacePage = () => {
   const [workspaceName, setWorkspaceName] = useState('');
   const [workspaceURL, setWorkspaceURL] = useState('');
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
-
   const [nameError, setNameError] = useState('');
   const [slugError, setSlugError] = useState('');
-
   const navigate = useNavigate();
-
   const isNameValid = workspaceName.trim().length >= 2;
   const isURLValid = /^[a-z0-9-]+$/.test(workspaceURL);
   const isFormValid = isNameValid && isURLValid;
-  const { setWorkspaceStore } = useWorkspaceStore.getState();
+  const { setWorkspaceStore } = useWorkspaceStore();
 
   const handleCreateWorkspace = async () => {
 
@@ -43,7 +40,7 @@ export const CreateWorkspacePage = () => {
         profileFileUrl: data.profileFileUrl
       })
 
-      navigate(`/${data.slug}`);
+      navigate(`/${data.slug}/project`);
     } catch (error: any) {
       const code = error.response?.data?.code;
       const message = error.response?.data?.message || '오류가 발생했습니다.';
@@ -132,12 +129,12 @@ export const CreateWorkspacePage = () => {
       </S.FormSection>
 
       <S.ButtonWrapper>
-        <Button size="lg" variant="neutralOutlined" onClick={() => navigate(-1)}>
+        <Button size="lg" $variant="neutralOutlined" onClick={() => navigate(-1)}>
           이전
         </Button>
         <Button
           size="lg"
-          variant="tealFilled"
+          $variant="tealFilled"
           disabled={!isFormValid}
           onClick={handleCreateWorkspace}
         >

@@ -98,10 +98,10 @@ export const variantStyles: Record<BadgeVariant, Record<BadgeStyleType, ReturnTy
 }
 
 export const BadgeContainer = styled.span<{
-  variant: BadgeVariant
-  styleType: BadgeStyleType
-  size: BadgeSize
-  shape: BadgeShape
+  $variant: BadgeVariant
+  $styleType: BadgeStyleType
+  $size: BadgeSize
+  $shape: BadgeShape
 }>`
    display: inline-flex;
    align-items: center;
@@ -110,8 +110,8 @@ export const BadgeContainer = styled.span<{
    font-weight: 500;
    white-space: nowrap;
  
-   ${(props) => variantStyles[props.variant][props.styleType]}
-   ${(props) => ShapeAndSize[props.shape][props.size]}
+   ${(props) => variantStyles[props.$variant][props.$styleType]}
+   ${(props) => ShapeAndSize[props.$shape][props.$size]}
  `
 
 export const IconWrapper = styled.span`

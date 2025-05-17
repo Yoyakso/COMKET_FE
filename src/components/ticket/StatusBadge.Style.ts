@@ -1,36 +1,36 @@
-import styled, { css } from "styled-components";
-import { color } from "@/styles/color";
+import styled, { css } from 'styled-components';
+import { color } from '@/styles/color';
 
 const getStatusStyle = (status: string) => {
   switch (status) {
-    case "TODO":
+    case 'TODO':
       return css`
-        background-color: #BFBFBF;
+        background-color: #bfbfbf;
         color: white;
       `;
-    case "IN_PROGRESS":
+    case 'IN_PROGRESS':
       return css`
-        background-color: #1890FF;
+        background-color: #1890ff;
         color: white;
       `;
-    case "DONE":
+    case 'DONE':
       return css`
-        background-color: #52C41A;
+        background-color: #52c41a;
         color: white;
       `;
-    case "HOLD":
+    case 'HOLD':
       return css`
-        background-color: #FF4D4F;
+        background-color: #ff4d4f;
         color: white;
       `;
-    case "DROP":
+    case 'DROP':
       return css`
-        background-color: #722ED1;
+        background-color: #722ed1;
         color: white;
       `;
-    case "BACKLOG":
+    case 'BACKLOG':
       return css`
-        background-color: #FA8C16;
+        background-color: #fa8c16;
         color: white;
       `;
     default:
@@ -44,7 +44,7 @@ export const Badge = styled.span<{ $status: string }>`
   font-size: 12px;
   font-weight: 500;
   min-width: 80px;
-  white-space: nowrap;      // 줄바꿈 방지
+  white-space: nowrap; // 줄바꿈 방지
   text-align: center;
   ${props => getStatusStyle(props.$status)}
 `;

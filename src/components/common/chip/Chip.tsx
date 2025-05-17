@@ -16,7 +16,7 @@ export type ChipSize = "sm" | "md"
 
 export interface ChipProps {
   children?: React.ReactNode
-  variant?: ChipVariant
+  $variant?: ChipVariant
   $styleType: ChipStyle
   size: ChipSize
   icon?: React.ReactElement<React.SVGProps<SVGSVGElement>>;
@@ -35,7 +35,7 @@ export interface ChipProps {
  */
 export const Chip = ({
   children,
-  variant,
+  $variant,
   $styleType,
   size,
   icon,
@@ -46,14 +46,14 @@ export const Chip = ({
   const iconColor =
     $styleType === "disabled"
       ? `${color.textTertiary}`
-      : ["indigo", "lightTeal", "basic"].includes(variant)
+      : ["indigo", "lightTeal", "basic"].includes($variant)
         ? "black"
         : "white";
 
   const coloredIcon = icon ? React.cloneElement(icon, { fill: iconColor }) : null
 
   return (
-    <S.ChipContainer $variant={variant} $styleType={$styleType} disabled={isDisabled} size={size}>
+    <S.ChipContainer $variant={$variant} $styleType={$styleType} disabled={isDisabled} size={size}>
       {coloredIcon}
       <S.ChipText>{children}</S.ChipText>
       {onClose && (
