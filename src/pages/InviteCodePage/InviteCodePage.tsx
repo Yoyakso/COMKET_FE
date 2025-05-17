@@ -1,54 +1,53 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import * as S from './InviteCodePage.Style'
-import { InviteCode } from '@components/common/textInput/InviteCode'
-import { Button } from '@components/common/button/Button'
-import { Dropdown, DropdownOption } from '@/components/common/dropdown/Dropdown'
-import styled, { keyframes } from 'styled-components'
-import SpinnerIcon from '@assets/icons/InviteCodeSpinner.svg?react'
-import ValidIcon from '@/assets/icons/InviteCodeValid.svg?react'
-import ErrorIcon from '@assets/icons/InviteCodeError.svg?react'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import * as S from './InviteCodePage.Style';
+import { InviteCode } from '@components/common/textInput/InviteCode';
+import { Button } from '@components/common/button/Button';
+import { Dropdown, DropdownOption } from '@/components/common/dropdown/Dropdown';
+import styled, { keyframes } from 'styled-components';
+import SpinnerIcon from '@assets/icons/InviteCodeSpinner.svg?react';
+import ValidIcon from '@/assets/icons/InviteCodeValid.svg?react';
+import ErrorIcon from '@assets/icons/InviteCodeError.svg?react';
 import { fetchWorkspaceByInviteCode } from '@/api/Workspace';
-import { error } from 'console'
+import { error } from 'console';
 
 const rotate = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-`
+`;
 
 const Spinner = styled(SpinnerIcon)`
   animation: ${rotate} 1s linear infinite;
   width: 20px;
   height: 20px;
-`
+`;
 
 export const InviteCodePage = () => {
-  const navigate = useNavigate()
-  const [code, setCode] = useState<string>('')
-  const [workspace, setWorkspace] = useState<DropdownOption | null>(null)
+  const navigate = useNavigate();
+  const [code, setCode] = useState<string>('');
+  const [workspace, setWorkspace] = useState<DropdownOption | null>(null);
 
   const [codeStatus, setCodeStatus] = useState<{
-    isLoading: boolean
-    isSuccess: boolean
-    errorType: 'none' | 'invalid' | 'expired'
+    isLoading: boolean;
+    isSuccess: boolean;
+    errorType: 'none' | 'invalid' | 'expired';
   }>({
     isLoading: false,
     isSuccess: false,
     errorType: 'none',
-  })
+  });
 
   const handleCodeChange = (newCode: string) => {
-    setCode(newCode)
+    setCode(newCode);
     if (newCode.length < 6) {
-      setWorkspace(null)
+      setWorkspace(null);
       setCodeStatus({
         isLoading: false,
         isSuccess: false,
         errorType: 'none',
-
-      })
+      });
     }
-  }
+  };
 
   const handleComplete = async (enteredCode: string) => {
     setCode(enteredCode);
@@ -96,7 +95,7 @@ export const InviteCodePage = () => {
             <InviteCode
               onComplete={handleComplete}
               size="md"
-              onStatusChange={(status) => setCodeStatus(status)}
+              onStatusChange={status => setCodeStatus(status)}
               onChangeCode={handleCodeChange}
               errorType={codeStatus.errorType}
             />
@@ -109,6 +108,7 @@ export const InviteCodePage = () => {
             )}
           </S.InviteCodeWrapper>
         </S.InviteCodeGroup>
+        <div></div>
 
         <S.DropdownGroup>
           <S.Label>워크스페이스</S.Label>
@@ -117,9 +117,9 @@ export const InviteCodePage = () => {
               size="sm"
               $variant={workspace ? 'activated-disabled' : 'disabled'}
               options={workspace ? [workspace] : []}
-              type='single-image'
+              type="single-image"
               value={workspace?.value}
-              onChange={() => { }}
+              onChange={() => {}}
               placeholder=""
             />
           </S.DropdownWrapper>
@@ -136,12 +136,13 @@ export const InviteCodePage = () => {
           disabled={!code || !workspace}
           onClick={() => {
             if (workspace && workspace.value) {
-              navigate(`/${workspace?.value}`)
+              navigate(`/${workspace?.value}`);
             }
-          }}>
+          }}
+        >
           입장
         </Button>
       </S.ButtonWrapper>
     </S.Container>
-  )
-}
+  );
+};

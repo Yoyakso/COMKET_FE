@@ -1,24 +1,26 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
-import { LocalNavBar } from '../common/navBar/LocalNavBar';
-import * as S from './WorkspaceManageLayout.Style';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar";
+import { LocalNavBar } from "@/components/common/navBar/LocalNavBar";
+import * as S from "./WorkspaceManageLayout.Style";
 
-
-export const WorkspaceManageLayout = ({ children }: { children: React.ReactNode }) => {
-
+export const WorkspaceManageLayout: React.FC = ({ children }: { children: React.ReactNode }) => {
   return (
-    <S.Wrapper>
+    <S.PageContainer>
+      <S.GNBContainer>
+        <GlobalNavBar variant="workspace" />
+      </S.GNBContainer>
 
-      <GlobalNavBar variant="workspace" />
+      <S.MainContainer>
+        <S.LNBContainer>
+          <LocalNavBar variant="settings" />
+        </S.LNBContainer>
 
-      <S.Body>
-        <LocalNavBar variant="settings" />
-        <S.ContentWrapper>
+        <S.Content>
           {children}
           <Outlet />
-        </S.ContentWrapper>
-      </S.Body>
-    </S.Wrapper>
+        </S.Content>
+      </S.MainContainer>
+    </S.PageContainer>
   );
 };
