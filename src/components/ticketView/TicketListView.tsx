@@ -8,11 +8,11 @@ import { TicketType, Status } from "@/types/filter";
 import { Ticket } from "@/types/ticket";
 
 interface TicketListViewProps {
+  listTickets: Ticket[];
   onTicketClick: (ticket: Ticket) => void
 }
 
-export const TicketListView = ({ onTicketClick }: TicketListViewProps) => {
-
+export const TicketListView = ({ listTickets, onTicketClick }: TicketListViewProps) => {
   const {
     selectedPriorities,
     selectedStatuses,
@@ -26,17 +26,22 @@ export const TicketListView = ({ onTicketClick }: TicketListViewProps) => {
     TicketSelectionStore();
 
   useEffect(() => {
-    setInitialTickets(tickets);
-  }, [tickets]);
+    setInitialTickets(listTickets);
+  }, [listTickets]);
 
   const [searchValue, setSearchValue] = useState('');
 
-  const filteredTickets = tickets.filter(ticket => {
+  const filteredTickets = listTickets.filter(ticket => {
     const isPriorityMatch =
       selectedPriorities.length === 0 || selectedPriorities.includes(ticket.priority);
-    const isStatusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(ticket.status);
-    const isTypeMatch = selectedTypes.length === 0 || selectedTypes.includes(ticket.type);
-    const isSearchMatch = ticket.title.toLowerCase().includes(searchValue.toLowerCase());
+    const isStatusMatch =
+      selectedStatuses.length === 0 || selectedStatuses.includes(ticket.status);
+    const isTypeMatch =
+      selectedTypes.length === 0 || selectedTypes.includes(ticket.type);
+    const isSearchMatch =
+      typeof ticket.title === "string" &&
+      ticket.title.toLowerCase().includes(searchValue.toLowerCase());
+
     return isPriorityMatch && isStatusMatch && isTypeMatch && isSearchMatch;
   });
 
