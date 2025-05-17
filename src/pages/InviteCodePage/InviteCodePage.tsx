@@ -9,7 +9,8 @@ import SpinnerIcon from '@assets/icons/InviteCodeSpinner.svg?react';
 import ValidIcon from '@/assets/icons/InviteCodeValid.svg?react';
 import ErrorIcon from '@assets/icons/InviteCodeError.svg?react';
 import { fetchWorkspaceByInviteCode } from '@/api/Workspace';
-import { error } from 'console';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { toast } from 'react-toastify';
 
 const rotate = keyframes`
   0% { transform: rotate(0deg); }
@@ -82,6 +83,40 @@ export const InviteCodePage = () => {
     }
   };
 
+  const handleJoin = async () => {
+    try {
+      const data = await fetchWorkspaceByInviteCode(code);
+      useWorkspaceStore.getState().setWorkspaceStore({
+        workspaceName: data.name,
+        workspaceSlug: data.slug,
+        workspaceId: data.id,
+        profileFileUrl: data.profileFileUrl ?? '',
+      });
+      navigate(`/${data.slug}/project`);
+    } catch (error) {
+      toast.error('해당 초대코드의 워크스페이스를 조회할 수 없습니다다.');
+      console.error('조회 실패:', error);
+    }
+    // const { email } = useUserStore.getState();
+    // if (!email) {
+    //   alert('이메일이 없습니다.');
+    //   return;
+    // }
+
+    //   await inviteWorkspaceMembers(data.id, {
+    //     memberEmailList: [email],
+    //     positionType: 'MEMBER',
+    //     state: 'ACTIVE',
+    //   });
+    // } catch (error) {
+    //   if (axios.isAxiosError(error)) {
+    //     console.error('응답 상태:', error.response?.status);
+    //     console.error('응답 메시지:', error.response?.data);
+    //   }
+    //   toast.error('입장 실패되었습니다.');
+    //   console.error('입장 실패:', error);
+    // }
+  };
   return (
     <S.Container>
       <S.Header>
@@ -136,7 +171,7 @@ export const InviteCodePage = () => {
           disabled={!code || !workspace}
           onClick={() => {
             if (workspace && workspace.value) {
-              navigate(`/${workspace?.value}`);
+              handleJoin();
             }
           }}
         >
