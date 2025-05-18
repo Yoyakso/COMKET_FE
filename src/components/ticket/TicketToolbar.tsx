@@ -3,7 +3,7 @@ import * as S from './TicketToolbar.Style';
 import { Filter } from '@/components/common/dropdown/Filter';
 import { Search } from '@/components/common/search/Search';
 import { SlidersHorizontal } from 'lucide-react';
-import { TicketFilterStore } from '@/components/ticket/Ticket';
+import { TicketFilterStore } from '@/stores/ticketStore';
 import { BulkDropdown } from '@components/common/dropdown/BulkDropdown'; // ✅ 새로 만든 드롭다운
 import { STATUS_COLORS } from './StatusDropdown.Style';
 import { TicketType, Status } from '@/types/filter';

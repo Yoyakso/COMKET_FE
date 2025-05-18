@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TicketDropdownStore } from '@/components/ticket/Ticket';
+import { TicketDropdownStore } from "@/stores/ticketStore";
 import { OutsideClick } from '@/utils/OutsideClick';
 import { PortalDropdown } from '@/utils/PortalDropdown';
 import * as S from './StatusDropdown.Style';

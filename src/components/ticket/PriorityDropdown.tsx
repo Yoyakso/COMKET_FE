@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TicketDropdownStore } from '@/components/ticket/Ticket';
+import { TicketDropdownStore } from "@/stores/ticketStore";
 import { PRIORITY_COLORS } from './PriorityDropdown.Style';
 import * as S from './PriorityDropdown.Style';
 import { OutsideClick } from '@/utils/OutsideClick';

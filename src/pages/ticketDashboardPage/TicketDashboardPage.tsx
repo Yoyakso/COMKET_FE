@@ -14,6 +14,7 @@ import { getProjectById } from "@/api/Project";
 import { getTicketsByProjectName } from "@/api/Ticket"
 import { useWorkspaceStore } from "@/stores/workspaceStore";
 import { TicketType } from "../../types/filter";
+import { TicketDropdownStore } from "@/stores/ticketStore";
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<"list" | "board">("list");
@@ -21,8 +22,10 @@ export const TicketDashboardPage = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const { projectId } = useParams<{ projectId: string }>();
   const [projectName, setProjectName] = useState<string | null>(null);
+  const [projectDescription, setProjectDescription] = useState<string>("");
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
   const [ticketList, setTicketList] = useState<Ticket[]>([]);
+  const { setTickets } = TicketDropdownStore();
 
   useEffect(() => {
     const fetchProjectName = async () => {
@@ -30,6 +33,7 @@ export const TicketDashboardPage = () => {
       try {
         const response = await getProjectById(workspaceName, projectId);
         setProjectName(response.name);
+        setProjectDescription(response.description);
       } catch (error) {
         console.error("프로젝트 이름 조회 실패:", error);
       }
@@ -42,7 +46,7 @@ export const TicketDashboardPage = () => {
       if (!projectName) return;
       try {
         const tickets = await getTicketsByProjectName(projectName);
-
+        console.log("담당자", tickets)
         const mappedTickets: Ticket[] = tickets.map((ticket: any) => ({
           id: ticket.id,
           title: ticket.ticket_name,
@@ -69,6 +73,7 @@ export const TicketDashboardPage = () => {
             email: ticket.creator_member?.email || "",
           }
         }));
+        setTickets(mappedTickets);
         setTicketList(mappedTickets);
       } catch (e) {
         console.error("티켓 불러오기 실패:", e);
@@ -106,7 +111,6 @@ export const TicketDashboardPage = () => {
     setSelectedTicket(ticketList[newIndex]);
   };
 
-
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -121,9 +125,9 @@ export const TicketDashboardPage = () => {
           <S.Header>
             <S.TitleGroup>
               <div style={{ width: "calc(100% - 100px)" }}>
-                <S.Title>COMKET_통합</S.Title>
+                <S.Title>{projectName}</S.Title>
                 <S.Description>
-                  프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다
+                  {projectDescription}
                 </S.Description>
               </div>
               <Button size="md" $variant="tealFilled" onClick={() => setIsModalOpen(true)}>
@@ -147,7 +151,7 @@ export const TicketDashboardPage = () => {
           </S.Header>
 
           {viewType === "list" ? (
-            <TicketListView listTickets={ticketList} onTicketClick={handleTicketClick} />
+            <TicketListView ticketList={ticketList} onTicketClick={handleTicketClick} />
           ) : (
             <TicketBoardView onTicketClick={handleTicketClick} />
           )}
@@ -162,9 +166,10 @@ export const TicketDashboardPage = () => {
           />
         )}
 
-        {selectedTicket && (
+        {selectedTicket && projectName && (
           <TicketDetailPanel
             ticket={selectedTicket}
+            projectName={projectName}
             onClose={handleClosePanel}
             onNavigate={handleNavigateTicket}
           />

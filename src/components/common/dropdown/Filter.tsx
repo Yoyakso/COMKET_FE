@@ -4,7 +4,7 @@ import { StatusBadge } from "@/components/ticket/StatusBadge";
 import { TypeBadge } from "@/components/ticket/TypeBadge";
 import * as S from "@/components/common/dropdown/Filter.Style";
 import { PRIORITY, STATUS, TYPE } from "@/constants/filterData";
-import { TicketFilterStore } from "@/components/ticket/Ticket";
+import { TicketFilterStore } from "@/stores/ticketStore";
 
 export const Filter = () => {
 
