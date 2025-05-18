@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import type { Priority, Status, TicketType } from '@/types/filter';
 import type { Ticket } from '@/types/ticket';
-import { MOCK_TICKETS } from '@/constants/ticketData';
 import { updateNestedTickets, deleteNestedTickets } from '@/utils/ticketUtills';
 
 // 필터링된 티켓을 저장하는 스토어
@@ -62,14 +61,16 @@ interface TicketDropdownStore {
   updateManyTicketStatus: (ticketIds: number[], newStatus: Status) => void;
   updateManyTicketType: (ticketIds: number[], newType: TicketType) => void;
   deleteManyTicket: (ticketIds: number[]) => void;
+  setTickets: (tickets: Ticket[]) => void;
 }
 
 export const TicketDropdownStore = create<TicketDropdownStore>(set => ({
-  tickets: MOCK_TICKETS,
+  tickets: [],
 
   openDropdown: null,
 
   setOpenDropdown: dropdown => set({ openDropdown: dropdown }),
+  setTickets: (newTickets) => set({ tickets: newTickets }),
 
   updateTicketPriority: (ticketId, newPriority) =>
     set(state => ({
