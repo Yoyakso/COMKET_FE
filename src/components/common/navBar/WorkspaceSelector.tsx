@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ChevronDown } from '@/assets/icons';
+import { ChevronDown, ChevronUp } from '@/assets/icons';
 import * as S from './WorkspaceSelector.Style';
 import { WorkspaceSelectorDropdown } from '@/components/workspace/WorkspaceSelectorDropdown';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
@@ -27,7 +27,7 @@ export const WorkspaceSelector = () => {
 
         <S.TextBox>
           <S.WorkspaceName>{workspaceName ?? 'workspace'}</S.WorkspaceName>
-          <ChevronDown />
+          {open ? <ChevronUp /> : <ChevronDown />}
         </S.TextBox>
 
         {open && <WorkspaceSelectorDropdown triggerRef={triggerRef} close={() => setOpen(false)} />}
