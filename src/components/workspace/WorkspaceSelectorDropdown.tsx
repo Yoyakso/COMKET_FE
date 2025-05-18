@@ -46,12 +46,6 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
     (async () => {
       const members = await getWorkspaceMembers(workspaceId);
       const me = members.find(m => m.email === email);
-
-      console.group('[WorkspaceSelector] owner check');
-      console.table(members.map(m => ({ email: m.email, position: m.positionType })));
-      console.log({ me, isOwner: me?.positionType === 'OWNER' });
-      console.groupEnd();
-
       setIsOwner(me?.positionType === 'OWNER');
     })();
   }, [email, workspaceId]);
@@ -126,7 +120,6 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
                       key={`${ws.id}-${idx}`}
                       onClick={() => handleSelect(ws)}
                       $active={ws.slug === workspaceSlug}
-                      whileHover={{ backgroundColor: '# f5f5f5' }}
                       transition={{ type: 'tween', duration: 0.1 }}
                     >
                       {ws.profileFileUrl ? <S.Img src={ws.profileFileUrl} /> : <S.Placeholder />}

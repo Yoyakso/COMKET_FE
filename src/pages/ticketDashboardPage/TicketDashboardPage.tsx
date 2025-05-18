@@ -15,6 +15,7 @@ import { getTicketsByProjectName } from '@/api/Ticket';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { TicketType } from '../../types/filter';
 import { TicketDropdownStore } from '@/stores/ticketStore';
+import { EmptyTicket } from '@/components/ticket/EmptyTicket';
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
@@ -147,7 +148,9 @@ export const TicketDashboardPage = () => {
             </S.ViewTabBar>
           </S.Header>
 
-          {viewType === 'list' ? (
+          {ticketList.length === 0 ? (
+            <EmptyTicket onCreateTicket={() => setIsModalOpen(true)} />
+          ) : viewType === 'list' ? (
             <TicketListView ticketList={ticketList} onTicketClick={handleTicketClick} />
           ) : (
             <TicketBoardView onTicketClick={handleTicketClick} />
