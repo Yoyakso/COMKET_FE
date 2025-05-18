@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { X, ExternalLink, MessageSquarePlus, Sparkles, Send, ChevronLeft, ChevronRight, Paperclip, Plus } from "lucide-react"
+import { useNavigate, useParams } from 'react-router-dom'
+import { X, ExternalLink, MessageSquarePlus, ChevronLeft, ChevronRight, Paperclip, Plus } from "lucide-react"
 import * as S from "./TicketDetailPanel.Style"
 import { Ticket } from "@/types/ticket"
 import { StatusBadge } from "../ticket/StatusBadge"
@@ -21,52 +22,27 @@ interface ThreadMessage {
 
 interface TicketDetailPanelProps {
   ticket: Ticket
+  projectName: string
   onClose: () => void
   onNavigate?: (direction: "prev" | "next") => void
 }
 
-export const TicketDetailPanel = ({ ticket, onClose, onNavigate }: TicketDetailPanelProps) => {
+export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: TicketDetailPanelProps) => {
   const [showThread, setShowThread] = useState(false)
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
-  const [newMessage, setNewMessage] = useState("")
-  const [isAiSummarizing, setIsAiSummarizing] = useState(false)
-  const [aiSummary, setAiSummary] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const { projectId } = useParams()
 
   const writerColor = getColorFromString(ticket.writer.name)
   const assigneeColor = getColorFromString(ticket.assignee.name)
 
   const startThread = () => {
-    setShowThread(true)
-  }
-
-  const sendMessage = () => {
-    if (!newMessage.trim()) return
-
-    const message: ThreadMessage = {
-      id: Date.now(),
-      user: {
-        id: 999,
-        name: "현재 사용자",
-        avatar: "/abstract-geometric-shapes.png",
-      },
-      content: newMessage,
-      timestamp: new Date().toISOString(),
-    }
-
-    setThreadMessages([...threadMessages, message])
-    setNewMessage("")
-  }
-
-  const summarizeWithAI = () => {
-    if (threadMessages.length === 0) return
-
-    setIsAiSummarizing(true)
-    setTimeout(() => {
-      setAiSummary(
-        "이 스레드에서는 티켓의 구현 방법과 일정에 대해 논의했습니다. 주요 결정사항: 1) 다음 주까지 기본 기능 구현, 2) UI 디자인은 승인됨, 3) 테스트 계획 필요",
-      )
-      setIsAiSummarizing(false)
-    }, 1500)
+    navigate(`/${projectId}/tickets/${ticket.id}/thread`, {
+      state: {
+        ticket,
+        projectName
+      }
+    })
   }
 
   const formatTimestamp = (timestamp: string) => {
@@ -105,16 +81,6 @@ export const TicketDetailPanel = ({ ticket, onClose, onNavigate }: TicketDetailP
       <S.ContentScrollArea>
         {showThread ? (
           <S.ThreadContainer>
-            {aiSummary && (
-              <S.AiSummaryBox>
-                <S.AiSummaryHeader>
-                  <Sparkles className="h-4 w-4 text-purple-500" />
-                  <S.AiSummaryTitle>AI 요약</S.AiSummaryTitle>
-                </S.AiSummaryHeader>
-                <S.AiSummaryContent>{aiSummary}</S.AiSummaryContent>
-              </S.AiSummaryBox>
-            )}
-
             <S.ThreadMessageList>
               {threadMessages.length === 0 ? (
                 <S.EmptyThreadMessage>
@@ -230,36 +196,6 @@ export const TicketDetailPanel = ({ ticket, onClose, onNavigate }: TicketDetailP
           </S.TicketInfoContainer>
         )}
       </S.ContentScrollArea>
-
-      {showThread && (
-        <S.ThreadInputContainer>
-          <S.ThreadInputHeader>
-            <S.Button $variant="ghost" $size="sm" onClick={() => setShowThread(false)}>
-              <ChevronLeft className="h-3 w-3 mr-1" />
-              티켓 정보 보기
-            </S.Button>
-            <S.Button
-              $variant="ghost"
-              $size="sm"
-              onClick={summarizeWithAI}
-              disabled={threadMessages.length === 0 || isAiSummarizing}
-            >
-              <Sparkles className="h-3 w-3 mr-1" />
-              {isAiSummarizing ? "요약 중..." : "AI로 요약하기"}
-            </S.Button>
-          </S.ThreadInputHeader>
-          <S.MessageInputContainer>
-            <S.Textarea
-              placeholder="메시지를 입력하세요..."
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-            />
-            <S.Button $variant="default" $size="icon" onClick={sendMessage} disabled={!newMessage.trim()}>
-              <Send className="h-4 w-4" />
-            </S.Button>
-          </S.MessageInputContainer>
-        </S.ThreadInputContainer>
-      )}
 
       <S.PanelFooter>
         <S.Button $variant="outline" $size="sm" onClick={() => onNavigate?.("prev")}>

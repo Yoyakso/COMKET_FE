@@ -1,18 +1,18 @@
 import * as S from "./TicketListView.Style";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { TicketTable } from "@/components/ticket/TicketTable";
 import { TicketToolbar } from "@/components/ticket/TicketToolbar";
-import { TicketFilterStore, TicketDropdownStore } from "../ticket/Ticket";
+import { TicketFilterStore, TicketDropdownStore } from "@/stores/ticketStore";
 import { TicketSelectionStore } from "@/components/ticket/TicketSelectionStore";
 import { TicketType, Status } from "@/types/filter";
 import { Ticket } from "@/types/ticket";
 
 interface TicketListViewProps {
-  listTickets: Ticket[];
+  ticketList: Ticket[];
   onTicketClick: (ticket: Ticket) => void
 }
 
-export const TicketListView = ({ listTickets, onTicketClick }: TicketListViewProps) => {
+export const TicketListView = ({ ticketList, onTicketClick }: TicketListViewProps) => {
   const {
     selectedPriorities,
     selectedStatuses,
@@ -26,12 +26,12 @@ export const TicketListView = ({ listTickets, onTicketClick }: TicketListViewPro
     TicketSelectionStore();
 
   useEffect(() => {
-    setInitialTickets(listTickets);
-  }, [listTickets]);
+    setInitialTickets(ticketList); // 선택 기능만 초기화
+  }, [ticketList]);
 
   const [searchValue, setSearchValue] = useState('');
 
-  const filteredTickets = listTickets.filter(ticket => {
+  const filteredTickets = tickets.filter(ticket => {
     const isPriorityMatch =
       selectedPriorities.length === 0 || selectedPriorities.includes(ticket.priority);
     const isStatusMatch =

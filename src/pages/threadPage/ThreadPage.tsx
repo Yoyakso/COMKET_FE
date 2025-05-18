@@ -8,7 +8,6 @@ import { ThreadInfo } from "@/components/thread/threadInfo/ThreadInfo"
 import { ThreadAiSummary } from "@/components/thread/threadAiSummary/ThreadAiSummary"
 import { getTicketById } from "@/api/Ticket"
 
-// 티켓 타입 정의
 interface Assignee {
   id: number
   name: string
@@ -50,44 +49,6 @@ interface ActionItem {
   task: string
   priority: "상" | "중" | "하"
   status: "대기" | "진행중" | "완료"
-}
-
-// 우선순위 색상 매핑
-const PRIORITY_COLORS = {
-  상: "#ef4444",
-  중: "#f59e0b",
-  하: "#3b82f6",
-  HIGH: "#ef4444",
-  MEDIUM: "#f59e0b",
-  LOW: "#3b82f6",
-}
-
-// 상태 색상 매핑
-const STATUS_COLORS = {
-  대기: "#6b7280",
-  진행중: "#3b82f6",
-  완료: "#10b981",
-}
-
-// 샘플 데이터
-const SAMPLE_TICKET: Ticket = {
-  id: 1001,
-  title: "COMKET 1차 스펙 개발",
-  type: "개발",
-  description: "COMKET 프로젝트의 1차 스펙 개발 작업입니다.",
-  assignee: { id: 1, name: "팀원1", avatar: "/ak-symbol.png" },
-  priority: "HIGH",
-  status: "진행중",
-  startDate: "2023-05-10",
-  dueDate: "2023-05-20",
-  subticketCount: 2,
-  writer: { id: 2, name: "이태경", avatar: "/placeholder-obgtm.png", code: "tph00300" },
-  hasSubtickets: true,
-  tags: ["@FE", "@BE", "@기획", "@PM"],
-  childTickets: [
-    { id: 1005, title: "하위티켓: 로그인 기능 구현" },
-    { id: 1006, title: "하위티켓: 대시보드 UI 개발" },
-  ],
 }
 
 const SAMPLE_MESSAGES: ThreadMessage[] = [
@@ -205,9 +166,6 @@ export const ThreadPage = ({ onBack }: ThreadPageProps) => {
     }
   }, [ticket, ticketId, projectName]);
 
-
-
-
   const { connect, send } = useWebSocket({
     ticketId: Number(ticketId),
     token,
@@ -221,7 +179,6 @@ export const ThreadPage = ({ onBack }: ThreadPageProps) => {
   }, [connect])
 
 
-  // 메시지 전송
   const sendMessage = () => {
     if (!newMessage.trim()) return
 
@@ -237,11 +194,10 @@ export const ThreadPage = ({ onBack }: ThreadPageProps) => {
       isCurrentUser: true,
     }
     send(message)
-    setThreadMessages((prev) => [...prev, message]) // Optimistic UI update
+    setThreadMessages((prev) => [...prev, message])
     setNewMessage("")
   }
 
-  // 스레드 메시지 포맷팅
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
     return date.toLocaleString("ko-KR", {
@@ -252,15 +208,12 @@ export const ThreadPage = ({ onBack }: ThreadPageProps) => {
     })
   }
 
-  // AI로 스레드 요약 및 액션 아이템 추출
   const updateAiAnalysis = () => {
-    // 실제로는 AI API를 호출하겠지만, 여기서는 시뮬레이션
     setAiSummary(
       "이 스레드에서는 로그인 기능 구현과 API 연동에 대해 논의했습니다. 팀원1은 로그인 기능을 다음 주 화요일까지 완료할 예정이며, 백엔드 API는 이번 주 금요일까지 준비될 예정입니다. 테스트 계정도 함께 전달될 예정입니다.",
     )
   }
 
-  // 메시지가 추가될 때마다 AI 분석 업데이트
   useEffect(() => {
     if (threadMessages.length > 0) {
       updateAiAnalysis()
