@@ -4,6 +4,7 @@ export interface Ticket {
   id: number;
   title: string;
   type: TicketType;
+  description: string;
   assignee: {
     name: string;
     nickname: string;

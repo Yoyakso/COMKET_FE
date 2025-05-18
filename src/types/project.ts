@@ -1,11 +1,19 @@
+export interface AdminInfo {
+  email: string
+  name: string
+  positionType: string
+  projectMemberId: number
+  state: string
+}
+
 export interface ProjectData {
   id: number
   name: string
   description: string
   tag: string
-  visibility: "전체 공개" | "멤버 공개";
+  visibility: "전체 공개" | "멤버 공개"
   admin: string
-  adminInfo: []
+  adminInfo: AdminInfo[]
   memberCount: number
   createdBy: string
   createdAt: string
