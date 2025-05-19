@@ -1,3 +1,4 @@
+import "../node_modules/@uiw/react-md-editor/markdown-editor.css"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { ThemeProvider } from 'styled-components';

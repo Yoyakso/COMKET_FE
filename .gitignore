@@ -28,3 +28,6 @@ dev-dist
 .prettier*
 
 .settings.json
+
+.env
+.env.*
