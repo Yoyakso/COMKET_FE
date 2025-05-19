@@ -52,9 +52,10 @@ interface TicketTableProps {
   toggleSingle?: (id: number) => void;
   toggleWithSubtickets?: (ticket: Ticket) => void;
   onTicketClick: (ticket: Ticket) => void;
+  onTicketHover: (ticket: Ticket | null) => void;
 }
 
-export const TicketTable = ({ tickets, onTicketClick }: TicketTableProps) => {
+export const TicketTable = ({ tickets, onTicketClick, onTicketHover }: TicketTableProps) => {
   const [sortKey, setSortKey] = useState<keyof Ticket | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [columnWidths, setColumnWidths] = useState(INITIAL_WIDTHS);
@@ -198,6 +199,7 @@ export const TicketTable = ({ tickets, onTicketClick }: TicketTableProps) => {
               onCheckToggle={toggleSingle}
               toggleWithSubtickets={toggleWithSubtickets}
               onTicketClick={onTicketClick}
+              onTicketHover={onTicketHover}
             />
           ))}
         </S.TableBody>

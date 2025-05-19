@@ -1,14 +1,15 @@
 import styled from "styled-components"
+import { color } from "@/styles/color"
 
 export const SectionTitle = styled.h2`
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 8px;
+  color: ${color.basic700};
+  margin-left: 6px;
 `
 
 export const AiSummaryBox = styled.div`
-  background-color: #ffffff;
+  background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
@@ -18,12 +19,12 @@ export const AiSummaryBox = styled.div`
 export const AiSummaryContent = styled.p`
   font-size: 13px;
   line-height: 1.5;
-  color: #374151;
+  color: ${color.textSecondary};
   text-align: center;
 `
 
 export const ActionItemsContainer = styled.div`
-  background-color: #ffffff;
+  background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
@@ -44,7 +45,7 @@ export const TableHeaderCell = styled.th`
   padding: 8px 6px;
   font-size: 11px;
   font-weight: 500;
-  color: #6b7280;
+  color: ${color.basic700};
 `
 
 export const TableBody = styled.tbody``
@@ -59,7 +60,7 @@ export const TableRow = styled.tr`
 export const TableCell = styled.td`
   padding: 8px 6px;
   font-size: 12px;
-  color: #374151;
+  color: ${color.basic900};;
 `
 
 export const AssigneeDisplay = styled.div`

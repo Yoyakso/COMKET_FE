@@ -10,9 +10,10 @@ import { Ticket } from "@/types/ticket";
 interface TicketListViewProps {
   ticketList: Ticket[];
   onTicketClick: (ticket: Ticket) => void
+  onTicketHover: (ticket: Ticket | null) => void;
 }
 
-export const TicketListView = ({ ticketList, onTicketClick }: TicketListViewProps) => {
+export const TicketListView = ({ ticketList, onTicketClick, onTicketHover }: TicketListViewProps) => {
   const {
     selectedPriorities,
     selectedStatuses,
@@ -63,7 +64,9 @@ export const TicketListView = ({ ticketList, onTicketClick }: TicketListViewProp
         selectedIds={selectedIds}
         toggleSingle={toggleSingle}
         toggleWithSubtickets={toggleWithSubtickets}
-        onTicketClick={onTicketClick} />
+        onTicketClick={onTicketClick}
+        onTicketHover={onTicketHover}
+      />
     </S.Wrapper>
   );
 };

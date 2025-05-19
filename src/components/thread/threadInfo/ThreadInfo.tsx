@@ -1,5 +1,6 @@
 import { CheckCircle, Tag, User } from "lucide-react"
 import * as S from "./ThreadInfo.Style"
+import { StatusBadge } from "@components/ticket/StatusBadge"
 
 export const ThreadInfo = ({ ticket }) => (
   <S.InfoGrid>
@@ -21,7 +22,8 @@ export const ThreadInfo = ({ ticket }) => (
       <S.InfoTitle>진행 상태</S.InfoTitle>
       <S.InfoContent>
         <S.StatusBadgeContainer>
-          <S.StatusBadge $status={ticket.status}>{ticket.status}</S.StatusBadge>
+          {/* <S.StatusBadge $status={ticket.status}>{ticket.status}</S.StatusBadge> */}
+          <StatusBadge status={ticket.status} />
         </S.StatusBadgeContainer>
       </S.InfoContent>
     </S.InfoSection>

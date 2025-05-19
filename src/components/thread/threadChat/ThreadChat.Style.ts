@@ -1,14 +1,15 @@
 import styled from "styled-components"
+import { color } from "@/styles/color"
 
 export const SectionTitle = styled.h2`
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 8px;
+  color: ${color.basic800};
+  margin-left: 5px;
 `
 
 export const ThreadContainer = styled.div`
-  background-color: #ffffff;
+  background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
@@ -83,7 +84,7 @@ export const MessageInput = styled.textarea`
   min-height: 38px;
   &:focus {
     outline: none;
-    border-color: #10b981;
+    border-color: ${color.teal800};
     box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
   }
 `
@@ -92,18 +93,18 @@ export const SendButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 50px;
+  height: 100%;
   border-radius: 6px;
-  background-color: #10b981;
+  background-color: ${color.teal700};
   color: white;
   border: none;
   cursor: pointer;
   &:hover {
-    background-color: #059669;
+    background-color: ${color.teal800};
   }
   &:disabled {
-    background-color: #d1d5db;
+    background-color: ${color.basic400};
     cursor: not-allowed;
   }
 `

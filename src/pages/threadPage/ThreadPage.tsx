@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import { useParams, useLocation } from "react-router-dom"
+import { useState, useEffect, useCallback } from "react"
+import { useParams, useLocation, useNavigate } from "react-router-dom"
 import { Send, CheckCircle, Tag, ArrowLeft, User } from "lucide-react"
 import * as S from "./ThreadPage.Style"
 import { useWebSocket } from "@/hooks/useWebSocket"
@@ -7,6 +7,10 @@ import { ThreadChat } from "@/components/thread/threadChat/ThreadChat"
 import { ThreadInfo } from "@/components/thread/threadInfo/ThreadInfo"
 import { ThreadAiSummary } from "@/components/thread/threadAiSummary/ThreadAiSummary"
 import { getTicketById } from "@/api/Ticket"
+import { Ticket } from "@/types/ticket"
+import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
+import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
+import { useUserStore } from "@/stores/userStore"
 
 interface Assignee {
   id: number
@@ -15,34 +19,15 @@ interface Assignee {
   code?: string
 }
 
-interface Ticket {
-  id: number
-  title: string
-  type: string
-  description: string
-  assignee: Assignee | null
-  priority: "HIGH" | "MEDIUM" | "LOW"
-  status: "대기" | "진행중" | "완료"
-  startDate: string
-  dueDate: string
-  subticketCount: number
-  writer: Assignee
-  hasSubtickets?: boolean
-  parentTicket?: { id: number; title: string }
-  childTickets?: { id: number; title: string }[]
-  tags?: string[]
-}
-
-// 스레드 메시지 타입 정의
 interface ThreadMessage {
-  id: number
-  user: Assignee
+  ticketId: number
+  senderMemberId: number
+  senderName: string
   content: string
-  timestamp: string
-  isCurrentUser: boolean
+  sentAt: string
+  // isCurrentUser: boolean
 }
 
-// 액션 아이템 타입 정의
 interface ActionItem {
   id: number
   assignee: Assignee
@@ -50,30 +35,6 @@ interface ActionItem {
   priority: "상" | "중" | "하"
   status: "대기" | "진행중" | "완료"
 }
-
-const SAMPLE_MESSAGES: ThreadMessage[] = [
-  {
-    id: 1,
-    user: { id: 1, name: "팀원1", avatar: "/ak-symbol.png" },
-    content: "로그인 기능 구현은 언제까지 완료될 예정인가요?",
-    timestamp: "2023-05-12T09:30:00",
-    isCurrentUser: false,
-  },
-  {
-    id: 2,
-    user: { id: 2, name: "이태경", avatar: "/placeholder-obgtm.png" },
-    content: "다음 주 화요일까지 완료할 예정입니다. API 연동은 백엔드 팀과 협의가 필요합니다.",
-    timestamp: "2023-05-12T09:35:00",
-    isCurrentUser: false,
-  },
-  {
-    id: 3,
-    user: { id: 3, name: "현재 사용자", avatar: "/abstract-geometric-shapes.png" },
-    content: "백엔드 API는 이번 주 금요일까지 준비될 예정입니다. 테스트 계정도 함께 전달드리겠습니다.",
-    timestamp: "2023-05-12T09:40:00",
-    isCurrentUser: true,
-  },
-]
 
 const SAMPLE_ACTION_ITEMS: ActionItem[] = [
   {
@@ -101,12 +62,11 @@ const SAMPLE_ACTION_ITEMS: ActionItem[] = [
 
 interface ThreadPageProps {
   // ticketId?: number
-  onBack?: () => void
 }
 
-export const ThreadPage = ({ onBack }: ThreadPageProps) => {
+export const ThreadPage = ({ }: ThreadPageProps) => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
-  const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>(SAMPLE_MESSAGES)
+  const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
   const [actionItems, setActionItems] = useState<ActionItem[]>(SAMPLE_ACTION_ITEMS)
   const [newMessage, setNewMessage] = useState("")
   const [aiSummary, setAiSummary] = useState<string | null>(
@@ -114,10 +74,12 @@ export const ThreadPage = ({ onBack }: ThreadPageProps) => {
   )
   const token = localStorage.getItem("accessToken")
   const location = useLocation()
+  const navigate = useNavigate();
   const state = location.state as { ticket?: Ticket; projectName?: string }
   const ticketFromState = state?.ticket
   const projectName = state?.projectName
-
+  const memberId = useUserStore((state) => state.memberId)
+  const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
 
   useEffect(() => {
@@ -166,13 +128,23 @@ export const ThreadPage = ({ onBack }: ThreadPageProps) => {
     }
   }, [ticket, ticketId, projectName]);
 
-  const { connect, send } = useWebSocket({
+  const handleMessage = useCallback((data: ThreadMessage) => {
+    setThreadMessages((prev) => [...prev, data])
+  }, [])
+
+  const { connect, send, disconnect } = useWebSocket({
     ticketId: Number(ticketId),
     token,
-    onMessage: (data: ThreadMessage) => {
-      setThreadMessages((prev) => [...prev, data])
-    },
+    onMessage: handleMessage,
   })
+
+  // const { connect, send } = useWebSocket({
+  //   ticketId: Number(ticketId),
+  //   token,
+  //   onMessage: (data: ThreadMessage) => {
+  //     setThreadMessages((prev) => [...prev, data])
+  //   },
+  // })
 
   useEffect(() => {
     if (ticketId && token) {
@@ -180,33 +152,25 @@ export const ThreadPage = ({ onBack }: ThreadPageProps) => {
     }
   }, [ticketId, token, connect]);
 
+  const formatDateToServerFormat = (date: Date) => {
+    return date.toISOString().slice(0, 19) // '2025-05-16T19:10:23' 형태로 자름
+  }
+
   const sendMessage = () => {
     if (!newMessage.trim()) return
 
     const message: ThreadMessage = {
-      id: Date.now(),
-      user: {
-        id: 999,
-        name: "현재 사용자",
-        avatar: "/abstract-geometric-shapes.png",
-      },
+      ticketId: Number(ticketId),
+      senderMemberId: memberId,
+      senderName: memberName,
       content: newMessage,
-      timestamp: new Date().toISOString(),
-      isCurrentUser: true,
+      sentAt: formatDateToServerFormat(new Date()),
+      // isCurrentUser: true
     }
+    console.log("보내는 메시지:", message)
     send(message)
     setThreadMessages((prev) => [...prev, message])
     setNewMessage("")
-  }
-
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp)
-    return date.toLocaleString("ko-KR", {
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
   }
 
   const updateAiAnalysis = () => {
@@ -221,31 +185,45 @@ export const ThreadPage = ({ onBack }: ThreadPageProps) => {
     }
   }, [threadMessages])
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <S.PageContainer>
-      <S.PageHeader>
-        <S.BackButton onClick={onBack}>
-          <ArrowLeft size={16} />
-          <span>뒤로 가기</span>
-        </S.BackButton>
-        <S.PageTitle>{ticket.title}</S.PageTitle>
-      </S.PageHeader>
+      <S.GNBContainer>
+        <GlobalNavBar variant="workspace" />
+      </S.GNBContainer>
 
-      <S.ContentContainer>
-        <S.LeftColumn>
-          <ThreadChat
-            messages={threadMessages}
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            sendMessage={sendMessage}
-          />
-          <ThreadInfo ticket={ticket} />
-        </S.LeftColumn>
+      <S.MainContainer>
+        <S.LNBContainer>
+          <LocalNavBar variant="settings" />
+        </S.LNBContainer>
 
-        <S.RightColumn>
-          <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
-        </S.RightColumn>
-      </S.ContentContainer>
-    </S.PageContainer>
+        <S.ContentContainer>
+          <S.PageHeader>
+            <S.BackButton onClick={handleBack}>
+              <ArrowLeft size={16} />
+              <span>뒤로 가기</span>
+            </S.BackButton>
+            <S.PageTitle>{ticket.title}</S.PageTitle>
+          </S.PageHeader>
+
+          <S.LeftColumn>
+            <ThreadChat
+              messages={threadMessages}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              sendMessage={sendMessage}
+            />
+            <ThreadInfo ticket={ticket} />
+          </S.LeftColumn>
+
+          <S.RightColumn>
+            <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
+          </S.RightColumn>
+        </S.ContentContainer>
+      </S.MainContainer>
+    </S.PageContainer >
   )
 }

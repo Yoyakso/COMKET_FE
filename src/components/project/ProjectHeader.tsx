@@ -17,10 +17,6 @@ export const ProjectHeader = ({ projectCount, onSearch, onCreateProject, onFilte
   const filterButtonRef = useRef<HTMLDivElement>(null)
 
   const filterOptions: DropdownOption[] = [
-    { label: "1", value: "owner", groupName: "프로젝트 태그" },
-    { label: "2", value: "admin", groupName: "프로젝트 태그" },
-    { label: "3", value: "member", groupName: "프로젝트 태그" },
-
     { label: "전체 공개", value: "public", groupName: "공개 범위" },
     { label: "멤버 공개", value: "private", groupName: "공개 범위" },
   ]
