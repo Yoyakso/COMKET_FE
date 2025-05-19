@@ -175,9 +175,10 @@ export const ThreadPage = ({ onBack }: ThreadPageProps) => {
   })
 
   useEffect(() => {
-    connect()
-  }, [connect])
-
+    if (ticketId && token) {
+      connect();
+    }
+  }, [ticketId, token, connect]);
 
   const sendMessage = () => {
     if (!newMessage.trim()) return
