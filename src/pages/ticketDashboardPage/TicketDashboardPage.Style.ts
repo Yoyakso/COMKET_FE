@@ -111,3 +111,10 @@ export const ViewTab = styled.button<{ $active?: boolean }>`
     color: ${color.teal500};
   }
 `;
+
+export const PanelWrapper = styled.div`
+  position: absolute;
+  top: 100px;
+  right: 32px;
+  z-index: 999;
+`;

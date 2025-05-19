@@ -1,6 +1,6 @@
 import * as S from "./TicketDashboardPage.Style";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { TicketListView } from "@/components/ticketView/TicketListView";
 import { TicketBoardView } from "@/components/ticketView/TicketBoardView";
 import { ListChecks, Rows2, Plus } from 'lucide-react';
@@ -26,6 +26,8 @@ export const TicketDashboardPage = () => {
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
   const [ticketList, setTicketList] = useState<Ticket[]>([]);
   const { setTickets } = TicketDropdownStore();
+  const [hoveredTicket, setHoveredTicket] = useState<Ticket | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProjectName = async () => {
@@ -85,7 +87,15 @@ export const TicketDashboardPage = () => {
 
 
   const handleTicketClick = (ticket: Ticket) => {
-    setSelectedTicket(ticket);
+    if (!projectId) return;
+    console.log("이동 경로:", `/${projectId}/tickets/${ticket.id}/thread`);
+
+    navigate(`/${projectId}/tickets/${ticket.id}/thread`, {
+      state: {
+        ticket,
+        projectName,
+      },
+    });
   };
 
   const handleTicketCreate = (newTicket: Ticket) => {
@@ -95,6 +105,10 @@ export const TicketDashboardPage = () => {
 
   const handleClosePanel = () => {
     setSelectedTicket(null);
+  };
+
+  const handleTicketHover = (ticket: Ticket | null) => {
+    setHoveredTicket(ticket);
   };
 
   const handleNavigateTicket = (direction: "prev" | "next") => {
@@ -151,7 +165,11 @@ export const TicketDashboardPage = () => {
           </S.Header>
 
           {viewType === "list" ? (
-            <TicketListView ticketList={ticketList} onTicketClick={handleTicketClick} />
+            <TicketListView
+              ticketList={ticketList}
+              onTicketClick={handleTicketClick}
+              onTicketHover={handleTicketHover}
+            />
           ) : (
             <TicketBoardView onTicketClick={handleTicketClick} />
           )}
@@ -166,13 +184,26 @@ export const TicketDashboardPage = () => {
           />
         )}
 
-        {selectedTicket && projectName && (
+        {/* {selectedTicket && projectName && (
           <TicketDetailPanel
             ticket={selectedTicket}
             projectName={projectName}
             onClose={handleClosePanel}
             onNavigate={handleNavigateTicket}
           />
+        )} */}
+        {hoveredTicket && !selectedTicket && projectName && (
+          <S.PanelWrapper
+            onMouseEnter={() => setHoveredTicket(hoveredTicket)} // 유지
+            onMouseLeave={() => setHoveredTicket(null)} // 패널 영역 나갈 때만 닫힘
+          >
+            <TicketDetailPanel
+              ticket={hoveredTicket}
+              projectName={projectName}
+              onClose={() => setHoveredTicket(null)}
+              onNavigate={handleNavigateTicket}
+            />
+          </S.PanelWrapper>
         )}
       </S.MainContainer>
     </S.PageContainer>
