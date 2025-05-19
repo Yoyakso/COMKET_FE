@@ -173,9 +173,6 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
     setNewMessage("")
   }
 
-
-
-
   const updateAiAnalysis = () => {
     setAiSummary(
       "이 스레드에서는 로그인 기능 구현과 API 연동에 대해 논의했습니다. 팀원1은 로그인 기능을 다음 주 화요일까지 완료할 예정이며, 백엔드 API는 이번 주 금요일까지 준비될 예정입니다. 테스트 계정도 함께 전달될 예정입니다.",

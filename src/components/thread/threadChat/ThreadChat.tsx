@@ -3,7 +3,7 @@ import * as S from "./ThreadChat.Style"
 
 export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }) => (
   <>
-    <S.SectionTitle>[이슈/티켓명]</S.SectionTitle>
+    <S.SectionTitle>티켓 이름</S.SectionTitle>
     <S.ThreadContainer>
       {messages.map((message) => (
         <S.MessageWrapper key={message.id} $isCurrentUser={message.isCurrentUser}>
@@ -19,7 +19,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
 
     <S.MessageInputContainer>
       <S.MessageInput
-        placeholder="메시지를 입력하세요..."
+        placeholder="메시지를 입력하세요."
         value={newMessage}
         onChange={(e) => setNewMessage(e.target.value)}
       />
