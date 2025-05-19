@@ -11,10 +11,12 @@ export const ThreadAiSummary = ({ aiSummary, actionItems }) => (
     <S.ActionItemsContainer>
       <S.ActionItemsTable>
         <S.TableHeader>
-          <S.TableHeaderCell>담당자</S.TableHeaderCell>
-          <S.TableHeaderCell>작업 상세 내용</S.TableHeaderCell>
-          <S.TableHeaderCell>우선순위</S.TableHeaderCell>
-          <S.TableHeaderCell>상태</S.TableHeaderCell>
+          <S.TableRow>
+            <S.TableHeaderCell>담당자</S.TableHeaderCell>
+            <S.TableHeaderCell>작업 상세 내용</S.TableHeaderCell>
+            <S.TableHeaderCell>우선순위</S.TableHeaderCell>
+            <S.TableHeaderCell>상태</S.TableHeaderCell>
+          </S.TableRow>
         </S.TableHeader>
         <S.TableBody>
           {actionItems.map((item) => (
