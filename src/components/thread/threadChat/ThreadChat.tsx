@@ -8,7 +8,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
       {messages.map((message) => (
         <S.MessageWrapper key={message.id} $isCurrentUser={message.isCurrentUser}>
           <S.MessageAvatar>
-            <S.AvatarImage src={message.user.avatar || "/placeholder.svg"} alt={message.user.name} />
+            {/* <S.AvatarImage src={message.user.avatar || "/placeholder.svg"} alt={message.user.name} /> */}
           </S.MessageAvatar>
           <S.MessageBubble $isCurrentUser={message.isCurrentUser}>
             <S.MessageContent>{message.content}</S.MessageContent>
