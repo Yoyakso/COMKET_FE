@@ -16,6 +16,9 @@ import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { TicketType } from '../../types/filter';
 import { TicketDropdownStore } from '@/stores/ticketStore';
 import { EmptyTicket } from '@/components/ticket/EmptyTicket';
+import { deleteTickets, deleteTicket } from '@/api/Ticket';
+import { DeleteModal } from '@/components/common/modal/DeleteModal';
+import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
@@ -27,6 +30,8 @@ export const TicketDashboardPage = () => {
   const workspaceName = useWorkspaceStore(state => state.workspaceName);
   const [ticketList, setTicketList] = useState<Ticket[]>([]);
   const { setTickets } = TicketDropdownStore();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { selectedIds, clearSelection } = TicketSelectionStore();
 
   useEffect(() => {
     const fetchProjectName = async () => {
@@ -111,6 +116,20 @@ export const TicketDashboardPage = () => {
     setSelectedTicket(ticketList[newIndex]);
   };
 
+  const handleBulkDelete = async () => {
+    if (!projectName || selectedIds.length === 0) return;
+    try {
+      await deleteTickets(selectedIds, projectName);
+
+      setTicketList(prev => prev.filter(t => !selectedIds.includes(t.id)));
+
+      clearSelection();
+      setShowDeleteModal(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -151,7 +170,11 @@ export const TicketDashboardPage = () => {
           {ticketList.length === 0 ? (
             <EmptyTicket onCreateTicket={() => setIsModalOpen(true)} />
           ) : viewType === 'list' ? (
-            <TicketListView ticketList={ticketList} onTicketClick={handleTicketClick} />
+            <TicketListView
+              ticketList={ticketList}
+              onTicketClick={handleTicketClick}
+              onDeleteTickets={() => setShowDeleteModal(true)}
+            />
           ) : (
             <TicketBoardView onTicketClick={handleTicketClick} />
           )}
@@ -172,6 +195,23 @@ export const TicketDashboardPage = () => {
             projectName={projectName}
             onClose={handleClosePanel}
             onNavigate={handleNavigateTicket}
+          />
+        )}
+
+        {showDeleteModal && (
+          <DeleteModal
+            title="티켓 삭제"
+            message={
+              <>
+                선택한 티켓 {selectedIds.length}개를 삭제하시겠습니까?
+                <br />
+                삭제 시 관련 데이터가 모두 제거되며 복구할 수 없습니다.
+              </>
+            }
+            confirmText="삭제"
+            cancelText="취소"
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={handleBulkDelete}
           />
         )}
       </S.MainContainer>

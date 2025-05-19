@@ -1,23 +1,24 @@
-import * as S from "./TicketListView.Style";
-import { useState, useEffect } from "react";
-import { TicketTable } from "@/components/ticket/TicketTable";
-import { TicketToolbar } from "@/components/ticket/TicketToolbar";
-import { TicketFilterStore, TicketDropdownStore } from "@/stores/ticketStore";
-import { TicketSelectionStore } from "@/components/ticket/TicketSelectionStore";
-import { TicketType, Status } from "@/types/filter";
-import { Ticket } from "@/types/ticket";
+import * as S from './TicketListView.Style';
+import { useState, useEffect } from 'react';
+import { TicketTable } from '@/components/ticket/TicketTable';
+import { TicketToolbar } from '@/components/ticket/TicketToolbar';
+import { TicketFilterStore, TicketDropdownStore } from '@/stores/ticketStore';
+import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
+import { TicketType, Status } from '@/types/filter';
+import { Ticket } from '@/types/ticket';
 
 interface TicketListViewProps {
   ticketList: Ticket[];
-  onTicketClick: (ticket: Ticket) => void
+  onTicketClick: (ticket: Ticket) => void;
+  onDeleteTickets: () => void;
 }
 
-export const TicketListView = ({ ticketList, onTicketClick }: TicketListViewProps) => {
-  const {
-    selectedPriorities,
-    selectedStatuses,
-    selectedTypes,
-  } = TicketFilterStore();
+export const TicketListView = ({
+  ticketList,
+  onTicketClick,
+  onDeleteTickets,
+}: TicketListViewProps) => {
+  const { selectedPriorities, selectedStatuses, selectedTypes } = TicketFilterStore();
 
   const { tickets, updateManyTicketType, updateManyTicketStatus, deleteManyTicket } =
     TicketDropdownStore();
@@ -34,12 +35,10 @@ export const TicketListView = ({ ticketList, onTicketClick }: TicketListViewProp
   const filteredTickets = tickets.filter(ticket => {
     const isPriorityMatch =
       selectedPriorities.length === 0 || selectedPriorities.includes(ticket.priority);
-    const isStatusMatch =
-      selectedStatuses.length === 0 || selectedStatuses.includes(ticket.status);
-    const isTypeMatch =
-      selectedTypes.length === 0 || selectedTypes.includes(ticket.type);
+    const isStatusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(ticket.status);
+    const isTypeMatch = selectedTypes.length === 0 || selectedTypes.includes(ticket.type);
     const isSearchMatch =
-      typeof ticket.title === "string" &&
+      typeof ticket.title === 'string' &&
       ticket.title.toLowerCase().includes(searchValue.toLowerCase());
 
     return isPriorityMatch && isStatusMatch && isTypeMatch && isSearchMatch;
@@ -49,12 +48,9 @@ export const TicketListView = ({ ticketList, onTicketClick }: TicketListViewProp
     <S.Wrapper>
       <TicketToolbar
         selectedTicketIds={selectedIds}
-        onDeleteTickets={() => {
-          deleteManyTicket(selectedIds)
-          clearSelection();
-        }}
-        onChangeType={(type) => updateManyTicketType(selectedIds, type as TicketType)}
-        onChangeStatus={(status) => updateManyTicketStatus(selectedIds, status as Status)}
+        onDeleteTickets={onDeleteTickets}
+        onChangeType={type => updateManyTicketType(selectedIds, type as TicketType)}
+        onChangeStatus={status => updateManyTicketStatus(selectedIds, status as Status)}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
       />
@@ -63,7 +59,8 @@ export const TicketListView = ({ ticketList, onTicketClick }: TicketListViewProp
         selectedIds={selectedIds}
         toggleSingle={toggleSingle}
         toggleWithSubtickets={toggleWithSubtickets}
-        onTicketClick={onTicketClick} />
+        onTicketClick={onTicketClick}
+      />
     </S.Wrapper>
   );
 };

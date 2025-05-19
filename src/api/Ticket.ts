@@ -103,10 +103,26 @@ export const getTicketById = async (ticketId: number, projectName: string): Prom
  * @returns
  */
 export const deleteTickets = async (ids: number[], projectName: string) => {
-  return axios.delete(`${BASE_URL}/api/v1/tickets`, {
-    params: { project_name: projectName },
-    data: { ticket_ids: ids },
-  });
+  try {
+    const token = localStorage.getItem('accessToken');
+    if (!token) throw new Error('로그인 토큰이 없습니다.');
+
+    const response = await axios.delete(
+      `${BASE_URL}/api/v1/tickets?project_name=${encodeURIComponent(projectName)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        data: { ticket_ids: ids },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('티켓 여러 개 삭제 실패:', error);
+    throw error;
+  }
 };
 
 /**
@@ -116,7 +132,22 @@ export const deleteTickets = async (ids: number[], projectName: string) => {
  * @returns
  */
 export const deleteTicket = async (ticketId: number, projectName: string) => {
-  return axios.delete(`${BASE_URL}/api/v1/tickets/${ticketId}`, {
-    params: { project_name: projectName },
-  });
+  try {
+    const token = localStorage.getItem('accessToken');
+    if (!token) throw new Error('로그인 토큰이 없습니다.');
+
+    const response = await axios.delete(
+      `${BASE_URL}/api/v1/tickets/${ticketId}?project_name=${encodeURIComponent(projectName)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('티켓 단건 삭제 실패:', error);
+    throw error;
+  }
 };
