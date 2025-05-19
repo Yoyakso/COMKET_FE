@@ -1,23 +1,23 @@
-import { useState, useEffect } from "react";
-import * as S from "./WorkspacePage.Style";
-import { Button } from "@/components/common/button/Button";
-import { Dropdown, DropdownOption } from "@/components/common/dropdown/Dropdown";
-import { useNavigate } from "react-router-dom";
-import { fetchMyWorkspaces } from "@/api/Workspace";
-import { useWorkspaceStore } from "@/stores/workspaceStore";
-
+import { useState, useEffect } from 'react';
+import * as S from './WorkspacePage.Style';
+import { Button } from '@/components/common/button/Button';
+import { Dropdown, DropdownOption } from '@/components/common/dropdown/Dropdown';
+import { useNavigate } from 'react-router-dom';
+import { fetchMyWorkspaces } from '@/api/Workspace';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
+import DropdownIcon from '@/assets/icons/DropdownIcon.svg?url';
 
 export const WorkspacePage = () => {
-
   const navigate = useNavigate();
   const [options, setOptions] = useState<DropdownOption[]>([]);
-  const [selectedSlug, setSelectedSlug] = useState<string>("");
+  const [selectedSlug, setSelectedSlug] = useState<string>('');
   const { setWorkspaceSlug } = useWorkspaceStore.getState();
 
   interface Workspace {
     id: string;
     name: string;
     slug: string;
+    profileFileUrl?: string;
   }
 
   useEffect(() => {
@@ -28,16 +28,17 @@ export const WorkspacePage = () => {
         const formatted = data.map((ws: Workspace) => ({
           label: ws.name,
           value: ws.slug,
+          imageSrc: ws.profileFileUrl?.trim() ? ws.profileFileUrl : DropdownIcon,
         }));
 
         setOptions(formatted);
         if (formatted.length > 0) {
           setSelectedSlug(formatted[0].value);
-          console.log("selected slug:", formatted[0].value);
+          console.log('selected slug:', formatted[0].value);
         }
         console.log(data);
       } catch (err) {
-        console.error("워크스페이스 목록 불러오기 실패:", err);
+        console.error('워크스페이스 목록 불러오기 실패:', err);
         setOptions([]);
         setSelectedSlug('');
       }
@@ -46,7 +47,6 @@ export const WorkspacePage = () => {
     fetchData();
   }, []);
 
-
   const handleJoin = () => {
     if (selectedSlug) {
       setWorkspaceSlug(selectedSlug);
@@ -54,9 +54,7 @@ export const WorkspacePage = () => {
     }
   };
 
-
   return (
-
     <S.Container>
       <S.Card>
         <S.Title>워크스페이스 선택</S.Title>
@@ -75,10 +73,10 @@ export const WorkspacePage = () => {
               <S.Line />
             </S.DividerBox>
 
-            <Button $variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
+            <Button $variant="tealFilled" size="lg" onClick={() => navigate('/workspace/create')}>
               워크스페이스 생성
             </Button>
-            <Button $variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
+            <Button $variant="neutralOutlined" size="lg" onClick={() => navigate('/invitecode')}>
               초대 코드로 입장
             </Button>
           </>
@@ -88,15 +86,15 @@ export const WorkspacePage = () => {
               <Dropdown
                 options={options}
                 value={selectedSlug}
-                onChange={(value) => {
-                  if (typeof value === "string") {
+                onChange={value => {
+                  if (typeof value === 'string') {
                     setSelectedSlug(value);
                   }
                 }}
                 placeholder="워크스페이스 선택"
                 size="md"
                 $variant="activated"
-                iconLeft
+                type="single-image"
               />
               <Button $variant="neutralFilled" size="md" onClick={handleJoin}>
                 참여
@@ -109,11 +107,10 @@ export const WorkspacePage = () => {
               <S.Line />
             </S.DividerBox>
 
-
-            <Button $variant="tealFilled" size="lg" onClick={() => navigate("/workspace/create")}>
+            <Button $variant="tealFilled" size="lg" onClick={() => navigate('/workspace/create')}>
               워크스페이스 생성
             </Button>
-            <Button $variant="neutralOutlined" size="lg" onClick={() => navigate("/invitecode")}>
+            <Button $variant="neutralOutlined" size="lg" onClick={() => navigate('/invitecode')}>
               초대 코드로 입장
             </Button>
           </>
@@ -122,4 +119,3 @@ export const WorkspacePage = () => {
     </S.Container>
   );
 };
-
