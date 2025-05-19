@@ -29,7 +29,8 @@
     "src/**/*.d.ts",
     "svg.d.ts",
     "src",
-    "src/types"
+    "src/types",
+    "node_modules/react-markdown"
   ]
   // "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
 }
