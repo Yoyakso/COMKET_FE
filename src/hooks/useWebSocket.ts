@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 
-const BASE_URL = import.meta.env.VITE_WEBSOCKET_URL; // 프로토콜 포함: wss://comket-api.co.kr
+const BASE_URL = import.meta.env.VITE_WEBSOCKET_URL;
 
 export const useWebSocket = ({
   ticketId,
