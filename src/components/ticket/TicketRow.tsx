@@ -14,6 +14,7 @@ interface TicketRowProps {
   toggleSingle: (id: number, parentId?: number) => void;
   toggleWithSubtickets: (ticket: Ticket) => void;
   onTicketClick?: (ticket: Ticket) => void;
+  onTicketHover?: (ticket: Ticket | null) => void;
 }
 
 export const TicketRow = ({
@@ -22,6 +23,7 @@ export const TicketRow = ({
   toggleSingle,
   toggleWithSubtickets,
   onTicketClick,
+  onTicketHover,
 }: TicketRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -30,7 +32,11 @@ export const TicketRow = ({
 
   return (
     <>
-      <S.TableRow>
+      <S.TableRow
+        onMouseEnter={() => onTicketHover?.(ticket)}
+        onMouseMove={() => onTicketHover?.(ticket)}
+        onMouseLeave={() => onTicketHover?.(null)}
+      >
         <S.TableCell>
           {hasSubtickets ? (
             <S.ToggleButton onClick={toggleExpand}>

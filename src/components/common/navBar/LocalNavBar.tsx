@@ -54,7 +54,7 @@ export const LocalNavBar = ({
           href: `/${workspaceSlug}/settings`,
           icon: <InformationIcon />,
         },
-        { id: 'plan', label: '플랜 관리', href: '/plan', icon: <PlanIcon /> },
+        { id: 'plan', label: '플랜 관리', href: '', icon: <PlanIcon /> },
         {
           id: 'member',
           label: '멤버 관리',

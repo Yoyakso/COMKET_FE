@@ -11,23 +11,24 @@ interface TicketListViewProps {
   ticketList: Ticket[];
   onTicketClick: (ticket: Ticket) => void;
   onDeleteTickets: () => void;
+  onTicketHover?: (ticket: Ticket | null) => void;
 }
 
 export const TicketListView = ({
   ticketList,
   onTicketClick,
   onDeleteTickets,
+  onTicketHover,
 }: TicketListViewProps) => {
   const { selectedPriorities, selectedStatuses, selectedTypes } = TicketFilterStore();
 
-  const { tickets, updateManyTicketType, updateManyTicketStatus, deleteManyTicket } =
-    TicketDropdownStore();
+  const { tickets, updateManyTicketType, updateManyTicketStatus } = TicketDropdownStore();
 
   const { selectedIds, toggleSingle, toggleWithSubtickets, clearSelection, setInitialTickets } =
     TicketSelectionStore();
 
   useEffect(() => {
-    setInitialTickets(ticketList); // 선택 기능만 초기화
+    setInitialTickets(ticketList);
   }, [ticketList]);
 
   const [searchValue, setSearchValue] = useState('');
@@ -60,6 +61,7 @@ export const TicketListView = ({
         toggleSingle={toggleSingle}
         toggleWithSubtickets={toggleWithSubtickets}
         onTicketClick={onTicketClick}
+        onTicketHover={onTicketHover}
       />
     </S.Wrapper>
   );

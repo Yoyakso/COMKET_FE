@@ -20,7 +20,8 @@ export const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 24px 12px 24px;
+  padding: 24px;
+  border-bottom: 1px solid ${color.basic200};
 `
 
 export const PanelTitle = styled.h2`
@@ -51,7 +52,6 @@ export const Button = styled.button<{ $variant?: "default" | "outline" | "ghost"
   transition: all 0.2s ease;
   cursor: pointer;
   
-  /* 크기 스타일 */
   ${(props) =>
     props.$size === "sm" &&
     `
@@ -60,7 +60,6 @@ export const Button = styled.button<{ $variant?: "default" | "outline" | "ghost"
     font-size: 14px;
   `}
 
-  /* 변형 스타일 */
   ${(props) =>
     props.$variant === "outline" &&
     `
