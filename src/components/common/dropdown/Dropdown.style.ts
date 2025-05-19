@@ -1,6 +1,6 @@
-import styled, { css } from 'styled-components'
-import type { DropdownSize, DropdownVariant } from './Dropdown'
-import { color } from '@/styles/color'
+import styled, { css } from 'styled-components';
+import type { DropdownSize, DropdownVariant } from './Dropdown';
+import { color } from '@/styles/color';
 
 const sizeStyles = {
   sm: css`
@@ -13,7 +13,7 @@ const sizeStyles = {
     font-size: 14px;
     padding: 0 12px;
   `,
-}
+};
 
 const containerVariants = {
   none: css`
@@ -51,7 +51,7 @@ const containerVariants = {
     background-color: ${color.white};
     border: 1px solid ${color.error};
   `,
-}
+};
 
 const textColors = {
   none: color.textTertiary,
@@ -60,16 +60,16 @@ const textColors = {
   'activated-disabled': color.textPrimary,
   error: color.textPrimary,
   disabled: color.textTertiary,
-}
+};
 
 export const Wrapper = styled.div`
   position: relative;
   width: 100%;
-`
+`;
 
 export const Container = styled.div<{
-  $size: DropdownSize
-  $variant: DropdownVariant
+  $size: DropdownSize;
+  $variant: DropdownVariant;
 }>`
   display: flex;
   align-items: center;
@@ -78,14 +78,12 @@ export const Container = styled.div<{
   ${({ $size }) => sizeStyles[$size]}
   ${({ $variant }) => containerVariants[$variant]}
   cursor: ${({ $variant }) =>
-    $variant === 'disabled' || $variant === 'activated-disabled'
-      ? 'not-allowed'
-      : 'pointer'};
-`
+    $variant === 'disabled' || $variant === 'activated-disabled' ? 'not-allowed' : 'pointer'};
+`;
 
 export const TextBox = styled.div<{
-  $size: DropdownSize
-  $variant: DropdownVariant
+  $size: DropdownSize;
+  $variant: DropdownVariant;
 }>`
   display: flex;
   align-items: center;
@@ -97,16 +95,16 @@ export const TextBox = styled.div<{
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-`
+`;
 
 export const IconLeft = styled.span<{
-  $size: DropdownSize
-  $variant: DropdownVariant
+  $size: DropdownSize;
+  $variant: DropdownVariant;
 }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 8px;
+  margin-right: 3px;
   width: ${({ $size }) => ($size === 'sm' ? '20px' : '24px')};
   height: ${({ $size }) => ($size === 'sm' ? '20px' : '24px')};
 
@@ -114,11 +112,11 @@ export const IconLeft = styled.span<{
     width: 100%;
     height: 100%;
   }
-`
+`;
 
 export const IconRight = styled.span<{
-  $size: DropdownSize
-  $variant: DropdownVariant
+  $size: DropdownSize;
+  $variant: DropdownVariant;
 }>`
   position: absolute;
   right: 10px;
@@ -132,7 +130,7 @@ export const IconRight = styled.span<{
     width: 100%;
     height: 100%;
   }
-`
+`;
 
 export const OptionList = styled.ul<{ $size: DropdownSize }>`
   position: absolute;
@@ -165,40 +163,38 @@ export const OptionList = styled.ul<{ $size: DropdownSize }>`
 
   scrollbar-width: thin;
   scrollbar-color: ${color.textPlaceholder16} transparent;
-`
+`;
 
 export const OptionItem = styled.li<{
-  $size: DropdownSize
-  selected?: boolean
+  $size: DropdownSize;
+  selected?: boolean;
 }>`
   ${({ $size }) => sizeStyles[$size]};
   padding: 0 12px;
   display: flex;
   align-items: center;
   cursor: pointer;
-  background-color: ${({ selected }) =>
-    selected ? color.basic100 : color.white};
+  background-color: ${({ selected }) => (selected ? color.basic100 : color.white)};
   border-radius: 4px;
 
   &:hover {
     background-color: ${color.basic100};
   }
-`
-
+`;
 
 export const OptionItemContent = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-`
+`;
 
 export const IconCircle = styled.img`
   width: 20px;
   height: 20px;
   border-radius: 50%;
   object-fit: cover;
-`
+`;
 
 export const GroupLabel = styled.div`
   width: 100%;
@@ -207,17 +203,16 @@ export const GroupLabel = styled.div`
   font-weight: 600;
   color: ${color.textLabel};
   background-color: ${color.textPlaceholder08};
-`
+`;
 
 export const GroupBlock = styled.div`
   width: 100%;
   padding-bottom: 8px;
-`
+`;
 
 export const ChipContainer = styled.div`
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
   align-items: center;
-`
-
+`;

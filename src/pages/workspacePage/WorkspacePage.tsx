@@ -34,7 +34,6 @@ export const WorkspacePage = () => {
         setOptions(formatted);
         if (formatted.length > 0) {
           setSelectedSlug(formatted[0].value);
-          console.log('selected slug:', formatted[0].value);
         }
         console.log(data);
       } catch (err) {
@@ -95,6 +94,7 @@ export const WorkspacePage = () => {
                 size="md"
                 $variant="activated"
                 type="single-image"
+                iconLeft
               />
               <Button $variant="neutralFilled" size="md" onClick={handleJoin}>
                 참여

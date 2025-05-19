@@ -117,7 +117,18 @@ export const Dropdown = ({
       >
         {iconLeft && !isChip && (
           <S.IconLeft $size={size} $variant={$variant}>
-            <DropdownIcon />
+            {type === 'single-image' && value ? (
+              options.find(o => o.value === value)?.imageSrc ? (
+                <S.IconCircle
+                  src={options.find(o => o.value === value)!.imageSrc!}
+                  alt="selected"
+                />
+              ) : (
+                <DropdownIcon />
+              )
+            ) : (
+              <DropdownIcon />
+            )}
           </S.IconLeft>
         )}
 
