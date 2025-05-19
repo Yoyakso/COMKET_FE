@@ -39,7 +39,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
     status: "",
     start_date: new Date().toISOString().split("T")[0],
     end_date: new Date().toISOString().split("T")[0],
-    assignee_member: null as number | null, // 임시 지정
+    assignee_member_id: null as number | null, // 임시 지정
     requester: {
       id: memberId,
       name: name,
@@ -82,7 +82,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!ticketData.assignee_member) {
+    if (!ticketData.assignee_member_id) {
       toast.error("담당자를 선택해주세요.");
       return;
     }
@@ -96,7 +96,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
       start_date: ticketData.start_date,
       end_date: ticketData.end_date,
       parent_ticket_id: null,
-      assignee_member_id: ticketData.assignee_member,
+      assignee_member_id: ticketData.assignee_member_id,
     };
     console.log("dto", dto)
     try {
@@ -217,7 +217,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
               <S.SelectField onClick={() => setShowAssigneeDropdown(prev => !prev)}>
                 <S.AssigneeText>
                   {
-                    members.find((m) => m.projectMemberId === ticketData.assignee_member)?.name || "담당자 선택"
+                    members.find((m) => m.projectMemberId === ticketData.assignee_member_id)?.name || "담당자 선택"
                   }
                 </S.AssigneeText>
                 <ChevronDown size={16} />
@@ -227,7 +227,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
                       <S.DropdownItem
                         key={member.projectMemberId}
                         onClick={() => {
-                          setTicketData({ ...ticketData, assignee_member: member.projectMemberId });
+                          setTicketData({ ...ticketData, assignee_member_id: member.projectMemberId });
                           setShowAssigneeDropdown(false); // 자동 닫힘
                         }}
                       >
