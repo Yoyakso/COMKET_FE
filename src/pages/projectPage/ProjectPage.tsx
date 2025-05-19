@@ -14,6 +14,7 @@ import { createProject, getAllProjects, editProject } from "@api/Project"
 import { formatDate } from "@utils/dateFormat"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
 import { useInitializeWorkspace } from "@/hooks/useWorkspace"
+import { toast } from "react-toastify"
 
 export const ProjectPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
@@ -118,6 +119,7 @@ export const ProjectPage = () => {
       setSearchQuery("");
       setSelectedFilters([]);
       setShowCreateModal(false);
+      toast.success("프로젝트 생성이 완료되었습니다.");
     } catch (error) {
       console.error("프로젝트 생성 실패:", error);
       throw error;

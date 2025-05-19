@@ -51,9 +51,10 @@ interface TicketTableProps {
   selectedIds?: number[];
   toggleSingle?: (id: number) => void;
   toggleWithSubtickets?: (ticket: Ticket) => void;
+  onTicketClick: (ticket: Ticket) => void;
 }
 
-export const TicketTable = ({ tickets }: TicketTableProps) => {
+export const TicketTable = ({ tickets, onTicketClick }: TicketTableProps) => {
   const [sortKey, setSortKey] = useState<keyof Ticket | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [columnWidths, setColumnWidths] = useState(INITIAL_WIDTHS);
@@ -146,19 +147,19 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
     sortable?: boolean;
     align?: 'left' | 'center';
   }[] = [
-    { key: 'expander', label: '', resizable: true, sortable: false, align: 'center' },
-    { key: 'checkbox', label: '', resizable: true, sortable: false, align: 'center' },
-    { key: 'id', label: '티켓 ID', resizable: true, sortable: true, align: 'center' },
-    { key: 'title', label: '티켓', resizable: true, sortable: true, align: 'left' },
-    { key: 'type', label: '유형', resizable: true, sortable: true, align: 'center' },
-    { key: 'assignee', label: '담당자', resizable: true, sortable: true, align: 'left' },
-    { key: 'priority', label: '우선순위', resizable: true, sortable: true, align: 'center' },
-    { key: 'status', label: '상태', resizable: true, sortable: true, align: 'center' },
-    { key: 'startDate', label: '시작일', resizable: true, sortable: true, align: 'center' },
-    { key: 'dueDate', label: '마감일', resizable: true, sortable: true, align: 'center' },
-    { key: 'subticketCount', label: '하위 티켓', resizable: true, sortable: true, align: 'center' },
-    { key: 'writer', label: '작성자', resizable: true, sortable: true, align: 'left' },
-  ];
+      { key: 'expander', label: '', resizable: true, sortable: false, align: 'center' },
+      { key: 'checkbox', label: '', resizable: true, sortable: false, align: 'center' },
+      { key: 'id', label: '티켓 ID', resizable: true, sortable: true, align: 'center' },
+      { key: 'title', label: '티켓', resizable: true, sortable: true, align: 'left' },
+      { key: 'type', label: '유형', resizable: true, sortable: true, align: 'center' },
+      { key: 'assignee', label: '담당자', resizable: true, sortable: true, align: 'left' },
+      { key: 'priority', label: '우선순위', resizable: true, sortable: true, align: 'center' },
+      { key: 'status', label: '상태', resizable: true, sortable: true, align: 'center' },
+      { key: 'startDate', label: '시작일', resizable: true, sortable: true, align: 'center' },
+      { key: 'dueDate', label: '마감일', resizable: true, sortable: true, align: 'center' },
+      { key: 'subticketCount', label: '하위 티켓', resizable: true, sortable: true, align: 'center' },
+      { key: 'writer', label: '작성자', resizable: true, sortable: true, align: 'left' },
+    ];
 
   return (
     <S.TableWrapper>
@@ -181,7 +182,9 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
                     label
                   )}
                 </S.HeaderContent>
-                {resizable && <S.Resizer onMouseDown={e => handleMouseDown(e, key)} />}
+                {resizable && (
+                  <S.Resizer onMouseDown={(e) => handleMouseDown(e, key)} />
+                )}
               </S.HeaderCell>
             ))}
           </S.HeaderRow>
@@ -191,13 +194,14 @@ export const TicketTable = ({ tickets }: TicketTableProps) => {
             <TicketRow
               key={ticket.id}
               ticket={ticket}
-              isChecked={id => selectedIds.includes(id)}
+              isChecked={(id) => selectedIds?.includes(id) ?? false}
               onCheckToggle={toggleSingle}
               toggleWithSubtickets={toggleWithSubtickets}
+              onTicketClick={onTicketClick}
             />
           ))}
         </S.TableBody>
       </S.Table>
-    </S.TableWrapper>
+    </S.TableWrapper >
   );
 };

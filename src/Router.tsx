@@ -15,6 +15,7 @@ import { ProjectPage } from './pages/projectPage/ProjectPage';
 import { AccountInfoPage } from './pages/accountInfoPage/AccountInfoPage';
 import { ProfilePage } from './pages/profilePage/profilePage';
 import { TicketDashboardPage } from './pages/ticketDashboardPage/TicketDashboardPage';
+import { ThreadPage } from './pages/threadPage/ThreadPage';
 
 export const Router = createBrowserRouter([
   {
@@ -93,8 +94,12 @@ export const Router = createBrowserRouter([
         element: <AccountInfoPage />,
       },
       {
-        path: 'workspace/project/ticketdashboard',
+        path: "/:projectId/tickets",
         element: <TicketDashboardPage />,
+      },
+      {
+        path: '/:projectId/tickets/:ticketId/thread',
+        element: <ThreadPage />,
       },
     ],
   },

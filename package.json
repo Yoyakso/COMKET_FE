@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@floating-ui/react-dom": "^2.1.2",
+    "@toast-ui/editor": "^3.2.2",
+    "@toast-ui/react-editor": "^3.2.3",
     "axios": "^1.9.0",
     "framer-motion": "^12.11.0",
     "lucide-react": "^0.508.0",
