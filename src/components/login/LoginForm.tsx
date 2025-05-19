@@ -26,13 +26,15 @@ export const LoginForm = () => {
 
     try {
       const data = await logIn({ email, password })
+      console.log("로그인데이터", data);
       toast.success("로그인 성공!")
       localStorage.setItem("accessToken", data.accessToken)
       setUserState({
         email: data.email,
         name: data.name,
         memberId: data.memberId,
-        loginPlatformInfo: data.loginPlatformInfo
+        loginPlatformInfo: data.loginPlatformInfo,
+        profileFileUrl: "",
       });
       navigate('/workspace')
 
@@ -52,11 +54,11 @@ export const LoginForm = () => {
       <S.FormWrapper>
         <form onSubmit={handleSubmit}>
           <S.FormRow>
-            <TextInput type="default" size="md" state="enable" value={email} onChange={setEmail} placeholder="이메일" />
+            <TextInput type="default" size="md" $state="enable" value={email} onChange={setEmail} placeholder="이메일" />
           </S.FormRow>
 
           <S.FormRow>
-            <TextInput type="password" size="md" state="enable" value={password} onChange={setPassword} placeholder="비밀번호" />
+            <TextInput type="password" size="md" $state="enable" value={password} onChange={setPassword} placeholder="비밀번호" />
           </S.FormRow>
 
           <S.RememberSignupRow>

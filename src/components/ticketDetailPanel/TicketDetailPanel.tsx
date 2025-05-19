@@ -36,14 +36,14 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
   const writerColor = getColorFromString(ticket.writer.name)
   const assigneeColor = getColorFromString(ticket.assignee.name)
 
-  const startThread = () => {
-    navigate(`/${projectId}/tickets/${ticket.id}/thread`, {
-      state: {
-        ticket,
-        projectName
-      }
-    })
-  }
+  // const startThread = () => {
+  //   navigate(`/${projectId}/tickets/${ticket.id}/thread`, {
+  //     state: {
+  //       ticket,
+  //       projectName
+  //     }
+  //   })
+  // }
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
@@ -69,14 +69,14 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
         </S.HeaderActions>
       </S.PanelHeader>
 
-      {!showThread && (
+      {/* {!showThread && (
         <S.ThreadStartContainer>
           <S.ThreadStartButton onClick={startThread}>
             <MessageSquarePlus width={16} height={16} />
             스레드 시작하기
           </S.ThreadStartButton>
         </S.ThreadStartContainer>
-      )}
+      )} */}
 
       <S.ContentScrollArea>
         {showThread ? (

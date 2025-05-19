@@ -10,11 +10,6 @@ interface Props {
 export const MarkdownEditor = ({ initialValue = "", onChange }: Props) => {
   const [value, setValue] = useState<string>(initialValue);
 
-  // 초기값이 변경될 경우 동기화 (선택적)
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
   // value 변경 시 콜백 실행
   useEffect(() => {
     onChange?.(value);
@@ -25,7 +20,7 @@ export const MarkdownEditor = ({ initialValue = "", onChange }: Props) => {
       <MDEditor
         value={value}
         onChange={(val = "") => setValue(val)}
-        preview="live" // live, edit, preview 설정 가능
+        preview="live"
         textareaProps={{ placeholder: "티켓 상세 내용 입력" }}
       />
     </S.EditorWrapper>
