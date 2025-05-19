@@ -9,9 +9,10 @@ import { uploadProfileImage, type UploadResponse } from '@/api/Workspace';
 interface ImageUploadProps {
   onClose: () => void;
   onImageSelect: (fileInfo: { file_id: number; file_url: string; file_name: string }) => void;
+  initialImageUrl?: string;
 }
 
-export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
+export const ImageUpload = ({ onClose, onImageSelect, initialImageUrl }: ImageUploadProps) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -95,6 +96,8 @@ export const ImageUpload = ({ onClose, onImageSelect }: ImageUploadProps) => {
               <S.PreviewLabel>미리보기</S.PreviewLabel>
               {previewUrl ? (
                 <S.PreviewImage src={previewUrl} alt="미리보기" width={200} height={200} />
+              ) : initialImageUrl ? (
+                <S.PreviewImage src={initialImageUrl} width={200} height={200} />
               ) : (
                 <S.PreviewPlaceholder>
                   <DropdownIcon />

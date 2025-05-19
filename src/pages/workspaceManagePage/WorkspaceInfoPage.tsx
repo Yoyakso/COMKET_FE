@@ -172,11 +172,12 @@ export const WorkspaceInfoPage = () => {
               사진 선택
             </Button>
             {isModalOpen && (
-              <ImageUpload onClose={() => setModalOpen(false)} onImageSelect={handleImageSelect} />
+              <ImageUpload
+                onClose={() => setModalOpen(false)}
+                onImageSelect={handleImageSelect}
+                initialImageUrl={profileFileUrl}
+              />
             )}
-            <span style={{ color: color.textTertiary, fontSize: '14px' }}>
-              {fileName || '선택된 파일 없음'}
-            </span>
           </S.PhotoUploader>
         </S.PhotoWrapper>
       </S.PhotoGroup>
@@ -225,7 +226,14 @@ export const WorkspaceInfoPage = () => {
           워크스페이스 나가기
         </Button>
         <S.SubButtonWrapper>
-          <Button $variant="neutralOutlined" size="sm" onClick={() => navigate(-1)}>
+          <Button
+            $variant="neutralOutlined"
+            size="sm"
+            onClick={() => {
+              fetchWorkspaceInfo();
+              toast.error('변경사항이 취소되었습니다.');
+            }}
+          >
             취소
           </Button>
           <Button

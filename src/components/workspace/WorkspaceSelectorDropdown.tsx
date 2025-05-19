@@ -32,13 +32,12 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
   useOutsideClick([triggerRef, dropdownRef], close);
 
   useEffect(() => {
-    if (!showSub || fetchedRef.current || myWorkspaces.length) return;
+    if (!showSub) return;
     (async () => {
       const list = await fetchMyWorkspaces();
       setMyWorkspaces(list);
-      fetchedRef.current = true;
     })();
-  }, [showSub, myWorkspaces.length, setMyWorkspaces]);
+  }, [showSub, setMyWorkspaces]);
 
   useEffect(() => {
     if (!email || !workspaceId) return;
@@ -67,6 +66,7 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
     if (!storedEmail || !id) return;
     await exitWorkspace({ workspaceId: id.toString(), email: storedEmail });
     clearWorkspace();
+
     ['workspaceId', 'workspaceSlug', 'workspaceName'].forEach(k => localStorage.removeItem(k));
     navigate('/workspace', { replace: true });
     window.location.reload();
@@ -94,7 +94,7 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
             <S.Item onClick={() => navigate(`/${workspaceSlug}/settings`)}>
               워크스페이스 정보
             </S.Item>
-            <S.Item onClick={() => navigate('/')}>플랜 관리</S.Item>
+            <S.Item onClick={() => navigate('/plan')}>플랜 관리</S.Item>
             <S.Item onClick={() => navigate(`/${workspaceSlug}/member`)}>멤버 관리</S.Item>
             <S.Item onClick={() => navigate(`/${workspaceSlug}/project`)}>프로젝트 관리</S.Item>
 
