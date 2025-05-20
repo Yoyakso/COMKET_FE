@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { useParams, useLocation, useNavigate } from "react-router-dom"
-import { Send, CheckCircle, Tag, ArrowLeft, User } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import * as S from "./ThreadPage.Style"
 import { useWebSocket } from "@/hooks/useWebSocket"
 import { ThreadChat } from "@/components/thread/threadChat/ThreadChat"
@@ -25,7 +25,7 @@ interface ThreadMessage {
   senderName: string
   content: string
   sentAt: string
-  // isCurrentUser: boolean
+  isCurrentUser: boolean
 }
 
 interface ActionItem {
@@ -102,7 +102,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
           //     profileUrl: data.assignee_member?.profileUrl || "",
           //     email: data.assignee_member?.email || "",
           //   },
-          //   threadCount: 0, // ✅ 백엔드에서 제공되지 않으면 기본값 처리
+          //   threadCount: 0, // 백엔드에서 제공되지 않으면 기본값 처리
           //   priority: data.ticket_priority,
           //   status: data.ticket_state,
           //   startDate: data.start_date,
@@ -128,23 +128,28 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
     }
   }, [ticket, ticketId, projectName]);
 
-  const handleMessage = useCallback((data: ThreadMessage) => {
-    setThreadMessages((prev) => [...prev, data])
-  }, [])
+  const handleMessage = useCallback((data: ThreadMessage | ThreadMessage[]) => {
+    const normalizedMessages = Array.isArray(data) ? data : [data]
+
+    const processed = normalizedMessages.map((msg) => ({
+      ...msg,
+      isCurrentUser: msg.senderMemberId === memberId,
+    }))
+
+    setThreadMessages((prev) => {
+      const seen = new Set(prev.map((m) => m.sentAt + m.senderMemberId))
+      const unique = processed.filter(
+        (msg) => !seen.has(msg.sentAt + msg.senderMemberId)
+      )
+      return [...prev, ...unique]
+    })
+  }, [memberId])
 
   const { connect, send, disconnect } = useWebSocket({
     ticketId: Number(ticketId),
     token,
     onMessage: handleMessage,
   })
-
-  // const { connect, send } = useWebSocket({
-  //   ticketId: Number(ticketId),
-  //   token,
-  //   onMessage: (data: ThreadMessage) => {
-  //     setThreadMessages((prev) => [...prev, data])
-  //   },
-  // })
 
   useEffect(() => {
     if (ticketId && token) {
@@ -153,23 +158,29 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   }, [ticketId, token, connect]);
 
   const formatDateToServerFormat = (date: Date) => {
-    return date.toISOString().slice(0, 19) // '2025-05-16T19:10:23' 형태로 자름
+    return date.toISOString().slice(0, 19)
   }
 
   const sendMessage = () => {
     if (!newMessage.trim()) return
 
-    const message: ThreadMessage = {
+    // 서버로 보낼 메시지
+    const messageToSend = {
       ticketId: Number(ticketId),
       senderMemberId: memberId,
       senderName: memberName,
       content: newMessage,
       sentAt: formatDateToServerFormat(new Date()),
-      // isCurrentUser: true
     }
-    console.log("보내는 메시지:", message)
-    send(message)
-    setThreadMessages((prev) => [...prev, message])
+
+    // 프론트 렌더링용 메시지
+    const uiMessage: ThreadMessage = {
+      ...messageToSend,
+      isCurrentUser: true,
+    }
+
+    send(messageToSend)
+    setThreadMessages((prev) => [...prev, uiMessage])
     setNewMessage("")
   }
 

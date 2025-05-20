@@ -13,10 +13,11 @@ export const useWebSocket = ({
 }) => {
   const socketRef = useRef<WebSocket | null>(null)
   const openedRef = useRef(false)
+  const heartbeatRef = useRef<NodeJS.Timeout | null>(null)
 
   const connect = useCallback(() => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      console.warn("이미 연결되어 있음")
+      console.warn("WebSocket 이미 연결되어 있음")
       return
     }
 
@@ -29,12 +30,21 @@ export const useWebSocket = ({
     ws.onopen = () => {
       openedRef.current = true
       console.log("WebSocket 연결됨")
+
+      heartbeatRef.current = setInterval(() => {
+        if (socketRef.current?.readyState === WebSocket.OPEN) {
+          const ping = JSON.stringify({ type: "ping" })
+          socketRef.current.send(ping)
+          console.log("WebSocket ping 보냄:", ping)
+        }
+      }, 30 * 1000)
     }
 
     ws.onmessage = (e) => {
       try {
+        console.log("수신 메시지:", e.data)
         const data = JSON.parse(e.data)
-        onMessage(data)
+        if (data.type !== "pong") onMessage(data)
       } catch (err) {
         console.error("메시지 파싱 실패:", e.data)
       }
@@ -46,10 +56,17 @@ export const useWebSocket = ({
 
     ws.onclose = (e) => {
       if (!openedRef.current) {
-        console.warn("onopen 전에 종료됨", e.code)
+        console.warn("WebSocket onopen 전에 종료됨", e.code)
       } else {
-        console.log("WebSocket 정상 종료", e.code)
+        console.log("WebSocket 종료됨", e.code)
+
+        if (e.code === 1006) {
+          console.log("1006 비정상 종료 감지 → 재연결 시도")
+          setTimeout(() => connect(), 1000)
+        }
       }
+
+      if (heartbeatRef.current) clearInterval(heartbeatRef.current)
     }
   }, [ticketId, token, onMessage])
 
@@ -57,11 +74,12 @@ export const useWebSocket = ({
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(message))
     } else {
-      console.warn("연결 안됨")
+      console.warn("WebSocket 연결 안됨")
     }
   }, [])
 
   const disconnect = useCallback(() => {
+    if (heartbeatRef.current) clearInterval(heartbeatRef.current)
     socketRef.current?.close()
     socketRef.current = null
     openedRef.current = false
