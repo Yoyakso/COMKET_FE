@@ -9,6 +9,7 @@ import { getProjectMembers } from "@/api/Project"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
 import { useUserStore } from "@/stores/userStore"
 import { toast } from "react-toastify"
+import { Ticket } from '@/types/ticket';
 
 interface Member {
   memberId: number
@@ -113,7 +114,33 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
     console.log("dto", dto)
     try {
       const response = await createTicket(projectName, dto);
-      onSubmit(response);
+      const mappedTicket: Ticket = {
+        id: response.id,
+        title: response.ticket_name,
+        description: response.description,
+        type: response.ticket_type,
+        priority: response.ticket_priority,
+        status: response.ticket_state,
+        startDate: response.start_date,
+        endDate: response.end_date,
+        subticketCount: 0,
+        subtickets: [],
+        parentId: null,
+        threadCount: 0,
+        assignee: {
+          name: members.find(m => m.projectMemberId === ticketData.assignee_member_id)?.name || '',
+          email: '',
+          profileUrl: '',
+          nickname: ''
+        },
+        writer: {
+          name: ticketData.requester.name,
+          email: '',
+          profileUrl: '',
+          nickname: ''
+        }
+      };
+      onSubmit(mappedTicket);
       toast.success("티켓 생성이 완료되었습니다.")
       onClose();
     } catch (err) {
@@ -133,7 +160,6 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
     setShowPriorityDropdown(false);
     setShowStatusDropdown(false);
     setShowAssigneeDropdown(false);
-
     const shouldOpen = !currentState;
 
     switch (dropdown) {

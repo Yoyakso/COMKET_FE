@@ -90,7 +90,6 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
       const fetchTicket = async () => {
         try {
           const data = await getTicketById(Number(ticketId), projectName);
-          console.log("ddddddddsfdsfdfdsfsdfdsfddd", data)
           // const mappedTicket: Ticket = {
           //   id: data.id,
           //   title: data.ticket_name,
@@ -220,19 +219,21 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
             <S.PageTitle>{ticket.title}</S.PageTitle>
           </S.PageHeader>
 
-          <S.LeftColumn>
-            <ThreadChat
-              messages={threadMessages}
-              newMessage={newMessage}
-              setNewMessage={setNewMessage}
-              sendMessage={sendMessage}
-            />
-            <ThreadInfo ticket={ticket} />
-          </S.LeftColumn>
+          <S.ContentBody>
+            <S.LeftColumn>
+              <ThreadChat
+                messages={threadMessages}
+                newMessage={newMessage}
+                setNewMessage={setNewMessage}
+                sendMessage={sendMessage}
+              />
+              <ThreadInfo ticket={ticket} />
+            </S.LeftColumn>
 
-          <S.RightColumn>
-            <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
-          </S.RightColumn>
+            <S.RightColumn>
+              <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
+            </S.RightColumn>
+          </S.ContentBody>
         </S.ContentContainer>
       </S.MainContainer>
     </S.PageContainer >
