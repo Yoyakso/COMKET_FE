@@ -25,7 +25,10 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
     }
   }
 
-  const getAvatarImage = (index: number) => {
+  const getAvatarImage = (index: number, isCurrentUser: boolean) => {
+    if (isCurrentUser) {
+      return "/images/avatar-1.png"
+    }
     const avatarIndex = (index % 5) + 1
     return `/images/avatar-${avatarIndex}.png`
   }
@@ -41,7 +44,10 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
               $isCurrentUser={message.isCurrentUser}
             >
               <S.MessageAvatar>
-                <S.AvatarImage src={getAvatarImage(index)} alt={`${message.senderName} 아바타`} />
+                <S.AvatarImage
+                  src={getAvatarImage(index, message.isCurrentUser)}
+                  alt={`${message.senderName} 아바타`}
+                />
               </S.MessageAvatar>
 
               <S.SenderInfo $isCurrentUser={message.isCurrentUser}>
@@ -74,6 +80,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
 
       <S.MessageInputContainer>
         <S.MessageInput
+          placeholder="메시지를 입력해주세요."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyDown}
