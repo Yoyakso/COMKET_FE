@@ -4,21 +4,27 @@ import { AvatarWithName } from './AvatarWithName';
 import { Ticket } from '@/types/ticket';
 import { CheckBox } from '../common/checkbox/CheckBox';
 import { ChevronRight, ChevronDown, MessageSquare } from 'lucide-react';
-import { TypeBadge } from "./TypeBadge";
-import { PriorityDropdown } from "./PriorityDropdown";
-import { StatusDropdown } from "./StatusDropdown";
+import { TypeBadge } from './TypeBadge';
+import { PriorityDropdown } from './PriorityDropdown';
+import { StatusDropdown } from './StatusDropdown';
 
 interface TicketRowProps {
   ticket: Ticket;
   isChecked: (id: number) => boolean;
-  onCheckToggle: (id: number, parentId?: number) => void;
-  toggleWithSubtickets: (Ticket: Ticket) => void;
+  toggleSingle: (id: number, parentId?: number) => void;
+  toggleWithSubtickets: (ticket: Ticket) => void;
   onTicketClick?: (ticket: Ticket) => void;
   onTicketHover?: (ticket: Ticket | null) => void;
 }
 
-export const TicketRow = ({ ticket, isChecked, onCheckToggle, onTicketClick, onTicketHover }: TicketRowProps) => {
-
+export const TicketRow = ({
+  ticket,
+  isChecked,
+  toggleSingle,
+  toggleWithSubtickets,
+  onTicketClick,
+  onTicketHover,
+}: TicketRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => setIsExpanded(prev => !prev);
@@ -45,11 +51,15 @@ export const TicketRow = ({ ticket, isChecked, onCheckToggle, onTicketClick, onT
             $variant="primary"
             size="md"
             checked={isChecked(ticket.id)}
-            onChange={() => onCheckToggle(ticket.id)}
+            onChange={() =>
+              hasSubtickets
+                ? toggleWithSubtickets(ticket)
+                : toggleSingle(ticket.id, ticket.parentId)
+            }
           />
         </S.TableCell>
         <S.TableCell>{ticket.id}</S.TableCell>
-        <S.TableCell onClick={() => onTicketClick?.(ticket)} style={{ cursor: "pointer" }}>
+        <S.TableCell onClick={() => onTicketClick?.(ticket)} style={{ cursor: 'pointer' }}>
           <S.TicketTitleGroup>
             {ticket.title}
             {ticket.threadCount > 0 && (
@@ -89,7 +99,7 @@ export const TicketRow = ({ ticket, isChecked, onCheckToggle, onTicketClick, onT
                 $variant="primary"
                 size="md"
                 checked={isChecked(sub.id)}
-                onChange={() => onCheckToggle(sub.id, ticket.id)}
+                onChange={() => toggleSingle(sub.id, ticket.id)}
               />
             </S.SubticketCell>
             <S.SubticketCell>{sub.id}</S.SubticketCell>

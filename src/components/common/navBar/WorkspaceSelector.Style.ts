@@ -1,5 +1,5 @@
-import styled from "styled-components"
-import { color } from "@/styles/color" // 필요 시 수정
+import styled from 'styled-components';
+import { color } from '@/styles/color';
 
 export const Container = styled.button`
   display: flex;
@@ -14,18 +14,18 @@ export const Container = styled.button`
   &:hover {
     background-color: #f3f4f6;
   }
-`
+`;
 
 export const Logo = styled.div`
   width: 32px;
-  height: 32px; 
+  height: 32px;
   background-color: #f3f4f6;
   border-radius: 6px;
-  border: 1px solid #E7EAF1;
+  border: 1px solid #e7eaf1;
   display: flex;
   align-items: center;
   justify-content: center;
-`
+`;
 
 export const LogoBox = styled.div`
   width: 36px;
@@ -41,16 +41,22 @@ export const LogoBox = styled.div`
     width: 24px;
     height: 24px;
   }
-`
+`;
 
 export const TextBox = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-`
+`;
 
 export const WorkspaceName = styled.span`
   font-weight: 700;
   font-size: 16px;
   color: ${color.textPrimary};
-`
+`;
+export const SelectorButton = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 9px;
+`;

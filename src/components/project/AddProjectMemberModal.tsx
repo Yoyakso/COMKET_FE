@@ -1,131 +1,131 @@
-import { useState, useEffect } from "react"
-import ReactDOM from "react-dom"
-import * as S from "./AddProjectMemberModal.Style"
-import { ChevronDown, X } from "lucide-react"
-import { inviteProjectMembers } from "@/api/Project"
-import { getColorFromString } from "@/utils/avatarColor"
-import { toast } from "react-toastify"
-import type { ProjectMember } from "./ProjectMemberModal"
-import { useWorkspaceStore } from "@/stores/workspaceStore"
+import { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+import * as S from './AddProjectMemberModal.Style';
+import { ChevronDown, X } from 'lucide-react';
+import { inviteProjectMembers } from '@/api/Project';
+import { getColorFromString } from '@/utils/avatarColor';
+import { toast } from 'react-toastify';
+import type { ProjectMember } from './ProjectMemberModal';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
 
 export interface Member {
-  id: number
-  name?: string
-  email: string
-  initial: string
-  color: string
+  id: number;
+  name?: string;
+  email: string;
+  initial: string;
+  color: string;
 }
 
 interface AddProjectMemberModalProps {
-  onClose: () => void
-  projectId: number
-  memberMap: Map<string, { memberId: number; name: string; email: string }>
-  onAddSuccess: (newMembers: ProjectMember[]) => void
+  onClose: () => void;
+  projectId: number;
+  memberMap: Map<string, { memberId: number; name: string; email: string }>;
+  onAddSuccess: (newMembers: ProjectMember[]) => void;
 }
 
-export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSuccess }: AddProjectMemberModalProps) => {
-  const [selectedMembers, setSelectedMembers] = useState<Member[]>([])
-  const [emailInput, setEmailInput] = useState<string>("")
-  const [role, setRole] = useState<string>("일반 멤버")
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
-  const workspaceName = useWorkspaceStore((state) => state.workspaceName)
-  const [suggestions, setSuggestions] = useState<Member[]>([])
+export const AddProjectMemberModal = ({
+  onClose,
+  projectId,
+  memberMap,
+  onAddSuccess,
+}: AddProjectMemberModalProps) => {
+  const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
+  const [emailInput, setEmailInput] = useState<string>('');
+  const [role, setRole] = useState<string>('일반 멤버');
+  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const workspaceName = useWorkspaceStore(state => state.workspaceName);
+  const [suggestions, setSuggestions] = useState<Member[]>([]);
 
   useEffect(() => {
-    setIsMounted(true)
-    return () => setIsMounted(false)
-  }, [])
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
 
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose()
-    }
-    document.addEventListener("keydown", handleEscKey)
-    return () => document.removeEventListener("keydown", handleEscKey)
-  }, [onClose])
+      if (event.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEscKey);
+    return () => document.removeEventListener('keydown', handleEscKey);
+  }, [onClose]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement
-      if (!target.closest(".role-dropdown") && !target.closest(".role-button")) {
-        setIsRoleDropdownOpen(false)
+      const target = event.target as HTMLElement;
+      if (!target.closest('.role-dropdown') && !target.closest('.role-button')) {
+        setIsRoleDropdownOpen(false);
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (!emailInput) {
-      setSuggestions([])
-      return
+      setSuggestions([]);
+      return;
     }
 
     const filtered = Array.from(memberMap.values())
-      .filter(
-        (m) =>
-          m.email.includes(emailInput) &&
-          !selectedMembers.some((s) => s.email === m.email)
-      )
-      .slice(0, 5) // 최대 5개
+      .filter(m => m.email.includes(emailInput) && !selectedMembers.some(s => s.email === m.email))
+      .slice(0, 5); // 최대 5개
 
-    const suggestionList: Member[] = filtered.map((m) => ({
+    const suggestionList: Member[] = filtered.map(m => ({
       id: m.memberId,
       name: m.name,
       email: m.email,
       initial: m.name?.charAt(0).toUpperCase() || m.email.charAt(0).toUpperCase(),
       color: getColorFromString(m.email),
-    }))
+    }));
 
-    setSuggestions(suggestionList)
+    setSuggestions(suggestionList);
+  }, [emailInput, memberMap, selectedMembers]);
 
-  }, [emailInput, memberMap, selectedMembers])
-
-  const toggleRoleDropdown = () => setIsRoleDropdownOpen(!isRoleDropdownOpen)
+  const toggleRoleDropdown = () => setIsRoleDropdownOpen(!isRoleDropdownOpen);
   const handleRoleSelect = (selectedRole: string) => {
-    setRole(selectedRole)
-    setIsRoleDropdownOpen(false)
-  }
+    setRole(selectedRole);
+    setIsRoleDropdownOpen(false);
+  };
 
   const removeMember = (memberId: number) => {
-    setSelectedMembers(selectedMembers.filter((member) => member.id !== memberId))
-  }
+    setSelectedMembers(selectedMembers.filter(member => member.id !== memberId));
+  };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmailInput(e.target.value)
-  }
+    setEmailInput(e.target.value);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault()
-      const email = emailInput.trim().replace(/,$/, "")
-      if (!email) return
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const email = emailInput.trim().replace(/,$/, '');
+      if (!email) return;
 
-      const matched = memberMap.get(email)
+      const matched = memberMap.get(email);
       if (!matched) {
-        alert("해당 이메일은 워크스페이스 멤버가 아닙니다.")
-        return
+        toast.error('해당 이메일은 워크스페이스 멤버가 아닙니다.');
+        return;
       }
 
-      addMember(matched)
+      addMember(matched);
     }
-  }
+  };
 
   const addMember = (m: { memberId: number; name: string; email: string }) => {
-    if (selectedMembers.some((member) => member.email === m.email)) {
-      toast.error("이미 추가된 이메일입니다.")
-      return
+    if (selectedMembers.some(member => member.email === m.email)) {
+      toast.error('이미 추가된 이메일입니다.');
+      return;
     }
 
     if (!m.memberId) {
-      toast.error("유효하지 않은 멤버입니다.")
-      return
+      toast.error('유효하지 않은 멤버입니다.');
+      return;
     }
 
-    const initial = m.name?.charAt(0).toUpperCase() || m.email.charAt(0).toUpperCase()
-    const color = getColorFromString(m.email)
+    const initial = m.name?.charAt(0).toUpperCase() || m.email.charAt(0).toUpperCase();
+    const color = getColorFromString(m.email);
 
     const newMember: Member = {
       id: m.memberId,
@@ -133,67 +133,67 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
       email: m.email,
       initial,
       color,
-    }
+    };
 
-    setSelectedMembers([...selectedMembers, newMember])
-    setEmailInput("")
-  }
+    setSelectedMembers([...selectedMembers, newMember]);
+    setEmailInput('');
+  };
 
   const handleSubmit = async () => {
-    if (selectedMembers.length === 0) return
+    if (selectedMembers.length === 0) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      if (!workspaceName) throw new Error("워크스페이스 정보가 없습니다.")
+      if (!workspaceName) throw new Error('워크스페이스 정보가 없습니다.');
 
       const workspaceMemberIdList = selectedMembers
-        .map((m) => m.id)
-        .filter((id): id is number => id !== null && id !== undefined)
+        .map(m => m.id)
+        .filter((id): id is number => id !== null && id !== undefined);
 
       if (workspaceMemberIdList.length === 0) {
-        toast.error("선택된 멤버가 없습니다.")
-        setIsSubmitting(false)
-        return
+        toast.error('선택된 멤버가 없습니다.');
+        setIsSubmitting(false);
+        return;
       }
 
-      const positionType = role === "프로젝트 관리자" ? "ADMIN" : "MEMBER"
+      const positionType = role === '프로젝트 관리자' ? 'ADMIN' : 'MEMBER';
 
       await inviteProjectMembers(workspaceName, projectId, {
         workspaceMemberIdList,
         positionType,
-      })
+      });
 
       onAddSuccess(
-        selectedMembers.map((m) => ({
+        selectedMembers.map(m => ({
           id: m.id,
           email: m.email,
-          name: m.name ?? "",
-          position: "",
-          role: role === "프로젝트 관리자" ? "프로젝트 관리자" : "일반 멤버",
+          name: m.name ?? '',
+          position: '',
+          role: role === '프로젝트 관리자' ? '프로젝트 관리자' : '일반 멤버',
           initial: m.initial,
           color: m.color,
-        }))
-      )
-      toast.success("멤버 초대가 완료되었습니다.")
-      onClose()
+        })),
+      );
+      toast.success('멤버 초대가 완료되었습니다.');
+      onClose();
     } catch (error) {
-      console.error("멤버 초대 실패:", error)
-      toast.error("멤버 초대 중 오류가 발생했습니다.")
+      console.error('멤버 초대 실패:', error);
+      toast.error('멤버 초대 중 오류가 발생했습니다.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const modalContent = (
     <S.ModalOverlay onClick={onClose}>
-      <S.ModalContent onClick={(e) => e.stopPropagation()}>
+      <S.ModalContent onClick={e => e.stopPropagation()}>
         <S.Title>프로젝트 멤버 추가</S.Title>
 
         <S.FormRow>
           <S.Label>추가 대상</S.Label>
           <S.InputContainer>
             <S.MemberTagsContainer>
-              {selectedMembers.map((member) => (
+              {selectedMembers.map(member => (
                 <S.MemberTag key={member.email}>
                   <S.MemberAvatar $bgColor={member.color}>{member.initial}</S.MemberAvatar>
                   <span>
@@ -213,21 +213,21 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
               />
               {suggestions.length > 0 && (
                 <S.SuggestionList>
-                  {suggestions.map((s) => (
+                  {suggestions.map(s => (
                     <S.SuggestionItem
                       key={s.email}
                       onClick={() =>
                         addMember({
                           memberId: s.id,
-                          name: s.name || "",
+                          name: s.name || '',
                           email: s.email,
                         })
                       }
                     >
-                      <S.SuggestionAvatar $bgColor={s.color}>
-                        {s.initial}
-                      </S.SuggestionAvatar>
-                      <span>{s.name} [{s.email}]</span>
+                      <S.SuggestionAvatar $bgColor={s.color}>{s.initial}</S.SuggestionAvatar>
+                      <span>
+                        {s.name} [{s.email}]
+                      </span>
                     </S.SuggestionItem>
                   ))}
                 </S.SuggestionList>
@@ -247,10 +247,16 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
 
               {isRoleDropdownOpen && (
                 <S.DropdownMenu className="role-dropdown">
-                  <S.DropdownItem $active={role === "프로젝트 관리자"} onClick={() => handleRoleSelect("프로젝트 관리자")}>
+                  <S.DropdownItem
+                    $active={role === '프로젝트 관리자'}
+                    onClick={() => handleRoleSelect('프로젝트 관리자')}
+                  >
                     프로젝트 관리자
                   </S.DropdownItem>
-                  <S.DropdownItem $active={role === "일반 멤버"} onClick={() => handleRoleSelect("일반 멤버")}>
+                  <S.DropdownItem
+                    $active={role === '일반 멤버'}
+                    onClick={() => handleRoleSelect('일반 멤버')}
+                  >
                     일반 멤버
                   </S.DropdownItem>
                 </S.DropdownMenu>
@@ -260,14 +266,19 @@ export const AddProjectMemberModal = ({ onClose, projectId, memberMap, onAddSucc
         </S.FormRow>
 
         <S.ButtonContainer>
-          <S.CancelButton onClick={onClose} disabled={isSubmitting}>취소</S.CancelButton>
-          <S.AddButton onClick={handleSubmit} disabled={isSubmitting || selectedMembers.length === 0}>
-            {isSubmitting ? "추가 중..." : "추가"}
+          <S.CancelButton onClick={onClose} disabled={isSubmitting}>
+            취소
+          </S.CancelButton>
+          <S.AddButton
+            onClick={handleSubmit}
+            disabled={isSubmitting || selectedMembers.length === 0}
+          >
+            {isSubmitting ? '추가 중...' : '추가'}
           </S.AddButton>
         </S.ButtonContainer>
       </S.ModalContent>
     </S.ModalOverlay>
-  )
+  );
 
-  return ReactDOM.createPortal(modalContent, document.body)
-}
+  return ReactDOM.createPortal(modalContent, document.body);
+};
