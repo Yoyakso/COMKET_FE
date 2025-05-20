@@ -71,6 +71,38 @@ export const TicketDashboardPage = () => {
         const mappedTickets: Ticket[] = tickets.map((ticket: any) => {
           const assignee = members.find(m => m.id === ticket.assignee_member_id);
           const writer = members.find(m => m.id === ticket.creator_member_id);
+
+          const subtickets = ticket.sub_tickets?.map((sub: any) => {
+            const subAssignee = members.find(m => m.id === sub.assignee_member_id);
+            const subWriter = members.find(m => m.id === sub.creator_member_id);
+            return {
+              id: sub.id,
+              title: sub.ticket_name,
+              type: sub.ticket_type as TicketType,
+              description: sub.description,
+              assignee: {
+                nickname: '',
+                profileUrl: '',
+                name: subAssignee?.name || '',
+                email: subAssignee?.email || '',
+              },
+              threadCount: 0,
+              priority: sub.ticket_priority,
+              status: sub.ticket_state,
+              startDate: sub.start_date,
+              endDate: sub.end_date,
+              subticketCount: 0,
+              subtickets: [],
+              parentId: sub.parent_ticket_id ?? undefined,
+              writer: {
+                nickname: '',
+                profileUrl: '',
+                name: subWriter?.name || '',
+                email: subWriter?.email || '',
+              },
+            }
+          }) ?? []
+
           return {
             id: ticket.id,
             title: ticket.ticket_name,
