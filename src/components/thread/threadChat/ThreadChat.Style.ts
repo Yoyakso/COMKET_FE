@@ -16,7 +16,7 @@ export const ThreadContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 450px;
+  height: 450px;
   overflow-y: auto;
 `
 
@@ -42,12 +42,32 @@ export const AvatarImage = styled.img`
   object-fit: cover;
 `
 
+export const SenderInfo = styled.div<{ $isCurrentUser: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: ${(props) => (props.$isCurrentUser ? "flex-end" : "flex-start")};
+  max-width: 75%;
+`
+
+export const SenderName = styled.span<{ $isCurrentUser: boolean }>`
+  font-size: 11px;
+  color: ${color.basic600};
+  margin: ${(props) => (props.$isCurrentUser ? "0 8px 2px 0" : "0 0 2px 8px")};
+`
+
+export const MessageBubbleContainer = styled.div<{ $isCurrentUser: boolean }>`
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  flex-direction: ${(props) => (props.$isCurrentUser ? "row-reverse" : "row")};
+`
+
 export const MessageBubble = styled.div<{ $isCurrentUser: boolean }>`
   background-color: ${(props) => (props.$isCurrentUser ? "#10b981" : "#f3f4f6")};
   color: ${(props) => (props.$isCurrentUser ? "#ffffff" : "#374151")};
   border-radius: 12px;
   padding: 8px 12px;
-  max-width: 75%;
+  width: 100%;
   position: relative;
   &:before {
     content: "";
@@ -66,6 +86,14 @@ export const MessageContent = styled.p`
   font-size: 13px;
   line-height: 1.4;
   word-break: break-word;
+`
+
+export const MessageTime = styled.span<{ $isCurrentUser: boolean }>`
+  font-size: 10px;
+  color: ${color.basic600};
+  white-space: nowrap;
+  align-self: flex-end;
+  margin-bottom: 2px;
 `
 
 export const MessageInputContainer = styled.div`
