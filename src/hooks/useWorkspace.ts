@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { fetchWorkspaceBySlug } from "@/api/Workspace";
-import { useWorkspaceStore } from "@/stores/workspaceStore";
+import { useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { fetchWorkspaceBySlug } from '@/api/Workspace';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
 
 /**
  * 페이지 진입 시 URL의 workspaceSlug를 이용해
@@ -23,12 +23,12 @@ export const useInitializeWorkspace = () => {
           workspaceName: ws.name,
           workspaceSlug: ws.slug,
           workspaceId: ws.id,
-          profileFileUrl: ws.profileFileUrl ?? "",
+          profileFileUrl: ws.profileFileUrl ?? '',
         });
       } catch (e) {
-        console.error("워크스페이스 초기화 실패:", e);
+        console.error('워크스페이스 초기화 실패:', e);
         clearWorkspace();
-        navigate("/workspace");
+        navigate('/workspace');
       }
     };
 

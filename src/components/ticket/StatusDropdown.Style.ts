@@ -14,12 +14,13 @@ export const STATUS_COLORS: Record<Status, string> = {
 
 export const Positioner = styled.div`
   position: relative;
-  display: inline-block;
+  min-width: 60px;
 `;
 
 export const Wrapper = styled.div<{ $color: string }>`
   height: 18px;
   min-width: 60px;
+  width: 100%;
   padding: 1px 8px;
   border-radius: 999px;
   background-color: transparent;
@@ -35,10 +36,8 @@ export const Wrapper = styled.div<{ $color: string }>`
 `;
 
 export const MorphDropdown = styled(motion.div)`
-  position: absolute;
-  top: 85%;
-  transform: translateX(-50%);
-  margin-top: 6px;
+  position: relative;
+  margin-top: 3px;
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
   padding: 6px 0;

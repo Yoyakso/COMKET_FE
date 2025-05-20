@@ -7,10 +7,11 @@ import { ImageUpload } from '@components/workspace/ImageUpload';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
 import { WorkspaceDelete } from '@/components/workspace/WorkspaceDelete';
 import { WorkspaceExit } from '@/components/workspace/WorkspaceExit';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMyWorkspaces, updateWorkspace, deleteWorkspace, exitWorkspace } from '@api/Workspace';
-import { useNavigate } from 'react-router-dom';
+import { getWorkspaceMembers } from '@api/Member';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { useUserStore } from '@/stores/userStore';
 import { toast } from 'react-toastify';
 
 export const WorkspaceInfoPage = () => {
@@ -19,6 +20,9 @@ export const WorkspaceInfoPage = () => {
   const workspaceName = useWorkspaceStore(s => s.workspaceName);
   const profileFileUrl = useWorkspaceStore(s => s.profileFileUrl);
   const setProfileFileUrl = useWorkspaceStore(s => s.setProfileFileUrl);
+  const setWorkspaceStore = useWorkspaceStore.getState().setWorkspaceStore;
+  const email = useUserStore(s => s.email);
+
   const [workspace, setWorkspace] = useState<any>(null);
   const [description, setDescription] = useState('');
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
@@ -27,35 +31,28 @@ export const WorkspaceInfoPage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isExitModalOpen, setExitModalOpen] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
 
   const isValid = description.trim() !== '';
   const navigate = useNavigate();
-  const { setWorkspaceStore } = useWorkspaceStore.getState();
 
   const fetchWorkspaceInfo = async () => {
-    try {
-      const res = await fetchMyWorkspaces();
-      console.log('워크스페이스 목록:', res);
-      const target = res.find((ws: any) => ws.slug === workspaceSlug);
-
-      if (!target) {
-        toast.error('해당 주소의 워크스페이스를 찾을 수 없습니다.');
-        return;
-      }
-      setWorkspace(target);
-      setDescription(target.description);
-      setVisibility(target.isPublic ? 'public' : 'private');
-      localStorage.setItem('workspaceSlug', target.slug);
-
-      setWorkspaceStore({
-        workspaceName: target.name,
-        workspaceSlug: target.slug,
-        workspaceId: target.id,
-        profileFileUrl: target.profileFileUrl,
-      });
-    } catch (err) {
-      console.error('워크스페이스 정보 불러오기 실패:', err);
+    const res = await fetchMyWorkspaces();
+    const target = res.find((ws: any) => ws.slug === workspaceSlug);
+    if (!target) {
+      toast.error('해당 주소의 워크스페이스를 찾을 수 없습니다.');
+      return;
     }
+    setWorkspace(target);
+    setDescription(target.description);
+    setVisibility(target.isPublic ? 'public' : 'private');
+    localStorage.setItem('workspaceSlug', target.slug);
+    setWorkspaceStore({
+      workspaceName: target.name,
+      workspaceSlug: target.slug,
+      workspaceId: target.id,
+      profileFileUrl: target.profileFileUrl,
+    });
   };
 
   useEffect(() => {
@@ -64,9 +61,17 @@ export const WorkspaceInfoPage = () => {
       navigate('/workspace');
       return;
     }
-
     fetchWorkspaceInfo();
-  }, []);
+  }, [workspaceSlug]);
+
+  useEffect(() => {
+    if (!workspaceId || !email) return;
+    (async () => {
+      const members = await getWorkspaceMembers(workspaceId);
+      const me = members.find((m: any) => m.email === email);
+      setIsOwner((me?.positionType ?? '').toUpperCase() === 'OWNER');
+    })();
+  }, [workspaceId, email]);
 
   const handleImageSelect = ({
     file_id,
@@ -94,7 +99,7 @@ export const WorkspaceInfoPage = () => {
       });
       toast.success('저장되었습니다.');
       await fetchWorkspaceInfo();
-    } catch (error) {
+    } catch {
       toast.error('저장 실패하였습니다.');
     }
   };
@@ -104,12 +109,10 @@ export const WorkspaceInfoPage = () => {
       if (!workspaceId) return;
       await deleteWorkspace(workspaceId.toString());
       toast.success('워크스페이스가 삭제되었습니다.');
-
       useWorkspaceStore.getState().clearWorkspace();
       setDeleteModalOpen(false);
       navigate('/workspace');
     } catch (error: any) {
-      console.error('삭제 실패:', error);
       if (error?.response?.status === 403) {
         toast.error('삭제 권한이 없습니다. OWNER만 삭제할 수 있습니다.');
       } else {
@@ -169,11 +172,12 @@ export const WorkspaceInfoPage = () => {
               사진 선택
             </Button>
             {isModalOpen && (
-              <ImageUpload onClose={() => setModalOpen(false)} onImageSelect={handleImageSelect} />
+              <ImageUpload
+                onClose={() => setModalOpen(false)}
+                onImageSelect={handleImageSelect}
+                initialImageUrl={profileFileUrl}
+              />
             )}
-            <span style={{ color: color.textTertiary, fontSize: '14px' }}>
-              {fileName || '선택된 파일 없음'}
-            </span>
           </S.PhotoUploader>
         </S.PhotoWrapper>
       </S.PhotoGroup>
@@ -222,7 +226,14 @@ export const WorkspaceInfoPage = () => {
           워크스페이스 나가기
         </Button>
         <S.SubButtonWrapper>
-          <Button $variant="neutralOutlined" size="sm" onClick={() => navigate(-1)}>
+          <Button
+            $variant="neutralOutlined"
+            size="sm"
+            onClick={() => {
+              fetchWorkspaceInfo();
+              toast.error('변경사항이 취소되었습니다.');
+            }}
+          >
             취소
           </Button>
           <Button
@@ -238,32 +249,21 @@ export const WorkspaceInfoPage = () => {
 
       {isExitModalOpen && (
         <WorkspaceExit
-          isOwner={workspace?.role === 'OWNER'}
+          isOwner={isOwner}
           onClose={() => setExitModalOpen(false)}
           onExit={async () => {
             try {
-              const email = localStorage.getItem('email');
-              if (!email || !workspaceId) {
-                throw new Error('이메일 또는 워크스페이스 ID가 없습니다.');
-              }
-
-              await exitWorkspace({
-                workspaceId: workspaceId.toString(),
-                email,
-              }); // ← API 요청
-
+              const localEmail = localStorage.getItem('email');
+              if (!localEmail || !workspaceId) return;
+              await exitWorkspace({ workspaceId: workspaceId.toString(), email: localEmail });
               localStorage.removeItem('workspaceId');
               localStorage.removeItem('workspaceSlug');
               localStorage.removeItem('workspaceName');
-
               setExitModalOpen(false);
-              navigate('/workspace', {
-                replace: true,
-              });
+              navigate('/workspace', { replace: true });
               window.location.reload();
-            } catch (err) {
-              console.error('워크스페이스 나가기 실패:', err);
-              alert('워크스페이스 나가기에 실패했습니다.');
+            } catch {
+              toast.error('워크스페이스 나가기에 실패했습니다.');
             }
           }}
         />
@@ -271,6 +271,3 @@ export const WorkspaceInfoPage = () => {
     </S.Container>
   );
 };
-function long(profileFileId: string): string {
-  throw new Error('Function not implemented.');
-}

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TicketDropdownStore } from "@/stores/ticketStore";
-import { OutsideClick } from '@/utils/OutsideClick';
+import { TicketDropdownStore } from '@/stores/ticketStore';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { PortalDropdown } from '@/utils/PortalDropdown';
 import * as S from './StatusDropdown.Style';
 import type { Status } from '@/types/filter';
@@ -34,7 +34,7 @@ export const StatusDropdown = ({ ticketId }: { ticketId: number }) => {
   const currentStatus = ticket?.status ?? 'TODO';
   const isOpen = openDropdown?.ticketId === ticketId && openDropdown.field === 'status';
 
-  OutsideClick(ref, () => isOpen && setOpenDropdown(null));
+  useOutsideClick(ref, () => isOpen && setOpenDropdown(null));
 
   const handleSelect = (status: Status) => {
     updateTicketStatus(ticketId, status);

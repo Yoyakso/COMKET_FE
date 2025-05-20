@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TicketDropdownStore } from "@/stores/ticketStore";
+import { TicketDropdownStore } from '@/stores/ticketStore';
 import { PRIORITY_COLORS } from './PriorityDropdown.Style';
 import * as S from './PriorityDropdown.Style';
-import { OutsideClick } from '@/utils/OutsideClick';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 import type { Priority } from '@/types/filter';
 import { PortalDropdown } from '@/utils/PortalDropdown';
 
@@ -26,7 +26,7 @@ export const PriorityDropdown = ({ ticketId }: { ticketId: number }) => {
   const currentPriority = ticket?.priority ?? 'LOW';
   const isOpen = openDropdown?.ticketId === ticketId && openDropdown.field === 'priority';
 
-  OutsideClick(ref, () => isOpen && setOpenDropdown(null));
+  useOutsideClick(ref, () => isOpen && setOpenDropdown(null));
 
   const handleSelect = (priority: Priority) => {
     updateTicketPriority(ticketId, priority);
