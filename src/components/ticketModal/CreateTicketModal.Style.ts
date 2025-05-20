@@ -90,7 +90,7 @@ export const SelectField = styled.div`
   flex: 1;
   height: 40px;
   padding: 0 12px;
-  border: 1px solid ${color.basic0};
+  border: 1px solid ${color.basic100};
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -271,15 +271,16 @@ export const SubmitButton = styled.button`
   height: 48px;
   border: none;
   border-radius: 4px;
-  background-color: ${color.primaryDisabled};
+  background-color: ${color.teal500};
   font-size: 14px;
   font-weight: 500;
-  color: ${color.textTertiary};
+  color: white;
   cursor: pointer;
-  
-  &:hover {
-    background-color:${color.teal500};
-    color: white;
+
+  &:disabled {
+    background-color: ${color.primaryDisabled};
+    color: ${color.textTertiary};
+    cursor: not-allowed;
   }
 `
 

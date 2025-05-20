@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ChevronDown } from "lucide-react"
 import { MarkdownEditor } from "@components/common/markdownEditor/MarkdownEditor"
 import * as S from "./CreateTicketModal.Style"
@@ -23,9 +23,9 @@ interface CreateTicketModalProps {
   projectId: number
 }
 
-const TYPE_OPTIONS = ["개발", "디자인", "기획", "테스트"]; // 임시 지정
-const PRIORITY_OPTIONS = ["LOW", "MEDIUM", "HIGH", "URGENT"];
-const STATUS_OPTIONS = ["TODO", "IN_PROGRESS", "DONE", "HOLD", "DROP", "BACKLOG", "DELETED"];
+const TYPE_OPTIONS = ["개발", "디자인", "기획", "테스트", "버그", "회의/논의", "문서화", "기타"];
+const PRIORITY_OPTIONS = ["LOW", "MEDIUM", "HIGH"];
+const STATUS_OPTIONS = ["TODO", "IN_PROGRESS", "DONE", "HOLD", "DROP", "BACKLOG"];
 
 export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }: CreateTicketModalProps) => {
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
@@ -39,16 +39,28 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
     status: "",
     start_date: new Date().toISOString().split("T")[0],
     end_date: new Date().toISOString().split("T")[0],
-    assignee_member_id: null as number | null, // 임시 지정
+    assignee_member_id: null as number | null,
     requester: {
       id: memberId,
       name: name,
       avatar: name ? name.charAt(0) : "?",
     },
   })
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false)
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
+  const priorityRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
+  const typeRef = useRef<HTMLDivElement>(null);
+  const assigneeRef = useRef<HTMLDivElement>(null);
+  const isFormValid =
+    ticketData.title.trim() !== "" &&
+    ticketData.content.trim() !== "" &&
+    ticketData.type !== "" &&
+    ticketData.priority !== "" &&
+    ticketData.status !== "" &&
+    ticketData.assignee_member_id !== null;
 
   useEffect(() => {
     if (name && memberId) {
@@ -109,6 +121,41 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
     }
   };
 
+  const scrollToRef = (ref: React.RefObject<HTMLDivElement>) => {
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const toggleDropdown = (
+    dropdown: "type" | "priority" | "status" | "assignee",
+    currentState: boolean
+  ) => {
+    setShowTypeDropdown(false);
+    setShowPriorityDropdown(false);
+    setShowStatusDropdown(false);
+    setShowAssigneeDropdown(false);
+
+    const shouldOpen = !currentState;
+
+    switch (dropdown) {
+      case "type":
+        setShowTypeDropdown(shouldOpen);
+        if (shouldOpen) scrollToRef(typeRef);
+        break;
+      case "priority":
+        setShowPriorityDropdown(shouldOpen);
+        if (shouldOpen) scrollToRef(priorityRef);
+        break;
+      case "status":
+        setShowStatusDropdown(shouldOpen);
+        if (shouldOpen) scrollToRef(statusRef);
+        break;
+      case "assignee":
+        setShowAssigneeDropdown(shouldOpen);
+        if (shouldOpen) scrollToRef(assigneeRef);
+        break;
+    }
+  };
+
   return (
     <S.ModalOverlay>
       <S.ModalContainer>
@@ -118,18 +165,28 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
 
         <S.ModalContent>
           <S.Form onSubmit={handleSubmit}>
-            <S.FormRow>
+            <S.FormRow ref={typeRef}>
               <S.FormLabel>유형</S.FormLabel>
-              <S.SelectField>
-                <select
-                  value={ticketData.type}
-                  onChange={(e) => setTicketData({ ...ticketData, type: e.target.value })}
-                >
-                  <option value="">선택</option>
-                  {TYPE_OPTIONS.map((type) => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
+              <S.SelectField onClick={() => toggleDropdown("type", showTypeDropdown)}>
+                <S.AssigneeText>
+                  {ticketData.type || "유형 선택"}
+                </S.AssigneeText>
+                <ChevronDown size={16} />
+                {showTypeDropdown && (
+                  <S.DropdownMenu>
+                    {TYPE_OPTIONS.map((type) => (
+                      <S.DropdownItem
+                        key={type}
+                        onClick={() => {
+                          setTicketData({ ...ticketData, type });
+                          setShowTypeDropdown(false);
+                        }}
+                      >
+                        {type}
+                      </S.DropdownItem>
+                    ))}
+                  </S.DropdownMenu>
+                )}
               </S.SelectField>
             </S.FormRow>
 
@@ -152,9 +209,9 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
               </S.EditorWrapper>
             </S.FormRow>
 
-            <S.FormRow>
+            <S.FormRow ref={priorityRef}>
               <S.FormLabel>우선 순위</S.FormLabel>
-              <S.SelectField onClick={() => setShowPriorityDropdown((prev) => !prev)}>
+              <S.SelectField onClick={() => toggleDropdown("priority", showPriorityDropdown)}>
                 <PriorityBadge priority={ticketData.priority as any} />
                 <ChevronDown size={16} />
                 {showPriorityDropdown && (
@@ -175,9 +232,9 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
               </S.SelectField>
             </S.FormRow>
 
-            <S.FormRow>
+            <S.FormRow ref={statusRef}>
               <S.FormLabel>상태</S.FormLabel>
-              <S.SelectField onClick={() => setShowStatusDropdown((prev) => !prev)}>
+              <S.SelectField onClick={() => toggleDropdown("status", showStatusDropdown)}>
                 <StatusBadge status={ticketData.status as any} />
                 <ChevronDown size={16} />
                 {showStatusDropdown && (
@@ -205,16 +262,15 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
                 <S.UserOption>
                   <S.UserAvatar>{ticketData.requester.avatar}</S.UserAvatar>
                   <S.UserName>
-                    {ticketData.requester.name} [{ticketData.requester.id}]
+                    {ticketData.requester.name}
                   </S.UserName>
                 </S.UserOption>
-                <ChevronDown size={16} />
               </S.SelectField>
             </S.FormRow>
 
-            <S.FormRow>
+            <S.FormRow ref={assigneeRef}>
               <S.FormLabel>담당자</S.FormLabel>
-              <S.SelectField onClick={() => setShowAssigneeDropdown(prev => !prev)}>
+              <S.SelectField onClick={() => toggleDropdown("assignee", showAssigneeDropdown)}>
                 <S.AssigneeText>
                   {
                     members.find((m) => m.projectMemberId === ticketData.assignee_member_id)?.name || "담당자 선택"
@@ -228,7 +284,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
                         key={member.projectMemberId}
                         onClick={() => {
                           setTicketData({ ...ticketData, assignee_member_id: member.projectMemberId });
-                          setShowAssigneeDropdown(false); // 자동 닫힘
+                          setShowAssigneeDropdown(false);
                         }}
                       >
                         <S.UserOption>
@@ -248,7 +304,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
           <S.CancelButton type="button" onClick={onClose}>
             취소
           </S.CancelButton>
-          <S.SubmitButton type="submit" onClick={handleSubmit}>
+          <S.SubmitButton type="submit" onClick={handleSubmit} disabled={!isFormValid} className={!isFormValid ? "disabled" : ""}>
             등록
           </S.SubmitButton>
         </S.ModalFooter>
