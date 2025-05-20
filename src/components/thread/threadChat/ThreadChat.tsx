@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Send } from "lucide-react"
 import * as S from "./ThreadChat.Style"
 import { formatDateTime } from "@/utils/formatDateTime"
@@ -6,6 +6,7 @@ import { formatDateTime } from "@/utils/formatDateTime"
 export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }) => {
   const messagesEndRef = useRef(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [isComposing, setIsComposing] = useState(false)
 
   useEffect(() => {
     scrollToBottom()
@@ -15,8 +16,8 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault()
       if (newMessage.trim()) {
         sendMessage()
@@ -47,7 +48,14 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
                 <S.SenderName $isCurrentUser={message.isCurrentUser}>{message.senderName}</S.SenderName>
                 <S.MessageBubbleContainer $isCurrentUser={message.isCurrentUser}>
                   <S.MessageBubble $isCurrentUser={message.isCurrentUser}>
-                    <S.MessageContent>{message.content}</S.MessageContent>
+                    <S.MessageContent>
+                      {message.content.split("\n").map((line, i) => (
+                        <span key={i}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </S.MessageContent>
                   </S.MessageBubble>
                   <S.MessageTime $isCurrentUser={message.isCurrentUser}>
                     {formatDateTime(message.sentAt)}
@@ -66,10 +74,11 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
 
       <S.MessageInputContainer>
         <S.MessageInput
-          placeholder="메시지를 입력하세요."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyDown}
+          onCompositionStart={() => setIsComposing(true)}
+          onCompositionEnd={() => setIsComposing(false)}
         />
         <S.SendButton onClick={sendMessage} disabled={!newMessage || !newMessage.trim()}>
           <Send size={16} />
