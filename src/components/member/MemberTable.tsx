@@ -3,6 +3,7 @@ import * as S from './MemberTable.Style';
 import { MemberRow } from './MemberRow';
 import type { MemberData } from '@/types/member';
 import { ChevronDown, ChevronUp } from '@/assets/icons';
+import { MemberDetailPanel } from '@/components/memberDetailPanel/MemberDetailPanel';
 
 interface MemberTableProps {
   members: MemberData[];
@@ -15,6 +16,7 @@ type SortDirection = 'asc' | 'desc';
 export const MemberTable = ({ members, onUpdateMember }: MemberTableProps) => {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -131,10 +133,14 @@ export const MemberTable = ({ members, onUpdateMember }: MemberTableProps) => {
               key={`${member.id}-${index}`}
               member={member}
               onUpdateMember={onUpdateMember}
+              onClickDetail={id => setSelectedMemberId(id)}
             />
           ))}
         </S.TableBody>
       </S.Table>
+      {selectedMemberId !== null && (
+        <MemberDetailPanel memberId={selectedMemberId} onClose={() => setSelectedMemberId(null)} />
+      )}
     </S.TableContainer>
   );
 };

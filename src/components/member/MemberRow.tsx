@@ -8,10 +8,12 @@ import { formatDate } from '@/utils/dateFormat';
 import { deleteWorkspaceMember, updateWorkspaceMember } from '@/api/Member';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { toast } from 'react-toastify';
+import { MemberDetailPanel } from '@/components/memberDetailPanel/MemberDetailPanel';
 
 interface MemberRowProps {
   member: MemberData;
   onUpdateMember: (email: string, newRole: 'OWNER' | 'ADMIN' | 'MEMBER') => void;
+  onClickDetail?: (memberId: number) => void;
 }
 
 const translateRole = (positionType: string) => {
@@ -50,7 +52,7 @@ const reverseRoleMap = Object.fromEntries(Object.entries(roleMap).map(([eng, kor
 
 const roles = Object.values(roleMap);
 
-export const MemberRow = ({ member, onUpdateMember }: MemberRowProps) => {
+export const MemberRow = ({ member, onUpdateMember, onClickDetail }: MemberRowProps) => {
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [currentRole, setCurrentRole] = useState(translateRole(member.positionType));
   const [activeDropdownId, setActiveDropdownId] = useState<number | null>(null);
@@ -86,6 +88,7 @@ export const MemberRow = ({ member, onUpdateMember }: MemberRowProps) => {
     };
   }, []);
 
+  console.log('멤버:', member);
   const toggleMemberDeleteDropdown = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
     setShowRoleDropdown(false);
@@ -146,7 +149,12 @@ export const MemberRow = ({ member, onUpdateMember }: MemberRowProps) => {
         <S.Cell>
           <S.UserInfo>
             <S.UserAvatar color={color}>{member.name?.[0] ?? '?'}</S.UserAvatar>
-            <S.UserName>
+            <S.UserName
+              onClick={() => {
+                onClickDetail(member.workspaceMemberid);
+              }}
+              style={{ cursor: 'pointer' }}
+            >
               {member.name} [{member.email.split('@')[0]}]
             </S.UserName>
           </S.UserInfo>
