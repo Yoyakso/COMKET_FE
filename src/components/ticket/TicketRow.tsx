@@ -92,7 +92,10 @@ export const TicketRow = ({
 
       {isExpanded &&
         ticket.subtickets?.map(sub => (
-          <S.SubticketRow key={sub.id}>
+          <S.SubticketRow key={sub.id}
+            onClick={() => onTicketClick?.(sub)}
+            style={{ cursor: 'pointer' }}
+          >
             <S.SubticketCell />
             <S.SubticketCell>
               <CheckBox
