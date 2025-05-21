@@ -202,7 +202,10 @@ export const TicketDashboardPage = () => {
               onDeleteTickets={() => setShowDeleteModal(true)}
             />
           ) : (
-            <TicketBoardView onTicketClick={handleTicketClick} />
+            <TicketBoardView
+              ticketList={ticketList}
+              onTicketClick={handleTicketClick}
+            />
           )}
         </S.Wrapper>
 
