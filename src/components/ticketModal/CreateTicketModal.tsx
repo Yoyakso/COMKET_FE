@@ -9,7 +9,7 @@ import { getProjectMembers } from "@/api/Project"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
 import { useUserStore } from "@/stores/userStore"
 import { toast } from "react-toastify"
-import { Ticket } from '@/types/ticket';
+import { mapTicketFromResponse } from "@/utils/ticketMapper"
 
 interface Member {
   memberId: number
@@ -96,7 +96,6 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("제출 데이터:", ticketData);
     const dto: any = {
       ticket_name: ticketData.title,
       description: ticketData.content,
@@ -110,36 +109,10 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
     if (typeof ticketData.parentTicketId === "number") {
       dto.parent_ticket_id = ticketData.parentTicketId;
     }
-    console.log("dto", dto)
     try {
-      const response = await createTicket(projectName, dto);
-      const mappedTicket: Ticket = {
-        id: response.id,
-        title: response.ticket_name,
-        description: response.description,
-        type: response.ticket_type,
-        priority: response.ticket_priority,
-        status: response.ticket_state,
-        startDate: response.start_date,
-        endDate: response.end_date,
-        subticketCount: 0,
-        subtickets: [],
-        parentId: response.parent_ticket_id,
-        threadCount: 0,
-        assignee: {
-          name: members.find(m => m.projectMemberId === ticketData.assignee_member_id)?.name || '',
-          email: '',
-          profileUrl: '',
-          nickname: ''
-        },
-        writer: {
-          name: ticketData.requester.name,
-          email: '',
-          profileUrl: '',
-          nickname: ''
-        }
-      };
-      onSubmit(mappedTicket);
+      const response = await createTicket(projectName, dto)
+      const mappedTicket = mapTicketFromResponse(response)
+      onSubmit(mappedTicket)
       toast.success("티켓 생성이 완료되었습니다.")
       onClose();
     } catch (err) {

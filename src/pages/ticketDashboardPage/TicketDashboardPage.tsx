@@ -11,15 +11,15 @@ import { Ticket } from '@/types/ticket';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
 import { getProjectById, getProjectMembers } from '@/api/Project';
-import { getTicketsByProjectName } from '@/api/Ticket';
+import { getTicketsByProjectName, getTicketById } from '@/api/Ticket';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
-import { TicketType } from '../../types/filter';
 import { MemberData } from '@/types/member';
 import { TicketDropdownStore } from '@/stores/ticketStore';
 import { EmptyTicket } from '@/components/ticket/EmptyTicket';
 import { deleteTickets, deleteTicket } from '@/api/Ticket';
 import { DeleteModal } from '@/components/common/modal/DeleteModal';
 import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
+import { mapTicketFromResponse } from "@/utils/ticketMapper";
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
@@ -68,44 +68,14 @@ export const TicketDashboardPage = () => {
       if (!projectName) return;
       try {
         const tickets = await getTicketsByProjectName(projectName);
-        const rawTickets: Ticket[] = tickets.map((ticket: any) => {
-          const assignee = members.find(m => m.id === ticket.assignee_member_id);
-          const writer = members.find(m => m.id === ticket.creator_member_id);
-
-          return {
-            id: ticket.id,
-            title: ticket.ticket_name,
-            type: ticket.ticket_type as TicketType,
-            description: ticket.description,
-            assignee: {
-              nickname: '',
-              profileUrl: '',
-              name: assignee?.name || '',
-              email: assignee?.email || '',
-            },
-            threadCount: 0,
-            priority: ticket.ticket_priority,
-            status: ticket.ticket_state,
-            startDate: ticket.start_date,
-            endDate: ticket.end_date,
-            subticketCount: ticket.sub_ticket_count,
-            subtickets: [],
-            parentId: ticket.parent_ticket_id ?? undefined,
-            writer: {
-              nickname: '',
-              profileUrl: '',
-              name: writer?.name || '',
-              email: writer?.email || '',
-            },
-          };
-        });
+        const rawTickets: Ticket[] = tickets.map((t: any) => mapTicketFromResponse(t));
         const parentTickets = rawTickets.filter(t => t.parentId === undefined);
         const childTickets = rawTickets.filter(t => t.parentId !== undefined);
         const nestedTickets = parentTickets.map(parent => ({
           ...parent,
           subtickets: childTickets.filter(child => child.parentId === parent.id),
         }));
-        console.log("티켓 목록", ticketList)
+
         setTickets(nestedTickets);
         setTicketList(nestedTickets);
       } catch (e) {
@@ -114,7 +84,7 @@ export const TicketDashboardPage = () => {
     };
 
     fetchTickets();
-  }, [projectName, members]);
+  }, [projectName]);
 
   const handleTicketClick = (ticket: Ticket) => {
     if (!projectId) return;
@@ -128,7 +98,18 @@ export const TicketDashboardPage = () => {
   };
 
   const handleTicketCreate = (newTicket: Ticket) => {
-    setTicketList(prev => [newTicket, ...prev]);
+    if (newTicket.parentId) {
+      setTicketList(prev =>
+        prev.map(ticket =>
+          ticket.id === newTicket.parentId
+            ? { ...ticket, subtickets: [...ticket.subtickets, newTicket] }
+            : ticket
+        )
+      );
+    } else {
+      setTicketList(prev => [newTicket, ...prev]);
+    }
+
     setIsModalOpen(false);
   };
 
@@ -159,7 +140,6 @@ export const TicketDashboardPage = () => {
     console.log('이동:', direction, '->', ticketList[newIndex].id);
     setSelectedTicket(ticketList[newIndex]);
   };
-
 
   const handleBulkDelete = async () => {
     if (!projectName || selectedIds.length === 0) return;
