@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import * as S from './InviteCodePage.Style';
 import { InviteCode } from '@components/common/textInput/InviteCode';
 import { Button } from '@components/common/button/Button';
@@ -25,6 +25,7 @@ const Spinner = styled(SpinnerIcon)`
 
 export const InviteCodePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [code, setCode] = useState<string>('');
   const [workspace, setWorkspace] = useState<DropdownOption | null>(null);
 
@@ -37,6 +38,15 @@ export const InviteCodePage = () => {
     isSuccess: false,
     errorType: 'none',
   });
+
+  useEffect(() => {
+    const codeFromUrl = searchParams.get('code');
+    if (codeFromUrl) {
+      localStorage.setItem('inviteCode', codeFromUrl);
+      setCode(codeFromUrl);
+      handleComplete(codeFromUrl);
+    }
+  }, []);
 
   const handleCodeChange = (newCode: string) => {
     setCode(newCode);
@@ -128,6 +138,7 @@ export const InviteCodePage = () => {
           <S.Label>초대 코드</S.Label>
           <S.InviteCodeWrapper>
             <InviteCode
+              value={code}
               onComplete={handleComplete}
               size="md"
               onStatusChange={status => setCodeStatus(status)}

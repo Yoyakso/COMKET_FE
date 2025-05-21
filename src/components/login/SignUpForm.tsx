@@ -1,19 +1,19 @@
-import { useState } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import * as S from "./SignUpForm.Style"
-import { COMKET2 } from "@/assets/icons"
-import { CheckBox } from "../common/checkbox/CheckBox"
-import { checkVerificationCode, registerUser, sendVerificationCode } from "@api/Oauth"
-import { toast } from "react-toastify"
+import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import * as S from './SignUpForm.Style';
+import { COMKET2 } from '@/assets/icons';
+import { CheckBox } from '../common/checkbox/CheckBox';
+import { checkVerificationCode, registerUser, sendVerificationCode } from '@api/Oauth';
+import { toast } from 'react-toastify';
 
 export const SignUpForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState(location.state?.email || "")
-  const [code, setCode] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState(location.state?.email || '');
+  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isVerificationChecked, setIsVerificationChecked] = useState(false);
   const [agreements, setAgreements] = useState({
     all: false,
@@ -21,86 +21,85 @@ export const SignUpForm = () => {
     privacy: false,
     marketing: false,
     information: false,
-  })
+  });
 
   const handleAllAgreements = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked
+    const checked = e.target.checked;
     setAgreements({
       all: checked,
       service: checked,
       privacy: checked,
       marketing: checked,
       information: checked,
-    })
-  }
+    });
+  };
 
   const isFormValid =
-    name.trim() !== "" &&
-    email.trim() !== "" &&
-    code.trim() !== "" &&
+    name.trim() !== '' &&
+    email.trim() !== '' &&
+    code.trim() !== '' &&
     password.trim().length >= 8 &&
     confirmPassword === password &&
     agreements.service &&
     agreements.privacy;
 
   const isPasswordMismatch =
-    password !== "" && confirmPassword !== "" && password !== confirmPassword;
+    password !== '' && confirmPassword !== '' && password !== confirmPassword;
 
+  const handleAgreementChange =
+    (key: keyof typeof agreements) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const checked = e.target.checked;
 
-  const handleAgreementChange = (key: keyof typeof agreements) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked
+      // 개별 체크 반영
+      const updated = {
+        ...agreements,
+        [key]: checked,
+      };
 
-    // 개별 체크 반영
-    const updated = {
-      ...agreements,
-      [key]: checked,
-    }
+      // 전체 동의 여부 다시 계산
+      updated.all = updated.service && updated.privacy && updated.marketing && updated.information;
 
-    // 전체 동의 여부 다시 계산
-    updated.all =
-      updated.service && updated.privacy && updated.marketing && updated.information
-
-    setAgreements(updated)
-  }
+      setAgreements(updated);
+    };
 
   const handleSendVerification = async () => {
     if (!email) {
-      toast.error("이메일을 입력해 주세요.");
+      toast.error('이메일을 입력해 주세요.');
       return;
     }
 
     try {
       const res = await sendVerificationCode(email);
-      toast.info("인증번호가 발송되었습니다!");
-      console.log("이메일 인증 응답:", res);
+      toast.info('인증번호가 발송되었습니다!');
+      console.log('이메일 인증 응답:', res);
     } catch (err) {
-      toast.error("인증번호 발송에 실패했습니다. 이메일 주소를 확인해주세요.");
+      toast.error('인증번호 발송에 실패했습니다. 이메일 주소를 확인해주세요.');
     }
   };
 
   const handleCheckVerification = async () => {
     if (!code) {
-      toast.error("인증번호를 입력해 주세요.");
+      toast.error('인증번호를 입력해 주세요.');
     }
 
     try {
-      await checkVerificationCode(email, Number(code));
-      toast.success("인증번호 검증에 성공했습니다.");
+      await checkVerificationCode(email, String(code));
+      toast.success('인증번호 검증에 성공했습니다.');
       setIsVerificationChecked(true);
     } catch (err) {
-      toast.error("인증번호 검증에 실패했습니다. 인증번호를 확인해주세요.")
+      toast.error('인증번호 검증에 실패했습니다. 인증번호를 확인해주세요.');
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error("비밀번호가 일치하지 않습니다.");
+      toast.error('비밀번호가 일치하지 않습니다.');
       return;
     }
 
     if (!agreements.service || !agreements.privacy) {
-      toast.info("필수 약관에 동의해주세요.");
+      toast.info('필수 약관에 동의해주세요.');
       return;
     }
 
@@ -111,13 +110,13 @@ export const SignUpForm = () => {
         real_name: name,
       });
 
-      console.log("회원가입 성공:", res);
-      toast.success("회원가입이 완료되었습니다.")
-      navigate("/signup/complete");
+      console.log('회원가입 성공:', res);
+      toast.success('회원가입이 완료되었습니다.');
+      navigate('/signup/complete');
     } catch (err) {
-      toast.error("회원가입에 실패했습니다. 다시 시도해주세요.");
+      toast.error('회원가입에 실패했습니다. 다시 시도해주세요.');
     }
-  }
+  };
 
   return (
     <S.Container>
@@ -134,7 +133,7 @@ export const SignUpForm = () => {
             type="text"
             placeholder="이름을 입력해 주세요."
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={e => setName(e.target.value)}
           />
         </S.FormRow>
 
@@ -145,9 +144,11 @@ export const SignUpForm = () => {
               type="email"
               placeholder="이메일 주소를 입력해 주세요."
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
             />
-            <S.VerificationButton type="button" onClick={handleSendVerification}>인증번호 발송</S.VerificationButton>
+            <S.VerificationButton type="button" onClick={handleSendVerification}>
+              인증번호 발송
+            </S.VerificationButton>
           </S.EmailRow>
         </S.FormRow>
 
@@ -158,9 +159,16 @@ export const SignUpForm = () => {
             autoComplete="one-time-code"
             placeholder="인증번호를 입력해 주세요."
             value={code}
-            onChange={(e) => setCode(e.target.value)}
+            onChange={e => {
+              const onlyDigits = e.target.value.replace(/\D/g, '');
+              setCode(onlyDigits);
+            }}
           />
-          <S.VerificationButton type="button" onClick={handleCheckVerification} disabled={isVerificationChecked}>
+          <S.VerificationButton
+            type="button"
+            onClick={handleCheckVerification}
+            disabled={isVerificationChecked}
+          >
             인증번호 확인
           </S.VerificationButton>
         </S.FormRow>
@@ -172,7 +180,7 @@ export const SignUpForm = () => {
             autoComplete="new-password"
             placeholder="비밀번호를 입력해 주세요. (영문, 숫자 포함 8자 이상)"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
           />
         </S.FormRow>
 
@@ -183,13 +191,11 @@ export const SignUpForm = () => {
             autoComplete="new-password"
             placeholder="비밀번호를 다시 한번 더 입력해 주세요."
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={e => setConfirmPassword(e.target.value)}
           />
         </S.FormRow>
 
-        {isPasswordMismatch && (
-          <S.ErrorMessage>비밀번호가 일치하지 않습니다.</S.ErrorMessage>
-        )}
+        {isPasswordMismatch && <S.ErrorMessage>비밀번호가 일치하지 않습니다.</S.ErrorMessage>}
 
         <S.CheckboxContainer>
           <S.CheckboxRow>
@@ -208,7 +214,7 @@ export const SignUpForm = () => {
               $variant="primary"
               size="md"
               checked={agreements.service}
-              onChange={handleAgreementChange("service")}
+              onChange={handleAgreementChange('service')}
             />
             <S.TermLink href="#">약관 보기</S.TermLink>
           </S.TermRow>
@@ -219,7 +225,7 @@ export const SignUpForm = () => {
               $variant="primary"
               size="md"
               checked={agreements.privacy}
-              onChange={handleAgreementChange("privacy")}
+              onChange={handleAgreementChange('privacy')}
             />
             <S.TermLink href="#">약관 보기</S.TermLink>
           </S.TermRow>
@@ -230,7 +236,7 @@ export const SignUpForm = () => {
               $variant="primary"
               size="md"
               checked={agreements.marketing}
-              onChange={handleAgreementChange("marketing")}
+              onChange={handleAgreementChange('marketing')}
             />
             <S.TermLink href="#">약관 보기</S.TermLink>
           </S.TermRow>
@@ -241,14 +247,16 @@ export const SignUpForm = () => {
               $variant="primary"
               size="md"
               checked={agreements.information}
-              onChange={handleAgreementChange("information")}
+              onChange={handleAgreementChange('information')}
             />
             <S.TermLink href="#">약관 보기</S.TermLink>
           </S.TermRow>
         </S.CheckboxContainer>
 
-        <S.SignupButton type="submit" onClick={handleSubmit} disabled={!isFormValid}>회원가입</S.SignupButton>
+        <S.SignupButton type="submit" onClick={handleSubmit} disabled={!isFormValid}>
+          회원가입
+        </S.SignupButton>
       </S.Form>
     </S.Container>
-  )
-}
+  );
+};
