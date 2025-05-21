@@ -22,7 +22,6 @@ export const ThreadInfo = ({ ticket }) => (
       <S.InfoTitle>진행 상태</S.InfoTitle>
       <S.InfoContent>
         <S.StatusBadgeContainer>
-          {/* <S.StatusBadge $status={ticket.status}>{ticket.status}</S.StatusBadge> */}
           <StatusBadge status={ticket.status} />
         </S.StatusBadgeContainer>
       </S.InfoContent>
