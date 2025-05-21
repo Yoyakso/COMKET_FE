@@ -20,16 +20,16 @@ export const GNBContainer = styled.div`
 
 export const MainContainer = styled.div`
   display: flex;
-  height: calc(100vh - 72px);
+  height: 100vh;
   padding-top: 72px;
-  overflow: hidden;
+  box-sizing: border-box;
 `
 
 export const LNBContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 60px;
+  top: 72px;
   left: 0;
   height: calc(100vh - 72px);
   z-index: 90;
@@ -37,17 +37,21 @@ export const LNBContainer = styled.div`
 
 export const ContentContainer = styled.div`
   display: flex;
-  gap: 16px;
-  height: calc(100% - 72px);
-  padding: 32px;
-  margin-left: 150px;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 14px;
+  margin-left: 260px;
+  box-sizing: border-box;
   overflow: hidden;
 `
 
 export const PageHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  padding: 16px;
+  height: 60px;
+  box-sizing: border-box;
 `
 
 export const BackButton = styled.button`
@@ -68,10 +72,18 @@ export const BackButton = styled.button`
 `
 
 export const PageTitle = styled.h1`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: ${color.textPrimary};
   margin-left: 15px;
+`
+
+export const ContentBody = styled.div`
+  display: flex;
+  flex: 1;
+  gap: 16px;
+  padding: 0 32px 32px;
+  overflow: auto;
 `
 
 export const LeftColumn = styled.div`

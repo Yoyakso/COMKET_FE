@@ -1,7 +1,7 @@
-import axios from "axios"
+import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL
-const REDIRECT_URI = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+const REDIRECT_URI = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI;
 
 /**
  * Google OAuth2 로그인 요청
@@ -9,7 +9,6 @@ const REDIRECT_URI = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI
  * @returns 백엔드에서 받은 응답 데이터
  */
 export const googleLogin = async (code: string) => {
-
   try {
     localStorage.clear();
 
@@ -17,44 +16,38 @@ export const googleLogin = async (code: string) => {
       params: {
         code,
         redirect: REDIRECT_URI,
-      }
-    })
-    return response.data
+      },
+    });
+    return response.data;
   } catch (error: any) {
-    console.error("Google OAuth 로그인 실패:", error)
-    throw error
+    console.error('Google OAuth 로그인 실패:', error);
+    throw error;
   }
-}
+};
 
 /**
  * 직접 로그인
  * @param param
- * @returns 
+ * @returns
  */
-export const logIn = async ({
-  email,
-  password,
-}: {
-  email: string
-  password: string
-}) => {
+export const logIn = async ({ email, password }: { email: string; password: string }) => {
   try {
     const response = await axios.post(`${BASE_URL}/api/v1/auth/login`, {
       email,
       password,
-    })
+    });
 
-    const { accessToken } = response.data
+    const { accessToken } = response.data;
     if (accessToken) {
-      localStorage.setItem("accessToken", accessToken)
+      localStorage.setItem('accessToken', accessToken);
     }
 
-    return response.data
+    return response.data;
   } catch (error) {
-    console.error("로그인 실패:", error)
-    throw error
+    console.error('로그인 실패:', error);
+    throw error;
   }
-}
+};
 
 /**
  * 이메일로 회원가입하기
@@ -62,7 +55,7 @@ export const logIn = async ({
  * @param password 사용자가 입력한 비밀번호
  * @param nickname 닉네임
  * @param real_name 본명
- * @returns 
+ * @returns
  */
 export const registerUser = async ({
   email,
@@ -81,22 +74,22 @@ export const registerUser = async ({
     });
     return response.data;
   } catch (error) {
-    console.error("회원가입 실패:", error);
+    console.error('회원가입 실패:', error);
     throw error;
   }
 };
 
 /**
  * 검증코드 전송
- * @param email 
- * @returns 
+ * @param email
+ * @returns
  */
 export const sendVerificationCode = async (email: string) => {
   try {
     const response = await axios.post(`${BASE_URL}/api/v1/email/verify/send`, { email });
     return response.data;
   } catch (error) {
-    console.error("이메일 인증번호 발송 실패:", error);
+    console.error('이메일 인증번호 발송 실패:', error);
     throw error;
   }
 };
@@ -105,26 +98,26 @@ export const sendVerificationCode = async (email: string) => {
  * 코드 검증 요청
  * @param email
  * @param code
- * @returns 
+ * @returns
  */
-export const checkVerificationCode = async (email: string, code: number) => {
+export const checkVerificationCode = async (email: string, code: string) => {
   try {
     const response = await axios.post(`${BASE_URL}/api/v1/email/verify/code`, { email, code });
     return response.data;
   } catch (error) {
-    console.error("이메일 인증번호 검증 실패", error);
+    console.error('이메일 인증번호 검증 실패', error);
     throw error;
   }
-}
+};
 
 /**
  * 로그아웃
- * @returns 
+ * @returns
  */
 export const logOut = async () => {
   try {
-    const token = localStorage.getItem("accessToken")
-    if (!token) throw new Error("로그인 토큰이 없습니다.")
+    const token = localStorage.getItem('accessToken');
+    if (!token) throw new Error('로그인 토큰이 없습니다.');
 
     const response = await axios.post(`${BASE_URL}/api/v1/auth/logout`, null, {
       headers: {
@@ -134,7 +127,7 @@ export const logOut = async () => {
 
     return response.data;
   } catch (error) {
-    console.error("로그아웃 실패", error);
+    console.error('로그아웃 실패', error);
     throw error;
   }
-}
+};

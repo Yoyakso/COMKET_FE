@@ -22,7 +22,6 @@ export const MemberPage = () => {
     const fetchMembers = async () => {
       try {
         const data = await getWorkspaceMembers(workspaceId);
-        console.log(data);
         setMembers(data);
       } catch (error) {
         console.error('멤버 불러오기 실패:', error);
@@ -32,6 +31,19 @@ export const MemberPage = () => {
 
     fetchMembers();
   }, []);
+
+  useEffect(() => {
+    const filtered = members.filter(member => {
+      const roleMatch = activeFilter.roles.includes(member.positionType.toLowerCase());
+      const stateMatch = activeFilter.states.includes(member.state.toLowerCase());
+      return roleMatch && stateMatch;
+    });
+    setFilteredMembers(filtered);
+  }, [members, activeFilter]);
+
+  const handleFilter = ({ roles, states }: { roles: string[]; states: string[] }) => {
+    setActiveFilter({ roles, states });
+  };
 
   useEffect(() => {
     if (members.length > 0) {
@@ -50,16 +62,16 @@ export const MemberPage = () => {
     }
   };
 
-  const handleFilter = ({ roles, states }: { roles: string[]; states: string[] }) => {
-    setActiveFilter({ roles, states });
+  // const handleFilter = ({ roles, states }: { roles: string[]; states: string[] }) => {
+  //   setActiveFilter({ roles, states });
 
-    const filtered = members.filter(member => {
-      const roleMatch = roles.includes(member.positionType.toLowerCase());
-      const stateMatch = states.includes(member.state.toLowerCase());
-      return roleMatch && stateMatch;
-    });
-    setFilteredMembers(filtered);
-  };
+  //   const filtered = members.filter(member => {
+  //     const roleMatch = roles.includes(member.positionType.toLowerCase());
+  //     const stateMatch = states.includes(member.state.toLowerCase());
+  //     return roleMatch && stateMatch;
+  //   });
+  //   setFilteredMembers(filtered);
+  // };
 
   const finalFilteredMembers = filteredMembers.filter(member => {
     const nameMatch = member.name?.includes(searchQuery);

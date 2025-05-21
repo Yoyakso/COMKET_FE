@@ -1,42 +1,46 @@
-import { useState, useRef, useEffect } from "react"
-import * as S from "./MemberHeader.Style"
-import { Search } from "../common/search/Search"
-import { InviteModal } from "../workspace/InviteModal"
-import { Dropdown, type DropdownOption } from "@/components/common/dropdown/Dropdown"
+import { useState, useRef, useEffect } from 'react';
+import * as S from './MemberHeader.Style';
+import { Search } from '../common/search/Search';
+import { InviteModal } from '../workspace/InviteModal';
+import { Dropdown, type DropdownOption } from '@/components/common/dropdown/Dropdown';
+import { MemberData } from '@/types/member';
 
 interface MemberHeaderProps {
-  memberCount: number
-  onSearch: (query: string) => void
-  onFilter?: (filters: { roles: string[]; states: string[] }) => void
+  memberCount: number;
+  onSearch: (query: string) => void;
+  onFilter?: (filters: { roles: string[]; states: string[] }) => void;
+  onUpdateMemberList?: (members: MemberData[]) => void;
 }
 
-const allFilterValues = [
-  "owner", "admin", "member",
-  "active", "inactive", "removed"
-]
+const allFilterValues = ['owner', 'admin', 'member', 'active', 'inactive', 'removed'];
 
-export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderProps) => {
-  const [searchValue, setSearchValue] = useState("")
-  const [isInviteModalOpen, setInviteModalOpen] = useState(false)
-  const [selectedFilters, setSelectedFilters] = useState<string[]>(allFilterValues)
-  const filterButtonRef = useRef<HTMLDivElement>(null)
+export const MemberHeader = ({
+  memberCount,
+  onSearch,
+  onFilter,
+  onUpdateMemberList,
+}: MemberHeaderProps) => {
+  const [searchValue, setSearchValue] = useState('');
+  const [isInviteModalOpen, setInviteModalOpen] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(allFilterValues);
+  const filterButtonRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const roles = allFilterValues.filter(v => ["owner", "admin", "member"].includes(v))
-    const states = allFilterValues.filter(v => ["active", "inactive", "removed"].includes(v))
+    const roles = allFilterValues.filter(v => ['owner', 'admin', 'member'].includes(v));
+    const states = allFilterValues.filter(v => ['active', 'inactive', 'removed'].includes(v));
 
-    onFilter?.({ roles, states })
-  }, [])
+    onFilter?.({ roles, states });
+  }, []);
 
   const filterOptions: DropdownOption[] = [
-    { label: "워크스페이스 소유자", value: "owner", groupName: "역할" },
-    { label: "워크스페이스 관리자", value: "admin", groupName: "역할" },
-    { label: "일반 멤버", value: "member", groupName: "역할" },
+    { label: '워크스페이스 소유자', value: 'owner', groupName: '역할' },
+    { label: '워크스페이스 관리자', value: 'admin', groupName: '역할' },
+    { label: '일반 멤버', value: 'member', groupName: '역할' },
 
-    { label: "활성", value: "active", groupName: "계정 상태" },
-    { label: "비활성", value: "inactive", groupName: "계정 상태" },
-    { label: "제거", value: "removed", groupName: "계정 상태" },
-  ]
+    { label: '활성', value: 'active', groupName: '계정 상태' },
+    { label: '비활성', value: 'inactive', groupName: '계정 상태' },
+    { label: '제거', value: 'removed', groupName: '계정 상태' },
+  ];
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value);
@@ -44,23 +48,23 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
   };
 
   const openInviteModal = () => {
-    setInviteModalOpen(true)
-  }
+    setInviteModalOpen(true);
+  };
   const closeInviteModal = () => {
-    setInviteModalOpen(false)
-  }
+    setInviteModalOpen(false);
+  };
 
   const handleFilterChange = (values: string | string[]) => {
-    if (!Array.isArray(values)) return
+    if (!Array.isArray(values)) return;
 
-    setSelectedFilters(values)
-    const roles = values.filter(v => ["owner", "admin", "member"].includes(v))
-    const states = values.filter(v => ["active", "inactive", "removed"].includes(v))
+    setSelectedFilters(values);
+    const roles = values.filter(v => ['owner', 'admin', 'member'].includes(v));
+    const states = values.filter(v => ['active', 'inactive', 'removed'].includes(v));
 
     if (onFilter) {
-      onFilter({ roles, states })
+      onFilter({ roles, states });
     }
-  }
+  };
 
   return (
     <S.HeaderContainer>
@@ -77,7 +81,7 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
                   onChange={handleFilterChange}
                   placeholder="필터"
                   size="sm"
-                  $variant={selectedFilters.length > 0 ? "activated" : "none"}
+                  $variant={selectedFilters.length > 0 ? 'activated' : 'none'}
                   type="group-check"
                   iconLeft={true}
                 />
@@ -100,7 +104,9 @@ export const MemberHeader = ({ memberCount, onSearch, onFilter }: MemberHeaderPr
         </S.RightSection>
       </S.HeaderTop>
 
-      {isInviteModalOpen && <InviteModal onClose={closeInviteModal} />}
+      {isInviteModalOpen && (
+        <InviteModal onClose={closeInviteModal} onUpdateMemberList={onUpdateMemberList} />
+      )}
     </S.HeaderContainer>
-  )
-}
+  );
+};

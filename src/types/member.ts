@@ -1,5 +1,5 @@
 export interface MemberData {
-  workspaceMemberId: number;
+  workspaceMemberid: number;
   id: number;
   name: string;
   email: string;

@@ -56,7 +56,7 @@ export const Router = createBrowserRouter([
         ),
       },
       {
-        path: 'invitecode',
+        path: '/workspace/invite',
         element: (
           <WorkspaceLayout>
             <InviteCodePage />
@@ -94,7 +94,7 @@ export const Router = createBrowserRouter([
         element: <AccountInfoPage />,
       },
       {
-        path: "/:projectId/tickets",
+        path: '/:projectId/tickets',
         element: <TicketDashboardPage />,
       },
       {

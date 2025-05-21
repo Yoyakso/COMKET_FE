@@ -13,6 +13,7 @@ export const useWebSocket = ({
 }) => {
   const socketRef = useRef<WebSocket | null>(null);
   const openedRef = useRef(false);
+  const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
 
   const connect = useCallback(() => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -29,6 +30,14 @@ export const useWebSocket = ({
     ws.onopen = () => {
       openedRef.current = true;
       console.log('WebSocket 연결됨');
+
+      heartbeatRef.current = setInterval(() => {
+        if (socketRef.current?.readyState === WebSocket.OPEN) {
+          const ping = JSON.stringify({ type: 'ping' });
+          socketRef.current.send(ping);
+          console.log('WebSocket ping 보냄:', ping);
+        }
+      }, 30 * 1000);
     };
 
     ws.onmessage = e => {
@@ -48,8 +57,15 @@ export const useWebSocket = ({
       if (!openedRef.current) {
         console.warn('onopen 전에 종료됨', e.code);
       } else {
-        console.log('WebSocket 정상 종료', e.code);
+        console.log('WebSocket 종료됨', e.code);
+
+        if (e.code === 1006) {
+          console.log('1006 비정상 종료 감지 → 재연결 시도');
+          setTimeout(() => connect(), 1000);
+        }
       }
+
+      if (heartbeatRef.current) clearInterval(heartbeatRef.current);
     };
   }, [ticketId, token, onMessage]);
 
@@ -62,6 +78,7 @@ export const useWebSocket = ({
   }, []);
 
   const disconnect = useCallback(() => {
+    if (heartbeatRef.current) clearInterval(heartbeatRef.current);
     socketRef.current?.close();
     socketRef.current = null;
     openedRef.current = false;

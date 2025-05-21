@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import * as S from './InviteModal.Style';
 import { ChevronDown } from '@assets/icons';
-import { inviteWorkspaceMembers } from '@/api/Member';
+import { inviteWorkspaceMembers, getWorkspaceMembers } from '@/api/Member';
 import { getColorFromString } from '@utils/avatarColor';
 import { toast } from 'react-toastify';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { MemberData } from '@/types/member';
 
 interface InviteType {
   id: string;
@@ -16,11 +17,12 @@ interface InviteType {
 
 interface InviteModalProps {
   onClose: () => void;
+  onUpdateMemberList?: (members: MemberData[]) => void;
 }
 
 type RoleType = '일반 멤버' | '워크스페이스 소유자' | '워크스페이스 관리자';
 
-export const InviteModal = ({ onClose }: InviteModalProps) => {
+export const InviteModal = ({ onClose, onUpdateMemberList }: InviteModalProps) => {
   const [email, setEmail] = useState<string>('');
   const [invitees, setInvitees] = useState<InviteType[]>([]);
   const [role, setRole] = useState<RoleType>('일반 멤버');
@@ -110,6 +112,8 @@ export const InviteModal = ({ onClose }: InviteModalProps) => {
       });
 
       toast.success('초대가 완료되었습니다.');
+      const updatedMembers = await getWorkspaceMembers(workspaceId);
+      onUpdateMemberList?.(updatedMembers);
       onClose();
     } catch (error: any) {
       const code = error?.response?.data?.code;
