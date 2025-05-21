@@ -6,7 +6,7 @@ interface Props {
 }
 
 export const UserStatusBadge = ({ email }: Props) => {
-  const status = useUserStatusStore(s => s.statusMap[email] || '오프라인');
+  const status = useUserStatusStore(s => s.statusMap[email] || '온라인');
 
   return (
     <S.Container>

@@ -109,12 +109,12 @@ export const ProjectTable = ({ projects, onViewProject, onDeleteProject }: Proje
                 {getSortIcon("name")}
               </S.HeaderContent>
             </S.HeaderCell>
-            <S.HeaderCell onClick={() => handleSort("id")}>
+            {/* <S.HeaderCell onClick={() => handleSort("id")}>
               <S.HeaderContent>
                 <span>프로젝트 ID</span>
                 {getSortIcon("id")}
               </S.HeaderContent>
-            </S.HeaderCell>
+            </S.HeaderCell> */}
             <S.HeaderCell onClick={() => handleSort("description")}>
               <S.HeaderContent>
                 <span>프로젝트 설명</span>

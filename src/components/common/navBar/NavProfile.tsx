@@ -13,7 +13,7 @@ export interface NavProfileProps {
 
 export function NavProfile({ name, defaultImage }: NavProfileProps) {
   const email = useUserStore(state => state.email);
-  const status = useUserStatusStore(state => state.statusMap[email] || '오프라인');
+  const status = useUserStatusStore(state => state.statusMap[email] || '온라인');
   const [image, setImage] = useState(defaultImage);
   const profileImg = useUserStore(state => state.profileFileUrl);
 
