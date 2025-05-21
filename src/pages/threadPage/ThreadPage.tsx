@@ -68,7 +68,7 @@ interface ThreadPageProps {
 export const ThreadPage = ({ }: ThreadPageProps) => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
-  const [actionItems, setActionItems] = useState<ActionItem[]>(SAMPLE_ACTION_ITEMS)
+  const [actionItems, setActionItems] = useState<ActionItem[] | null>(null)
   const [newMessage, setNewMessage] = useState("")
   const [aiSummary, setAiSummary] = useState<string | null>("AI 요약 내용은 곧 업데이트 될 예정입니다.")
   const token = localStorage.getItem("accessToken")
@@ -240,7 +240,14 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
               </S.LeftColumn>
 
               <S.RightColumn>
-                <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
+                {/* <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} /> */}
+                <ThreadAiSummary
+                  aiSummary={aiSummary}
+                  actionItems={actionItems ?? []}
+                  placeholderMessage={
+                    actionItems === null ? "액션아이템 추출 기능은 곧 업데이트 될 예정입니다." : undefined
+                  }
+                />
               </S.RightColumn>
             </S.ContentBody>
           </S.ContentContainer>
