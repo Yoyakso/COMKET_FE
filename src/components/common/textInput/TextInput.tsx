@@ -59,7 +59,7 @@ export const TextInput = ({
     <S.Container size={size} $state={safeState}>
       <S.InputBox size={size} $state={safeState} $focused={focused}>
         <S.StyledInput
-          type={isPassword && !showPassword ? 'text' : 'text'}
+          type={isPassword && !showPassword ? 'password' : 'text'}
           value={value}
           onChange={handleInputChange}
           placeholder={placeholder}
