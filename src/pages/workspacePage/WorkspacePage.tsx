@@ -72,7 +72,7 @@ export const WorkspacePage = () => {
               <S.Line />
             </S.DividerBox>
 
-            <Button $variant="tealFilled" size="lg" onClick={() => navigate('/workspaces/create')}>
+            <Button $variant="tealFilled" size="lg" onClick={() => navigate('/workspace/create')}>
               워크스페이스 생성
             </Button>
             <Button $variant="neutralOutlined" size="lg" onClick={() => navigate('/invite')}>

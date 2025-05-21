@@ -94,7 +94,7 @@ export const TicketTable = ({ tickets, onTicketClick, onTicketHover }: TicketTab
         : PRIORITY_ORDER[bPriority] - PRIORITY_ORDER[aPriority];
     }
     // 담당자/작성자 name 기준 정렬
-    if (sortKey === 'assignee' || sortKey === 'writer') {
+    if (sortKey === 'assignee_member' || sortKey === 'creator_member') {
       const aName = (aValue as { name?: string })?.name ?? '';
       const bName = (bValue as { name?: string })?.name ?? '';
       return sortOrder === 'asc' ? aName.localeCompare(bName) : bName.localeCompare(aName);
@@ -150,7 +150,7 @@ export const TicketTable = ({ tickets, onTicketClick, onTicketHover }: TicketTab
   }[] = [
       { key: 'expander', label: '', resizable: true, sortable: false, align: 'center' },
       { key: 'checkbox', label: '', resizable: true, sortable: false, align: 'center' },
-      { key: 'id', label: '티켓 ID', resizable: true, sortable: true, align: 'center' },
+      // { key: 'id', label: '티켓 ID', resizable: true, sortable: true, align: 'center' },
       { key: 'title', label: '티켓', resizable: true, sortable: true, align: 'left' },
       { key: 'type', label: '유형', resizable: true, sortable: true, align: 'center' },
       { key: 'assignee', label: '담당자', resizable: true, sortable: true, align: 'left' },

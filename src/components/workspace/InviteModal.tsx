@@ -20,7 +20,7 @@ interface InviteModalProps {
   onUpdateMemberList?: (members: MemberData[]) => void;
 }
 
-type RoleType = '일반 멤버' | '워크스페이스 소유자' | '워크스페이스 관리자';
+type RoleType = '일반 멤버' | '워크스페이스 관리자';
 
 export const InviteModal = ({ onClose, onUpdateMemberList }: InviteModalProps) => {
   const [email, setEmail] = useState<string>('');
@@ -88,10 +88,8 @@ export const InviteModal = ({ onClose, onUpdateMemberList }: InviteModalProps) =
     setGenerateLink(!generateLink);
   };
 
-  const mapRoleToPositionType = (role: RoleType): 'ADMIN' | 'OWNER' | 'MEMBER' => {
+  const mapRoleToPositionType = (role: RoleType): 'ADMIN' | 'MEMBER' => {
     switch (role) {
-      case '워크스페이스 소유자':
-        return 'OWNER';
       case '워크스페이스 관리자':
         return 'ADMIN';
       default:
@@ -180,9 +178,6 @@ export const InviteModal = ({ onClose, onUpdateMemberList }: InviteModalProps) =
             {isRoleOpen && (
               <S.DropdownMenu>
                 <S.DropdownItem onClick={() => selectRole('일반 멤버')}>일반 멤버</S.DropdownItem>
-                <S.DropdownItem onClick={() => selectRole('워크스페이스 소유자')}>
-                  워크스페이스 소유자
-                </S.DropdownItem>
                 <S.DropdownItem onClick={() => selectRole('워크스페이스 관리자')}>
                   워크스페이스 관리자
                 </S.DropdownItem>

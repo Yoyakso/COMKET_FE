@@ -40,7 +40,7 @@ export const ModalTitle = styled.h2`
 export const ModalContent = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 30px;
 `
 
 export const Form = styled.form`
@@ -315,4 +315,17 @@ export const DropdownItem = styled.li`
   & > span {
     margin-right: 8px;
   }
+`;
+
+export const DateRangeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const DateField = styled.input`
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
 `;

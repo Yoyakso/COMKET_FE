@@ -153,3 +153,10 @@ export const StatusBadge = styled.span<{ $status: string }>`
     }
   }};
 `
+
+export const PlaceholderMessage = styled.div`
+  padding: 16px;
+  text-align: center;
+  color: ${color.textSecondary};
+  font-size: 13px;
+`
