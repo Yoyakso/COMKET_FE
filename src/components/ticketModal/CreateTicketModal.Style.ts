@@ -316,3 +316,16 @@ export const DropdownItem = styled.li`
     margin-right: 8px;
   }
 `;
+
+export const DateRangeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const DateField = styled.input`
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+`;

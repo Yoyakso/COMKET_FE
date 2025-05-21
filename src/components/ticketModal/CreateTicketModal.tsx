@@ -239,6 +239,28 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
               </S.EditorWrapper>
             </S.FormRow>
 
+            <S.FormRow>
+              <S.FormLabel>기간</S.FormLabel>
+              <S.DateRangeWrapper>
+                <S.DateField
+                  type="date"
+                  value={ticketData.start_date}
+                  onChange={(e) =>
+                    setTicketData({ ...ticketData, start_date: e.target.value })
+                  }
+                />
+                <span>~</span>
+                <S.DateField
+                  type="date"
+                  value={ticketData.end_date}
+                  onChange={(e) =>
+                    setTicketData({ ...ticketData, end_date: e.target.value })
+                  }
+                />
+              </S.DateRangeWrapper>
+            </S.FormRow>
+
+
             <S.FormRow ref={priorityRef}>
               <S.FormLabel>우선 순위</S.FormLabel>
               <S.SelectField onClick={() => toggleDropdown("priority", showPriorityDropdown)}>
