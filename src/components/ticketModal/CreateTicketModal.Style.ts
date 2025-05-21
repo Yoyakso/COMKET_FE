@@ -40,7 +40,7 @@ export const ModalTitle = styled.h2`
 export const ModalContent = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 30px;
 `
 
 export const Form = styled.form`

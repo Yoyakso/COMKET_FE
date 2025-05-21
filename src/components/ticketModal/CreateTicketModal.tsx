@@ -62,8 +62,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
     ticketData.content.trim() !== "" &&
     ticketData.type !== "" &&
     ticketData.priority !== "" &&
-    ticketData.status !== "" &&
-    ticketData.assignee_member_id !== null;
+    ticketData.status !== ""
 
   useEffect(() => {
     if (name && memberId) {
@@ -97,10 +96,6 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!ticketData.assignee_member_id) {
-      toast.error("담당자를 선택해주세요.");
-      return;
-    }
     console.log("제출 데이터:", ticketData);
     const dto: any = {
       ticket_name: ticketData.title,
@@ -259,7 +254,6 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
                 />
               </S.DateRangeWrapper>
             </S.FormRow>
-
 
             <S.FormRow ref={priorityRef}>
               <S.FormLabel>우선 순위</S.FormLabel>
