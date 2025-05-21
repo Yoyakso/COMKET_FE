@@ -70,7 +70,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
   const [actionItems, setActionItems] = useState<ActionItem[]>(SAMPLE_ACTION_ITEMS)
   const [newMessage, setNewMessage] = useState("")
-  const [aiSummary, setAiSummary] = useState<string | null>()
+  const [aiSummary, setAiSummary] = useState<string | null>("AI 요약 내용은 곧 업데이트 될 예정입니다.")
   const token = localStorage.getItem("accessToken")
   const location = useLocation()
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
     console.log("ticket:", ticket)
     console.log("ticketId:", ticketId)
     console.log("projectName:", projectName)
-    if (!ticket && ticketId && projectName) {
+    if (ticketId && projectName) {
       const fetchTicket = async () => {
         try {
           const data = await getTicketById(Number(ticketId), projectName);
@@ -125,7 +125,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
 
       fetchTicket();
     }
-  }, [ticket, ticketId, projectName]);
+  }, [ticketId, projectName]);
 
   const handleMessage = useCallback((data: ThreadMessage | ThreadMessage[]) => {
     const normalizedMessages = Array.isArray(data) ? data : [data]
@@ -254,6 +254,13 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
           onClose={() => setIsCreateModalOpen(false)}
           onSubmit={(newTicket) => {
             setIsCreateModalOpen(false);
+            console.log("✅ newTicket:", newTicket);
+            navigate(`/${projectId}/tickets/${newTicket.id}/thread`, {
+              state: {
+                ticket: newTicket,
+                projectName,
+              },
+            });
           }}
         />
       )}
