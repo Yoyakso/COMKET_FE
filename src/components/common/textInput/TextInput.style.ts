@@ -37,24 +37,22 @@ export const InputBox = styled.div<{
       ${$state === 'enable'
         ? color.textPlaceholder24
         : $state === 'hover'
-        ? color.basic1000
-        : $state === 'focus' || $focused
-        ? color.basic1000
-        : $state === 'typing'
-        ? color.basic1000
-        : $state === 'activated'
-        ? color.textPlaceholder24
-        : $state === 'success'
-        ? color.success
-        : $state === 'error'
-        ? color.error
-        : $state === 'disabled' || $state === 'registered'
-        ? 'none'
-        : color.textPlaceholder24};
+          ? color.basic1000
+          : $state === 'focus' || $focused
+            ? color.basic1000
+            : $state === 'typing'
+              ? color.basic1000
+              : $state === 'activated'
+                ? color.textPlaceholder24
+                : $state === 'success'
+                  ? color.success
+                  : $state === 'error'
+                    ? color.error
+                    : $state === 'disabled' || $state === 'registered'
+                      ? 'none'
+                      : color.textPlaceholder24};
 
-    background-color: ${$state === 'disabled'
-      ? color.textPlaceholder32
-      : color.white};
+    background-color: ${$state === 'disabled' ? color.textPlaceholder32 : color.white};
   `}
 `;
 
@@ -72,8 +70,8 @@ export const StyledInput = styled.input<{ $state: string }>`
       $state === 'disabled'
         ? color.textTertiary
         : $state === 'registered'
-        ? 'transparent'
-        : color.textPlaceholder70};
+          ? 'transparent'
+          : color.textPlaceholder70};
   }
 `;
 
@@ -94,21 +92,6 @@ export const FakeInput = styled.div<{ size: string }>`
 `;
 
 export const ClearButton = styled.button<{ size: string }>`
-  position: absolute;
-  right: ${({ size }) => (size === 'sm' ? '33px' : '38px')};
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-
-  svg {
-    width: ${({ size }) => (size === 'sm' ? '16px' : '18px')};
-    height: ${({ size }) => (size === 'sm' ? '16px' : '18px')};
-  }
-`;
-
-export const RemoveButton = styled.button<{ size: string }>`
   position: absolute;
   right: ${({ size }) => (size === 'sm' ? '11px' : '15px')};
   background: none;
@@ -156,6 +139,5 @@ export const Clear2Button = styled.button<{ size: string }>`
 export const HelperText = styled.span<{ $state: string }>`
   margin-top: 6px;
   font-size: 12px;
-  color: ${({ $state }) =>
-  $state === 'error' ? color.error : color.textTertiary};
+  color: ${({ $state }) => ($state === 'error' ? color.error : color.textTertiary)};
 `;
