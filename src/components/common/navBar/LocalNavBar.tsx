@@ -112,7 +112,7 @@ export const LocalNavBar = ({
       )}
       <S.Divider />
       <S.NavProfileContainer>
-        <NavProfile name={name} defaultImage={profileImg} status="온라인" />
+        <NavProfile name={name} defaultImage={profileImg} />
       </S.NavProfileContainer>
     </S.NavContainer>
   );
