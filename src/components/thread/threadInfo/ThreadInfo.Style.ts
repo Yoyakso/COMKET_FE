@@ -9,6 +9,7 @@ export const InfoGrid = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 15px;
+  max-height: 180px;
 `
 
 export const InfoSection = styled.div`
@@ -56,41 +57,6 @@ export const StatusBadgeContainer = styled.div`
   display: flex;
   gap: 6px;
 `
-
-// export const StatusBadge = styled.span<{ $status: string }>`
-//   display: inline-flex;
-//   align-items: center;
-//   justify-content: center;
-//   padding: 2px 6px;
-//   border-radius: 4px;
-//   font-size: 11px;
-//   font-weight: 500;
-//   background-color: ${(props) => {
-//     switch (props.$status) {
-//       case "대기": return "#f3f4f6"
-//       case "진행중": return "#dbeafe"
-//       case "완료": return "#d1fae5"
-//       default: return "#f3f4f6"
-//     }
-//   }};
-//   color: ${(props) => {
-//     switch (props.$status) {
-//       case "대기": return "#4b5563"
-//       case "진행중": return "#1d4ed8"
-//       case "완료": return "#047857"
-//       default: return "#4b5563"
-//     }
-//   }};
-//   border: 1px solid
-//     ${(props) => {
-//     switch (props.$status) {
-//       case "대기": return "#e5e7eb"
-//       case "진행중": return "#bfdbfe"
-//       case "완료": return "#a7f3d0"
-//       default: return "#e5e7eb"
-//     }
-//   }};
-// `
 
 export const TagsContainer = styled.div`
   display: flex;

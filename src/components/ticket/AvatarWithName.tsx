@@ -31,7 +31,7 @@ export const AvatarWithName = ({ user }: AvatarWithNameProps) => {
       )}
       <S.TextGroup>
         <S.Name>{user.name}</S.Name>
-        <S.Nickname>[{user.nickname}]</S.Nickname>
+        <S.Nickname>[{user.email.split("@")[0]}]</S.Nickname>
       </S.TextGroup>
     </S.Container>
   );
