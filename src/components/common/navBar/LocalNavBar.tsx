@@ -57,14 +57,14 @@ export const LocalNavBar = ({
         { id: 'plan', label: '플랜 관리', href: '', icon: <PlanIcon /> },
         {
           id: 'member',
-          label: '멤버 관리',
+          label: '워크스페이스 멤버',
           href: `/${workspaceSlug}/member`,
           icon: <MemberIcon />,
           onClick: onNavigateMember,
         },
         {
           id: 'list',
-          label: '프로젝트 관리',
+          label: '프로젝트 목록',
           href: `/${workspaceSlug}/project`,
           icon: <ListIcon />,
           onClick: onNavigateProject,

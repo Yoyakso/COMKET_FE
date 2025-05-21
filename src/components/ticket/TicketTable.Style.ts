@@ -28,7 +28,7 @@ export const HeaderRow = styled.tr`
 export const HeaderCell = styled.th<{ $width?: number; $align?: 'left' | 'center' }>`
   width: ${({ $width }) => ($width ? `${$width}px` : 'auto')};
   text-align: ${({ $align }) => $align ?? 'left'};
-  min-width: 40px;
+  min-width: 30px;
   max-width: 1000px;
   padding: 12px 8px;
   color: ${color.textLabel};
