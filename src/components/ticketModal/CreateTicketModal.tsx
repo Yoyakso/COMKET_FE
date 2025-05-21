@@ -22,13 +22,14 @@ interface CreateTicketModalProps {
   onSubmit: (ticketData: any) => void
   projectName: string
   projectId: number
+  parentTicketId?: number
 }
 
 const TYPE_OPTIONS = ["개발", "디자인", "기획", "테스트", "버그", "회의/논의", "문서화", "기타"];
 const PRIORITY_OPTIONS = ["LOW", "MEDIUM", "HIGH"];
 const STATUS_OPTIONS = ["TODO", "IN_PROGRESS", "DONE", "HOLD", "DROP", "BACKLOG"];
 
-export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }: CreateTicketModalProps) => {
+export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, parentTicketId }: CreateTicketModalProps) => {
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
   const [members, setMembers] = useState<Member[]>([])
   const { name, memberId } = useUserStore()
@@ -46,6 +47,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
       name: name,
       avatar: name ? name.charAt(0) : "?",
     },
+    parentTicketId: parentTicketId ?? null,
   })
   const [showTypeDropdown, setShowTypeDropdown] = useState(false)
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -100,7 +102,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
       return;
     }
     console.log("제출 데이터:", ticketData);
-    const dto = {
+    const dto: any = {
       ticket_name: ticketData.title,
       description: ticketData.content,
       ticket_type: ticketData.type,
@@ -108,9 +110,11 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
       ticket_state: ticketData.status as any,
       start_date: ticketData.start_date,
       end_date: ticketData.end_date,
-      parent_ticket_id: null,
       assignee_member_id: ticketData.assignee_member_id,
     };
+    if (typeof ticketData.parentTicketId === "number") {
+      dto.parent_ticket_id = ticketData.parentTicketId;
+    }
     console.log("dto", dto)
     try {
       const response = await createTicket(projectName, dto);
@@ -125,7 +129,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
         endDate: response.end_date,
         subticketCount: 0,
         subtickets: [],
-        parentId: null,
+        parentId: response.parent_ticket_id,
         threadCount: 0,
         assignee: {
           name: members.find(m => m.projectMemberId === ticketData.assignee_member_id)?.name || '',

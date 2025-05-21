@@ -11,6 +11,7 @@ import { Ticket } from "@/types/ticket"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import { useUserStore } from "@/stores/userStore"
+import { CreateTicketModal } from "@/components/ticketModal/CreateTicketModal"
 
 interface Assignee {
   id: number
@@ -79,6 +80,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   const memberId = useUserStore((state) => state.memberId)
   const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     console.log("ticket:", ticket)
@@ -161,7 +163,6 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   const sendMessage = () => {
     if (!newMessage.trim()) return
 
-    // 서버로 보낼 메시지
     const messageToSend = {
       ticketId: Number(ticketId),
       senderMemberId: memberId,
@@ -170,7 +171,6 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
       sentAt: formatDateToServerFormat(new Date()),
     }
 
-    // 프론트 렌더링용 메시지
     const uiMessage: ThreadMessage = {
       ...messageToSend,
       isCurrentUser: true,
@@ -179,6 +179,10 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
     send(messageToSend)
     setThreadMessages((prev) => [...prev, uiMessage])
     setNewMessage("")
+  }
+
+  const handleCreateSubTicket = () => {
+    setIsCreateModalOpen(true);
   }
 
   const updateAiAnalysis = () => {
@@ -198,48 +202,62 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   };
 
   return (
-    <S.PageContainer>
-      <S.GNBContainer>
-        <GlobalNavBar variant="workspace" />
-      </S.GNBContainer>
+    <>
+      <S.PageContainer>
+        <S.GNBContainer>
+          <GlobalNavBar variant="workspace" />
+        </S.GNBContainer>
 
-      <S.MainContainer>
-        <S.LNBContainer>
-          <LocalNavBar variant="settings" />
-        </S.LNBContainer>
+        <S.MainContainer>
+          <S.LNBContainer>
+            <LocalNavBar variant="settings" />
+          </S.LNBContainer>
 
-        <S.ContentContainer>
-          <S.PageHeader>
-            <S.BackButton onClick={handleBack}>
-              <ArrowLeft size={16} />
-              <span>뒤로 가기</span>
-            </S.BackButton>
-            <S.PageTitle>{ticket.title}</S.PageTitle>
-            <S.PageHeaderActions>
-              <S.CreateSubTicketButton>
-                <Plus size={16} />
-                <span>하위 티켓 생성</span>
-              </S.CreateSubTicketButton>
-            </S.PageHeaderActions>
-          </S.PageHeader>
+          <S.ContentContainer>
+            <S.PageHeader>
+              <S.BackButton onClick={handleBack}>
+                <ArrowLeft size={16} />
+                <span>뒤로 가기</span>
+              </S.BackButton>
+              <S.PageTitle>{ticket.title}</S.PageTitle>
+              <S.PageHeaderActions>
+                <S.CreateSubTicketButton onClick={handleCreateSubTicket}>
+                  <Plus size={16} />
+                  <span>하위 티켓 생성</span>
+                </S.CreateSubTicketButton>
+              </S.PageHeaderActions>
+            </S.PageHeader>
 
-          <S.ContentBody>
-            <S.LeftColumn>
-              <ThreadChat
-                messages={threadMessages}
-                newMessage={newMessage}
-                setNewMessage={setNewMessage}
-                sendMessage={sendMessage}
-              />
-              <ThreadInfo ticket={ticket} />
-            </S.LeftColumn>
+            <S.ContentBody>
+              <S.LeftColumn>
+                <ThreadChat
+                  messages={threadMessages}
+                  newMessage={newMessage}
+                  setNewMessage={setNewMessage}
+                  sendMessage={sendMessage}
+                />
+                <ThreadInfo ticket={ticket} />
+              </S.LeftColumn>
 
-            <S.RightColumn>
-              <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
-            </S.RightColumn>
-          </S.ContentBody>
-        </S.ContentContainer>
-      </S.MainContainer>
-    </S.PageContainer >
+              <S.RightColumn>
+                <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
+              </S.RightColumn>
+            </S.ContentBody>
+          </S.ContentContainer>
+        </S.MainContainer>
+      </S.PageContainer >
+      {isCreateModalOpen && ticket && projectName && (
+        <CreateTicketModal
+          projectId={Number(projectId)}
+          projectName={projectName}
+          parentTicketId={Number(ticketId)}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={(newTicket) => {
+            setIsCreateModalOpen(false);
+          }}
+        />
+      )}
+
+    </>
   )
 }

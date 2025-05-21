@@ -6,7 +6,7 @@ export const PanelContainer = styled.div`
   top: 0;
   right: 0;
   bottom: 0;
-  width: 480px;
+  width: 440px;
   background-color: white;
   box-shadow: -4px 0 5px #E7EAF1;
   border-left: 1px solid #e5e7eb;
