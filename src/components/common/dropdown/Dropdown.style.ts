@@ -95,6 +95,7 @@ export const TextBox = styled.div<{
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  margin-right: 26px;
 `;
 
 export const IconLeft = styled.span<{

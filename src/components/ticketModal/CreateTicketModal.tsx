@@ -297,11 +297,17 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
             <S.FormRow ref={assigneeRef}>
               <S.FormLabel>담당자</S.FormLabel>
               <S.SelectField onClick={() => toggleDropdown("assignee", showAssigneeDropdown)}>
-                <S.AssigneeText>
-                  {
-                    members.find((m) => m.projectMemberId === ticketData.assignee_member_id)?.name || "담당자 선택"
-                  }
-                </S.AssigneeText>
+                {(() => {
+                  const assignee = members.find(m => m.projectMemberId === ticketData.assignee_member_id);
+                  return assignee ? (
+                    <S.UserOption>
+                      <S.UserAvatar>{assignee.name.charAt(0)}</S.UserAvatar>
+                      <S.UserName>{assignee.name}</S.UserName>
+                    </S.UserOption>
+                  ) : (
+                    <S.AssigneeText>담당자 선택</S.AssigneeText>
+                  );
+                })()}
                 <ChevronDown size={16} />
                 {showAssigneeDropdown && (
                   <S.DropdownMenu>

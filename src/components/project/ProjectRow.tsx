@@ -139,7 +139,6 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
     <>
       <S.Row onClick={handleRowClick}>
         <S.Cell>{project.name}</S.Cell>
-        <S.Cell>{project.id}</S.Cell>
         <S.Cell>
           <S.Description>{project.description}</S.Description>
         </S.Cell>
