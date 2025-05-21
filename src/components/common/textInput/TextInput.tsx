@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import * as S from './TextInput.style';
-
 import CloseIcon from '@/assets/icons/CloseIcon2.svg?react';
 import EyeOffIcon from '@/assets/icons/EyeOffIcon.svg?react';
 import EyeOnIcon from '@/assets/icons/EyeOnIcon.svg?react';
 import ClearIcon from '@/assets/icons/ClearIcon.svg?react';
 import PasswordDotIcon from '@/assets/icons/PasswordDotIcon.svg?react';
+import { koToEn } from '@/utils/koToEn';
 
 type TextInputProps = {
   value: string;
@@ -14,15 +14,15 @@ type TextInputProps = {
   type?: 'default' | 'password';
   size?: 'sm' | 'md';
   $state?:
-  | 'enable'
-  | 'hover'
-  | 'focus'
-  | 'typing'
-  | 'activated'
-  | 'success'
-  | 'error'
-  | 'disabled'
-  | 'registered';
+    | 'enable'
+    | 'hover'
+    | 'focus'
+    | 'typing'
+    | 'activated'
+    | 'success'
+    | 'error'
+    | 'disabled'
+    | 'registered';
   placeholder?: string;
   helperText?: string;
 };
@@ -40,21 +40,28 @@ export const TextInput = ({
   const [focused, setFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const safeState = $state ?? 'enable'; // ✅ 기본값 설정
+  const safeState = $state ?? 'enable';
   const isPassword = type === 'password';
   const showSecureIcons = isPassword && value;
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let inputValue = e.target.value;
+    if (isPassword) {
+      inputValue = koToEn(inputValue);
+    }
+    onChange(inputValue);
+  };
+
   const handleClear = () => onChange('');
-  const handleRemove = () => onRemove?.();
-  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+  const togglePasswordVisibility = () => setShowPassword(prev => !prev);
 
   return (
     <S.Container size={size} $state={safeState}>
       <S.InputBox size={size} $state={safeState} $focused={focused}>
         <S.StyledInput
-          type={isPassword && !showPassword ? 'text' : 'text'}
+          type={isPassword && !showPassword ? 'password' : 'text'}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={handleInputChange}
           placeholder={placeholder}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
@@ -63,10 +70,10 @@ export const TextInput = ({
           style={
             isPassword && !showPassword
               ? {
-                color: 'transparent',
-                textShadow: '0 0 0 #0000',
-                caretColor: '#000',
-              }
+                  color: 'transparent',
+                  textShadow: '0 0 0 #0000',
+                  caretColor: '#000',
+                }
               : {}
           }
         />
@@ -89,42 +96,17 @@ export const TextInput = ({
             >
               <ClearIcon />
             </S.Clear2Button>
-            <S.EyeButton
-              type="button"
-              size={size}
-              onClick={togglePasswordVisibility}
-            >
+            <S.EyeButton type="button" size={size} onClick={togglePasswordVisibility}>
               {showPassword ? <EyeOnIcon /> : <EyeOffIcon />}
             </S.EyeButton>
           </>
         )}
 
-        {!isPassword &&
-          value &&
-          safeState !== 'registered' &&
-          safeState !== 'activated' && (
-            <S.ClearButton
-              type="button"
-              size={size}
-              onClick={handleClear}
-              aria-label="입력 초기화"
-            >
-              <CloseIcon />
-            </S.ClearButton>
-          )}
-
-        {!isPassword &&
-          safeState !== 'registered' &&
-          safeState !== 'activated' && (
-            <S.RemoveButton
-              type="button"
-              size={size}
-              onClick={handleRemove}
-              aria-label="입력창 제거"
-            >
-              <CloseIcon />
-            </S.RemoveButton>
-          )}
+        {!isPassword && value && safeState !== 'registered' && safeState !== 'activated' && (
+          <S.ClearButton type="button" size={size} onClick={handleClear} aria-label="입력 초기화">
+            <CloseIcon />
+          </S.ClearButton>
+        )}
       </S.InputBox>
 
       {!!helperText && <S.HelperText $state={safeState}>{helperText}</S.HelperText>}

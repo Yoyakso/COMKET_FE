@@ -7,9 +7,11 @@ import { PortalDropdown } from '@/utils/PortalDropdown';
 import * as S from './WorkspaceSelectorDropdown.Style';
 import { fetchMyWorkspaces, exitWorkspace } from '@/api/Workspace';
 import { getWorkspaceMembers } from '@/api/Member';
+import { logOut } from '@/api/Oauth';
 import { WorkspaceExit } from './WorkspaceExit';
 import { ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'react-toastify';
 
 interface Props {
   triggerRef: React.RefObject<HTMLElement>;
@@ -25,6 +27,7 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
   const [showSub, setShowSub] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const { clearUser } = useUserStore();
   const fetchedRef = useRef(false);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -60,18 +63,16 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
     close();
   };
 
-  const handleExit = async () => {
-    const storedEmail = localStorage.getItem('email');
-    const { workspaceId: id, clearWorkspace } = useWorkspaceStore.getState();
-    if (!storedEmail || !id) return;
-    await exitWorkspace({ workspaceId: id.toString(), email: storedEmail });
-    clearWorkspace();
-
-    ['workspaceId', 'workspaceSlug', 'workspaceName'].forEach(k => localStorage.removeItem(k));
-    navigate('/workspace', { replace: true });
-    window.location.reload();
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      clearUser();
+      toast.success('로그아웃 되었습니다.');
+      navigate('/login');
+    } catch (error) {
+      toast.error('로그아웃에 실패했습니다.');
+    }
   };
-
   const enter = () => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
     setShowSub(true);
@@ -137,22 +138,14 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
             <S.Item
               onClick={e => {
                 e.stopPropagation();
-                setShowExitModal(true);
+                handleLogout();
               }}
             >
-              워크스페이스 나가기
+              로그아웃
             </S.Item>
           </S.Dropdown>
         </motion.div>
       </AnimatePresence>
-
-      {showExitModal && (
-        <WorkspaceExit
-          isOwner={isOwner}
-          onClose={() => setShowExitModal(false)}
-          onExit={handleExit}
-        />
-      )}
     </PortalDropdown>
   );
 };
