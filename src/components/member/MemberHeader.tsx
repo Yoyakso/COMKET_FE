@@ -68,7 +68,7 @@ export const MemberHeader = ({
 
   return (
     <S.HeaderContainer>
-      <S.Title>멤버 관리</S.Title>
+      <S.Title>워크스페이스 멤버 관리</S.Title>
       <S.HeaderTop>
         <S.MemberCount>{memberCount}명</S.MemberCount>
         <S.RightSection>

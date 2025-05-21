@@ -37,7 +37,7 @@ export const ProjectHeader = ({ projectCount, onSearch, onCreateProject, onFilte
 
   return (
     <S.HeaderContainer>
-      <S.Title>프로젝트 관리</S.Title>
+      <S.Title>프로젝트 목록</S.Title>
       <S.HeaderTop>
         <S.ProjectCount>{projectCount}개</S.ProjectCount>
         <S.RightSection>

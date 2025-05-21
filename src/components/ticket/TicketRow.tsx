@@ -93,7 +93,7 @@ export const TicketRow = ({
       {isExpanded &&
         ticket.subtickets?.map(sub => (
           <S.SubticketRow key={sub.id}>
-            <S.SubticketCell /> {/* 빈 칸 */}
+            <S.SubticketCell />
             <S.SubticketCell>
               <CheckBox
                 $variant="primary"

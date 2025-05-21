@@ -6,18 +6,18 @@ import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
 import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
 
 const INITIAL_WIDTHS = {
-  expander: 32,
-  checkbox: 32,
-  id: 60,
+  expander: 28,
+  checkbox: 28,
+  id: 40,
   title: 240,
-  type: 100,
-  assignee: 160,
-  priority: 100,
+  type: 60,
+  assignee: 140,
+  priority: 90,
   status: 120,
   startDate: 120,
   dueDate: 120,
-  subticketCount: 80,
-  writer: 160,
+  subticketCount: 40,
+  writer: 140,
 };
 
 const MIN_WIDTHS = {
@@ -32,7 +32,7 @@ const MIN_WIDTHS = {
   startDate: 80,
   dueDate: 80,
   subticketCount: 40,
-  writer: 100,
+  writer: 70,
 };
 
 const PRIORITY_ORDER = { HIGH: 3, MEDIUM: 2, LOW: 1 };
@@ -148,19 +148,19 @@ export const TicketTable = ({ tickets, onTicketClick, onTicketHover }: TicketTab
     sortable?: boolean;
     align?: 'left' | 'center';
   }[] = [
-    { key: 'expander', label: '', resizable: true, sortable: false, align: 'center' },
-    { key: 'checkbox', label: '', resizable: true, sortable: false, align: 'center' },
-    { key: 'id', label: '티켓 ID', resizable: true, sortable: true, align: 'center' },
-    { key: 'title', label: '티켓', resizable: true, sortable: true, align: 'left' },
-    { key: 'type', label: '유형', resizable: true, sortable: true, align: 'center' },
-    { key: 'assignee', label: '담당자', resizable: true, sortable: true, align: 'left' },
-    { key: 'priority', label: '우선순위', resizable: true, sortable: true, align: 'center' },
-    { key: 'status', label: '상태', resizable: true, sortable: true, align: 'center' },
-    { key: 'startDate', label: '시작일', resizable: true, sortable: true, align: 'center' },
-    { key: 'dueDate', label: '마감일', resizable: true, sortable: true, align: 'center' },
-    { key: 'subticketCount', label: '하위 티켓', resizable: true, sortable: true, align: 'center' },
-    { key: 'writer', label: '작성자', resizable: true, sortable: true, align: 'left' },
-  ];
+      { key: 'expander', label: '', resizable: true, sortable: false, align: 'center' },
+      { key: 'checkbox', label: '', resizable: true, sortable: false, align: 'center' },
+      { key: 'id', label: '티켓 ID', resizable: true, sortable: true, align: 'center' },
+      { key: 'title', label: '티켓', resizable: true, sortable: true, align: 'left' },
+      { key: 'type', label: '유형', resizable: true, sortable: true, align: 'center' },
+      { key: 'assignee', label: '담당자', resizable: true, sortable: true, align: 'left' },
+      { key: 'priority', label: '우선순위', resizable: true, sortable: true, align: 'center' },
+      { key: 'status', label: '상태', resizable: true, sortable: true, align: 'center' },
+      { key: 'startDate', label: '시작일', resizable: true, sortable: true, align: 'center' },
+      { key: 'dueDate', label: '마감일', resizable: true, sortable: true, align: 'center' },
+      { key: 'subticketCount', label: '하위 티켓', resizable: true, sortable: true, align: 'center' },
+      { key: 'writer', label: '작성자', resizable: true, sortable: true, align: 'left' },
+    ];
 
   return (
     <S.TableWrapper>

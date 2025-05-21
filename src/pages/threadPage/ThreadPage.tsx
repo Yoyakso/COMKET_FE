@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { useParams, useLocation, useNavigate } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Plus } from "lucide-react"
 import * as S from "./ThreadPage.Style"
 import { useWebSocket } from "@/hooks/useWebSocket"
 import { ThreadChat } from "@/components/thread/threadChat/ThreadChat"
@@ -11,6 +11,7 @@ import { Ticket } from "@/types/ticket"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import { useUserStore } from "@/stores/userStore"
+import { CreateTicketModal } from "@/components/ticketModal/CreateTicketModal"
 
 interface Assignee {
   id: number
@@ -39,21 +40,21 @@ interface ActionItem {
 const SAMPLE_ACTION_ITEMS: ActionItem[] = [
   {
     id: 1,
-    assignee: { id: 1, name: "팀원1", avatar: "" },
+    assignee: { id: 1, name: "팀원1", avatar: "/images/avatar-2.png" },
     task: "로그인 기능 구현",
     priority: "상",
     status: "대기",
   },
   {
     id: 2,
-    assignee: { id: 2, name: "팀원2", avatar: "" },
+    assignee: { id: 2, name: "팀원2", avatar: "/images/avatar-3.png" },
     task: "API 연동 작업",
     priority: "중",
     status: "진행중",
   },
   {
     id: 3,
-    assignee: { id: 3, name: "팀원3", avatar: "" },
+    assignee: { id: 3, name: "팀원3", avatar: "/images/avatar-5.png" },
     task: "테스트 계정 생성",
     priority: "하",
     status: "완료",
@@ -69,9 +70,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
   const [actionItems, setActionItems] = useState<ActionItem[]>(SAMPLE_ACTION_ITEMS)
   const [newMessage, setNewMessage] = useState("")
-  const [aiSummary, setAiSummary] = useState<string | null>(
-    "이 스레드에서는 로그인 기능 구현과 API 연동에 대해 논의했습니다. 팀원1은 로그인 기능을 다음 주 화요일까지 완료할 예정이며, 백엔드 API는 이번 주 금요일까지 준비될 예정입니다. 테스트 계정도 함께 전달될 예정입니다.",
-  )
+  const [aiSummary, setAiSummary] = useState<string | null>("AI 요약 내용은 곧 업데이트 될 예정입니다.")
   const token = localStorage.getItem("accessToken")
   const location = useLocation()
   const navigate = useNavigate();
@@ -81,12 +80,13 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   const memberId = useUserStore((state) => state.memberId)
   const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     console.log("ticket:", ticket)
     console.log("ticketId:", ticketId)
     console.log("projectName:", projectName)
-    if (!ticket && ticketId && projectName) {
+    if (ticketId && projectName) {
       const fetchTicket = async () => {
         try {
           const data = await getTicketById(Number(ticketId), projectName);
@@ -125,7 +125,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
 
       fetchTicket();
     }
-  }, [ticket, ticketId, projectName]);
+  }, [ticketId, projectName]);
 
   const handleMessage = useCallback((data: ThreadMessage | ThreadMessage[]) => {
     const normalizedMessages = Array.isArray(data) ? data : [data]
@@ -163,7 +163,6 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   const sendMessage = () => {
     if (!newMessage.trim()) return
 
-    // 서버로 보낼 메시지
     const messageToSend = {
       ticketId: Number(ticketId),
       senderMemberId: memberId,
@@ -172,7 +171,6 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
       sentAt: formatDateToServerFormat(new Date()),
     }
 
-    // 프론트 렌더링용 메시지
     const uiMessage: ThreadMessage = {
       ...messageToSend,
       isCurrentUser: true,
@@ -183,9 +181,13 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
     setNewMessage("")
   }
 
+  const handleCreateSubTicket = () => {
+    setIsCreateModalOpen(true);
+  }
+
   const updateAiAnalysis = () => {
     setAiSummary(
-      "이 스레드에서는 로그인 기능 구현과 API 연동에 대해 논의했습니다. 팀원1은 로그인 기능을 다음 주 화요일까지 완료할 예정이며, 백엔드 API는 이번 주 금요일까지 준비될 예정입니다. 테스트 계정도 함께 전달될 예정입니다.",
+      "AI 요약 내용은 곧 업데이트 될 예정입니다.",
     )
   }
 
@@ -200,42 +202,69 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   };
 
   return (
-    <S.PageContainer>
-      <S.GNBContainer>
-        <GlobalNavBar variant="workspace" />
-      </S.GNBContainer>
+    <>
+      <S.PageContainer>
+        <S.GNBContainer>
+          <GlobalNavBar variant="workspace" />
+        </S.GNBContainer>
 
-      <S.MainContainer>
-        <S.LNBContainer>
-          <LocalNavBar variant="settings" />
-        </S.LNBContainer>
+        <S.MainContainer>
+          <S.LNBContainer>
+            <LocalNavBar variant="settings" />
+          </S.LNBContainer>
 
-        <S.ContentContainer>
-          <S.PageHeader>
-            <S.BackButton onClick={handleBack}>
-              <ArrowLeft size={16} />
-              <span>뒤로 가기</span>
-            </S.BackButton>
-            <S.PageTitle>{ticket.title}</S.PageTitle>
-          </S.PageHeader>
+          <S.ContentContainer>
+            <S.PageHeader>
+              <S.BackButton onClick={handleBack}>
+                <ArrowLeft size={16} />
+                <span>뒤로 가기</span>
+              </S.BackButton>
+              <S.PageTitle>{ticket.title}</S.PageTitle>
+              <S.PageHeaderActions>
+                <S.CreateSubTicketButton onClick={handleCreateSubTicket}>
+                  <Plus size={16} />
+                  <span>하위 티켓 생성</span>
+                </S.CreateSubTicketButton>
+              </S.PageHeaderActions>
+            </S.PageHeader>
 
-          <S.ContentBody>
-            <S.LeftColumn>
-              <ThreadChat
-                messages={threadMessages}
-                newMessage={newMessage}
-                setNewMessage={setNewMessage}
-                sendMessage={sendMessage}
-              />
-              <ThreadInfo ticket={ticket} />
-            </S.LeftColumn>
+            <S.ContentBody>
+              <S.LeftColumn>
+                <ThreadChat
+                  messages={threadMessages}
+                  newMessage={newMessage}
+                  setNewMessage={setNewMessage}
+                  sendMessage={sendMessage}
+                />
+                <ThreadInfo ticket={ticket} />
+              </S.LeftColumn>
 
-            <S.RightColumn>
-              <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
-            </S.RightColumn>
-          </S.ContentBody>
-        </S.ContentContainer>
-      </S.MainContainer>
-    </S.PageContainer >
+              <S.RightColumn>
+                <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
+              </S.RightColumn>
+            </S.ContentBody>
+          </S.ContentContainer>
+        </S.MainContainer>
+      </S.PageContainer >
+      {isCreateModalOpen && ticket && projectName && (
+        <CreateTicketModal
+          projectId={Number(projectId)}
+          projectName={projectName}
+          parentTicketId={Number(ticketId)}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={(newTicket) => {
+            setIsCreateModalOpen(false);
+            console.log("✅ newTicket:", newTicket);
+            navigate(`/${projectId}/tickets/${newTicket.id}/thread`, {
+              state: {
+                ticket: newTicket,
+                projectName,
+              },
+            });
+          }}
+        />
+      )}
+
+    </>
   )
 }

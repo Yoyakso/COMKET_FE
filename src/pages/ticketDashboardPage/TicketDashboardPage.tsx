@@ -68,40 +68,9 @@ export const TicketDashboardPage = () => {
       if (!projectName) return;
       try {
         const tickets = await getTicketsByProjectName(projectName);
-        const mappedTickets: Ticket[] = tickets.map((ticket: any) => {
+        const rawTickets: Ticket[] = tickets.map((ticket: any) => {
           const assignee = members.find(m => m.id === ticket.assignee_member_id);
           const writer = members.find(m => m.id === ticket.creator_member_id);
-
-          const subtickets = ticket.sub_tickets?.map((sub: any) => {
-            const subAssignee = members.find(m => m.id === sub.assignee_member_id);
-            const subWriter = members.find(m => m.id === sub.creator_member_id);
-            return {
-              id: sub.id,
-              title: sub.ticket_name,
-              type: sub.ticket_type as TicketType,
-              description: sub.description,
-              assignee: {
-                nickname: '',
-                profileUrl: '',
-                name: subAssignee?.name || '',
-                email: subAssignee?.email || '',
-              },
-              threadCount: 0,
-              priority: sub.ticket_priority,
-              status: sub.ticket_state,
-              startDate: sub.start_date,
-              endDate: sub.end_date,
-              subticketCount: 0,
-              subtickets: [],
-              parentId: sub.parent_ticket_id ?? undefined,
-              writer: {
-                nickname: '',
-                profileUrl: '',
-                name: subWriter?.name || '',
-                email: subWriter?.email || '',
-              },
-            }
-          }) ?? []
 
           return {
             id: ticket.id,
@@ -128,11 +97,17 @@ export const TicketDashboardPage = () => {
               name: writer?.name || '',
               email: writer?.email || '',
             },
-          }
+          };
         });
-        console.log('mappedTickets', mappedTickets)
-        setTickets(mappedTickets);
-        setTicketList(mappedTickets);
+        const parentTickets = rawTickets.filter(t => t.parentId === undefined);
+        const childTickets = rawTickets.filter(t => t.parentId !== undefined);
+        const nestedTickets = parentTickets.map(parent => ({
+          ...parent,
+          subtickets: childTickets.filter(child => child.parentId === parent.id),
+        }));
+        console.log("티켓 목록", ticketList)
+        setTickets(nestedTickets);
+        setTicketList(nestedTickets);
       } catch (e) {
         console.error('티켓 불러오기 실패:', e);
       }
@@ -166,6 +141,11 @@ export const TicketDashboardPage = () => {
   };
 
   const handleNavigateTicket = (direction: 'prev' | 'next') => {
+    if (!selectedTicket && hoveredTicket) {
+      setSelectedTicket(hoveredTicket);
+      return;
+    }
+
     if (!selectedTicket) return;
 
     const currentIndex = ticketList.findIndex(t => t.id === selectedTicket.id);
@@ -176,8 +156,10 @@ export const TicketDashboardPage = () => {
         ? (currentIndex - 1 + ticketList.length) % ticketList.length
         : (currentIndex + 1) % ticketList.length;
 
+    console.log('이동:', direction, '->', ticketList[newIndex].id);
     setSelectedTicket(ticketList[newIndex]);
   };
+
 
   const handleBulkDelete = async () => {
     if (!projectName || selectedIds.length === 0) return;
@@ -252,19 +234,28 @@ export const TicketDashboardPage = () => {
             onSubmit={handleTicketCreate}
           />
         )}
-        {hoveredTicket && !selectedTicket && projectName && (
+        {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => setHoveredTicket(hoveredTicket)}
-            onMouseLeave={() => setHoveredTicket(null)}
+            onMouseEnter={() => { }}
+            onMouseLeave={() => {
+              if (!selectedTicket) setHoveredTicket(null);
+            }}
           >
             <TicketDetailPanel
-              ticket={hoveredTicket}
+              ticket={selectedTicket ?? hoveredTicket}
               projectName={projectName}
-              onClose={() => setHoveredTicket(null)}
+              onClose={() => {
+                if (selectedTicket) {
+                  setSelectedTicket(null);
+                } else {
+                  setHoveredTicket(null);
+                }
+              }}
               onNavigate={handleNavigateTicket}
             />
           </S.PanelWrapper>
         )}
+
         {showDeleteModal && (
           <DeleteModal
             title="티켓 삭제"

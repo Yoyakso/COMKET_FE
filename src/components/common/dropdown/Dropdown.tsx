@@ -57,9 +57,9 @@ export const Dropdown = ({
 
   const selectedText = isMulti
     ? selectedValues
-        .map(v => options.find(o => o.value === v)?.label)
-        .filter(Boolean)
-        .join(', ') || placeholder
+      .map(v => options.find(o => o.value === v)?.label)
+      .filter(Boolean)
+      .join(', ') || placeholder
     : (options.find(o => o.value === value)?.label ?? placeholder);
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export const Dropdown = ({
         onClick={() => (isMulti ? handleMultiSelect(o.value) : handleSingleSelect(o.value))}
       >
         <S.OptionItemContent>
-          {o.imageSrc && <S.IconCircle src={o.imageSrc} alt="icon" />}
+          {type === 'single-image' && o.imageSrc && <S.IconCircle src={o.imageSrc} alt="icon" />}
           {isMulti ? (
             <CheckBox
               label={o.label}
@@ -115,7 +115,7 @@ export const Dropdown = ({
         $variant={$variant}
         onClick={() => !isDisabled && setOpen(prev => !prev)}
       >
-        {iconLeft && !isChip && (
+        {type === 'single-image' && iconLeft && !isChip && (
           <S.IconLeft $size={size} $variant={$variant}>
             {type === 'single-image' && value ? (
               options.find(o => o.value === value)?.imageSrc ? (
@@ -176,11 +176,11 @@ export const Dropdown = ({
         <S.OptionList $size={size}>
           {type === 'group-check'
             ? [...new Set(options.map(o => o.groupName))].map((group, idx) => (
-                <S.GroupBlock key={`${group}-${idx}`}>
-                  <S.GroupLabel>{group}</S.GroupLabel>
-                  {options.filter(o => o.groupName === group).map(renderOption)}
-                </S.GroupBlock>
-              ))
+              <S.GroupBlock key={`${group}-${idx}`}>
+                <S.GroupLabel>{group}</S.GroupLabel>
+                {options.filter(o => o.groupName === group).map(renderOption)}
+              </S.GroupBlock>
+            ))
             : options.map((o, i) => renderOption(o, i))}
         </S.OptionList>
       )}
