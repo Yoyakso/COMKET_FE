@@ -39,21 +39,21 @@ interface ActionItem {
 const SAMPLE_ACTION_ITEMS: ActionItem[] = [
   {
     id: 1,
-    assignee: { id: 1, name: "팀원1", avatar: "/ak-symbol.png" },
+    assignee: { id: 1, name: "팀원1", avatar: "" },
     task: "로그인 기능 구현",
     priority: "상",
     status: "대기",
   },
   {
     id: 2,
-    assignee: { id: 2, name: "팀원2", avatar: "/abstract-geometric-SP.png" },
+    assignee: { id: 2, name: "팀원2", avatar: "" },
     task: "API 연동 작업",
     priority: "중",
     status: "진행중",
   },
   {
     id: 3,
-    assignee: { id: 3, name: "팀원3", avatar: "/machine-learning-concept.png" },
+    assignee: { id: 3, name: "팀원3", avatar: "" },
     task: "테스트 계정 생성",
     priority: "하",
     status: "완료",

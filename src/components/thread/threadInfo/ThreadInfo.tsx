@@ -11,7 +11,7 @@ export const ThreadInfo = ({ ticket }) => (
       <S.InfoContent>
         <S.AssigneeDisplay>
           <S.SmallAvatar>
-            <S.AvatarImage src={ticket.assignee?.avatar || "/placeholder.svg"} alt={ticket.assignee?.name || "미배정"} />
+            <S.AvatarImage src={ticket.assignee?.avatar || ""} alt={ticket.assignee?.name || "미배정"} />
           </S.SmallAvatar>
           <span>{ticket.assignee?.name || "미배정"}</span>
         </S.AssigneeDisplay>

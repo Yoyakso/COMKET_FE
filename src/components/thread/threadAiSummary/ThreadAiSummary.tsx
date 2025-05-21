@@ -24,7 +24,7 @@ export const ThreadAiSummary = ({ aiSummary, actionItems }) => (
               <S.TableCell>
                 <S.AssigneeDisplay>
                   <S.SmallAvatar>
-                    <S.AvatarImage src={item.assignee.avatar || "/placeholder.svg"} alt={item.assignee.name} />
+                    <S.AvatarImage src={item.assignee.avatar || ""} alt={item.assignee.name} />
                   </S.SmallAvatar>
                   <span>{item.assignee.name}</span>
                 </S.AssigneeDisplay>
