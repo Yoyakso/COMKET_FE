@@ -15,6 +15,7 @@ interface TicketRowProps {
   toggleWithSubtickets: (ticket: Ticket) => void;
   onTicketClick?: (ticket: Ticket) => void;
   onTicketHover?: (ticket: Ticket | null) => void;
+  projectName: string;
 }
 
 export const TicketRow = ({
@@ -24,12 +25,11 @@ export const TicketRow = ({
   toggleWithSubtickets,
   onTicketClick,
   onTicketHover,
+  projectName
 }: TicketRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
   const toggleExpand = () => setIsExpanded(prev => !prev);
   const hasSubtickets = ticket.subtickets?.length > 0;
-
   const getUserForAvatar = (assignee: any) => {
     if (!assignee) {
       return {
@@ -104,10 +104,10 @@ export const TicketRow = ({
           />
         </S.TableCell>
         <S.TableCell $align="center">
-          <PriorityDropdown ticketId={ticket.id} />
+          <PriorityDropdown ticketId={ticket.id} projectName={projectName} />
         </S.TableCell>
         <S.TableCell $align="center">
-          <StatusDropdown ticketId={ticket.id} />
+          <StatusDropdown ticketId={ticket.id} projectName={projectName} />
         </S.TableCell>
         <S.TableCell>{ticket.startDate}</S.TableCell>
         <S.TableCell>{ticket.endDate}</S.TableCell>
@@ -160,10 +160,10 @@ export const TicketRow = ({
               />
             </S.SubticketCell>
             <S.SubticketCell $align="center">
-              <PriorityDropdown ticketId={sub.id} />
+              <PriorityDropdown ticketId={sub.id} projectName={projectName} />
             </S.SubticketCell>
             <S.SubticketCell $align="center">
-              <StatusDropdown ticketId={sub.id} />
+              <StatusDropdown ticketId={sub.id} projectName={projectName} />
             </S.SubticketCell>
             <S.SubticketCell>{sub.startDate}</S.SubticketCell>
             <S.SubticketCell>{sub.endDate}</S.SubticketCell>
