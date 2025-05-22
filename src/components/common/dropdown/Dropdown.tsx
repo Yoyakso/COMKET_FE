@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import * as S from './Dropdown.style';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import ChevronDown from '@/assets/icons/ChevronDown.svg?react';
 import ChevronUp from '@/assets/icons/ChevronUp.svg?react';
@@ -57,9 +58,9 @@ export const Dropdown = ({
 
   const selectedText = isMulti
     ? selectedValues
-      .map(v => options.find(o => o.value === v)?.label)
-      .filter(Boolean)
-      .join(', ') || placeholder
+        .map(v => options.find(o => o.value === v)?.label)
+        .filter(Boolean)
+        .join(', ') || placeholder
     : (options.find(o => o.value === value)?.label ?? placeholder);
 
   useEffect(() => {
@@ -172,18 +173,28 @@ export const Dropdown = ({
         </S.IconRight>
       </S.Container>
 
-      {open && (
-        <S.OptionList $size={size}>
-          {type === 'group-check'
-            ? [...new Set(options.map(o => o.groupName))].map((group, idx) => (
-              <S.GroupBlock key={`${group}-${idx}`}>
-                <S.GroupLabel>{group}</S.GroupLabel>
-                {options.filter(o => o.groupName === group).map(renderOption)}
-              </S.GroupBlock>
-            ))
-            : options.map((o, i) => renderOption(o, i))}
-        </S.OptionList>
-      )}
+      <AnimatePresence>
+        {open && (
+          <S.OptionList
+            key="dropdown"
+            $size={size}
+            initial={{ opacity: 0, scaleY: 0.95 }}
+            animate={{ opacity: 1, scaleY: 1 }}
+            exit={{ opacity: 0, scaleY: 0.95 }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            style={{ transformOrigin: 'top' }}
+          >
+            {type === 'group-check'
+              ? [...new Set(options.map(o => o.groupName))].map((group, idx) => (
+                  <S.GroupBlock key={`${group}-${idx}`}>
+                    <S.GroupLabel>{group}</S.GroupLabel>
+                    {options.filter(o => o.groupName === group).map(renderOption)}
+                  </S.GroupBlock>
+                ))
+              : options.map((o, i) => renderOption(o, i))}
+          </S.OptionList>
+        )}
+      </AnimatePresence>
     </S.Wrapper>
   );
 };

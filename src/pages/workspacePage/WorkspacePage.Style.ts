@@ -1,6 +1,6 @@
-import styled from "styled-components";
-import { color } from "@/styles/color";
-import { Button} from "@/components/common/button/Button";
+import styled from 'styled-components';
+import { color } from '@/styles/color';
+import { motion } from 'framer-motion';
 
 export const Container = styled.div`
   height: 100vh;
@@ -9,7 +9,7 @@ export const Container = styled.div`
   align-items: center;
 `;
 
-export const Card = styled.div`
+export const MotionCard = styled(motion.div)`
   display: flex;
   width: 480px;
   background-color: ${color.white};
@@ -87,5 +87,3 @@ export const SelectDropdown = styled.span`
   font-size: 14px;
   color: ${color.textTertiary};
 `;
-
-
