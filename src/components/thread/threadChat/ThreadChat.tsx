@@ -27,7 +27,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
 
   const getAvatarImage = (index: number, isCurrentUser: boolean) => {
     if (isCurrentUser) {
-      return "/images/avatar-1.png"
+      return "/images/avatar-me.png"
     }
     const avatarIndex = (index % 5) + 1
     return `/images/avatar-${avatarIndex}.png`
@@ -35,7 +35,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
 
   return (
     <>
-      <S.SectionTitle>티켓 이름</S.SectionTitle>
+      <S.SectionTitle>스레드</S.SectionTitle>
       <S.ThreadContainer ref={containerRef}>
         {messages && messages.length > 0 ? (
           messages.map((message, index) => (
