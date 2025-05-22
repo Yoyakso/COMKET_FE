@@ -22,13 +22,13 @@ export const Column = styled.div<{ columnType: string }>`
    background-color: ${(props) => {
     switch (props.columnType) {
       case "TODO":
-        return "#d9f2fd"
+        return "#9CA3AF22"
       case "IN_PROGRESS":
-        return "#fff4e5" // Light orange
+        return "#3B82F622"
       case "DONE":
-        return `${color.teal0}`
+        return "#10B98122"
       case "OTHERS":
-        return "#f5f5f7" // Light gray
+        return "#FFB22C22"
       default:
         return color.basic0
     }
@@ -37,13 +37,13 @@ export const Column = styled.div<{ columnType: string }>`
   border-top: 4px solid ${(props) => {
     switch (props.columnType) {
       case "TODO":
-        return "#0064FF" // Blue
+        return "#9e9e9e"
       case "IN_PROGRESS":
-        return "#ff9a3d" // Orange
+        return "#3B82F6"
       case "DONE":
-        return `${color.teal500}`
+        return "#10B981"
       case "OTHERS":
-        return "#9e9e9e" // Gray
+        return "#FFB22C"
       default:
         return color.basic0
     }
@@ -69,13 +69,13 @@ export const ColumnHeader = styled.div<{ columnType: string }>`
   color: ${(props) => {
     switch (props.columnType) {
       case "TODO":
-        return "#0064FF"
-      case "IN_PROGRESS":
-        return "#e67700"
-      case "DONE":
-        return `${color.teal700}`
-      case "OTHERS":
         return "#616161"
+      case "IN_PROGRESS":
+        return "#3B82F6"
+      case "DONE":
+        return "#10B981"
+      case "OTHERS":
+        return "#FFB22C"
       default:
         return "#333"
     }

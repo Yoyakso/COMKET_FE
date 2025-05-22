@@ -15,6 +15,7 @@ interface TicketRowProps {
   toggleWithSubtickets: (ticket: Ticket) => void;
   onTicketClick?: (ticket: Ticket) => void;
   onTicketHover?: (ticket: Ticket | null) => void;
+  projectName: string;
 }
 
 export const TicketRow = ({
@@ -24,12 +25,11 @@ export const TicketRow = ({
   toggleWithSubtickets,
   onTicketClick,
   onTicketHover,
+  projectName
 }: TicketRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
   const toggleExpand = () => setIsExpanded(prev => !prev);
   const hasSubtickets = ticket.subtickets?.length > 0;
-
   const getUserForAvatar = (assignee: any) => {
     if (!assignee) {
       return {
@@ -49,11 +49,7 @@ export const TicketRow = ({
 
   return (
     <>
-      <S.TableRow
-        onMouseEnter={() => onTicketHover?.(ticket)}
-        onMouseMove={() => onTicketHover?.(ticket)}
-        onMouseLeave={() => onTicketHover?.(null)}
-      >
+      <S.TableRow>
         <S.TableCell>
           {hasSubtickets ? (
             <S.ToggleButton onClick={toggleExpand}>
@@ -76,7 +72,13 @@ export const TicketRow = ({
           />
         </S.TableCell>
         {/* <S.TableCell>{ticket.id}</S.TableCell> */}
-        <S.TableCell onClick={() => onTicketClick?.(ticket)} style={{ cursor: 'pointer' }}>
+        <S.TableCell
+          onMouseEnter={() => onTicketHover?.(ticket)}
+          onMouseMove={() => onTicketHover?.(ticket)}
+          onMouseLeave={() => onTicketHover?.(null)}
+          onClick={() => onTicketClick?.(ticket)}
+          style={{ cursor: 'pointer' }}
+        >
           <S.TicketTitleGroup>
             {ticket.title}
             {ticket.threadCount > 0 && (
@@ -102,10 +104,10 @@ export const TicketRow = ({
           />
         </S.TableCell>
         <S.TableCell $align="center">
-          <PriorityDropdown ticketId={ticket.id} />
+          <PriorityDropdown ticketId={ticket.id} projectName={projectName} />
         </S.TableCell>
         <S.TableCell $align="center">
-          <StatusDropdown ticketId={ticket.id} />
+          <StatusDropdown ticketId={ticket.id} projectName={projectName} />
         </S.TableCell>
         <S.TableCell>{ticket.startDate}</S.TableCell>
         <S.TableCell>{ticket.endDate}</S.TableCell>
@@ -158,10 +160,10 @@ export const TicketRow = ({
               />
             </S.SubticketCell>
             <S.SubticketCell $align="center">
-              <PriorityDropdown ticketId={sub.id} />
+              <PriorityDropdown ticketId={sub.id} projectName={projectName} />
             </S.SubticketCell>
             <S.SubticketCell $align="center">
-              <StatusDropdown ticketId={sub.id} />
+              <StatusDropdown ticketId={sub.id} projectName={projectName} />
             </S.SubticketCell>
             <S.SubticketCell>{sub.startDate}</S.SubticketCell>
             <S.SubticketCell>{sub.endDate}</S.SubticketCell>

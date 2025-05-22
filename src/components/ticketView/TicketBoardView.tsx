@@ -8,13 +8,6 @@ interface TicketBoardViewProps {
   onTicketClick: (ticket: Ticket) => void;
 }
 
-// const statusGroups = [
-//   { title: 'TODO', key: 'TODO' },
-//   { title: 'IN PROGRESS', key: 'IN_PROGRESS' },
-//   { title: 'DONE', key: 'DONE' },
-//   { title: 'OTHERS', key: 'OTHERS' }, // DROP / HOLD / BACKLOG
-// ];
-
 const statusGroups = [
   { title: "TODO", key: "TODO", icon: <ClipboardList size={16} /> },
   { title: "IN PROGRESS", key: "IN_PROGRESS", icon: <Clock size={16} /> },
