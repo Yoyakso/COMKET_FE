@@ -6,14 +6,14 @@ const Size: Record<ChipSize, ReturnType<typeof css>> = {
   sm: css`
     padding: 6px 8px;
     font-size: 12px;
-    width: 66px;
+    min-width: 66px;
     height: 24px;
     border-radius: 2px;
   `,
   md: css`
     padding: 6px 10px;
     font-size: 14px;
-    width: 77px;
+    min-width: 77px;
     height: 32px;
     border-radius: 2px;
   `,
@@ -84,6 +84,8 @@ export const ChipContainer = styled.div<ChipContainerProps>`
   gap: 6px;
   font-weight: 400;
   white-space: nowrap;
+  white-space: nowrap;
+  flex-shrink: 0;
 
   ${({ size }) => Size[size]}
   ${({ $variant, disabled }) => (disabled ? DisabledStyle : ActiveStyle[$variant])}
@@ -92,6 +94,10 @@ export const ChipContainer = styled.div<ChipContainerProps>`
 export const ChipText = styled.span`
   white-space: nowrap;
   font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  display: inline-block;
 `;
 
 export const CloseButton = styled.button<{ disabled?: boolean }>`

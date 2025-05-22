@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import { styled, keyframes } from "styled-components"
 import { color } from "@/styles/color"
 
 export const SectionTitle = styled.h2`
@@ -55,6 +55,17 @@ export const SenderName = styled.span<{ $isCurrentUser: boolean }>`
   margin: ${(props) => (props.$isCurrentUser ? "0 8px 2px 0" : "0 0 2px 8px")};
 `
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 export const MessageBubbleContainer = styled.div<{ $isCurrentUser: boolean }>`
   display: flex;
   align-items: flex-end;
@@ -69,6 +80,7 @@ export const MessageBubble = styled.div<{ $isCurrentUser: boolean }>`
   padding: 8px 12px;
   width: 100%;
   position: relative;
+  animation: ${fadeIn} 0.5s ease-in-out;
   &:before {
     content: "";
     position: absolute;

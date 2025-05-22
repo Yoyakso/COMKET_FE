@@ -5,6 +5,13 @@ import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { PortalDropdown } from '@/utils/PortalDropdown';
 import * as S from './StatusDropdown.Style';
 import type { Status } from '@/types/filter';
+import { editSingleTicket } from '@/api/Ticket';
+import { toast } from 'react-toastify'
+
+interface StatusDropdownProps {
+  ticketId: number;
+  projectName: string;
+}
 
 export const STATUS_COLORS: Record<Status, string> = {
   TODO: '#9CA3AF',
@@ -24,7 +31,7 @@ const findTicketById = (tickets: any[], id: number) => {
   return undefined;
 };
 
-export const StatusDropdown = ({ ticketId }: { ticketId: number }) => {
+export const StatusDropdown = ({ ticketId, projectName }: StatusDropdownProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState<Status | null>(null);
 
@@ -36,9 +43,29 @@ export const StatusDropdown = ({ ticketId }: { ticketId: number }) => {
 
   useOutsideClick(ref, () => isOpen && setOpenDropdown(null));
 
-  const handleSelect = (status: Status) => {
+  const handleSelect = async (status: Status) => {
     updateTicketStatus(ticketId, status);
     setOpenDropdown(null);
+
+    try {
+      const payload = {
+        ticket_name: ticket.title,
+        description: ticket.description,
+        ticket_type: ticket.type ?? null,
+        ticket_priority: ticket.priority ?? null,
+        ticket_state: status,
+        start_date: ticket.startDate ?? null,
+        end_date: ticket.endDate ?? null,
+        parent_ticket_id: ticket.parentId ?? null,
+        assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
+      };
+
+      await editSingleTicket(ticketId, projectName, payload);
+      toast.success("상태가 변경되었습니다.");
+    } catch (error) {
+      toast.error("상태 변경에 실패했습니다.");
+      console.error('상태 서버 반영 실패:', error);
+    }
   };
 
   const options: Status[] = ['TODO', 'IN_PROGRESS', 'DONE', 'HOLD', 'DROP', 'BACKLOG'];

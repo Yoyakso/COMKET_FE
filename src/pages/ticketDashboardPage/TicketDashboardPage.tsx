@@ -200,6 +200,7 @@ export const TicketDashboardPage = () => {
               onTicketClick={handleTicketClick}
               onTicketHover={handleTicketHover}
               onDeleteTickets={() => setShowDeleteModal(true)}
+              projectName={projectName}
             />
           ) : (
             <TicketBoardView

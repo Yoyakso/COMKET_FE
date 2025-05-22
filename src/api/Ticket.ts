@@ -151,3 +151,34 @@ export const deleteTicket = async (ticketId: number, projectName: string) => {
     throw error;
   }
 };
+
+/**
+ * 티겟 단건 수정
+ * @param ticketId 수정할 티켓 ID
+ * @param projectName 프로젝트 이름
+ * @returns 
+ */
+export const editSingleTicket = async (
+  ticketId: number,
+  projectName: string,
+  updatedFields: { [key: string]: any }
+) => {
+  try {
+    const token = localStorage.getItem('accessToken');
+    if (!token) throw new Error('로그인 토큰이 없습니다.');
+
+    const response = await axios.patch(
+      `${BASE_URL}/api/v1/tickets/${ticketId}?project_name=${encodeURIComponent(projectName)}`, updatedFields,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.log('티겟 수정 실패:', error);
+    throw error;
+  }
+}
