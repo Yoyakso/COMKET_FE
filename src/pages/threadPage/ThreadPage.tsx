@@ -6,12 +6,13 @@ import { useWebSocket } from "@/hooks/useWebSocket"
 import { ThreadChat } from "@/components/thread/threadChat/ThreadChat"
 import { ThreadInfo } from "@/components/thread/threadInfo/ThreadInfo"
 import { ThreadAiSummary } from "@/components/thread/threadAiSummary/ThreadAiSummary"
-import { getTicketById } from "@/api/Ticket"
+import { getTicketById, getTicketsByProjectName } from "@/api/Ticket"
 import { Ticket } from "@/types/ticket"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import { useUserStore } from "@/stores/userStore"
 import { CreateTicketModal } from "@/components/ticketModal/CreateTicketModal"
+import { mapTicketFromResponse } from "@/utils/ticketMapper"
 
 interface Assignee {
   id: number
@@ -83,49 +84,25 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
-    console.log("ticket:", ticket)
-    console.log("ticketId:", ticketId)
-    console.log("projectName:", projectName)
-    if (ticketId && projectName) {
+    if (!ticket && ticketId && projectName) {
       const fetchTicket = async () => {
         try {
           const data = await getTicketById(Number(ticketId), projectName);
-          // const mappedTicket: Ticket = {
-          //   id: data.id,
-          //   title: data.ticket_name,
-          //   type: data.ticket_type, // TicketType이 enum or string union이면 그대로 가능
-          //   description: data.description,
-          //   assignee: {
-          //     name: data.assignee_member?.realName || "",
-          //     nickname: data.assignee_member?.nickname || "",
-          //     profileUrl: data.assignee_member?.profileUrl || "",
-          //     email: data.assignee_member?.email || "",
-          //   },
-          //   threadCount: 0, // 백엔드에서 제공되지 않으면 기본값 처리
-          //   priority: data.ticket_priority,
-          //   status: data.ticket_state,
-          //   startDate: data.start_date,
-          //   endDate: data.end_date,
-          //   subticketCount: data.sub_ticket_count,
-          //   subtickets: [], // 필요 시 fetch 후 별도 처리
-          //   parentId: data.parent_ticket_id ?? undefined,
-          //   writer: {
-          //     name: data.creator_member?.realName || "",
-          //     nickname: data.creator_member?.nickname || "",
-          //     profileUrl: data.creator_member?.profileUrl || "",
-          //     email: data.creator_member?.email || "",
-          //   },
-          // };
+          const mapped = mapTicketFromResponse(data);
+          const all = await getTicketsByProjectName(projectName);
+          const children = all
+            .filter((t: any) => t.parent_ticket_id === mapped.id)
+            .map(mapTicketFromResponse);
 
-          // setTicket(mappedTicket);
+          setTicket({ ...mapped, subtickets: children });
         } catch (err) {
           console.error("티켓 조회 실패", err);
         }
       };
-
       fetchTicket();
     }
-  }, [ticketId, projectName]);
+  }, [ticket, ticketId, projectName]);
+
 
   const handleMessage = useCallback((data: ThreadMessage | ThreadMessage[]) => {
     const normalizedMessages = Array.isArray(data) ? data : [data]
@@ -261,13 +238,14 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
           onClose={() => setIsCreateModalOpen(false)}
           onSubmit={(newTicket) => {
             setIsCreateModalOpen(false);
-            console.log("✅ newTicket:", newTicket);
-            navigate(`/${projectId}/tickets/${newTicket.id}/thread`, {
-              state: {
-                ticket: newTicket,
-                projectName,
-              },
-            });
+            setTicket(prev =>
+              prev
+                ? {
+                  ...prev,
+                  subtickets: [...(prev.subtickets ?? []), newTicket],
+                }
+                : prev
+            );
           }}
         />
       )}

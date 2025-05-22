@@ -1,8 +1,11 @@
 import { CheckCircle, Tag, User } from "lucide-react"
 import * as S from "./ThreadInfo.Style"
 import { StatusBadge } from "@components/ticket/StatusBadge"
+import { useNavigate, useParams } from "react-router-dom";
 
 export const ThreadInfo = ({ ticket }) => {
+  const navigate = useNavigate();
+  const { projectId } = useParams<{ projectId: string }>();
 
   return (
     <S.InfoGrid>
@@ -45,7 +48,15 @@ export const ThreadInfo = ({ ticket }) => {
         <S.InfoContent>
           <S.SubticketList>
             {ticket.subtickets?.map((childTicket) => (
-              <S.SubticketItem key={childTicket.id}>
+              <S.SubticketItem
+                key={childTicket.id}
+                onClick={() =>
+                  navigate(`/${projectId}/tickets/${childTicket.id}/thread`, {
+                    state: { ticket: childTicket, projectName: ticket.projectName },
+                  })
+                }
+                style={{ cursor: "pointer" }}
+              >
                 <CheckCircle size={14} /> <span>{childTicket.title}</span>
               </S.SubticketItem>
             ))}
