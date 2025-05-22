@@ -41,7 +41,7 @@ export const ContentContainer = styled.div`
   flex: 1;
   gap: 8px;
   padding: 14px;
-  margin-left: 260px;
+  margin-left: 230px;
   box-sizing: border-box;
   overflow: hidden;
 `
@@ -76,6 +76,33 @@ export const PageTitle = styled.h1`
   font-weight: 600;
   color: ${color.textPrimary};
   margin-left: 15px;
+`
+
+export const PageHeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 8px;
+`
+
+export const CreateSubTicketButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: ${color.teal500};
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: ${color.teal600};
+  }
 `
 
 export const ContentBody = styled.div`

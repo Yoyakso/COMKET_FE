@@ -11,15 +11,15 @@ import { Ticket } from '@/types/ticket';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
 import { getProjectById, getProjectMembers } from '@/api/Project';
-import { getTicketsByProjectName } from '@/api/Ticket';
+import { getTicketsByProjectName, getTicketById } from '@/api/Ticket';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
-import { TicketType } from '../../types/filter';
 import { MemberData } from '@/types/member';
 import { TicketDropdownStore } from '@/stores/ticketStore';
 import { EmptyTicket } from '@/components/ticket/EmptyTicket';
 import { deleteTickets, deleteTicket } from '@/api/Ticket';
 import { DeleteModal } from '@/components/common/modal/DeleteModal';
 import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
+import { mapTicketFromResponse } from "@/utils/ticketMapper";
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
@@ -68,78 +68,23 @@ export const TicketDashboardPage = () => {
       if (!projectName) return;
       try {
         const tickets = await getTicketsByProjectName(projectName);
-        const mappedTickets: Ticket[] = tickets.map((ticket: any) => {
-          const assignee = members.find(m => m.id === ticket.assignee_member_id);
-          const writer = members.find(m => m.id === ticket.creator_member_id);
+        const rawTickets: Ticket[] = tickets.map((t: any) => mapTicketFromResponse(t));
+        const parentTickets = rawTickets.filter(t => t.parentId === undefined);
+        const childTickets = rawTickets.filter(t => t.parentId !== undefined);
+        const nestedTickets = parentTickets.map(parent => ({
+          ...parent,
+          subtickets: childTickets.filter(child => child.parentId === parent.id),
+        }));
 
-          const subtickets = ticket.sub_tickets?.map((sub: any) => {
-            const subAssignee = members.find(m => m.id === sub.assignee_member_id);
-            const subWriter = members.find(m => m.id === sub.creator_member_id);
-            return {
-              id: sub.id,
-              title: sub.ticket_name,
-              type: sub.ticket_type as TicketType,
-              description: sub.description,
-              assignee: {
-                nickname: '',
-                profileUrl: '',
-                name: subAssignee?.name || '',
-                email: subAssignee?.email || '',
-              },
-              threadCount: 0,
-              priority: sub.ticket_priority,
-              status: sub.ticket_state,
-              startDate: sub.start_date,
-              endDate: sub.end_date,
-              subticketCount: 0,
-              subtickets: [],
-              parentId: sub.parent_ticket_id ?? undefined,
-              writer: {
-                nickname: '',
-                profileUrl: '',
-                name: subWriter?.name || '',
-                email: subWriter?.email || '',
-              },
-            }
-          }) ?? []
-
-          return {
-            id: ticket.id,
-            title: ticket.ticket_name,
-            type: ticket.ticket_type as TicketType,
-            description: ticket.description,
-            assignee: {
-              nickname: '',
-              profileUrl: '',
-              name: assignee?.name || '',
-              email: assignee?.email || '',
-            },
-            threadCount: 0,
-            priority: ticket.ticket_priority,
-            status: ticket.ticket_state,
-            startDate: ticket.start_date,
-            endDate: ticket.end_date,
-            subticketCount: ticket.sub_ticket_count,
-            subtickets: [],
-            parentId: ticket.parent_ticket_id ?? undefined,
-            writer: {
-              nickname: '',
-              profileUrl: '',
-              name: writer?.name || '',
-              email: writer?.email || '',
-            },
-          }
-        });
-        console.log('mappedTickets', mappedTickets)
-        setTickets(mappedTickets);
-        setTicketList(mappedTickets);
+        setTickets(nestedTickets);
+        setTicketList(nestedTickets);
       } catch (e) {
         console.error('티켓 불러오기 실패:', e);
       }
     };
 
     fetchTickets();
-  }, [projectName, members]);
+  }, [projectName]);
 
   const handleTicketClick = (ticket: Ticket) => {
     if (!projectId) return;
@@ -153,7 +98,18 @@ export const TicketDashboardPage = () => {
   };
 
   const handleTicketCreate = (newTicket: Ticket) => {
-    setTicketList(prev => [newTicket, ...prev]);
+    if (newTicket.parentId) {
+      setTicketList(prev =>
+        prev.map(ticket =>
+          ticket.id === newTicket.parentId
+            ? { ...ticket, subtickets: [...ticket.subtickets, newTicket] }
+            : ticket
+        )
+      );
+    } else {
+      setTicketList(prev => [newTicket, ...prev]);
+    }
+
     setIsModalOpen(false);
   };
 
@@ -166,6 +122,11 @@ export const TicketDashboardPage = () => {
   };
 
   const handleNavigateTicket = (direction: 'prev' | 'next') => {
+    if (!selectedTicket && hoveredTicket) {
+      setSelectedTicket(hoveredTicket);
+      return;
+    }
+
     if (!selectedTicket) return;
 
     const currentIndex = ticketList.findIndex(t => t.id === selectedTicket.id);
@@ -176,6 +137,7 @@ export const TicketDashboardPage = () => {
         ? (currentIndex - 1 + ticketList.length) % ticketList.length
         : (currentIndex + 1) % ticketList.length;
 
+    console.log('이동:', direction, '->', ticketList[newIndex].id);
     setSelectedTicket(ticketList[newIndex]);
   };
 
@@ -240,7 +202,10 @@ export const TicketDashboardPage = () => {
               onDeleteTickets={() => setShowDeleteModal(true)}
             />
           ) : (
-            <TicketBoardView onTicketClick={handleTicketClick} />
+            <TicketBoardView
+              ticketList={ticketList}
+              onTicketClick={handleTicketClick}
+            />
           )}
         </S.Wrapper>
 
@@ -252,19 +217,28 @@ export const TicketDashboardPage = () => {
             onSubmit={handleTicketCreate}
           />
         )}
-        {hoveredTicket && !selectedTicket && projectName && (
+        {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => setHoveredTicket(hoveredTicket)}
-            onMouseLeave={() => setHoveredTicket(null)}
+            onMouseEnter={() => { }}
+            onMouseLeave={() => {
+              if (!selectedTicket) setHoveredTicket(null);
+            }}
           >
             <TicketDetailPanel
-              ticket={hoveredTicket}
+              ticket={selectedTicket ?? hoveredTicket}
               projectName={projectName}
-              onClose={() => setHoveredTicket(null)}
+              onClose={() => {
+                if (selectedTicket) {
+                  setSelectedTicket(null);
+                } else {
+                  setHoveredTicket(null);
+                }
+              }}
               onNavigate={handleNavigateTicket}
             />
           </S.PanelWrapper>
         )}
+
         {showDeleteModal && (
           <DeleteModal
             title="티켓 삭제"

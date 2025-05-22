@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { motion } from 'framer-motion';
 import type { DropdownSize, DropdownVariant } from './Dropdown';
 import { color } from '@/styles/color';
 
@@ -95,6 +96,7 @@ export const TextBox = styled.div<{
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  margin-right: 26px;
 `;
 
 export const IconLeft = styled.span<{
@@ -132,7 +134,7 @@ export const IconRight = styled.span<{
   }
 `;
 
-export const OptionList = styled.ul<{ $size: DropdownSize }>`
+export const OptionList = styled(motion.ul)<{ $size: DropdownSize }>`
   position: absolute;
   top: calc(100% + 4px);
   width: 100%;
@@ -145,6 +147,7 @@ export const OptionList = styled.ul<{ $size: DropdownSize }>`
   z-index: 100;
   max-height: 240px;
   overflow-y: auto;
+  transform-origin: top;
 
   &::-webkit-scrollbar {
     width: 6px;

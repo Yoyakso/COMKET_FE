@@ -30,6 +30,23 @@ export const TicketRow = ({
   const toggleExpand = () => setIsExpanded(prev => !prev);
   const hasSubtickets = ticket.subtickets?.length > 0;
 
+  const getUserForAvatar = (assignee: any) => {
+    if (!assignee) {
+      return {
+        name: "없음",
+        nickname: "없음",
+        email: "",
+        profileUrl: "",
+      };
+    }
+    return {
+      name: assignee.name || "없음",
+      nickname: assignee.name || "없음",
+      email: assignee.email || "",
+      profileUrl: assignee.profileUrl || "",
+    };
+  };
+
   return (
     <>
       <S.TableRow
@@ -58,7 +75,7 @@ export const TicketRow = ({
             }
           />
         </S.TableCell>
-        <S.TableCell>{ticket.id}</S.TableCell>
+        {/* <S.TableCell>{ticket.id}</S.TableCell> */}
         <S.TableCell onClick={() => onTicketClick?.(ticket)} style={{ cursor: 'pointer' }}>
           <S.TicketTitleGroup>
             {ticket.title}
@@ -74,7 +91,15 @@ export const TicketRow = ({
           <TypeBadge type={ticket.type} />
         </S.TableCell>
         <S.TableCell>
-          <AvatarWithName user={ticket.assignee} />
+          {/* <AvatarWithName user={ticket.assignee_member} /> */}
+          <AvatarWithName
+            user={{
+              name: ticket.assignee_member?.name || "없음",
+              nickname: ticket.assignee_member?.name || "없음",
+              email: ticket.assignee_member?.email || "",
+              profileUrl: ticket.assignee_member?.profileUrl || ""
+            }}
+          />
         </S.TableCell>
         <S.TableCell $align="center">
           <PriorityDropdown ticketId={ticket.id} />
@@ -86,14 +111,17 @@ export const TicketRow = ({
         <S.TableCell>{ticket.endDate}</S.TableCell>
         <S.TableCell>{ticket.subticketCount}</S.TableCell>
         <S.TableCell>
-          <AvatarWithName user={ticket.writer} />
+          <AvatarWithName user={ticket.creator_member} />
         </S.TableCell>
       </S.TableRow>
 
       {isExpanded &&
         ticket.subtickets?.map(sub => (
-          <S.SubticketRow key={sub.id}>
-            <S.SubticketCell /> {/* 빈 칸 */}
+          <S.SubticketRow key={sub.id}
+            onClick={() => onTicketClick?.(sub)}
+            style={{ cursor: 'pointer' }}
+          >
+            <S.SubticketCell />
             <S.SubticketCell>
               <CheckBox
                 $variant="primary"
@@ -102,7 +130,7 @@ export const TicketRow = ({
                 onChange={() => toggleSingle(sub.id, ticket.id)}
               />
             </S.SubticketCell>
-            <S.SubticketCell>{sub.id}</S.SubticketCell>
+            {/* <S.SubticketCell>{sub.id}</S.SubticketCell> */}
             <S.SubticketCell>
               <S.TicketTitleGroup>
                 {sub.title}
@@ -118,7 +146,16 @@ export const TicketRow = ({
               <TypeBadge type={sub.type} />
             </S.SubticketCell>
             <S.SubticketCell>
-              <AvatarWithName user={sub.assignee} />
+              {/* <AvatarWithName user={sub.assignee.name} /> */}
+              {/* <AvatarWithName user={getUserForAvatar(sub.assignee_member.name)} /> */}
+              <AvatarWithName
+                user={{
+                  name: sub.assignee_member?.name || "없음",
+                  nickname: sub.assignee_member?.name || "없음",
+                  email: sub.assignee_member?.email || "",
+                  profileUrl: sub.assignee_member?.profileUrl || ""
+                }}
+              />
             </S.SubticketCell>
             <S.SubticketCell $align="center">
               <PriorityDropdown ticketId={sub.id} />
@@ -130,7 +167,7 @@ export const TicketRow = ({
             <S.SubticketCell>{sub.endDate}</S.SubticketCell>
             <S.SubticketCell>-</S.SubticketCell>
             <S.SubticketCell>
-              <AvatarWithName user={sub.writer} />
+              <AvatarWithName user={sub.creator_member} />
             </S.SubticketCell>
           </S.SubticketRow>
         ))}

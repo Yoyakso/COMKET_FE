@@ -4,7 +4,7 @@ import { color } from "@/styles/color";
 export const NavContainer = styled.div<{ $variant: "default" | "settings" }>`
   display: flex;
   flex-direction: column;
-  width: 260px;
+  width: 230px;
   height: 100vh;
   border-right: 1px solid #9BA8C63D;
   background-color: ${color.white};

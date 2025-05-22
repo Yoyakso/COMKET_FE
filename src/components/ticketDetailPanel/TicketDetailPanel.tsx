@@ -33,8 +33,8 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
   const navigate = useNavigate()
   const { projectId } = useParams()
 
-  const writerColor = getColorFromString(ticket.writer.name)
-  const assigneeColor = getColorFromString(ticket.assignee.name)
+  const writerColor = getColorFromString(ticket.creator_member.name)
+  const assigneeColor = getColorFromString(ticket.assignee_member.name)
 
   // const startThread = () => {
   //   navigate(`/${projectId}/tickets/${ticket.id}/thread`, {
@@ -136,21 +136,21 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
               <S.UserDisplay>
                 <S.Avatar color={writerColor}>
                   {/* <S.AvatarImage src={ticket.writer.profileUrl || "/placeholder.svg"} alt={ticket.writer.name?.[0] ?? "?"} /> */}
-                  {ticket.writer.name?.[0] ?? "?"}
+                  {ticket.creator_member.name?.[0] ?? "?"}
                 </S.Avatar>
-                <S.UserName>{ticket.writer.name}</S.UserName>
+                <S.UserName>{ticket.creator_member.name}</S.UserName>
               </S.UserDisplay>
             </S.InfoSection>
 
             <S.InfoSection>
               <S.InfoLabel>담당자</S.InfoLabel>
-              {ticket.assignee ? (
+              {ticket.assignee_member ? (
                 <S.UserDisplay>
                   <S.Avatar color={assigneeColor}>
                     {/* <S.AvatarImage src={ticket.assignee.profileUrl || "/placeholder.svg"} alt={ticket.assignee.name} /> */}
-                    {ticket.assignee.name?.[0] ?? "?"}
+                    {ticket.assignee_member.name?.[0] ?? "?"}
                   </S.Avatar>
-                  <S.UserName>{ticket.assignee.name}</S.UserName>
+                  <S.UserName>{ticket.assignee_member.name}</S.UserName>
                 </S.UserDisplay>
               ) : (
                 <S.UnassignedText>미배정</S.UnassignedText>

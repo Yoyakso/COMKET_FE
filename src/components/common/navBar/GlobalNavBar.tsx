@@ -43,12 +43,12 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
           </S.NavLink>
         </S.NavLinks>
       )}
-      {variant === "default" && (
+      {/* {variant === "default" && (
         <S.AuthContainer>
           <S.LoginButton onClick={handleLoginButton}>로그인</S.LoginButton>
           <S.StartButton onClick={handleStartButton}>시작하기</S.StartButton>
         </S.AuthContainer>
-      )}
+      )} */}
 
       {variant === "workspace" && (
         <S.SearchContainter>

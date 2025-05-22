@@ -93,11 +93,7 @@ export const WorkspacePage = () => {
               <Button $variant="tealFilled" size="lg" onClick={() => navigate('/workspace/create')}>
                 워크스페이스 생성
               </Button>
-              <Button
-                $variant="neutralOutlined"
-                size="lg"
-                onClick={() => navigate('workspaces/invite')}
-              >
+              <Button $variant="neutralOutlined" size="lg" onClick={() => navigate('/invite')}>
                 초대 코드로 입장
               </Button>
             </>

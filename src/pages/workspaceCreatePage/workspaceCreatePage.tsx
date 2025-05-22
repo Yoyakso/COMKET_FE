@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import * as S from './workspaceCreatePage.Style';
 import { Radio } from '@/components/common/radio/Radio';
 import { Button } from '@/components/common/button/Button';
-import { workspaceCreate } from '@/api/Workspace'
+import { workspaceCreate } from '@/api/Workspace';
 import { toast } from 'react-toastify';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 
@@ -20,7 +21,6 @@ export const CreateWorkspacePage = () => {
   const { setWorkspaceStore } = useWorkspaceStore();
 
   const handleCreateWorkspace = async () => {
-
     setNameError('');
     setSlugError('');
 
@@ -37,8 +37,8 @@ export const CreateWorkspacePage = () => {
         workspaceName: data.name,
         workspaceSlug: data.slug,
         workspaceId: data.id,
-        profileFileUrl: data.profileFileUrl
-      })
+        profileFileUrl: data.profileFileUrl,
+      });
 
       navigate(`/${data.slug}/project`);
     } catch (error: any) {
@@ -64,83 +64,90 @@ export const CreateWorkspacePage = () => {
   };
 
   return (
-    <S.Container>
-      <S.Title>워크스페이스 생성</S.Title>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+    >
+      <S.Container>
+        <S.Title>워크스페이스 생성</S.Title>
 
-      <S.FormSection>
-        {/* 워크스페이스 이름 */}
-        <S.InputGroup>
-          <S.Label>워크스페이스 이름</S.Label>
-          <S.InputGroupWrapper>
-            <S.InputBox $isError={!isNameValid && workspaceName.length > 0}>
-              <S.CustomInput
-                placeholder="워크스페이스 이름 입력"
-                value={workspaceName}
-                onChange={(e) => setWorkspaceName(e.target.value)}
+        <S.FormSection>
+          {/* 워크스페이스 이름 */}
+          <S.InputGroup>
+            <S.Label>워크스페이스 이름</S.Label>
+            <S.InputGroupWrapper>
+              <S.InputBox $isError={!isNameValid && workspaceName.length > 0}>
+                <S.CustomInput
+                  placeholder="워크스페이스 이름 입력"
+                  value={workspaceName}
+                  onChange={e => setWorkspaceName(e.target.value)}
+                />
+              </S.InputBox>
+              {!isNameValid && workspaceName.length > 0 && (
+                <S.HelperText $isError={true}>2글자 이상의 이름이어야 합니다.</S.HelperText>
+              )}
+              {nameError && <S.HelperText $isError={true}>{nameError}</S.HelperText>}
+            </S.InputGroupWrapper>
+          </S.InputGroup>
+
+          {/* 워크스페이스 주소 */}
+          <S.InputGroup>
+            <S.Label>워크스페이스 주소</S.Label>
+            <S.InputGroupWrapper>
+              <S.InputBox $isError={!!slugError}>
+                <S.Prefix>https://comket.co.kr/</S.Prefix>
+                <S.CustomInput
+                  placeholder="워크스페이스 주소 입력"
+                  value={workspaceURL}
+                  onChange={e => setWorkspaceURL(e.target.value)}
+                />
+              </S.InputBox>
+              {slugError && <S.HelperText $isError={true}>{slugError}</S.HelperText>}
+              <S.HelperText $isError={false}>
+                · 영어 소문자와 숫자만 입력 가능 / 공백 및 특수문자 입력 불가
+                {'\n'}· 생성된 워크스페이스 주소는 나중에 변경할 수 없으니 신중하게 입력해 주세요.
+              </S.HelperText>
+            </S.InputGroupWrapper>
+          </S.InputGroup>
+
+          {/* 공개 여부 */}
+          <S.RadioGroup>
+            <S.Label>공개 여부</S.Label>
+            <S.RadioWrapper>
+              <Radio
+                label="공개"
+                color="black"
+                checked={visibility === 'public'}
+                onChange={() => setVisibility('public')}
+                disabled={false}
               />
-            </S.InputBox>
-            {!isNameValid && workspaceName.length > 0 && (
-              <S.HelperText $isError={true}>2글자 이상의 이름이어야 합니다.</S.HelperText>
-            )}
-            {nameError && <S.HelperText $isError={true}>{nameError}</S.HelperText>}
-          </S.InputGroupWrapper>
-        </S.InputGroup>
-
-        {/* 워크스페이스 주소 */}
-        <S.InputGroup>
-          <S.Label>워크스페이스 주소</S.Label>
-          <S.InputGroupWrapper>
-            <S.InputBox $isError={!!slugError}>
-              <S.Prefix>https://comket.co.kr/</S.Prefix>
-              <S.CustomInput
-                placeholder="워크스페이스 주소 입력"
-                value={workspaceURL}
-                onChange={(e) => setWorkspaceURL(e.target.value)}
+              <Radio
+                label="비공개"
+                color="black"
+                checked={visibility === 'private'}
+                onChange={() => setVisibility('private')}
+                disabled={false}
               />
-            </S.InputBox>
-            {slugError && <S.HelperText $isError={true}>{slugError}</S.HelperText>}
-            <S.HelperText $isError={false}>
-              · 영어 소문자와 숫자만 입력 가능 / 공백 및 특수문자 입력 불가
-              {'\n'}· 생성된 워크스페이스 주소는 나중에 변경할 수 없으니 신중하게 입력해 주세요.
-            </S.HelperText>
-          </S.InputGroupWrapper>
-        </S.InputGroup>
+            </S.RadioWrapper>
+          </S.RadioGroup>
+        </S.FormSection>
 
-        {/* 공개 여부 */}
-        <S.RadioGroup>
-          <S.Label>공개 여부</S.Label>
-          <S.RadioWrapper>
-            <Radio
-              label="공개"
-              color="black"
-              checked={visibility === 'public'}
-              onChange={() => setVisibility('public')}
-              disabled={false}
-            />
-            <Radio
-              label="비공개"
-              color="black"
-              checked={visibility === 'private'}
-              onChange={() => setVisibility('private')}
-              disabled={false}
-            />
-          </S.RadioWrapper>
-        </S.RadioGroup>
-      </S.FormSection>
-
-      <S.ButtonWrapper>
-        <Button size="lg" $variant="neutralOutlined" onClick={() => navigate(-1)}>
-          이전
-        </Button>
-        <Button
-          size="lg"
-          $variant="tealFilled"
-          disabled={!isFormValid}
-          onClick={handleCreateWorkspace}
-        >
-          생성
-        </Button>
-      </S.ButtonWrapper>
-    </S.Container>
+        <S.ButtonWrapper>
+          <Button size="lg" $variant="neutralOutlined" onClick={() => navigate(-1)}>
+            이전
+          </Button>
+          <Button
+            size="lg"
+            $variant="tealFilled"
+            disabled={!isFormValid}
+            onClick={handleCreateWorkspace}
+          >
+            생성
+          </Button>
+        </S.ButtonWrapper>
+      </S.Container>
+    </motion.div>
   );
 };

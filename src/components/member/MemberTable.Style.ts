@@ -15,11 +15,12 @@ export const Table = styled.table`
 `
 
 export const TableHeader = styled.thead`
-  background-color: ${color.neutral};
+  background-color: ${color.white};
 `
 
 export const HeaderRow = styled.tr`
-  border-bottom: 1px solid #dee2e6;
+  border-top: 1px solid #E7EAF1;
+  border-bottom: 1px solid #CFD5E4;
 `
 
 export const HeaderCell = styled.th`
@@ -27,12 +28,12 @@ export const HeaderCell = styled.th`
   text-align: left;
   font-weight: 500;
   font-size: 14px;
-  color:  ${color.textLabel};
+  color: ${color.textHeading};
   white-space: nowrap;
   cursor: pointer;
   
   &:hover {
-    background-color: #e9ecef;
+    background-color: #F7F8FA;
   }
   
   &:last-child {

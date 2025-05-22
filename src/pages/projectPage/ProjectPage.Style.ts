@@ -34,8 +34,8 @@ export const LNBContainer = styled.div`
 
 export const Content = styled.div`
   flex: 1;
-  margin-left: 260px;
-  padding: 32px 48px;
+  margin-left: 230px;
+  padding: 32px;
   box-sizing: border-box;
   height: calc(100vh - 72px);
   overflow: auto;

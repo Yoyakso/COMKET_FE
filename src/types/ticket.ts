@@ -5,11 +5,12 @@ export interface Ticket {
   title: string;
   type: TicketType;
   description: string;
-  assignee: {
+  assignee_member: {
     name: string;
     nickname: string;
     profileUrl?: string;
     email: string;
+    projectMemberId: number | null;
   };
   threadCount: number;
   priority: "LOW" | "MEDIUM" | "HIGH";
@@ -19,11 +20,11 @@ export interface Ticket {
   subticketCount: number;
   subtickets?: Ticket[];
   parentId?: number;
-  writer: {
+  creator_member: {
     name: string;
     nickname: string;
     profileUrl?: string;
     email: string;
-
+    projectMemberId: number | null;
   };
 }

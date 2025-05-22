@@ -9,7 +9,7 @@ import { getProjectMembers } from "@/api/Project"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
 import { useUserStore } from "@/stores/userStore"
 import { toast } from "react-toastify"
-import { Ticket } from '@/types/ticket';
+import { mapTicketFromResponse } from "@/utils/ticketMapper"
 
 interface Member {
   memberId: number
@@ -22,13 +22,14 @@ interface CreateTicketModalProps {
   onSubmit: (ticketData: any) => void
   projectName: string
   projectId: number
+  parentTicketId?: number
 }
 
 const TYPE_OPTIONS = ["개발", "디자인", "기획", "테스트", "버그", "회의/논의", "문서화", "기타"];
 const PRIORITY_OPTIONS = ["LOW", "MEDIUM", "HIGH"];
 const STATUS_OPTIONS = ["TODO", "IN_PROGRESS", "DONE", "HOLD", "DROP", "BACKLOG"];
 
-export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }: CreateTicketModalProps) => {
+export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, parentTicketId }: CreateTicketModalProps) => {
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
   const [members, setMembers] = useState<Member[]>([])
   const { name, memberId } = useUserStore()
@@ -46,6 +47,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
       name: name,
       avatar: name ? name.charAt(0) : "?",
     },
+    parentTicketId: parentTicketId ?? null,
   })
   const [showTypeDropdown, setShowTypeDropdown] = useState(false)
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
@@ -60,8 +62,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
     ticketData.content.trim() !== "" &&
     ticketData.type !== "" &&
     ticketData.priority !== "" &&
-    ticketData.status !== "" &&
-    ticketData.assignee_member_id !== null;
+    ticketData.status !== ""
 
   useEffect(() => {
     if (name && memberId) {
@@ -95,12 +96,7 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!ticketData.assignee_member_id) {
-      toast.error("담당자를 선택해주세요.");
-      return;
-    }
-    console.log("제출 데이터:", ticketData);
-    const dto = {
+    const dto: any = {
       ticket_name: ticketData.title,
       description: ticketData.content,
       ticket_type: ticketData.type,
@@ -108,39 +104,15 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
       ticket_state: ticketData.status as any,
       start_date: ticketData.start_date,
       end_date: ticketData.end_date,
-      parent_ticket_id: null,
       assignee_member_id: ticketData.assignee_member_id,
     };
-    console.log("dto", dto)
+    if (typeof ticketData.parentTicketId === "number") {
+      dto.parent_ticket_id = ticketData.parentTicketId;
+    }
     try {
-      const response = await createTicket(projectName, dto);
-      const mappedTicket: Ticket = {
-        id: response.id,
-        title: response.ticket_name,
-        description: response.description,
-        type: response.ticket_type,
-        priority: response.ticket_priority,
-        status: response.ticket_state,
-        startDate: response.start_date,
-        endDate: response.end_date,
-        subticketCount: 0,
-        subtickets: [],
-        parentId: null,
-        threadCount: 0,
-        assignee: {
-          name: members.find(m => m.projectMemberId === ticketData.assignee_member_id)?.name || '',
-          email: '',
-          profileUrl: '',
-          nickname: ''
-        },
-        writer: {
-          name: ticketData.requester.name,
-          email: '',
-          profileUrl: '',
-          nickname: ''
-        }
-      };
-      onSubmit(mappedTicket);
+      const response = await createTicket(projectName, dto)
+      const mappedTicket = mapTicketFromResponse(response)
+      onSubmit(mappedTicket)
       toast.success("티켓 생성이 완료되었습니다.")
       onClose();
     } catch (err) {
@@ -235,6 +207,27 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
               </S.EditorWrapper>
             </S.FormRow>
 
+            <S.FormRow>
+              <S.FormLabel>기간</S.FormLabel>
+              <S.DateRangeWrapper>
+                <S.DateField
+                  type="date"
+                  value={ticketData.start_date}
+                  onChange={(e) =>
+                    setTicketData({ ...ticketData, start_date: e.target.value })
+                  }
+                />
+                <span>~</span>
+                <S.DateField
+                  type="date"
+                  value={ticketData.end_date}
+                  onChange={(e) =>
+                    setTicketData({ ...ticketData, end_date: e.target.value })
+                  }
+                />
+              </S.DateRangeWrapper>
+            </S.FormRow>
+
             <S.FormRow ref={priorityRef}>
               <S.FormLabel>우선 순위</S.FormLabel>
               <S.SelectField onClick={() => toggleDropdown("priority", showPriorityDropdown)}>
@@ -297,11 +290,17 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId }:
             <S.FormRow ref={assigneeRef}>
               <S.FormLabel>담당자</S.FormLabel>
               <S.SelectField onClick={() => toggleDropdown("assignee", showAssigneeDropdown)}>
-                <S.AssigneeText>
-                  {
-                    members.find((m) => m.projectMemberId === ticketData.assignee_member_id)?.name || "담당자 선택"
-                  }
-                </S.AssigneeText>
+                {(() => {
+                  const assignee = members.find(m => m.projectMemberId === ticketData.assignee_member_id);
+                  return assignee ? (
+                    <S.UserOption>
+                      <S.UserAvatar>{assignee.name.charAt(0)}</S.UserAvatar>
+                      <S.UserName>{assignee.name}</S.UserName>
+                    </S.UserOption>
+                  ) : (
+                    <S.AssigneeText>담당자 선택</S.AssigneeText>
+                  );
+                })()}
                 <ChevronDown size={16} />
                 {showAssigneeDropdown && (
                   <S.DropdownMenu>
