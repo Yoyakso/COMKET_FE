@@ -49,11 +49,7 @@ export const TicketRow = ({
 
   return (
     <>
-      <S.TableRow
-        onMouseEnter={() => onTicketHover?.(ticket)}
-        onMouseMove={() => onTicketHover?.(ticket)}
-        onMouseLeave={() => onTicketHover?.(null)}
-      >
+      <S.TableRow>
         <S.TableCell>
           {hasSubtickets ? (
             <S.ToggleButton onClick={toggleExpand}>
@@ -76,7 +72,13 @@ export const TicketRow = ({
           />
         </S.TableCell>
         {/* <S.TableCell>{ticket.id}</S.TableCell> */}
-        <S.TableCell onClick={() => onTicketClick?.(ticket)} style={{ cursor: 'pointer' }}>
+        <S.TableCell
+          onMouseEnter={() => onTicketHover?.(ticket)}
+          onMouseMove={() => onTicketHover?.(ticket)}
+          onMouseLeave={() => onTicketHover?.(null)}
+          onClick={() => onTicketClick?.(ticket)}
+          style={{ cursor: 'pointer' }}
+        >
           <S.TicketTitleGroup>
             {ticket.title}
             {ticket.threadCount > 0 && (
