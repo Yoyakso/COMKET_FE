@@ -17,6 +17,7 @@ import { ProfilePage } from './pages/profilePage/profilePage';
 import { TicketDashboardPage } from './pages/ticketDashboardPage/TicketDashboardPage';
 import { ThreadPage } from './pages/threadPage/ThreadPage';
 import { ThreadPageWrapper } from './pages/threadPage/TreadPageWrapper';
+import { MainPage } from './pages/mainPage/mainPage';
 
 export const Router = createBrowserRouter([
   {
@@ -102,6 +103,10 @@ export const Router = createBrowserRouter([
         path: '/:projectId/tickets/:ticketId/thread',
         element: <ThreadPageWrapper />,
       },
+      {
+        path: 'main',
+        element: <MainPage />,
+      }
     ],
   },
 ]);
