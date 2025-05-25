@@ -5,6 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import prettier from 'eslint-config-prettier'
+import tanstackQuery from '@tanstack/eslint-plugin-query'
 
 export default tseslint.config(
   { ignores: ['dist'] },
@@ -13,6 +14,7 @@ export default tseslint.config(
       js.configs.recommended,
       ...tseslint.configs.recommended,
       'plugin:react/recommended',
+      'plugin:@tanstack/query/recommended',
       prettier,
     ],
     files: ['**/*.{ts,tsx}'],
@@ -32,6 +34,7 @@ export default tseslint.config(
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      '@tanstack/query': tanstackQuery,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
