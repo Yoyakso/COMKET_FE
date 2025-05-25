@@ -21,10 +21,14 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
     navigate('/signup')
   }
 
+  const handleLogoClick = () => {
+    navigate('/main');
+  };
+
   return (
     <S.NavbarContainer>
       {variant !== "workspace" && (
-        <S.LogoContainer>
+        <S.LogoContainer onClick={handleLogoClick} style={{ cursor: "pointer" }}>
           <COMKET />
           <S.LogoText>COMKET</S.LogoText>
         </S.LogoContainer>

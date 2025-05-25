@@ -13,25 +13,25 @@ export const MainPage = () => {
       id: 1,
       title: "프로젝트 관리",
       description: "팀의 모든 프로젝트를 한 곳에서 체계적으로 관리하세요",
-      image: "/placeholder.svg?height=400&width=600&query=project management dashboard with kanban boards",
+      image: "images/dummy-1.png",
     },
     {
       id: 2,
       title: "티겟 생성",
       description: "프로젝트 내에서 해결해야 할 이슈를 티켓으로 발행하세요.",
-      image: "/placeholder.svg?height=400&width=600&query=analytics dashboard with charts and graphs",
+      image: "images/dummy-1.png",
     },
     {
       id: 3,
       title: "실시간 협업",
       description: "팀원들과 실시간으로 소통하며 효율적으로 협업하세요",
-      image: "/placeholder.svg?height=400&width=600&query=team collaboration interface with chat and video calls",
+      image: "images/dummy-1.png",
     },
     {
       id: 4,
       title: "AI요약",
       description: "소통한 내용을 AI를 통해 요약하고, 액션아이템을 추출해보세요.",
-      image: "/placeholder.svg?height=400&width=600&query=mobile app interface showing project management",
+      image: "images/dummy-1.png",
     },
   ]
 
