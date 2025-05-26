@@ -40,7 +40,7 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
       {variant === "default" && (
         <S.NavLinks>
           <S.NavLink href="#">서비스 소개</S.NavLink>
-          <S.NavLink href="#">이용 요금</S.NavLink>
+          <S.NavLink href="/plan">이용 요금</S.NavLink>
           <S.NavLink href="#">
             고객 지원
             <ChevronDown style={{ marginLeft: '8px' }} />
