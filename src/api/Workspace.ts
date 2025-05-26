@@ -1,14 +1,14 @@
-import axios from "axios";
+import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 /**
  * 워크스페이스 목록 조회
- * @returns 
+ * @returns
  */
 export const fetchMyWorkspaces = async () => {
   try {
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem('accessToken');
     const response = await axios.get(`${BASE_URL}/api/v1/workspaces?includePublic=false`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -18,7 +18,7 @@ export const fetchMyWorkspaces = async () => {
 
     return response.data;
   } catch (error) {
-    console.error("워크스페이스 API 오류:", error);
+    console.error('워크스페이스 API 오류:', error);
     throw error;
   }
 };
@@ -57,19 +57,19 @@ export const workspaceCreate = async (params: WorkspaceCreateParams) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json', 
+          'Content-Type': 'application/json',
         },
 
-        withCredentials: true, 
-      }
+        withCredentials: true,
+      },
     );
 
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error("서버 응답 에러:", error.response.data); // ✅ 핵심
+      console.error('서버 응답 에러:', error.response.data); // ✅ 핵심
     } else {
-      console.error("에러:", error.message);
+      console.error('에러:', error.message);
     }
     throw error;
   }
@@ -82,7 +82,7 @@ export const workspaceCreate = async (params: WorkspaceCreateParams) => {
  */
 
 export const fetchWorkspaceBySlug = async (slug: string) => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem('accessToken');
 
   const response = await axios.get(`${BASE_URL}/api/v1/workspaces/slug/${slug}`, {
     headers: {
@@ -96,13 +96,13 @@ export const fetchWorkspaceBySlug = async (slug: string) => {
 
 /**
  * 워크스페이스 초대코드
- * @param inviteCode 
- * @returns 
+ * @param inviteCode
+ * @returns
  */
 export const fetchWorkspaceByInviteCode = async (inviteCode: string) => {
   const token = localStorage.getItem('accessToken');
 
-  const response = await axios.get(`${BASE_URL}/api/v1/workspaces/inviteCode/${inviteCode}`, {
+  const response = await axios.get(`${BASE_URL}/api/v1/workspaces/invite/${inviteCode}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -111,8 +111,6 @@ export const fetchWorkspaceByInviteCode = async (inviteCode: string) => {
 
   return response.data;
 };
-
-
 
 export interface UploadResponse {
   fileId: number;
@@ -129,7 +127,7 @@ export interface UploadResponse {
  */
 export const uploadProfileImage = async (
   file: File,
-  category: 'WORKSPACE_PROFILE' | 'MEMBER_PROFILE' | 'PROJECT_PROFILE'
+  category: 'WORKSPACE_PROFILE' | 'MEMBER_PROFILE' | 'PROJECT_PROFILE',
 ): Promise<UploadResponse> => {
   try {
     const token = localStorage.getItem('accessToken');
@@ -149,7 +147,7 @@ export const uploadProfileImage = async (
       fileId: response.data.fileId,
       fileUrl: response.data.fileUrl,
       fileName: response.data.fileName,
-    }
+    };
   } catch (error) {
     console.error('이미지 업로드 실패:', error);
     throw error;
@@ -166,29 +164,21 @@ export interface UpdateWorkspacePayload {
   name: string;
   description: string;
   is_public: boolean;
-  profile_file_id: number|null;
+  profile_file_id: number | null;
   state: 'ACTIVE' | 'INACTIVE' | 'DELETED';
 }
 
-export const updateWorkspace = async (
-  workspaceId: string,
-  payload: UpdateWorkspacePayload
-) => {
+export const updateWorkspace = async (workspaceId: string, payload: UpdateWorkspacePayload) => {
   const token = localStorage.getItem('accessToken');
   console.log('token', token);
 
-  const response = await axios.patch(
-    `${BASE_URL}/api/v1/workspaces/${workspaceId}`,
-    payload,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-     withCredentials: true,
-    
-    }
-  );
+  const response = await axios.patch(`${BASE_URL}/api/v1/workspaces/${workspaceId}`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    withCredentials: true,
+  });
 
   return response.data;
 };
@@ -222,8 +212,8 @@ export const exitWorkspace = async ({
 /**
  * 워크스페이스 삭제
  * @param workspaceId - 삭제할 워크스페이스 ID
- * @param email - 삭제할 멤버의 이메일 
- * @returns 
+ * @param email - 삭제할 멤버의 이메일
+ * @returns
  */
 export const deleteWorkspace = async (workspaceId: string) => {
   const token = localStorage.getItem('accessToken');
@@ -239,4 +229,3 @@ export const deleteWorkspace = async (workspaceId: string) => {
 
   return response.data;
 };
-

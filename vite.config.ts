@@ -1,44 +1,47 @@
 import svgr from 'vite-plugin-svgr';
 import { VitePWA } from 'vite-plugin-pwa';
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react({
+  plugins: [
+    react({
       babel: {
-        plugins: [["babel-plugin-styled-components", { displayName: true }]],
+        plugins: [['babel-plugin-styled-components', { displayName: true }]],
       },
-    }
-  ), svgr(), VitePWA({
-    registerType: 'autoUpdate',
-    injectRegister: false,
+    }),
+    svgr(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      injectRegister: false,
 
-    pwaAssets: {
-      disabled: false,
-      config: true,
-    },
+      pwaAssets: {
+        disabled: false,
+        config: true,
+      },
 
-    manifest: {
-      name: 'COMKET',
-      short_name: 'COMKET',
-      description: ' 프로젝트 관리와 논의 경험을 동시에 연결하는 협업 플랫폼',
-      theme_color: '#ffffff',
-    },
+      manifest: {
+        name: 'COMKET',
+        short_name: 'COMKET',
+        description: ' 프로젝트 관리와 논의 경험을 동시에 연결하는 협업 플랫폼',
+        theme_color: '#ffffff',
+      },
 
-    workbox: {
-      globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
-      cleanupOutdatedCaches: true,
-      clientsClaim: true,
-    },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+      },
 
-    devOptions: {
-      enabled: false,
-      navigateFallback: 'index.html',
-      suppressWarnings: true,
-      type: 'module',
-    },
-  })],
+      devOptions: {
+        enabled: false,
+        navigateFallback: 'index.html',
+        suppressWarnings: true,
+        type: 'module',
+      },
+    }),
+  ],
   server: {
     port: 3333,
   },
@@ -58,5 +61,5 @@ export default defineConfig({
       '@utils': '/src/utils',
       '@api': '/src/api',
     },
-  }
-})
+  },
+});

@@ -31,3 +31,5 @@ dev-dist
 
 .env
 .env.*
+
+localhost*.pem

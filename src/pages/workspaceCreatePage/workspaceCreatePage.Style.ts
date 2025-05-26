@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { color } from '@/styles/color';
-import { motion } from 'framer-motion';
 
 export const Container = styled.div`
   display: flex;
@@ -12,13 +11,6 @@ export const Container = styled.div`
   border: 1px solid ${color.textPlaceholder24};
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(219, 221, 233, 0.5);
-`;
-
-export const MotionCard = styled(motion.div)`
-  display: flex;
-  flex-direction: column;
-  width: 720px;
-  gap: 32px;
 `;
 
 export const Title = styled.h2`
