@@ -18,13 +18,17 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
   }
 
   const handleStartButton = () => {
-    navigate('/login')
+    navigate('/signup')
   }
+
+  const handleLogoClick = () => {
+    navigate('/main');
+  };
 
   return (
     <S.NavbarContainer>
       {variant !== "workspace" && (
-        <S.LogoContainer>
+        <S.LogoContainer onClick={handleLogoClick} style={{ cursor: "pointer" }}>
           <COMKET />
           <S.LogoText>COMKET</S.LogoText>
         </S.LogoContainer>
@@ -43,12 +47,12 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
           </S.NavLink>
         </S.NavLinks>
       )}
-      {/* {variant === "default" && (
+      {variant === "default" && (
         <S.AuthContainer>
           <S.LoginButton onClick={handleLoginButton}>로그인</S.LoginButton>
           <S.StartButton onClick={handleStartButton}>시작하기</S.StartButton>
         </S.AuthContainer>
-      )} */}
+      )}
 
       {variant === "workspace" && (
         <S.SearchContainter>

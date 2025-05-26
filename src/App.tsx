@@ -7,10 +7,13 @@ import { GlobalStyle } from './styles/globalStyle';
 import { theme } from './styles/theme';
 import { Outlet } from 'react-router-dom';
 import { AppInitializer } from "./AppInitializer"
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 export const App = () => {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <AppInitializer />
@@ -18,6 +21,6 @@ export const App = () => {
         <ToastContainer position="top-right" autoClose={2000} />
       </ThemeProvider>
       <PWABadge />
-    </>
+    </QueryClientProvider>
   );
 }
