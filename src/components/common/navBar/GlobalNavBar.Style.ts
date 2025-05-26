@@ -21,7 +21,7 @@ export const LogoText = styled.span`
   font-family: "Lexend";
   font-weight: 800;
   font-size: 22px;
-  color: #202632;
+  color: ${color.textPrimary};
   letter-spacing: -1.2px;
 `
 export const LeftSection = styled.div`
@@ -106,7 +106,7 @@ export const SearchContainter = styled.div`
 `
 
 export const StyledSearch = styled(Search)`
-  width: 100%; /* 부모의 400px에 맞춰짐 */
+  width: 100%;
   padding: 0;
   margin: 0;
   border: none;
