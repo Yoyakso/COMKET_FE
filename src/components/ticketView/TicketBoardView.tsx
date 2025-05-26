@@ -26,8 +26,8 @@ export const TicketBoardView = ({ ticketList, onTicketClick }: TicketBoardViewPr
   return (
     <S.BoardContainer>
       {statusGroups.map(group => (
-        <S.Column key={group.key} columnType={group.key}>
-          <S.ColumnHeader columnType={group.key}>
+        <S.Column key={group.key} $columnType={group.key}>
+          <S.ColumnHeader $columnType={group.key}>
             <S.ColumnTitle>
               {group.icon}
               <span style={{ marginLeft: "8px" }}>{group.title}</span>

@@ -10,7 +10,7 @@ export const BoardContainer = styled.div`
   background-color: white;
 `;
 
-export const Column = styled.div<{ columnType: string }>`
+export const Column = styled.div<{ $columnType: string }>`
   flex: 1;
   min-width: 250px;
   border-radius: 8px;
@@ -20,7 +20,7 @@ export const Column = styled.div<{ columnType: string }>`
   max-height: 100%;
 
    background-color: ${(props) => {
-    switch (props.columnType) {
+    switch (props.$columnType) {
       case "TODO":
         return "#9CA3AF22"
       case "IN_PROGRESS":
@@ -35,7 +35,7 @@ export const Column = styled.div<{ columnType: string }>`
   }};
 
   border-top: 4px solid ${(props) => {
-    switch (props.columnType) {
+    switch (props.$columnType) {
       case "TODO":
         return "#9e9e9e"
       case "IN_PROGRESS":
@@ -55,7 +55,7 @@ export const Column = styled.div<{ columnType: string }>`
   }
 `;
 
-export const ColumnHeader = styled.div<{ columnType: string }>`
+export const ColumnHeader = styled.div<{ $columnType: string }>`
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -67,7 +67,7 @@ export const ColumnHeader = styled.div<{ columnType: string }>`
   justify-content: space-between;
   
   color: ${(props) => {
-    switch (props.columnType) {
+    switch (props.$columnType) {
       case "TODO":
         return "#616161"
       case "IN_PROGRESS":
