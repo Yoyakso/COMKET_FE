@@ -16,7 +16,7 @@ import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { MemberData } from '@/types/member';
 import { TicketDropdownStore } from '@/stores/ticketStore';
 import { EmptyTicket } from '@/components/ticket/EmptyTicket';
-import { deleteTickets, deleteTicket } from '@/api/Ticket';
+import { deleteTickets, editSingleTicket } from '@/api/Ticket';
 import { DeleteModal } from '@/components/common/modal/DeleteModal';
 import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
 import { mapTicketFromResponse } from "@/utils/ticketMapper";
@@ -155,6 +155,36 @@ export const TicketDashboardPage = () => {
     }
   };
 
+  const handleTicketDrop = async (ticketId: number, newStatus: string) => {
+    if (!projectName) return;
+
+    try {
+      const ticket = ticketList.find(t => t.id === ticketId);
+      if (!ticket) throw new Error("티켓 정보를 찾을 수 없습니다.");
+
+      await editSingleTicket(ticketId, projectName, {
+        ticket_name: ticket.title,
+        description: ticket.description,
+        ticket_type: ticket.type,
+        ticket_priority: ticket.priority,
+        ticket_state: newStatus,
+        start_date: ticket.startDate,
+        end_date: ticket.endDate,
+        assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
+        parent_ticket_id: ticket.parentId ?? null
+      });
+
+      setTicketList(prev =>
+        prev.map(t =>
+          t.id === ticketId ? { ...t, status: newStatus as Ticket["status"] } : t
+        )
+      );
+
+    } catch (e) {
+      console.error("드래그 상태 변경 실패:", e);
+    }
+  };
+
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -206,6 +236,7 @@ export const TicketDashboardPage = () => {
             <TicketBoardView
               ticketList={ticketList}
               onTicketClick={handleTicketClick}
+              onTicketDrop={handleTicketDrop}
             />
           )}
         </S.Wrapper>
