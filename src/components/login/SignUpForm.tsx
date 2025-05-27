@@ -23,6 +23,7 @@ export const SignUpForm = () => {
     marketing: false,
     information: false,
   });
+  const inviteCodeParam = new URLSearchParams(location.search).get('inviteCode') ?? '';
 
   const isValidPassword = (password: string) => {
     const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
@@ -120,8 +121,13 @@ export const SignUpForm = () => {
         real_name: name,
       });
 
-      console.log('회원가입 성공:', res);
-      toast.success('회원가입이 완료되었습니다.');
+      if (inviteCodeParam) {
+        toast.success('회원가입이 완료되었습니다. 로그인 후 초대된 워크스페이스에 참가해 주세요!');
+        navigate(`/signup/complete?inviteCode=${inviteCodeParam}`, { replace: true });
+      } else {
+        toast.success('회원가입이 완료되었습니다.');
+        navigate('/signup/complete', { replace: true });
+      }
       navigate('/signup/complete');
     } catch (err) {
       toast.error('회원가입에 실패했습니다. 다시 시도해주세요.');

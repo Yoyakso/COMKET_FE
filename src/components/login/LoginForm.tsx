@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import * as S from './LoginForm.Style';
 import { OauthLoginButton } from './OauthLoginButton';
 import { TextInput } from '@/components/common/textInput/TextInput';
@@ -15,6 +15,8 @@ export const LoginForm = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const { setUserState } = useUserStore();
+  const { search } = useLocation();
+  const inviteCodeParam = new URLSearchParams(search).get('inviteCode');
 
   const handleCheckboxChange = () => {
     setRememberEmail(!rememberEmail);
@@ -37,15 +39,14 @@ export const LoginForm = () => {
         profileFileUrl: '',
       });
 
-      const inviteCode = localStorage.getItem('inviteCode');
-      if (inviteCode) {
-        navigate(`/workspace/invite`);
+      if (inviteCodeParam) {
+        navigate(`/workspaces/invite?code=${inviteCodeParam}`, { replace: true });
       } else {
-        navigate('/workspace');
+        navigate('/workspace', { replace: true });
       }
     } catch (error) {
       console.error('로그인 실패:', error);
-      throw error;
+      toast.error;
     }
   };
 
@@ -90,7 +91,11 @@ export const LoginForm = () => {
               interactionState="default"
               className="checkbox"
             />
-            <S.SignupLink href="/signup">회원가입</S.SignupLink>
+            <S.SignupLink
+              href={inviteCodeParam ? `/signup?inviteCode=${inviteCodeParam}` : '/signup'}
+            >
+              회원가입
+            </S.SignupLink>
           </S.RememberSignupRow>
 
           <S.LoginButton type="submit">로그인</S.LoginButton>

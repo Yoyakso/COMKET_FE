@@ -1,13 +1,17 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { googleLogin } from '@/api/Oauth';
+import { clearAuthStorage } from '@/utils/auth';
 import * as S from './GoogleRedirect.Style';
 import { useUserStore } from '@/stores/userStore';
 import { toast } from 'react-toastify';
 
 export const GoogleRedirect = () => {
   const navigate = useNavigate();
-  const code = new URL(window.location.href).searchParams.get('code');
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const code = params.get('code');
+  const inviteCodeFromState = params.get('state');
   const { setUserState } = useUserStore();
 
   useEffect(() => {
@@ -15,6 +19,7 @@ export const GoogleRedirect = () => {
 
     const fetchData = async () => {
       try {
+        clearAuthStorage();
         const result = await googleLogin(code);
 
         if (result.accessToken && result.name) {
@@ -27,11 +32,22 @@ export const GoogleRedirect = () => {
             loginPlatformInfo: result.loginPlatformInfo,
             profileFileUrl: result.profileFileUrl || '',
           });
-          navigate('/workspace');
+          if (inviteCodeFromState) {
+            navigate(`/workspaces/invite?code=${inviteCodeFromState}`, { replace: true });
+          } else {
+            navigate('/workspace', { replace: true });
+          }
         } else if (result.email) {
           // 신규 유저
           toast.info('회원가입이 필요한 사용자입니다.');
-          navigate('/signup', { state: { email: result.email } });
+          const signupPath = inviteCodeFromState
+            ? `/signup?inviteCode=${inviteCodeFromState}`
+            : '/signup';
+
+          navigate(signupPath, {
+            state: { email: result.email },
+            replace: true,
+          });
         }
       } catch (err: any) {
         if (err.response) {
@@ -71,7 +87,7 @@ export const GoogleRedirect = () => {
     };
 
     fetchData();
-  }, [code, navigate]);
+  }, [code, inviteCodeFromState, navigate]);
 
   return (
     <S.LoaderContainer>

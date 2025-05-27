@@ -11,6 +11,7 @@ import { WorkspaceLayout } from '@/components/layout/WorkspaceLayout';
 import { WorkspaceManageLayout } from '@/components/layout/WorkspaceManageLayout';
 import { WorkspaceInfoPage } from './pages/workspaceManagePage/WorkspaceInfoPage';
 import { InviteCodePage } from './pages/InviteCodePage/InviteCodePage';
+import { InviteEntry } from './components/inviteCode/InviteEntry';
 import { ProjectPage } from './pages/projectPage/ProjectPage';
 import { AccountInfoPage } from './pages/accountInfoPage/AccountInfoPage';
 import { ProfilePage } from './pages/profilePage/profilePage';
@@ -58,13 +59,14 @@ export const Router = createBrowserRouter([
         ),
       },
       {
-        path: '/invite',
+        path: 'workspaces/invite',
         element: (
           <WorkspaceLayout>
             <InviteCodePage />
           </WorkspaceLayout>
         ),
       },
+      { path: 'invite/:code', element: <InviteEntry /> },
       {
         path: 'workspace/create',
         element: (
@@ -106,7 +108,7 @@ export const Router = createBrowserRouter([
       {
         path: 'main',
         element: <MainPage />,
-      }
+      },
     ],
   },
 ]);
