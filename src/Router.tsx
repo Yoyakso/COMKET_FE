@@ -19,6 +19,7 @@ import { TicketDashboardPage } from './pages/ticketDashboardPage/TicketDashboard
 import { ThreadPage } from './pages/threadPage/ThreadPage';
 import { ThreadPageWrapper } from './pages/threadPage/TreadPageWrapper';
 import { MainPage } from './pages/mainPage/MainPage';
+import { PlanPage } from './pages/planPage/PlanPage';
 
 export const Router = createBrowserRouter([
   {
@@ -108,6 +109,10 @@ export const Router = createBrowserRouter([
       {
         path: 'main',
         element: <MainPage />,
+      },
+      {
+        path: 'plan',
+        element: <PlanPage />,
       },
     ],
   },

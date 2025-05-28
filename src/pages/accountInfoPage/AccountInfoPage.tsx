@@ -31,6 +31,11 @@ export const AccountInfoPage = () => {
     }
   }
 
+  const handleChangePassword = () => {
+    // navigate("/change-password")
+    toast.info("비밀번호 변경 기능은 현재 준비 중입니다.")
+  }
+
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -44,7 +49,6 @@ export const AccountInfoPage = () => {
 
         <S.Content>
           <S.Title>계정 정보</S.Title>
-
           <S.Section>
             <S.SectionTitle>이메일</S.SectionTitle>
             <S.SectionContent>
@@ -53,7 +57,6 @@ export const AccountInfoPage = () => {
           </S.Section>
 
           <S.Divider />
-
           <S.Section>
             <S.SectionTitle>로그인 정보</S.SectionTitle>
             <S.SectionContent>
@@ -71,6 +74,16 @@ export const AccountInfoPage = () => {
             </S.SectionContent>
           </S.Section>
 
+          <S.Divider />
+          <S.Section>
+            <S.SectionTitle>비밀번호</S.SectionTitle>
+            <S.SectionContent>
+              <S.WithdrawContainer>
+                <S.WithdrawText>최근 변경일: YYYY-MM-DD</S.WithdrawText>
+                <S.WithdrawButton onClick={handleChangePassword}>비밀번호 변경</S.WithdrawButton>
+              </S.WithdrawContainer>
+            </S.SectionContent>
+          </S.Section>
           <S.Divider />
 
           <S.Section>

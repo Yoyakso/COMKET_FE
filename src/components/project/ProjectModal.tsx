@@ -39,12 +39,11 @@ export const ProjectModal = ({
   const [isPublic, setIsPublic] = useState(initialData.isPublic)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
-  const [isEditing, setIsEditing] = useState(mode === "edit")
+  const [isEditing, setIsEditing] = useState(mode === "view")
   const [isComposing, setIsComposing] = useState(false)
-  const isViewMode = mode === "view" && !isEditing
   const isCreateMode = mode === "create"
 
-  const modalTitle = title || (isCreateMode ? "프로젝트 생성" : isViewMode ? "프로젝트 정보" : "프로젝트 수정")
+  const modalTitle = title || (isCreateMode ? "프로젝트 생성" : "프로젝트 정보")
 
   useEffect(() => {
     setIsMounted(true)
@@ -68,8 +67,6 @@ export const ProjectModal = ({
   }, [onClose])
 
   const handleAddTag = () => {
-    if (isViewMode) return
-
     const trimmedTag = tagInput.trim()
     if (trimmedTag && !tags.includes(trimmedTag)) {
       setTags([...tags, trimmedTag])
@@ -78,8 +75,6 @@ export const ProjectModal = ({
   }
 
   const handleTagInputKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
-    if (isViewMode || isComposing) return
-
     if (e.key === "Enter" || e.key === "," || e.key === " ") {
       e.preventDefault()
       handleAddTag()
@@ -87,8 +82,6 @@ export const ProjectModal = ({
   }
 
   const handleRemoveTag = (tagToRemove: string) => {
-    if (isViewMode) return
-
     setTags(tags.filter((tag) => tag !== tagToRemove))
   }
 
@@ -133,10 +126,6 @@ export const ProjectModal = ({
     }
   }
 
-  const toggleEditMode = () => {
-    setIsEditing(!isEditing)
-  }
-
   if (!isMounted) return null
 
   const modalContent = (
@@ -152,7 +141,6 @@ export const ProjectModal = ({
               placeholder="프로젝트 이름 입력"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
-              readOnly={isViewMode}
             />
           </S.InputContainer>
         </S.FormRow>
@@ -164,7 +152,6 @@ export const ProjectModal = ({
               placeholder="프로젝트 설명 입력"
               value={projectDescription}
               onChange={(e) => setProjectDescription(e.target.value)}
-              readOnly={isViewMode}
             />
           </S.InputContainer>
         </S.FormRow>
@@ -172,34 +159,23 @@ export const ProjectModal = ({
         <S.FormRow>
           <S.Label>프로젝트 태그</S.Label>
           <S.InputContainer>
-            {isViewMode ? (
-              <S.TagContainer>
-                {tags.map((tag) => (
-                  <Chip $styleType="filled" key={tag} $variant="lightTeal" size="sm">
-                    {tag}
-                  </Chip>
-                ))}
-                {tags.length === 0 && <S.EmptyText>태그 없음</S.EmptyText>}
-              </S.TagContainer>
-            ) : (
-              <S.TagContainer>
-                {tags.map((tag) => (
-                  <Chip $styleType="filled" key={tag} $variant="lightTeal" size="sm" onClose={() => handleRemoveTag(tag)}>
-                    {tag}
-                  </Chip>
-                ))}
-                <S.TagInput
-                  type="text"
-                  placeholder={tags.length > 0 ? "" : "태그 입력 후 Enter 또는 쉼표로 구분"}
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleTagInputKeyDown}
-                  onBlur={handleAddTag}
-                  onCompositionStart={() => setIsComposing(true)}
-                  onCompositionEnd={() => setIsComposing(false)}
-                />
-              </S.TagContainer>
-            )}
+            <S.TagContainer>
+              {tags.map((tag) => (
+                <Chip $styleType="filled" key={tag} $variant="lightTeal" size="sm" onClose={() => handleRemoveTag(tag)}>
+                  {tag}
+                </Chip>
+              ))}
+              <S.TagInput
+                type="text"
+                placeholder={tags.length > 0 ? "" : "태그 입력 후 Enter 또는 쉼표로 구분"}
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagInputKeyDown}
+                onBlur={handleAddTag}
+                onCompositionStart={() => setIsComposing(true)}
+                onCompositionEnd={() => setIsComposing(false)}
+              />
+            </S.TagContainer>
           </S.InputContainer>
         </S.FormRow>
 
@@ -212,14 +188,12 @@ export const ProjectModal = ({
                 checked={isPublic}
                 color="teal"
                 onChange={() => setIsPublic(true)}
-                disabled={isViewMode}
               />
               <Radio
                 label="멤버 공개"
                 checked={!isPublic}
                 color="teal"
                 onChange={() => setIsPublic(false)}
-                disabled={isViewMode}
               />
             </S.RadioGroup>
             <S.HelperText>
@@ -239,7 +213,7 @@ export const ProjectModal = ({
                   {isSubmitting ? "저장 중..." : "저장"}
                 </S.ConfirmButton>
               ) : (
-                <S.ConfirmButton onClick={toggleEditMode}>수정</S.ConfirmButton>
+                <S.ConfirmButton>저장</S.ConfirmButton>
               )}
             </>
           ) : (
