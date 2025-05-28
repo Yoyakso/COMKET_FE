@@ -6,7 +6,7 @@ export const PageContainer = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100vh;
-  background-color: ${color.basic0};
+  background-color: white;
   overflow: hidden;
 `
 

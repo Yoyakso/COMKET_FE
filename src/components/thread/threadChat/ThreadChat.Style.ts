@@ -18,6 +18,8 @@ export const ThreadContainer = styled.div`
   gap: 12px;
   height: 450px;
   overflow-y: auto;
+  min-height: 300px;
+  max-height: 500px;
 `
 
 export const MessageWrapper = styled.div<{ $isCurrentUser: boolean }>`

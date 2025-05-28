@@ -34,33 +34,35 @@ interface ActionItem {
   id: number
   assignee: Assignee
   task: string
-  priority: "상" | "중" | "하"
-  status: "대기" | "진행중" | "완료"
+  priority: "HIGH" | "MEDIUM" | "LOW"
+  status: "TODO" | "IN PROGRESS" | "DONE"
 }
 
 const SAMPLE_ACTION_ITEMS: ActionItem[] = [
   {
     id: 1,
-    assignee: { id: 1, name: "팀원1", avatar: "/images/avatar-2.png" },
+    assignee: { id: 1, name: "이태경", avatar: "/images/avatar-2.png" },
     task: "로그인 기능 구현",
-    priority: "상",
-    status: "대기",
+    priority: "HIGH",
+    status: "TODO",
   },
   {
     id: 2,
     assignee: { id: 2, name: "팀원2", avatar: "/images/avatar-3.png" },
     task: "API 연동 작업",
-    priority: "중",
-    status: "진행중",
+    priority: "MEDIUM",
+    status: "IN PROGRESS",
   },
   {
     id: 3,
     assignee: { id: 3, name: "팀원3", avatar: "/images/avatar-5.png" },
     task: "테스트 계정 생성",
-    priority: "하",
-    status: "완료",
+    priority: "LOW",
+    status: "DONE",
   },
 ]
+
+const mockAiSummary = `이번 회의에서는 Q4 마케팅 캠페인 전략에 대해 논의했습니다. 주요 결정사항으로는 소셜미디어 광고 예산을 30% 증액하고, 인플루언서 마케팅을 강화하기로 했습니다. 또한 새로운 제품 런칭을 위한 티저 캠페인을 12월 첫째 주에 시작하기로 결정했습니다. 팀 간 협업을 위해 주간 스탠드업 미팅을 도입하고, 프로젝트 진행상황을 실시간으로 공유할 수 있는 대시보드를 구축하기로 했습니다.`
 
 interface ThreadPageProps {
   // ticketId?: number
@@ -69,9 +71,10 @@ interface ThreadPageProps {
 export const ThreadPage = ({ }: ThreadPageProps) => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
-  const [actionItems, setActionItems] = useState<ActionItem[] | null>(null)
+  // const [actionItems, setActionItems] = useState<ActionItem[] | null>(null)
+  const actionItems = SAMPLE_ACTION_ITEMS
   const [newMessage, setNewMessage] = useState("")
-  const [aiSummary, setAiSummary] = useState<string | null>("AI 요약 내용은 곧 업데이트 될 예정입니다.")
+  const [aiSummary, setAiSummary] = useState<string | null>(mockAiSummary)
   const token = localStorage.getItem("accessToken")
   const location = useLocation()
   const navigate = useNavigate();
@@ -83,12 +86,19 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  console.log("ticketId:", ticketId);
+  console.log("projectName:", projectName);
+  console.log("초기 ticket:", ticket);
+
+
   useEffect(() => {
     if (!ticket && ticketId && projectName) {
       const fetchTicket = async () => {
         try {
           const data = await getTicketById(Number(ticketId), projectName);
+          console.log("API에서 받은 원본 ticket 데이터:", data);
           const mapped = mapTicketFromResponse(data);
+          console.log("매핑 후 ticket 데이터:", mapped);
           const all = await getTicketsByProjectName(projectName);
           const children = all
             .filter((t: any) => t.parent_ticket_id === mapped.id)
@@ -162,17 +172,17 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
     setIsCreateModalOpen(true);
   }
 
-  const updateAiAnalysis = () => {
-    setAiSummary(
-      "AI 요약 내용은 곧 업데이트 될 예정입니다.",
-    )
-  }
+  // const updateAiAnalysis = () => {
+  //   setAiSummary(
+  //     console.log("AI 분석 업데이트")
+  //   )
+  // }
 
-  useEffect(() => {
-    if (threadMessages.length > 0) {
-      updateAiAnalysis()
-    }
-  }, [threadMessages])
+  // useEffect(() => {
+  //   if (threadMessages.length > 0) {
+  //     updateAiAnalysis()
+  //   }
+  // }, [threadMessages])
 
   const handleBack = () => {
     navigate(-1);
@@ -213,23 +223,21 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
                   setNewMessage={setNewMessage}
                   sendMessage={sendMessage}
                 />
-                <ThreadInfo ticket={ticket} />
+                {ticket ? (
+                  <ThreadInfo ticket={ticket} />
+                ) : (
+                  <p>티켓 정보를 불러오는 중입니다...</p>
+                )}
               </S.LeftColumn>
 
               <S.RightColumn>
-                {/* <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} /> */}
-                <ThreadAiSummary
-                  aiSummary={aiSummary}
-                  actionItems={actionItems ?? []}
-                  placeholderMessage={
-                    actionItems === null ? "액션아이템 추출 기능은 곧 업데이트 될 예정입니다." : undefined
-                  }
-                />
+                <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
               </S.RightColumn>
             </S.ContentBody>
           </S.ContentContainer>
         </S.MainContainer>
       </S.PageContainer >
+
       {isCreateModalOpen && ticket && projectName && (
         <CreateTicketModal
           projectId={Number(projectId)}
