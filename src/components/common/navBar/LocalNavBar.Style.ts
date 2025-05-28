@@ -9,6 +9,7 @@ export const NavContainer = styled.div<{ $variant?: 'default' | 'settings' }>`
   height: 100vh;
   border-right: 1px solid #9ba8c63d;
   background-color: ${color.white};
+  padding: 15px;
 `;
 
 export const NavContent = styled.div`
@@ -54,7 +55,6 @@ export const NavItemLink = styled.a<{ $active?: boolean }>`
   }
 `;
 
-// ProjectNavBar 전용
 export const NavItem = styled.div`
   display: flex;
   align-items: center;
@@ -122,4 +122,25 @@ export const NavProfileContainer = styled.div`
 
 export const IconContainer = styled.div`
   cursor: pointer;
+`;
+
+export const ProjectSectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  margin-bottom: 8px;
+`;
+
+export const ProjectSectionTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #a7adb5;
+  cursor: pointer;
+
+  &:hover {
+    color: #6b7280;
+  }
 `;

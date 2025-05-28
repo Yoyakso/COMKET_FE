@@ -1,12 +1,27 @@
+'use client';
+
 import * as S from './LocalNavBar.Style';
 import { useNavigate } from 'react-router-dom';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { NavProfile } from './NavProfile';
-import { FolderIcon } from 'lucide-react';
+import { FolderIcon, ChevronRight, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 
-const mockProjects = [
-  { id: 'p1', name: '기획', ticketCount: 2 },
-  { id: 'p2', name: '디자인', ticketCount: 0 },
+const mockAllProjects = [
+  { id: 'p1', name: '1', ticketCount: 0 },
+  { id: 'p2', name: '2', ticketCount: 2 },
+  { id: 'p3', name: '3', ticketCount: 0 },
+  { id: 'p4', name: '4', ticketCount: 9 },
+  { id: 'p5', name: '5', ticketCount: 0 },
+  { id: 'p6', name: '6', ticketCount: 3 },
+  { id: 'p7', name: '7', ticketCount: 4 },
+  { id: 'p8', name: '8', ticketCount: 0 },
+];
+
+const mockMyProjects = [
+  { id: 'p2', name: '4', ticketCount: 2 },
+  { id: 'p3', name: '6', ticketCount: 0 },
+  { id: 'p4', name: '8', ticketCount: 9 },
 ];
 
 interface ProjectNavBarProps {
@@ -19,6 +34,33 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
   const name = useWorkspaceStore(s => s.workspaceName);
   const profileFileUrl = useWorkspaceStore(s => s.profileFileUrl);
 
+  const [isAllProjectsOpen, setIsAllProjectsOpen] = useState(true);
+  const [isMyProjectsOpen, setIsMyProjectsOpen] = useState(false);
+
+  const renderProjectList = (projects: typeof mockAllProjects, selectedProjectId?: string) => {
+    return projects.map(project => (
+      <S.ProjectItem
+        key={project.id}
+        onClick={() => {
+          onNavigateProject?.();
+          navigate(`/${slug}/project/${project.id}`);
+        }}
+        title={project.name}
+        style={{
+          backgroundColor: selectedProjectId === project.id ? '#f3f4f6' : 'transparent',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <FolderIcon size={16} />
+          <span>{project.name}</span>
+        </div>
+        {project.ticketCount > 0 && (
+          <S.Badge>{project.ticketCount > 9 ? '9+' : project.ticketCount}</S.Badge>
+        )}
+      </S.ProjectItem>
+    ));
+  };
+
   return (
     <S.NavContainer>
       <S.NavContent>
@@ -30,22 +72,26 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
         </S.SectionContainer>
 
         <S.SectionContainer>
-          <S.SectionTitle>내 프로젝트</S.SectionTitle>
-          <S.ItemsContainer>
-            {mockProjects.map(p => (
-              <S.ProjectItem
-                key={p.id}
-                onClick={() => {
-                  onNavigateProject?.();
-                  navigate(`/${slug}/project/${p.id}`);
-                }}
-                title={p.name}
-              >
-                <FolderIcon size={16} />
-                {p.name}
-              </S.ProjectItem>
-            ))}
-          </S.ItemsContainer>
+          <S.ProjectSectionHeader>
+            <S.ProjectSectionTitle onClick={() => setIsAllProjectsOpen(!isAllProjectsOpen)}>
+              {isAllProjectsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+              전체 프로젝트
+            </S.ProjectSectionTitle>
+          </S.ProjectSectionHeader>
+          {isAllProjectsOpen && (
+            <S.ItemsContainer>{renderProjectList(mockAllProjects, 'p3')}</S.ItemsContainer>
+          )}
+        </S.SectionContainer>
+
+        <S.SectionContainer>
+          <S.ProjectSectionHeader>
+            <S.ProjectSectionTitle onClick={() => setIsMyProjectsOpen(!isMyProjectsOpen)}>
+              {isMyProjectsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}내 프로젝트
+            </S.ProjectSectionTitle>
+          </S.ProjectSectionHeader>
+          {isMyProjectsOpen && (
+            <S.ItemsContainer>{renderProjectList(mockMyProjects)}</S.ItemsContainer>
+          )}
         </S.SectionContainer>
       </S.NavContent>
 
