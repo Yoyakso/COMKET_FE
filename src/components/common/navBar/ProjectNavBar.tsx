@@ -9,7 +9,11 @@ const mockProjects = [
   { id: 'p2', name: '디자인', ticketCount: 0 },
 ];
 
-export const ProjectNavBar = () => {
+interface ProjectNavBarProps {
+  onNavigateProject?: () => void;
+}
+
+export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
   const navigate = useNavigate();
   const slug = useWorkspaceStore(s => s.workspaceSlug);
   const name = useWorkspaceStore(s => s.workspaceName);
@@ -17,17 +21,34 @@ export const ProjectNavBar = () => {
 
   return (
     <S.NavContainer>
-      <S.SectionTitle>{name}</S.SectionTitle>
-      <S.NavItem onClick={() => navigate(`/${slug}/my-tickets`)}>📌 내 티켓</S.NavItem>
-      <S.SectionTitle>내 프로젝트</S.SectionTitle>
-      {mockProjects.map(p => (
-        <S.ProjectItem key={p.id} onClick={() => navigate(`/${slug}/project/${p.id}`)}>
-          <FolderIcon size={16} />
-          {p.name}
-          {p.ticketCount > 0 && <S.Badge>{p.ticketCount}</S.Badge>}
-        </S.ProjectItem>
-      ))}
-      <S.NavItem onClick={() => navigate(`/${slug}/project`)}>📋 전체 프로젝트 보기</S.NavItem>
+      <S.NavContent>
+        <S.SectionContainer>
+          <S.SectionTitle>{name}</S.SectionTitle>
+          <S.ItemsContainer>
+            <S.NavItem onClick={() => navigate(`/${slug}/my-tickets`)}>내 티켓 모아보기</S.NavItem>
+          </S.ItemsContainer>
+        </S.SectionContainer>
+
+        <S.SectionContainer>
+          <S.SectionTitle>내 프로젝트</S.SectionTitle>
+          <S.ItemsContainer>
+            {mockProjects.map(p => (
+              <S.ProjectItem
+                key={p.id}
+                onClick={() => {
+                  onNavigateProject?.();
+                  navigate(`/${slug}/project/${p.id}`);
+                }}
+                title={p.name}
+              >
+                <FolderIcon size={16} />
+                {p.name}
+              </S.ProjectItem>
+            ))}
+          </S.ItemsContainer>
+        </S.SectionContainer>
+      </S.NavContent>
+
       <S.Divider />
       <S.NavProfileContainer>
         <NavProfile name={name} defaultImage={profileFileUrl} />

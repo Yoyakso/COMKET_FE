@@ -3,9 +3,7 @@ import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { Footer } from '@/components/common/footer/Footer';
 import * as S from './WorkspaceLayout.Style';
 
-
 export const WorkspaceLayout = ({ children }: { children: React.ReactNode }) => {
-
   return (
     <S.Wrapper>
       <GlobalNavBar variant="white" />
