@@ -94,26 +94,26 @@ export const PriorityBadge = styled.span<{ $priority: string }>`
   font-weight: 500;
   background-color: ${(props) => {
     switch (props.$priority) {
-      case "상": return "#fee2e2"
-      case "중": return "#fef3c7"
-      case "하": return "#dbeafe"
+      case "HIGH": return "#fee2e2"
+      case "MEDIUM": return "#fef3c7"
+      case "LOW": return "#dbeafe"
       default: return "#f3f4f6"
     }
   }};
   color: ${(props) => {
     switch (props.$priority) {
-      case "상": return "#b91c1c"
-      case "중": return "#b45309"
-      case "하": return "#1d4ed8"
+      case "HIGH": return "#b91c1c"
+      case "MEDIUM": return "#b45309"
+      case "LOW": return "#1d4ed8"
       default: return "#4b5563"
     }
   }};
   border: 1px solid
     ${(props) => {
     switch (props.$priority) {
-      case "상": return "#fecaca"
-      case "중": return "#fde68a"
-      case "하": return "#bfdbfe"
+      case "HIGH": return "#fecaca"
+      case "MEDIUM": return "#fde68a"
+      case "LOW": return "#bfdbfe"
       default: return "#e5e7eb"
     }
   }};
@@ -129,26 +129,26 @@ export const StatusBadge = styled.span<{ $status: string }>`
   font-weight: 500;
   background-color: ${(props) => {
     switch (props.$status) {
-      case "대기": return "#f3f4f6"
-      case "진행중": return "#dbeafe"
-      case "완료": return "#d1fae5"
+      case "TODO": return "#f3f4f6"
+      case "IN PROGRESS": return "#dbeafe"
+      case "DONE": return "#d1fae5"
       default: return "#f3f4f6"
     }
   }};
   color: ${(props) => {
     switch (props.$status) {
-      case "대기": return "#4b5563"
-      case "진행중": return "#1d4ed8"
-      case "완료": return "#047857"
+      case "TODO": return "#4b5563"
+      case "IN PROGRESS": return "#1d4ed8"
+      case "DONE": return "#047857"
       default: return "#4b5563"
     }
   }};
   border: 1px solid
     ${(props) => {
     switch (props.$status) {
-      case "대기": return "#e5e7eb"
-      case "진행중": return "#bfdbfe"
-      case "완료": return "#a7f3d0"
+      case "TODO": return "#e5e7eb"
+      case "IN PROGRESS": return "#bfdbfe"
+      case "DONE": return "#a7f3d0"
       default: return "#e5e7eb"
     }
   }};

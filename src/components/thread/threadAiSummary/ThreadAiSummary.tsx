@@ -11,8 +11,8 @@ interface ActionItem {
   id: number
   assignee: Assignee
   task: string
-  priority: "상" | "중" | "하"
-  status: "대기" | "진행중" | "완료"
+  priority: "HIGH" | "MEDIUM" | "LOW"
+  status: "TODO" | "IN PROGRESS" | "DONE"
 }
 
 interface ThreadAiSummaryProps {
@@ -48,7 +48,7 @@ export const ThreadAiSummary = ({
               </S.TableRow>
             </S.TableHeader>
             <S.TableBody>
-              {actionItems.map((item) => (
+              {actionItems && actionItems.map((item) => (
                 <S.TableRow key={item.id}>
                   <S.TableCell>
                     <S.AssigneeDisplay>

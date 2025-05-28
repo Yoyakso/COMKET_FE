@@ -16,10 +16,11 @@ import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { MemberData } from '@/types/member';
 import { TicketDropdownStore } from '@/stores/ticketStore';
 import { EmptyTicket } from '@/components/ticket/EmptyTicket';
-import { deleteTickets, deleteTicket } from '@/api/Ticket';
+import { deleteTickets, editSingleTicket } from '@/api/Ticket';
 import { DeleteModal } from '@/components/common/modal/DeleteModal';
 import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
 import { mapTicketFromResponse } from "@/utils/ticketMapper";
+import { Status } from '@/types/filter';
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
@@ -29,8 +30,8 @@ export const TicketDashboardPage = () => {
   const [projectName, setProjectName] = useState<string | null>(null);
   const [projectDescription, setProjectDescription] = useState<string>('');
   const workspaceName = useWorkspaceStore(state => state.workspaceName);
-  const [ticketList, setTicketList] = useState<Ticket[]>([]);
-  const { setTickets } = TicketDropdownStore();
+  const tickets = TicketDropdownStore(state => state.tickets);
+  const setTickets = TicketDropdownStore(state => state.setTickets);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { selectedIds, clearSelection } = TicketSelectionStore();
   const [hoveredTicket, setHoveredTicket] = useState<Ticket | null>(null);
@@ -77,7 +78,6 @@ export const TicketDashboardPage = () => {
         }));
 
         setTickets(nestedTickets);
-        setTicketList(nestedTickets);
       } catch (e) {
         console.error('티켓 불러오기 실패:', e);
       }
@@ -99,15 +99,17 @@ export const TicketDashboardPage = () => {
 
   const handleTicketCreate = (newTicket: Ticket) => {
     if (newTicket.parentId) {
-      setTicketList(prev =>
-        prev.map(ticket =>
-          ticket.id === newTicket.parentId
-            ? { ...ticket, subtickets: [...ticket.subtickets, newTicket] }
-            : ticket
-        )
+      const updated = tickets.map(ticket =>
+        ticket.id === newTicket.parentId
+          ? {
+            ...ticket,
+            subtickets: [...(ticket.subtickets ?? []), newTicket]
+          }
+          : ticket
       );
+      setTickets(updated);
     } else {
-      setTicketList(prev => [newTicket, ...prev]);
+      setTickets([newTicket, ...tickets]);
     }
 
     setIsModalOpen(false);
@@ -128,30 +130,51 @@ export const TicketDashboardPage = () => {
     }
 
     if (!selectedTicket) return;
-
-    const currentIndex = ticketList.findIndex(t => t.id === selectedTicket.id);
+    const currentIndex = tickets.findIndex(t => t.id === selectedTicket.id);
     if (currentIndex === -1) return;
 
     const newIndex =
       direction === 'prev'
-        ? (currentIndex - 1 + ticketList.length) % ticketList.length
-        : (currentIndex + 1) % ticketList.length;
+        ? (currentIndex - 1 + tickets.length) % tickets.length
+        : (currentIndex + 1) % tickets.length;
 
-    console.log('이동:', direction, '->', ticketList[newIndex].id);
-    setSelectedTicket(ticketList[newIndex]);
+    console.log('이동:', direction, '->', tickets[newIndex].id);
+    setSelectedTicket(tickets[newIndex]);
   };
 
   const handleBulkDelete = async () => {
     if (!projectName || selectedIds.length === 0) return;
     try {
       await deleteTickets(selectedIds, projectName);
-
-      setTicketList(prev => prev.filter(t => !selectedIds.includes(t.id)));
-
+      TicketDropdownStore.getState().deleteManyTicket(selectedIds);
       clearSelection();
       setShowDeleteModal(false);
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleTicketDrop = async (ticketId: number, newStatus: Status) => {
+    if (!projectName) return;
+
+    try {
+      const ticket = tickets.find(t => t.id === ticketId);
+      if (!ticket) throw new Error("티켓 정보를 찾을 수 없습니다.");
+
+      await editSingleTicket(ticketId, projectName, {
+        ticket_name: ticket.title,
+        description: ticket.description,
+        ticket_type: ticket.type,
+        ticket_priority: ticket.priority,
+        ticket_state: newStatus,
+        start_date: ticket.startDate,
+        end_date: ticket.endDate,
+        assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
+        parent_ticket_id: ticket.parentId ?? null
+      });
+      TicketDropdownStore.getState().updateTicketStatus(ticketId, newStatus);
+    } catch (e) {
+      console.error("드래그 상태 변경 실패:", e);
     }
   };
 
@@ -192,11 +215,11 @@ export const TicketDashboardPage = () => {
             </S.ViewTabBar>
           </S.Header>
 
-          {ticketList.length === 0 ? (
+          {tickets.length === 0 ? (
             <EmptyTicket onCreateTicket={() => setIsModalOpen(true)} />
           ) : viewType === 'list' ? (
             <TicketListView
-              ticketList={ticketList}
+              ticketList={tickets}
               onTicketClick={handleTicketClick}
               onTicketHover={handleTicketHover}
               onDeleteTickets={() => setShowDeleteModal(true)}
@@ -204,8 +227,9 @@ export const TicketDashboardPage = () => {
             />
           ) : (
             <TicketBoardView
-              ticketList={ticketList}
+              ticketList={tickets}
               onTicketClick={handleTicketClick}
+              onTicketDrop={handleTicketDrop}
             />
           )}
         </S.Wrapper>
