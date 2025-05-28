@@ -10,7 +10,14 @@ interface TicketCardProps {
 
 export const TicketCard = ({ ticket, onClick }: TicketCardProps) => {
   return (
-    <S.CardContainer onClick={onClick}>
+    <S.CardContainer
+      onClick={onClick}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('ticketId', ticket.id.toString());
+        e.dataTransfer.effectAllowed = 'move';
+      }}
+    >
       <S.Header>
         <S.Title>{ticket.title}</S.Title>
         {ticket.threadCount > 0 && (
