@@ -12,7 +12,6 @@ export const Section = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   overflow: hidden;
-  max-height: 300px;
 `
 
 export const SectionHeader = styled.div`
@@ -29,6 +28,22 @@ export const SectionTitle = styled.h2`
   font-weight: 600;
   color: ${color.basic700};
   margin: 0;
+`
+
+export const EditButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 6px;
+  color: #6b7280;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #111827;
+    background-color: rgba(59, 130, 246, 0.1);
+  }
 `
 
 export const InfoGrid = styled.div`
@@ -79,52 +94,6 @@ export const TagBadge = styled.span`
   border: 1px solid #e5e7eb;
 `
 
-export const PriorityBadge = styled.span<{ priority?: string }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  background-color: ${(props) => {
-    switch (props.priority) {
-      case "HIGH":
-        return "#fef2f2"
-      case "MEDIUM":
-        return "#fef3c7"
-      case "LOW":
-        return "#f0f9ff"
-      default:
-        return "#fef2f2"
-    }
-  }};
-  color: ${(props) => {
-    switch (props.priority) {
-      case "HIGH":
-        return "#dc2626"
-      case "MEDIUM":
-        return "#d97706"
-      case "LOW":
-        return "#2563eb"
-      default:
-        return "#dc2626"
-    }
-  }};
-  border: 1px solid ${(props) => {
-    switch (props.priority) {
-      case "HIGH":
-        return "#fecaca"
-      case "MEDIUM":
-        return "#fed7aa"
-      case "LOW":
-        return "#bfdbfe"
-      default:
-        return "#fecaca"
-    }
-  }};
-`
-
 export const StatusBadgeContainer = styled.div`
   display: flex;
   gap: 6px;
@@ -142,12 +111,19 @@ export const UserDisplay = styled.div`
 `
 
 export const SmallAvatar = styled.div`
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   overflow: hidden;
-  background-color: #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `
 
 export const AvatarImage = styled.img`
@@ -294,4 +270,159 @@ export const SubticketItem = styled.li`
     height: 14px;
     flex-shrink: 0;
   }
+`
+
+export const StyledInput = styled.input`
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: ${color.textPrimary};
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  transition: all 0.2s ease;
+  outline: none;
+
+  &:focus {
+    border-color: ${color.primary};
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: #ffffff;
+  }
+
+  &:hover {
+    border-color: #d1d5db;
+  }
+
+  &::placeholder {
+    color: ${color.textSecondary};
+  }
+`
+
+export const StyledSelect = styled.select`
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: ${color.textPrimary};
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  transition: all 0.2s ease;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 32px;
+
+  &:focus {
+    border-color: ${color.primary};
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: #ffffff;
+  }
+
+  &:hover {
+    border-color: #d1d5db;
+  }
+
+  option {
+    padding: 8px;
+    background-color: white;
+    color: ${color.textPrimary};
+  }
+`
+
+export const StyledTextarea = styled.textarea`
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: ${color.textPrimary};
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  transition: all 0.2s ease;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+
+  &:focus {
+    border-color: ${color.primary};
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: #ffffff;
+  }
+
+  &:hover {
+    border-color: #d1d5db;
+  }
+
+  &::placeholder {
+    color: ${color.textSecondary};
+  }
+`
+
+export const SaveButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.25);
+  margin-top: 16px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px 0 rgba(16, 185, 129, 0.35);
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  }
+
+  &:active {
+    transform: translateY(0px);
+    box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.15);
+  }
+`
+
+export const CancelButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: ${color.textSecondary};
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 16px;
+  margin-left: 8px;
+
+  &:hover {
+    border-color: #d1d5db;
+    color: ${color.textPrimary};
+    background-color: #f9fafb;
+  }
+`
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0 16px 16px;
 `

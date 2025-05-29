@@ -11,6 +11,7 @@ export const SignUpForm = () => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState(location.state?.email || '');
+  // const isSocialUser = location.state?.provider === 'google';
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -49,16 +50,11 @@ export const SignUpForm = () => {
   const handleAgreementChange =
     (key: keyof typeof agreements) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const checked = e.target.checked;
-
-      // 개별 체크 반영
       const updated = {
         ...agreements,
         [key]: checked,
       };
-
-      // 전체 동의 여부 다시 계산
       updated.all = updated.service && updated.privacy && updated.marketing && updated.information;
-
       setAgreements(updated);
     };
 
@@ -114,7 +110,15 @@ export const SignUpForm = () => {
       toast.success('회원가입이 완료되었습니다.');
       navigate('/signup/complete');
     } catch (err) {
-      toast.error('회원가입에 실패했습니다. 다시 시도해주세요.');
+      if (err.response) {
+        console.error('회원가입 오류:', err.response);
+        const status = err.response.data.code;
+        if (status === "EMAIL_DUPLICATE") {
+          toast.error('이미 가입된 이메일입니다.');
+        }
+      } else {
+        toast.error('회원가입 요청에 실패했습니다. 네트워크 상태를 확인해주세요.');
+      }
     }
   };
 

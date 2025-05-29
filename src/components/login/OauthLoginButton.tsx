@@ -26,12 +26,8 @@ export const OauthLoginButton = ({ onClick, children, buttonStyle }: OauthLoginB
       `&access_type=offline` +
       `&prompt=consent`
       ;
-
-    console.log("🔎 Google 로그인 URL:", googleLoginUrl);
-
     window.location.href = googleLoginUrl;
   };
-
 
   return (
     <S.ButtonContainer onClick={handleOauth}>
