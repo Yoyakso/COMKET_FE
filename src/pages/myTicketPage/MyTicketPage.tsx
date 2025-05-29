@@ -1,4 +1,4 @@
-import * as S from './myTicketPage.Style';
+import * as S from './MyTicketPage.Style';
 import { useState } from 'react';
 import { ListChecks, Rows2 } from 'lucide-react';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
@@ -55,7 +55,7 @@ export const MyTicketPage = () => {
             <TicketListView
               ticketList={mockMyTickets}
               onTicketClick={handleTicketClick}
-              onDeleteTickets={() => {}}
+              onDeleteTickets={() => { }}
               projectName="내 티켓"
             />
           ) : (
