@@ -4,10 +4,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AvatarWithName } from './AvatarWithName';
 import { Ticket } from '@/types/ticket';
 import { CheckBox } from '../common/checkbox/CheckBox';
-import { ChevronRight, ChevronDown, MessageSquare, Minus } from 'lucide-react';
+import { ChevronRight, ChevronDown, MessageSquare } from 'lucide-react';
 import { TypeBadge } from './TypeBadge';
 import { PriorityDropdown } from './PriorityDropdown';
 import { StatusDropdown } from './StatusDropdown';
+import { AssigneeCell } from '@/components/ticket/AssignCell';
 
 interface TicketRowProps {
   ticket: Ticket;
@@ -102,14 +103,7 @@ export const TicketRow = ({
           <TypeBadge type={ticket.type} />
         </S.TableCell>
         <S.TableCell>
-          <AvatarWithName
-            user={{
-              name: ticket.assignee_member?.name || '없음',
-              nickname: ticket.assignee_member?.name || '없음',
-              email: ticket.assignee_member?.email || '',
-              profileUrl: ticket.assignee_member?.profileUrl || '',
-            }}
-          />
+          <AssigneeCell members={ticket.assignee_member ? [ticket.assignee_member] : []} />
         </S.TableCell>
         <S.TableCell $align="center">
           <PriorityDropdown ticketId={ticket.id} projectName={projectName} />

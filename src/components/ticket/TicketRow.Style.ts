@@ -82,25 +82,25 @@ export const ThreadIcon = styled.div`
   }
 `;
 
-export const SubticketRow = styled.tr`
-  background-color: #fafafa;
-`;
+// export const SubticketRow = styled.tr`
+//   background-color: #fafafa;
+// `;
 
-export const SubticketCell = styled.td<{ $align?: 'left' | 'center' | 'right' }>`
-  padding: 12px 20px;
-  color: ${color.textPrimary};
-  font-size: 14px;
-  text-align: ${({ $align }) => $align ?? 'left'};
-  vertical-align: middle;
-  position: relative;
+// export const SubticketCell = styled.td<{ $align?: 'left' | 'center' | 'right' }>`
+//   padding: 12px 20px;
+//   color: ${color.textPrimary};
+//   font-size: 14px;
+//   text-align: ${({ $align }) => $align ?? 'left'};
+//   vertical-align: middle;
+//   position: relative;
 
-  &:first-child::before {
-    content: '';
-    position: absolute;
-    left: 32px;
-    top: 0px;
-    bottom: 0px;
-    width: 1px;
-    background-color: ${color.teal500};
-  }
-`;
+//   &:first-child::before {
+//     content: '';
+//     position: absolute;
+//     left: 32px;
+//     top: 0px;
+//     bottom: 0px;
+//     width: 1px;
+//     background-color: ${color.teal500};
+//   }
+// `;

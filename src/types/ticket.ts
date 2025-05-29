@@ -1,4 +1,4 @@
-import { TicketType } from "./filter";
+import { TicketType } from './filter';
 
 export interface Ticket {
   id: number;
@@ -13,8 +13,8 @@ export interface Ticket {
     projectMemberId: number | null;
   };
   threadCount: number;
-  priority: "LOW" | "MEDIUM" | "HIGH";
-  status: "TODO" | "IN_PROGRESS" | "DONE" | "HOLD" | "BACKLOG" | "DROP";
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  status: 'TODO' | 'IN_PROGRESS' | 'DONE' | 'HOLD' | 'BACKLOG' | 'DROP';
   startDate: string;
   endDate: string;
   subticketCount: number;
