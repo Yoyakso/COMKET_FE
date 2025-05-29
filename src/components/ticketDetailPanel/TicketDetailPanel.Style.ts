@@ -222,41 +222,6 @@ export const DetailContent = styled.div`
   color: ${color.textPrimary};
 `
 
-export const PriorityDisplay = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  gap: 6px;
-  width: 67px;
-  height: 24px;
-  border-radius: 100px;
-  color: ${color.textLabel};
-  font-size: 12px;
-  background-color: #F7F8FA;
-`
-
-interface PriorityDotProps {
-  priority: "HIGH" | "MEDIUM" | "LOW"
-}
-
-export const PriorityDot = styled.span<PriorityDotProps>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: ${(props) => {
-    switch (props.priority) {
-      case "HIGH":
-        return `${color.error}`
-      case "MEDIUM":
-        return `${color.warning}`
-      case "LOW":
-        return `${color.success}`
-      default:
-        return "#9ca3af"
-    }
-  }};
-`
-
 export const UserDisplay = styled.div`
   display: flex;
   align-items: center;

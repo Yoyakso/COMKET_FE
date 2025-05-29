@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { X, ExternalLink, MessageSquarePlus, ChevronLeft, ChevronRight, Paperclip, Plus } from "lucide-react"
 import * as S from "./TicketDetailPanel.Style"
 import { Ticket } from "@/types/ticket"
-import { StatusBadge } from "../ticket/StatusBadge"
+import { StatusBadge } from "@/components/ticket/StatusBadge"
+import { PriorityBadge } from "@components/ticket/PriorityBadge"
 import { getColorFromString } from "@/utils/avatarColor"
 
 interface User {
@@ -92,7 +93,6 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
                   <S.ThreadMessageItem key={message.id}>
                     <S.Avatar color={writerColor}>
                       {/* <S.AvatarImage src={message.user.avatar || "/placeholder.svg"} alt={message.user.name} /> */}
-
                     </S.Avatar>
                     <S.MessageContent>
                       <S.MessageHeader>
@@ -120,10 +120,7 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
 
             <S.InfoSection>
               <S.InfoLabel>우선 순위</S.InfoLabel>
-              <S.PriorityDisplay>
-                <S.PriorityDot priority={ticket.priority} />
-                <span>{ticket.priority}</span>
-              </S.PriorityDisplay>
+              <PriorityBadge priority={ticket.priority} />
             </S.InfoSection>
 
             <S.InfoSection>
