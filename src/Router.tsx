@@ -3,6 +3,7 @@ import { App } from './App';
 import { LoginPage } from './pages/loginPage/LoginPage';
 import { WorkspacePage } from './pages/workspacePage/WorkspacePage';
 import { CreateWorkspacePage } from './pages/workspaceCreatePage/workspaceCreatePage';
+import { FindPasswordPage } from './pages/findPasswordPage/FindPasswordPage';
 import { SignUpPage } from './pages/signUpPage/SignUpPage';
 import { SignUpCompletePage } from './pages/signUpCompletePage/SignUpCompletePage';
 import { MemberPage } from './pages/memberPage/MemberPage';
@@ -38,6 +39,10 @@ export const Router = createBrowserRouter([
       {
         path: 'oauth/google',
         element: <GoogleRedirect />,
+      },
+      {
+        path: 'findPassword',
+        element: <FindPasswordPage />,
       },
       {
         path: 'signup',

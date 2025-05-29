@@ -1,5 +1,5 @@
-import styled from "styled-components"
-import { color } from "@/styles/color"
+import styled from 'styled-components';
+import { color } from '@/styles/color';
 
 export const Container = styled.div`
   display: flex;
@@ -11,7 +11,7 @@ export const Container = styled.div`
   border: 1px solid #e5e7eb;
   background-color: white;
   padding: 40px 32px 32px 32px;
-`
+`;
 
 export const FormWrapper = styled.div`
   width: 416px;
@@ -19,7 +19,7 @@ export const FormWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`
+`;
 
 export const Header = styled.div`
   position: relative;
@@ -27,7 +27,7 @@ export const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`
+`;
 
 export const Title = styled.h1`
   font-size: 18px;
@@ -36,30 +36,41 @@ export const Title = styled.h1`
   color: ${color.textPrimary};
   margin-top: 16px;
   margin-bottom: 32px;
-`
+`;
 
 export const FormRow = styled.div`
   width: 100%;
   margin-bottom: 1rem;
-`
+`;
 
 export const RememberSignupRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-`
+`;
+
+export const FindPasswordLink = styled.a`
+  font-size: 12px;
+  font-weight: 500;
+  color: ${color.textSecondary};
+  text-decoration: underline;
+
+  &:hover {
+    color: #4b5563;
+  }
+`;
 
 export const SignupLink = styled.a`
   font-size: 12px;
   font-weight: 500;
   color: ${color.textSecondary};
   text-decoration: underline;
-  
+
   &:hover {
     color: #4b5563;
   }
-`
+`;
 
 export const LoginButton = styled.button`
   width: 100%;
@@ -74,15 +85,15 @@ export const LoginButton = styled.button`
   transition: background-color 0.3s;
   margin-top: 40px;
   margin-bottom: 40px;
-`
+`;
 
 export const Divider = styled.div`
   position: relative;
   width: 100%;
   margin-bottom: 20px;
-  
+
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 50%;
     left: 0;
@@ -90,7 +101,7 @@ export const Divider = styled.div`
     height: 1px;
     background-color: #e5e7eb;
   }
-`
+`;
 
 export const DividerText = styled.span`
   position: relative;
@@ -100,5 +111,4 @@ export const DividerText = styled.span`
   font-size: 12px;
   left: 50%;
   transform: translateX(-50%);
-`
-
+`;

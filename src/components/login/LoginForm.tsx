@@ -91,11 +91,14 @@ export const LoginForm = () => {
               interactionState="default"
               className="checkbox"
             />
-            <S.SignupLink
-              href={inviteCodeParam ? `/signup?inviteCode=${inviteCodeParam}` : '/signup'}
-            >
-              회원가입
-            </S.SignupLink>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <S.FindPasswordLink href="/findpassword">비밀번호 찾기</S.FindPasswordLink>
+              <S.SignupLink
+                href={inviteCodeParam ? `/signup?inviteCode=${inviteCodeParam}` : '/signup'}
+              >
+                회원가입
+              </S.SignupLink>
+            </div>
           </S.RememberSignupRow>
 
           <S.LoginButton type="submit">로그인</S.LoginButton>
