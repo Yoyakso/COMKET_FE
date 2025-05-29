@@ -1,9 +1,10 @@
 import * as S from './TicketRow.Style';
 import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { AvatarWithName } from './AvatarWithName';
 import { Ticket } from '@/types/ticket';
 import { CheckBox } from '../common/checkbox/CheckBox';
-import { ChevronRight, ChevronDown, MessageSquare } from 'lucide-react';
+import { ChevronRight, ChevronDown, MessageSquare, Minus } from 'lucide-react';
 import { TypeBadge } from './TypeBadge';
 import { PriorityDropdown } from './PriorityDropdown';
 import { StatusDropdown } from './StatusDropdown';
@@ -16,6 +17,7 @@ interface TicketRowProps {
   onTicketClick?: (ticket: Ticket) => void;
   onTicketHover?: (ticket: Ticket | null) => void;
   projectName: string;
+  depth?: number;
 }
 
 export const TicketRow = ({
@@ -25,40 +27,49 @@ export const TicketRow = ({
   toggleWithSubtickets,
   onTicketClick,
   onTicketHover,
-  projectName
+  projectName,
+  depth = 0,
 }: TicketRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(prev => !prev);
   const hasSubtickets = ticket.subtickets?.length > 0;
-  const getUserForAvatar = (assignee: any) => {
-    if (!assignee) {
-      return {
-        name: "없음",
-        nickname: "없음",
-        email: "",
-        profileUrl: "",
-      };
-    }
-    return {
-      name: assignee.name || "없음",
-      nickname: assignee.name || "없음",
-      email: assignee.email || "",
-      profileUrl: assignee.profileUrl || "",
-    };
+
+  const getLineColor = (depth: number) => {
+    if (depth === 1) return '#87e6d3';
+    if (depth === 2) return '#56cbb0';
+    return '#C6F3E9';
   };
+
+  const paddingLeft = `${depth * 24}px`;
+  const lineColor = getLineColor(depth);
 
   return (
     <>
-      <S.TableRow>
-        <S.TableCell>
-          {hasSubtickets ? (
+      <S.TableRow $depth={depth}>
+        <td
+          style={{
+            paddingLeft,
+            position: 'relative',
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              width: '4px',
+              backgroundColor: lineColor,
+            }}
+          />
+          {hasSubtickets && depth < 2 ? (
             <S.ToggleButton onClick={toggleExpand}>
               {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             </S.ToggleButton>
           ) : (
             <S.ToggleButtonPlaceholder />
           )}
-        </S.TableCell>
+        </td>
         <S.TableCell>
           <CheckBox
             $variant="primary"
@@ -71,12 +82,10 @@ export const TicketRow = ({
             }
           />
         </S.TableCell>
-        {/* <S.TableCell>{ticket.id}</S.TableCell> */}
         <S.TableCell
-          onMouseEnter={() => onTicketHover?.(ticket)}
-          onMouseMove={() => onTicketHover?.(ticket)}
-          onMouseLeave={() => onTicketHover?.(null)}
           onClick={() => onTicketClick?.(ticket)}
+          onMouseEnter={() => onTicketHover?.(ticket)}
+          onMouseLeave={() => onTicketHover?.(null)}
           style={{ cursor: 'pointer' }}
         >
           <S.TicketTitleGroup>
@@ -93,13 +102,12 @@ export const TicketRow = ({
           <TypeBadge type={ticket.type} />
         </S.TableCell>
         <S.TableCell>
-          {/* <AvatarWithName user={ticket.assignee_member} /> */}
           <AvatarWithName
             user={{
-              name: ticket.assignee_member?.name || "없음",
-              nickname: ticket.assignee_member?.name || "없음",
-              email: ticket.assignee_member?.email || "",
-              profileUrl: ticket.assignee_member?.profileUrl || ""
+              name: ticket.assignee_member?.name || '없음',
+              nickname: ticket.assignee_member?.name || '없음',
+              email: ticket.assignee_member?.email || '',
+              profileUrl: ticket.assignee_member?.profileUrl || '',
             }}
           />
         </S.TableCell>
@@ -111,67 +119,27 @@ export const TicketRow = ({
         </S.TableCell>
         <S.TableCell>{ticket.startDate}</S.TableCell>
         <S.TableCell>{ticket.endDate}</S.TableCell>
-        <S.TableCell>{ticket.subticketCount}</S.TableCell>
+        <S.TableCell>{ticket.subticketCount ?? '-'}</S.TableCell>
         <S.TableCell>
           <AvatarWithName user={ticket.creator_member} />
         </S.TableCell>
       </S.TableRow>
 
-      {isExpanded &&
-        ticket.subtickets?.map(sub => (
-          <S.SubticketRow key={sub.id}
-            onClick={() => onTicketClick?.(sub)}
-            style={{ cursor: 'pointer' }}
-          >
-            <S.SubticketCell />
-            <S.SubticketCell>
-              <CheckBox
-                $variant="primary"
-                size="md"
-                checked={isChecked(sub.id)}
-                onChange={() => toggleSingle(sub.id, ticket.id)}
-              />
-            </S.SubticketCell>
-            {/* <S.SubticketCell>{sub.id}</S.SubticketCell> */}
-            <S.SubticketCell>
-              <S.TicketTitleGroup>
-                {sub.title}
-                {sub.threadCount > 0 && (
-                  <S.ThreadIcon>
-                    <MessageSquare width={'14px'} height={'14px'} />
-                    <span>{sub.threadCount}</span>
-                  </S.ThreadIcon>
-                )}
-              </S.TicketTitleGroup>
-            </S.SubticketCell>
-            <S.SubticketCell>
-              <TypeBadge type={sub.type} />
-            </S.SubticketCell>
-            <S.SubticketCell>
-              {/* <AvatarWithName user={sub.assignee.name} /> */}
-              {/* <AvatarWithName user={getUserForAvatar(sub.assignee_member.name)} /> */}
-              <AvatarWithName
-                user={{
-                  name: sub.assignee_member?.name || "없음",
-                  nickname: sub.assignee_member?.name || "없음",
-                  email: sub.assignee_member?.email || "",
-                  profileUrl: sub.assignee_member?.profileUrl || ""
-                }}
-              />
-            </S.SubticketCell>
-            <S.SubticketCell $align="center">
-              <PriorityDropdown ticketId={sub.id} projectName={projectName} />
-            </S.SubticketCell>
-            <S.SubticketCell $align="center">
-              <StatusDropdown ticketId={sub.id} projectName={projectName} />
-            </S.SubticketCell>
-            <S.SubticketCell>{sub.startDate}</S.SubticketCell>
-            <S.SubticketCell>{sub.endDate}</S.SubticketCell>
-            <S.SubticketCell>-</S.SubticketCell>
-            <S.SubticketCell>
-              <AvatarWithName user={sub.creator_member} />
-            </S.SubticketCell>
-          </S.SubticketRow>
+      {hasSubtickets &&
+        depth < 2 &&
+        isExpanded &&
+        ticket.subtickets?.map((sub, index) => (
+          <TicketRow
+            key={sub.id}
+            ticket={sub}
+            isChecked={isChecked}
+            toggleSingle={toggleSingle}
+            toggleWithSubtickets={toggleWithSubtickets}
+            onTicketClick={onTicketClick}
+            onTicketHover={onTicketHover}
+            projectName={projectName}
+            depth={depth + 1}
+          />
         ))}
     </>
   );

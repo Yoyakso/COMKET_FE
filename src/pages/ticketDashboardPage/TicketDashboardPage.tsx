@@ -72,11 +72,24 @@ export const TicketDashboardPage = () => {
         const rawTickets: Ticket[] = tickets.map((t: any) => mapTicketFromResponse(t));
         const parentTickets = rawTickets.filter(t => t.parentId === undefined);
         const childTickets = rawTickets.filter(t => t.parentId !== undefined);
-        const nestedTickets = parentTickets.map(parent => ({
-          ...parent,
-          subtickets: childTickets.filter(child => child.parentId === parent.id),
-        }));
 
+        const buildNestedTickets = (
+          tickets: Ticket[],
+          parentId: number | undefined = undefined,
+          depth: number = 0,
+        ): Ticket[] => {
+          if (depth >= 3) return [];
+
+          return tickets
+            .filter(ticket => ticket.parentId === parentId)
+            .map(ticket => ({
+              ...ticket,
+              subtickets: buildNestedTickets(tickets, ticket.id, depth + 1),
+            }));
+        };
+
+        const nestedTickets = buildNestedTickets(rawTickets);
+        console.log('[티켓 구조 디버깅]', JSON.stringify(nestedTickets, null, 2));
         setTickets(nestedTickets);
       } catch (e) {
         console.error('티켓 불러오기 실패:', e);

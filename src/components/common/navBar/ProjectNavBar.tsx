@@ -67,7 +67,7 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
         <S.SectionContainer>
           <S.SectionTitle>{name}</S.SectionTitle>
           <S.ItemsContainer>
-            <S.NavItem onClick={() => navigate(`/${slug}/my-tickets`)}>내 티켓 모아보기</S.NavItem>
+            <S.NavItem onClick={() => navigate(`/${slug}/mytickets`)}>내 티켓 모아보기</S.NavItem>
           </S.ItemsContainer>
         </S.SectionContainer>
 
