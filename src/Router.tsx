@@ -15,6 +15,7 @@ import { InviteEntry } from './components/inviteCode/InviteEntry';
 import { ProjectPage } from './pages/projectPage/ProjectPage';
 import { AccountInfoPage } from './pages/accountInfoPage/AccountInfoPage';
 import { ProfilePage } from './pages/profilePage/profilePage';
+import { MyTicketPage } from './pages/myTicketPage/MyTicketPage';
 import { TicketDashboardPage } from './pages/ticketDashboardPage/TicketDashboardPage';
 import { ThreadPage } from './pages/threadPage/ThreadPage';
 import { ThreadPageWrapper } from './pages/threadPage/TreadPageWrapper';
@@ -97,6 +98,10 @@ export const Router = createBrowserRouter([
       {
         path: 'account',
         element: <AccountInfoPage />,
+      },
+      {
+        path: ':workspaceSlug/mytickets',
+        element: <MyTicketPage />,
       },
       {
         path: '/:projectId/tickets',

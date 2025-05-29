@@ -89,7 +89,6 @@ export const TicketDashboardPage = () => {
         };
 
         const nestedTickets = buildNestedTickets(rawTickets);
-        console.log('[티켓 구조 디버깅]', JSON.stringify(nestedTickets, null, 2));
         setTickets(nestedTickets);
       } catch (e) {
         console.error('티켓 불러오기 실패:', e);
