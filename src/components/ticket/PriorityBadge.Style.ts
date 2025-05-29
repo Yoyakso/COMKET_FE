@@ -1,35 +1,33 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { color } from '@/styles/color';
+import type { Priority } from '@/types/filter';
 
-const getColor = (priority: string) => {
-  switch (priority) {
-    case 'HIGH':
-      return css`
-        background-color: rgb(250, 80, 74);
-        color: white;
-      `;
-    case 'MEDIUM':
-      return css`
-        background-color: rgb(255, 169, 39);
-        color: white;
-      `;
-    case 'LOW':
-      return css`
-        background-color: #18d9a0;
-        color: white;
-      `;
-    default:
-      return css``;
-  }
+export const PRIORITY_COLORS: Record<Priority, string> = {
+  HIGH: color.error || '#dc2626',
+  MEDIUM: color.warning || '#d97706',
+  LOW: color.success || '#10b981',
 };
 
-export const Badge = styled.span<{ $priority: string }>`
-  padding: 2px 8px;
-  border-radius: 12px;
+export const Badge = styled.span<{ $priority: Priority }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 6px;
+  height: 24px;
+  border-radius: 100px;
+  color: ${color.textLabel};
   font-size: 12px;
   font-weight: 500;
-  display: inline-block;
-  text-align: center;
-  min-width: 60px;
-  ${props => getColor(props.$priority)}
+  background-color: #F7F8FA;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: ${({ $priority }) => PRIORITY_COLORS[$priority]};
+    margin-right: 4px;
+    flex-shrink: 0;
+  }
 `;

@@ -79,52 +79,6 @@ export const TagBadge = styled.span`
   border: 1px solid #e5e7eb;
 `
 
-export const PriorityBadge = styled.span<{ priority?: string }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  background-color: ${(props) => {
-    switch (props.priority) {
-      case "HIGH":
-        return "#fef2f2"
-      case "MEDIUM":
-        return "#fef3c7"
-      case "LOW":
-        return "#f0f9ff"
-      default:
-        return "#fef2f2"
-    }
-  }};
-  color: ${(props) => {
-    switch (props.priority) {
-      case "HIGH":
-        return "#dc2626"
-      case "MEDIUM":
-        return "#d97706"
-      case "LOW":
-        return "#2563eb"
-      default:
-        return "#dc2626"
-    }
-  }};
-  border: 1px solid ${(props) => {
-    switch (props.priority) {
-      case "HIGH":
-        return "#fecaca"
-      case "MEDIUM":
-        return "#fed7aa"
-      case "LOW":
-        return "#bfdbfe"
-      default:
-        return "#fecaca"
-    }
-  }};
-`
-
 export const StatusBadgeContainer = styled.div`
   display: flex;
   gap: 6px;

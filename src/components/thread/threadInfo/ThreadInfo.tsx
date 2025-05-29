@@ -2,6 +2,7 @@ import { CheckCircle, Tag, User, FileText, Calendar } from "lucide-react"
 import * as S from "./ThreadInfo.Style"
 import { StatusBadge } from "@components/ticket/StatusBadge"
 import { useNavigate, useParams } from "react-router-dom"
+import { PriorityBadge } from "@/components/ticket/PriorityBadge"
 
 export const ThreadInfo = ({ ticket }) => {
   const navigate = useNavigate()
@@ -37,7 +38,7 @@ export const ThreadInfo = ({ ticket }) => {
             <S.InfoContent>
               <S.TypeContainer>
                 <S.TagBadge>{ticket.type}</S.TagBadge>
-                <S.PriorityBadge priority={ticket.priority}>{ticket.priority || "HIGH"}</S.PriorityBadge>
+                <PriorityBadge priority={ticket.priority} />
               </S.TypeContainer>
             </S.InfoContent>
           </S.InfoSection>
