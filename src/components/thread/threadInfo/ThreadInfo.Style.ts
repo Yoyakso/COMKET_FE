@@ -31,6 +31,19 @@ export const SectionTitle = styled.h2`
   margin: 0;
 `
 
+export const EditButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 4px;
+  color: #6b7280;
+
+  &:hover {
+    color: #111827;
+  }
+`
+
 export const InfoGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
