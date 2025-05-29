@@ -1,4 +1,6 @@
 import * as S from "./ThreadAiSummary.Style"
+import { useState } from "react"
+import { Loader2, Bot, Sparkles } from "lucide-react"
 
 interface Assignee {
   id: number
@@ -19,18 +21,73 @@ interface ThreadAiSummaryProps {
   aiSummary: string | null
   actionItems: ActionItem[]
   placeholderMessage?: string
+  onGenerateSummary?: () => Promise<string>
 }
 
+// 목업 데이터
+const mockAiSummary = `이번 회의에서는 Q4 마케팅 캠페인 전략에 대해 논의했습니다. 주요 결정사항으로는 소셜미디어 광고 예산을 30% 증액하고, 인플루언서 마케팅을 강화하기로 했습니다. 또한 새로운 제품 런칭을 위한 티저 캠페인을 12월 첫째 주에 시작하기로 결정했습니다. 팀 간 협업을 위해 주간 스탠드업 미팅을 도입하고, 프로젝트 진행상황을 실시간으로 공유할 수 있는 대시보드를 구축하기로 했습니다.`
+
 export const ThreadAiSummary = ({
-  aiSummary,
+  aiSummary: initialAiSummary,
   actionItems,
   placeholderMessage,
+  onGenerateSummary
 }: ThreadAiSummaryProps) => {
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [aiSummary, setAiSummary] = useState<string | null>(initialAiSummary || mockAiSummary)
+
+  const handleGenerateSummary = async () => {
+    setIsLoading(true)
+    try {
+      if (onGenerateSummary) {
+        const summary = await onGenerateSummary()
+        setAiSummary(summary)
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        setAiSummary(mockAiSummary)
+      }
+    } catch (error) {
+      console.error("요약 생성 중 오류 발생:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <>
-      <S.SectionTitle>AI 요약</S.SectionTitle>
+      <S.SectionTitleContainer>
+        <S.SectionTitle>AI 요약</S.SectionTitle>
+        <S.GenerateButton onClick={handleGenerateSummary} disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <S.SpinnerIcon>
+                <Loader2 size={16} />
+              </S.SpinnerIcon>
+              <span>요약 생성 중...</span>
+            </>
+          ) : (
+            <>
+              <S.ButtonIcon>
+                <Sparkles size={16} />
+              </S.ButtonIcon>
+              <span>AI 요약 생성</span>
+            </>
+          )}
+        </S.GenerateButton>
+      </S.SectionTitleContainer>
+
       <S.AiSummaryBox>
-        <S.AiSummaryContent>{aiSummary}</S.AiSummaryContent>
+        {isLoading ? (
+          <S.LoadingContainer>
+            <S.LoadingSpinner>
+              <Bot size={32} />
+            </S.LoadingSpinner>
+            <S.LoadingText>AI가 회의 내용을 요약하고 있습니다...</S.LoadingText>
+          </S.LoadingContainer>
+        ) : (
+          <S.AiSummaryContent>{aiSummary}</S.AiSummaryContent>
+        )}
       </S.AiSummaryBox>
 
       <S.SectionTitle>액션 아이템</S.SectionTitle>

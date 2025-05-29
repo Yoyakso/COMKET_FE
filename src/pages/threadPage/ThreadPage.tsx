@@ -64,64 +64,49 @@ const SAMPLE_ACTION_ITEMS: ActionItem[] = [
 
 const mockAiSummary = `이번 회의에서는 Q4 마케팅 캠페인 전략에 대해 논의했습니다. 주요 결정사항으로는 소셜미디어 광고 예산을 30% 증액하고, 인플루언서 마케팅을 강화하기로 했습니다. 또한 새로운 제품 런칭을 위한 티저 캠페인을 12월 첫째 주에 시작하기로 결정했습니다. 팀 간 협업을 위해 주간 스탠드업 미팅을 도입하고, 프로젝트 진행상황을 실시간으로 공유할 수 있는 대시보드를 구축하기로 했습니다.`
 
-interface ThreadPageProps {
-  // ticketId?: number
-}
-
-export const ThreadPage = ({ }: ThreadPageProps) => {
+export const ThreadPage = () => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
-  // const [actionItems, setActionItems] = useState<ActionItem[] | null>(null)
   const actionItems = SAMPLE_ACTION_ITEMS
   const [newMessage, setNewMessage] = useState("")
   const [aiSummary, setAiSummary] = useState<string | null>(mockAiSummary)
   const token = localStorage.getItem("accessToken")
   const location = useLocation()
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const state = location.state as { ticket?: Ticket; projectName?: string }
   const ticketFromState = state?.ticket
   const projectName = state?.projectName
   const memberId = useUserStore((state) => state.memberId)
   const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-  console.log("ticketId:", ticketId);
-  console.log("projectName:", projectName);
-  console.log("초기 ticket:", ticket);
-
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   useEffect(() => {
     if (!ticket && ticketId && projectName) {
       const fetchTicket = async () => {
         try {
-          const data = await getTicketById(Number(ticketId), projectName);
-          console.log("API에서 받은 원본 ticket 데이터:", data);
-          const mapped = mapTicketFromResponse(data);
-          console.log("매핑 후 ticket 데이터:", mapped);
-          const all = await getTicketsByProjectName(projectName);
+          const data = await getTicketById(Number(ticketId), projectName)
+          const mapped = mapTicketFromResponse(data)
+          const all = await getTicketsByProjectName(projectName)
           const children = all
             .filter((t: any) => t.parent_ticket_id === mapped.id)
-            .map(mapTicketFromResponse);
+            .map(mapTicketFromResponse)
 
-          setTicket({ ...mapped, subtickets: children });
+          setTicket({ ...mapped, subtickets: children })
         } catch (err) {
-          console.error("티켓 조회 실패", err);
+          console.error("티켓 조회 실패", err)
         }
-      };
-      fetchTicket();
+      }
+      fetchTicket()
     }
-  }, [ticket, ticketId, projectName]);
-
+  }, [ticket, ticketId, projectName])
 
   const handleMessage = useCallback((data: ThreadMessage | ThreadMessage[]) => {
     const normalizedMessages = Array.isArray(data) ? data : [data]
-
     const processed = normalizedMessages.map((msg) => ({
       ...msg,
       isCurrentUser: msg.senderMemberId === memberId,
     }))
-
     setThreadMessages((prev) => {
       const seen = new Set(prev.map((m) => m.sentAt + m.senderMemberId))
       const unique = processed.filter(
@@ -139,9 +124,9 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
 
   useEffect(() => {
     if (ticketId && token) {
-      connect();
+      connect()
     }
-  }, [ticketId, token, connect]);
+  }, [ticketId, token, connect])
 
   const formatDateToServerFormat = (date: Date) => {
     return date.toISOString().slice(0, 19)
@@ -169,24 +154,12 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
   }
 
   const handleCreateSubTicket = () => {
-    setIsCreateModalOpen(true);
+    setIsCreateModalOpen(true)
   }
 
-  // const updateAiAnalysis = () => {
-  //   setAiSummary(
-  //     console.log("AI 분석 업데이트")
-  //   )
-  // }
-
-  // useEffect(() => {
-  //   if (threadMessages.length > 0) {
-  //     updateAiAnalysis()
-  //   }
-  // }, [threadMessages])
-
   const handleBack = () => {
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   return (
     <>
@@ -206,7 +179,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
                 <ArrowLeft size={16} />
                 <span>뒤로 가기</span>
               </S.BackButton>
-              <S.PageTitle>{ticket.title}</S.PageTitle>
+              <S.PageTitle>{ticket?.title}</S.PageTitle>
               <S.PageHeaderActions>
                 <S.CreateSubTicketButton onClick={handleCreateSubTicket}>
                   <Plus size={16} />
@@ -224,7 +197,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
                   sendMessage={sendMessage}
                 />
                 {ticket ? (
-                  <ThreadInfo ticket={ticket} />
+                  <ThreadInfo projectName={projectName} ticket={ticket} />
                 ) : (
                   <p>티켓 정보를 불러오는 중입니다...</p>
                 )}
@@ -236,7 +209,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
             </S.ContentBody>
           </S.ContentContainer>
         </S.MainContainer>
-      </S.PageContainer >
+      </S.PageContainer>
 
       {isCreateModalOpen && ticket && projectName && (
         <CreateTicketModal
@@ -245,7 +218,7 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
           parentTicketId={Number(ticketId)}
           onClose={() => setIsCreateModalOpen(false)}
           onSubmit={(newTicket) => {
-            setIsCreateModalOpen(false);
+            setIsCreateModalOpen(false)
             setTicket(prev =>
               prev
                 ? {
@@ -253,11 +226,10 @@ export const ThreadPage = ({ }: ThreadPageProps) => {
                   subtickets: [...(prev.subtickets ?? []), newTicket],
                 }
                 : prev
-            );
+            )
           }}
         />
       )}
-
     </>
   )
 }

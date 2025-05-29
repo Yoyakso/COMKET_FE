@@ -17,7 +17,7 @@ export const Column = styled.div<{ $columnType: string }>`
   padding: 12px;
   display: flex;
   flex-direction: column;
-  max-height: 100%;
+  height: 100vh;
 
    background-color: ${(props) => {
     switch (props.$columnType) {
