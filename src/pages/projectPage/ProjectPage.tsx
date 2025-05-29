@@ -171,7 +171,7 @@ export const ProjectPage = () => {
 
       <S.MainContainer>
         <S.LNBContainer>
-          <LocalNavBar variant="settings" onNavigateProject={handleNavigateProject} />
+          <LocalNavBar variant="project" onNavigateProject={handleNavigateProject} />
         </S.LNBContainer>
 
         <S.Content>
