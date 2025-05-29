@@ -19,7 +19,7 @@ import { EmptyTicket } from '@/components/ticket/EmptyTicket';
 import { deleteTickets, editSingleTicket } from '@/api/Ticket';
 import { DeleteModal } from '@/components/common/modal/DeleteModal';
 import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
-import { mapTicketFromResponse } from "@/utils/ticketMapper";
+import { mapTicketFromResponse } from '@/utils/ticketMapper';
 import { Status } from '@/types/filter';
 
 export const TicketDashboardPage = () => {
@@ -41,14 +41,14 @@ export const TicketDashboardPage = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await getProjectMembers(workspaceName, Number(projectId))
-        setMembers(response)
+        const response = await getProjectMembers(workspaceName, Number(projectId));
+        setMembers(response);
       } catch (error) {
-        console.error("멤버 조회 실패:", error)
+        console.error('멤버 조회 실패:', error);
       }
-    }
-    fetchMembers()
-  }, [workspaceName, projectId])
+    };
+    fetchMembers();
+  }, [workspaceName, projectId]);
 
   useEffect(() => {
     const fetchProjectName = async () => {
@@ -72,11 +72,23 @@ export const TicketDashboardPage = () => {
         const rawTickets: Ticket[] = tickets.map((t: any) => mapTicketFromResponse(t));
         const parentTickets = rawTickets.filter(t => t.parentId === undefined);
         const childTickets = rawTickets.filter(t => t.parentId !== undefined);
-        const nestedTickets = parentTickets.map(parent => ({
-          ...parent,
-          subtickets: childTickets.filter(child => child.parentId === parent.id),
-        }));
 
+        const buildNestedTickets = (
+          tickets: Ticket[],
+          parentId: number | undefined = undefined,
+          depth: number = 0,
+        ): Ticket[] => {
+          if (depth >= 3) return [];
+
+          return tickets
+            .filter(ticket => ticket.parentId === parentId)
+            .map(ticket => ({
+              ...ticket,
+              subtickets: buildNestedTickets(tickets, ticket.id, depth + 1),
+            }));
+        };
+
+        const nestedTickets = buildNestedTickets(rawTickets);
         setTickets(nestedTickets);
       } catch (e) {
         console.error('티켓 불러오기 실패:', e);
@@ -102,10 +114,10 @@ export const TicketDashboardPage = () => {
       const updated = tickets.map(ticket =>
         ticket.id === newTicket.parentId
           ? {
-            ...ticket,
-            subtickets: [...(ticket.subtickets ?? []), newTicket]
-          }
-          : ticket
+              ...ticket,
+              subtickets: [...(ticket.subtickets ?? []), newTicket],
+            }
+          : ticket,
       );
       setTickets(updated);
     } else {
@@ -159,7 +171,7 @@ export const TicketDashboardPage = () => {
 
     try {
       const ticket = tickets.find(t => t.id === ticketId);
-      if (!ticket) throw new Error("티켓 정보를 찾을 수 없습니다.");
+      if (!ticket) throw new Error('티켓 정보를 찾을 수 없습니다.');
 
       await editSingleTicket(ticketId, projectName, {
         ticket_name: ticket.title,
@@ -170,11 +182,11 @@ export const TicketDashboardPage = () => {
         start_date: ticket.startDate,
         end_date: ticket.endDate,
         assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
-        parent_ticket_id: ticket.parentId ?? null
+        parent_ticket_id: ticket.parentId ?? null,
       });
       TicketDropdownStore.getState().updateTicketStatus(ticketId, newStatus);
     } catch (e) {
-      console.error("드래그 상태 변경 실패:", e);
+      console.error('드래그 상태 변경 실패:', e);
     }
   };
 
@@ -186,7 +198,7 @@ export const TicketDashboardPage = () => {
 
       <S.MainContainer>
         <S.LNBContainer>
-          <LocalNavBar variant="settings" />
+          <LocalNavBar variant="project" />
         </S.LNBContainer>
         <S.Wrapper>
           <S.Header>
@@ -244,7 +256,7 @@ export const TicketDashboardPage = () => {
         )}
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => { }}
+            onMouseEnter={() => {}}
             onMouseLeave={() => {
               if (!selectedTicket) setHoveredTicket(null);
             }}

@@ -14,6 +14,7 @@ export const SignUpForm = () => {
   // const isSocialUser = location.state?.provider === 'google';
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isVerificationChecked, setIsVerificationChecked] = useState(false);
   const [agreements, setAgreements] = useState({
@@ -23,6 +24,12 @@ export const SignUpForm = () => {
     marketing: false,
     information: false,
   });
+  const inviteCodeParam = new URLSearchParams(location.search).get('inviteCode') ?? '';
+
+  const isValidPassword = (password: string) => {
+    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return regex.test(password);
+  };
 
   const handleAllAgreements = (e: React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
@@ -39,7 +46,7 @@ export const SignUpForm = () => {
     name.trim() !== '' &&
     email.trim() !== '' &&
     code.trim() !== '' &&
-    password.trim().length >= 8 &&
+    isValidPassword(password) &&
     confirmPassword === password &&
     agreements.service &&
     agreements.privacy;
@@ -89,6 +96,10 @@ export const SignUpForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isValidPassword(password)) {
+      toast.error('비밀번호 형식이 올바르지 않습니다.');
+      return;
+    }
     if (password !== confirmPassword) {
       toast.error('비밀번호가 일치하지 않습니다.');
       return;
@@ -106,8 +117,13 @@ export const SignUpForm = () => {
         real_name: name,
       });
 
-      console.log('회원가입 성공:', res);
-      toast.success('회원가입이 완료되었습니다.');
+      if (inviteCodeParam) {
+        toast.success('회원가입이 완료되었습니다. 로그인 후 초대된 워크스페이스에 참가해 주세요!');
+        navigate(`/signup/complete?inviteCode=${inviteCodeParam}`, { replace: true });
+      } else {
+        toast.success('회원가입이 완료되었습니다.');
+        navigate('/signup/complete', { replace: true });
+      }
       navigate('/signup/complete');
     } catch (err) {
       if (err.response) {
@@ -177,29 +193,43 @@ export const SignUpForm = () => {
           </S.VerificationButton>
         </S.FormRow>
 
-        <S.FormRow>
-          <S.Label>비밀번호</S.Label>
-          <S.Input
-            type="password"
-            autoComplete="new-password"
-            placeholder="비밀번호를 입력해 주세요. (영문, 숫자 포함 8자 이상)"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
-        </S.FormRow>
+        <S.FormGroup>
+          <S.FormRow>
+            <S.Label>비밀번호</S.Label>
+            <S.Input
+              type="password"
+              autoComplete="new-password"
+              placeholder="비밀번호를 입력해 주세요. (영문, 숫자 포함 8자 이상)"
+              value={password}
+              onChange={e => {
+                const value = e.target.value;
+                setPassword(value);
+                if (value === '') {
+                  setPasswordError('');
+                } else if (!isValidPassword(value)) {
+                  setPasswordError('비밀번호는 영문, 숫자를 포함하여 8자 이상이어야 합니다.');
+                } else {
+                  setPasswordError('');
+                }
+              }}
+            />
+          </S.FormRow>
+          <S.ErrorMessage show={!!passwordError}>{passwordError}</S.ErrorMessage>
+        </S.FormGroup>
 
-        <S.FormRow>
-          <S.Label>비밀번호 확인</S.Label>
-          <S.Input
-            type="password"
-            autoComplete="new-password"
-            placeholder="비밀번호를 다시 한번 더 입력해 주세요."
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-          />
-        </S.FormRow>
-
-        {isPasswordMismatch && <S.ErrorMessage>비밀번호가 일치하지 않습니다.</S.ErrorMessage>}
+        <S.FormGroup>
+          <S.FormRow>
+            <S.Label>비밀번호 확인</S.Label>
+            <S.Input
+              type="password"
+              autoComplete="new-password"
+              placeholder="비밀번호를 다시 한번 더 입력해 주세요."
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+            />
+          </S.FormRow>
+          <S.ErrorMessage show={isPasswordMismatch}>비밀번호가 일치하지 않습니다.</S.ErrorMessage>
+        </S.FormGroup>
 
         <S.CheckboxContainer>
           <S.CheckboxRow>

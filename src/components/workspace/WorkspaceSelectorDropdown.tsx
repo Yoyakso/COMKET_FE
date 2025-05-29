@@ -92,12 +92,12 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
           transition={{ duration: 0.18, type: 'tween' }}
         >
           <S.Dropdown>
-            <S.Item onClick={() => navigate(`/${workspaceSlug}/settings`)}>
+            <S.Item onClick={() => window.open(`/${workspaceSlug}/settings`)}>
               워크스페이스 정보
             </S.Item>
-            <S.Item onClick={() => navigate('/plan')}>플랜 관리</S.Item>
-            <S.Item onClick={() => navigate(`/${workspaceSlug}/member`)}>멤버 관리</S.Item>
-            <S.Item onClick={() => navigate(`/${workspaceSlug}/project`)}>프로젝트 관리</S.Item>
+            <S.Item onClick={() => window.open('/plan')}>플랜 관리</S.Item>
+            <S.Item onClick={() => window.open(`/${workspaceSlug}/member`)}>멤버 관리</S.Item>
+            <S.Item onClick={() => window.open(`/${workspaceSlug}/project`)}>프로젝트 관리</S.Item>
 
             <S.Divider />
 

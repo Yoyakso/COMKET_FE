@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Navigate } from 'react-router-dom';
 import * as S from './InviteCodePage.Style';
 import { InviteCode } from '@components/common/textInput/InviteCode';
 import { Button } from '@components/common/button/Button';
@@ -26,6 +26,19 @@ const Spinner = styled(SpinnerIcon)`
 export const InviteCodePage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const codeFromUrl = searchParams.get('code');
+  const accessToken = localStorage.getItem('accessToken');
+
+  useEffect(() => {
+    if (!accessToken) {
+      toast.info('초대된 워크스페이스에 참가하려면 먼저 회원가입을 완료해주세요!');
+    }
+  }, [accessToken]);
+
+  if (!accessToken) {
+    return <Navigate to={`/signup?inviteCode=${codeFromUrl}`} replace />;
+  }
+
   const [code, setCode] = useState<string>('');
   const [workspace, setWorkspace] = useState<DropdownOption | null>(null);
 
@@ -40,13 +53,11 @@ export const InviteCodePage = () => {
   });
 
   useEffect(() => {
-    const codeFromUrl = searchParams.get('code');
     if (codeFromUrl) {
-      localStorage.setItem('inviteCode', codeFromUrl);
       setCode(codeFromUrl);
       handleComplete(codeFromUrl);
     }
-  }, []);
+  }, [codeFromUrl]);
 
   const handleCodeChange = (newCode: string) => {
     setCode(newCode);

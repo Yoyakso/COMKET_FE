@@ -3,6 +3,7 @@ import { App } from './App';
 import { LoginPage } from './pages/loginPage/LoginPage';
 import { WorkspacePage } from './pages/workspacePage/WorkspacePage';
 import { CreateWorkspacePage } from './pages/workspaceCreatePage/workspaceCreatePage';
+import { FindPasswordPage } from './pages/findPasswordPage/FindPasswordPage';
 import { SignUpPage } from './pages/signUpPage/SignUpPage';
 import { SignUpCompletePage } from './pages/signUpCompletePage/SignUpCompletePage';
 import { MemberPage } from './pages/memberPage/MemberPage';
@@ -11,9 +12,11 @@ import { WorkspaceLayout } from '@/components/layout/WorkspaceLayout';
 import { WorkspaceManageLayout } from '@/components/layout/WorkspaceManageLayout';
 import { WorkspaceInfoPage } from './pages/workspaceManagePage/WorkspaceInfoPage';
 import { InviteCodePage } from './pages/InviteCodePage/InviteCodePage';
+import { InviteEntry } from './components/inviteCode/InviteEntry';
 import { ProjectPage } from './pages/projectPage/ProjectPage';
 import { AccountInfoPage } from './pages/accountInfoPage/AccountInfoPage';
 import { ProfilePage } from './pages/profilePage/profilePage';
+import { MyTicketPage } from './pages/myTicketPage/MyTicketPage';
 import { TicketDashboardPage } from './pages/ticketDashboardPage/TicketDashboardPage';
 import { ThreadPage } from './pages/threadPage/ThreadPage';
 import { ThreadPageWrapper } from './pages/threadPage/TreadPageWrapper';
@@ -38,6 +41,10 @@ export const Router = createBrowserRouter([
         element: <GoogleRedirect />,
       },
       {
+        path: 'findPassword',
+        element: <FindPasswordPage />,
+      },
+      {
         path: 'signup',
         element: <SignUpPage />,
       },
@@ -59,13 +66,14 @@ export const Router = createBrowserRouter([
         ),
       },
       {
-        path: '/invite',
+        path: 'workspaces/invite',
         element: (
           <WorkspaceLayout>
             <InviteCodePage />
           </WorkspaceLayout>
         ),
       },
+      { path: 'invite/:code', element: <InviteEntry /> },
       {
         path: 'workspace/create',
         element: (
@@ -97,6 +105,10 @@ export const Router = createBrowserRouter([
         element: <AccountInfoPage />,
       },
       {
+        path: ':workspaceSlug/mytickets',
+        element: <MyTicketPage />,
+      },
+      {
         path: '/:projectId/tickets',
         element: <TicketDashboardPage />,
       },
@@ -111,7 +123,7 @@ export const Router = createBrowserRouter([
       {
         path: 'plan',
         element: <PlanPage />,
-      }
+      },
     ],
   },
 ]);

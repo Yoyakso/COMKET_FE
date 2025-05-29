@@ -1,4 +1,4 @@
-import { Ticket } from "@/types/ticket"
+import { Ticket } from '@/types/ticket';
 
 export function mapTicketFromResponse(response: any): Ticket {
   return {

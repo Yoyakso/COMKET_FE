@@ -1,55 +1,61 @@
-import { useState, useEffect, useRef } from "react"
-import { ChevronDown } from "lucide-react"
-import { MarkdownEditor } from "@components/common/markdownEditor/MarkdownEditor"
-import * as S from "./CreateTicketModal.Style"
-import { PriorityBadge } from "../ticket/PriorityBadge"
-import { StatusBadge } from "../ticket/StatusBadge"
-import { createTicket } from "@/api/Ticket"
-import { getProjectMembers } from "@/api/Project"
-import { useWorkspaceStore } from "@/stores/workspaceStore"
-import { useUserStore } from "@/stores/userStore"
-import { toast } from "react-toastify"
-import { mapTicketFromResponse } from "@/utils/ticketMapper"
+import { useState, useEffect, useRef } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { MarkdownEditor } from '@components/common/markdownEditor/MarkdownEditor';
+import * as S from './CreateTicketModal.Style';
+import { PriorityBadge } from '../ticket/PriorityBadge';
+import { StatusBadge } from '../ticket/StatusBadge';
+import { createTicket } from '@/api/Ticket';
+import { getProjectMembers } from '@/api/Project';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { useUserStore } from '@/stores/userStore';
+import { toast } from 'react-toastify';
+import { mapTicketFromResponse } from '@/utils/ticketMapper';
 
 interface Member {
-  memberId: number
-  name: string
-  projectMemberId: number
+  memberId: number;
+  name: string;
+  projectMemberId: number;
 }
 
 interface CreateTicketModalProps {
-  onClose: () => void
-  onSubmit: (ticketData: any) => void
-  projectName: string
-  projectId: number
-  parentTicketId?: number
+  onClose: () => void;
+  onSubmit: (ticketData: any) => void;
+  projectName: string;
+  projectId: number;
+  parentTicketId?: number;
 }
 
-const TYPE_OPTIONS = ["개발", "디자인", "기획", "테스트", "버그", "회의/논의", "문서화", "기타"];
-const PRIORITY_OPTIONS = ["LOW", "MEDIUM", "HIGH"];
-const STATUS_OPTIONS = ["TODO", "IN_PROGRESS", "DONE", "HOLD", "DROP", "BACKLOG"];
+const TYPE_OPTIONS = ['개발', '디자인', '기획', '테스트', '버그', '회의/논의', '문서화', '기타'];
+const PRIORITY_OPTIONS = ['LOW', 'MEDIUM', 'HIGH'];
+const STATUS_OPTIONS = ['TODO', 'IN_PROGRESS', 'DONE', 'HOLD', 'DROP', 'BACKLOG'];
 
-export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, parentTicketId }: CreateTicketModalProps) => {
-  const workspaceName = useWorkspaceStore((state) => state.workspaceName)
-  const [members, setMembers] = useState<Member[]>([])
-  const { name, memberId } = useUserStore()
+export const CreateTicketModal = ({
+  onClose,
+  onSubmit,
+  projectName,
+  projectId,
+  parentTicketId,
+}: CreateTicketModalProps) => {
+  const workspaceName = useWorkspaceStore(state => state.workspaceName);
+  const [members, setMembers] = useState<Member[]>([]);
+  const { name, memberId } = useUserStore();
   const [ticketData, setTicketData] = useState({
-    type: "",
-    title: "",
-    content: "",
-    priority: "",
-    status: "",
-    start_date: new Date().toISOString().split("T")[0],
-    end_date: new Date().toISOString().split("T")[0],
+    type: '',
+    title: '',
+    content: '',
+    priority: '',
+    status: '',
+    start_date: new Date().toISOString().split('T')[0],
+    end_date: new Date().toISOString().split('T')[0],
     assignee_member_id: null as number | null,
     requester: {
       id: memberId,
       name: name,
-      avatar: name ? name.charAt(0) : "?",
+      avatar: name ? name.charAt(0) : '?',
     },
     parentTicketId: parentTicketId ?? null,
-  })
-  const [showTypeDropdown, setShowTypeDropdown] = useState(false)
+  });
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
@@ -58,15 +64,15 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
   const typeRef = useRef<HTMLDivElement>(null);
   const assigneeRef = useRef<HTMLDivElement>(null);
   const isFormValid =
-    ticketData.title.trim() !== "" &&
-    ticketData.content.trim() !== "" &&
-    ticketData.type !== "" &&
-    ticketData.priority !== "" &&
-    ticketData.status !== ""
+    ticketData.title.trim() !== '' &&
+    ticketData.content.trim() !== '' &&
+    ticketData.type !== '' &&
+    ticketData.priority !== '' &&
+    ticketData.status !== '';
 
   useEffect(() => {
     if (name && memberId) {
-      setTicketData((prev) => ({
+      setTicketData(prev => ({
         ...prev,
         requester: {
           id: memberId,
@@ -80,18 +86,18 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await getProjectMembers(workspaceName, projectId)
-        setMembers(response)
+        const response = await getProjectMembers(workspaceName, projectId);
+        setMembers(response);
       } catch (error) {
-        console.error("멤버 조회 실패:", error)
+        console.error('멤버 조회 실패:', error);
       }
-    }
-    fetchMembers()
-  }, [workspaceName, projectId])
+    };
+    fetchMembers();
+  }, [workspaceName, projectId]);
 
   const handleContentChange = (content: string) => {
-    setTicketData({ ...ticketData, content })
-  }
+    setTicketData({ ...ticketData, content });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,27 +112,27 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
       end_date: ticketData.end_date,
       assignee_member_id: ticketData.assignee_member_id,
     };
-    if (typeof ticketData.parentTicketId === "number") {
+    if (typeof ticketData.parentTicketId === 'number') {
       dto.parent_ticket_id = ticketData.parentTicketId;
     }
     try {
-      const response = await createTicket(projectName, dto)
-      const mappedTicket = mapTicketFromResponse(response)
-      onSubmit(mappedTicket)
-      toast.success("티켓 생성이 완료되었습니다.")
+      const response = await createTicket(projectName, dto);
+      const mappedTicket = mapTicketFromResponse(response);
+      onSubmit(mappedTicket);
+      toast.success('티켓 생성이 완료되었습니다.');
       onClose();
     } catch (err) {
-      console.error("티켓 생성 에러:", err);
+      console.error('티켓 생성 에러:', err);
     }
   };
 
   const scrollToRef = (ref: React.RefObject<HTMLDivElement>) => {
-    ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   const toggleDropdown = (
-    dropdown: "type" | "priority" | "status" | "assignee",
-    currentState: boolean
+    dropdown: 'type' | 'priority' | 'status' | 'assignee',
+    currentState: boolean,
   ) => {
     setShowTypeDropdown(false);
     setShowPriorityDropdown(false);
@@ -135,19 +141,19 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
     const shouldOpen = !currentState;
 
     switch (dropdown) {
-      case "type":
+      case 'type':
         setShowTypeDropdown(shouldOpen);
         if (shouldOpen) scrollToRef(typeRef);
         break;
-      case "priority":
+      case 'priority':
         setShowPriorityDropdown(shouldOpen);
         if (shouldOpen) scrollToRef(priorityRef);
         break;
-      case "status":
+      case 'status':
         setShowStatusDropdown(shouldOpen);
         if (shouldOpen) scrollToRef(statusRef);
         break;
-      case "assignee":
+      case 'assignee':
         setShowAssigneeDropdown(shouldOpen);
         if (shouldOpen) scrollToRef(assigneeRef);
         break;
@@ -165,14 +171,12 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
           <S.Form onSubmit={handleSubmit}>
             <S.FormRow ref={typeRef}>
               <S.FormLabel>유형</S.FormLabel>
-              <S.SelectField onClick={() => toggleDropdown("type", showTypeDropdown)}>
-                <S.AssigneeText>
-                  {ticketData.type || "유형 선택"}
-                </S.AssigneeText>
+              <S.SelectField onClick={() => toggleDropdown('type', showTypeDropdown)}>
+                <S.AssigneeText>{ticketData.type || '유형 선택'}</S.AssigneeText>
                 <ChevronDown size={16} />
                 {showTypeDropdown && (
                   <S.DropdownMenu>
-                    {TYPE_OPTIONS.map((type) => (
+                    {TYPE_OPTIONS.map(type => (
                       <S.DropdownItem
                         key={type}
                         onClick={() => {
@@ -193,17 +197,14 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
               <S.TextField
                 placeholder="티켓 제목 입력"
                 value={ticketData.title}
-                onChange={(e) => setTicketData({ ...ticketData, title: e.target.value })}
+                onChange={e => setTicketData({ ...ticketData, title: e.target.value })}
               />
             </S.FormRow>
 
             <S.FormRow>
               <S.FormLabel>상세 내용</S.FormLabel>
               <S.EditorWrapper>
-                <MarkdownEditor
-                  initialValue={ticketData.content}
-                  onChange={handleContentChange}
-                />
+                <MarkdownEditor initialValue={ticketData.content} onChange={handleContentChange} />
               </S.EditorWrapper>
             </S.FormRow>
 
@@ -213,29 +214,25 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
                 <S.DateField
                   type="date"
                   value={ticketData.start_date}
-                  onChange={(e) =>
-                    setTicketData({ ...ticketData, start_date: e.target.value })
-                  }
+                  onChange={e => setTicketData({ ...ticketData, start_date: e.target.value })}
                 />
                 <span>~</span>
                 <S.DateField
                   type="date"
                   value={ticketData.end_date}
-                  onChange={(e) =>
-                    setTicketData({ ...ticketData, end_date: e.target.value })
-                  }
+                  onChange={e => setTicketData({ ...ticketData, end_date: e.target.value })}
                 />
               </S.DateRangeWrapper>
             </S.FormRow>
 
             <S.FormRow ref={priorityRef}>
               <S.FormLabel>우선 순위</S.FormLabel>
-              <S.SelectField onClick={() => toggleDropdown("priority", showPriorityDropdown)}>
+              <S.SelectField onClick={() => toggleDropdown('priority', showPriorityDropdown)}>
                 <PriorityBadge priority={ticketData.priority as any} />
                 <ChevronDown size={16} />
                 {showPriorityDropdown && (
                   <S.DropdownMenu>
-                    {PRIORITY_OPTIONS.map((priority) => (
+                    {PRIORITY_OPTIONS.map(priority => (
                       <S.DropdownItem
                         key={priority}
                         onClick={() => {
@@ -253,15 +250,15 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
 
             <S.FormRow ref={statusRef}>
               <S.FormLabel>상태</S.FormLabel>
-              <S.SelectField onClick={() => toggleDropdown("status", showStatusDropdown)}>
+              <S.SelectField onClick={() => toggleDropdown('status', showStatusDropdown)}>
                 <StatusBadge status={ticketData.status as any} />
                 <ChevronDown size={16} />
                 {showStatusDropdown && (
                   <S.DropdownMenu>
-                    {STATUS_OPTIONS.map((status) => (
+                    {STATUS_OPTIONS.map(status => (
                       <S.DropdownItem
                         key={status}
-                        onClick={(e) => {
+                        onClick={e => {
                           e.stopPropagation();
                           setTicketData({ ...ticketData, status });
                           setShowStatusDropdown(false);
@@ -280,18 +277,18 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
               <S.SelectField>
                 <S.UserOption>
                   <S.UserAvatar>{ticketData.requester.avatar}</S.UserAvatar>
-                  <S.UserName>
-                    {ticketData.requester.name}
-                  </S.UserName>
+                  <S.UserName>{ticketData.requester.name}</S.UserName>
                 </S.UserOption>
               </S.SelectField>
             </S.FormRow>
 
             <S.FormRow ref={assigneeRef}>
               <S.FormLabel>담당자</S.FormLabel>
-              <S.SelectField onClick={() => toggleDropdown("assignee", showAssigneeDropdown)}>
+              <S.SelectField onClick={() => toggleDropdown('assignee', showAssigneeDropdown)}>
                 {(() => {
-                  const assignee = members.find(m => m.projectMemberId === ticketData.assignee_member_id);
+                  const assignee = members.find(
+                    m => m.projectMemberId === ticketData.assignee_member_id,
+                  );
                   return assignee ? (
                     <S.UserOption>
                       <S.UserAvatar>{assignee.name.charAt(0)}</S.UserAvatar>
@@ -304,11 +301,14 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
                 <ChevronDown size={16} />
                 {showAssigneeDropdown && (
                   <S.DropdownMenu>
-                    {members.map((member) => (
+                    {members.map(member => (
                       <S.DropdownItem
                         key={member.projectMemberId}
                         onClick={() => {
-                          setTicketData({ ...ticketData, assignee_member_id: member.projectMemberId });
+                          setTicketData({
+                            ...ticketData,
+                            assignee_member_id: member.projectMemberId,
+                          });
                           setShowAssigneeDropdown(false);
                         }}
                       >
@@ -329,11 +329,16 @@ export const CreateTicketModal = ({ onClose, onSubmit, projectName, projectId, p
           <S.CancelButton type="button" onClick={onClose}>
             취소
           </S.CancelButton>
-          <S.SubmitButton type="submit" onClick={handleSubmit} disabled={!isFormValid} className={!isFormValid ? "disabled" : ""}>
+          <S.SubmitButton
+            type="submit"
+            onClick={handleSubmit}
+            disabled={!isFormValid}
+            className={!isFormValid ? 'disabled' : ''}
+          >
             등록
           </S.SubmitButton>
         </S.ModalFooter>
       </S.ModalContainer>
     </S.ModalOverlay>
-  )
-}
+  );
+};
