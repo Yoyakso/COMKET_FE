@@ -10,6 +10,7 @@ import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useUserStore } from '@/stores/userStore';
 import { toast } from 'react-toastify';
 import { mapTicketFromResponse } from '@/utils/ticketMapper';
+import { TicketTemplate } from '@/types/ticketTemplate';
 
 interface Member {
   memberId: number;
@@ -23,6 +24,7 @@ interface CreateTicketModalProps {
   projectName: string;
   projectId: number;
   parentTicketId?: number;
+  template?: TicketTemplate
 }
 
 const TYPE_OPTIONS = ['개발', '디자인', '기획', '테스트', '버그', '회의/논의', '문서화', '기타'];
@@ -35,6 +37,7 @@ export const CreateTicketModal = ({
   projectName,
   projectId,
   parentTicketId,
+  template,
 }: CreateTicketModalProps) => {
   const workspaceName = useWorkspaceStore(state => state.workspaceName);
   const [members, setMembers] = useState<Member[]>([]);
@@ -69,6 +72,10 @@ export const CreateTicketModal = ({
     ticketData.type !== '' &&
     ticketData.priority !== '' &&
     ticketData.status !== '';
+  const [title, setTitle] = useState(template?.name || '');
+  const [description, setDescription] = useState(template?.purpose || '');
+  const [type, setType] = useState(template?.type || '기본');
+  const [color, setColor] = useState(template?.color || 'blue');
 
   useEffect(() => {
     if (name && memberId) {
