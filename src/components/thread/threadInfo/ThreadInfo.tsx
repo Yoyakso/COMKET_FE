@@ -9,6 +9,8 @@ import { editSingleTicket, getTicketById } from "@/api/Ticket";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProjectMembers } from "@/api/Project";
 import { useWorkspaceStore } from "@/stores/workspaceStore";
+import { MarkdownEditor } from "@/components/common/markdownEditor/MarkdownEditor";
+import { marked } from "marked";
 
 interface TicketUpdatePayload {
   ticket_name: string;
@@ -275,13 +277,12 @@ export const ThreadInfo = ({ projectName }: ThreadInfoProps) => {
           <S.InfoTitle>상세 내용</S.InfoTitle>
           <S.DetailContent>
             {isEditMode ? (
-              <S.StyledTextarea
-                value={editedTicket.description}
-                onChange={(e) => setEditedTicket({ ...editedTicket, description: e.target.value })}
-                placeholder="상세 내용을 입력하세요..."
+              <MarkdownEditor
+                initialValue={editedTicket.description}
+                onChange={(value) => setEditedTicket({ ...editedTicket, description: value })}
               />
             ) : fetchedTicket.description ? (
-              <div dangerouslySetInnerHTML={{ __html: fetchedTicket.description }} />
+              <div dangerouslySetInnerHTML={{ __html: marked(fetchedTicket.description) }} />
             ) : (
               <S.PlaceholderText>상세 내용이 없습니다.</S.PlaceholderText>
             )}

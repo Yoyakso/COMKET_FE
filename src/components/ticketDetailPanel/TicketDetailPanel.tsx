@@ -6,6 +6,7 @@ import { Ticket } from "@/types/ticket"
 import { StatusBadge } from "@/components/ticket/StatusBadge"
 import { PriorityBadge } from "@components/ticket/PriorityBadge"
 import { getColorFromString } from "@/utils/avatarColor"
+import { marked } from "marked"
 
 interface User {
   id: number
@@ -70,15 +71,6 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
         </S.HeaderActions>
       </S.PanelHeader>
 
-      {/* {!showThread && (
-        <S.ThreadStartContainer>
-          <S.ThreadStartButton onClick={startThread}>
-            <MessageSquarePlus width={16} height={16} />
-            스레드 시작하기
-          </S.ThreadStartButton>
-        </S.ThreadStartContainer>
-      )} */}
-
       <S.ContentScrollArea>
         {showThread ? (
           <S.ThreadContainer>
@@ -115,7 +107,9 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
 
             <S.InfoSection>
               <S.InfoLabel>설명</S.InfoLabel>
-              <S.DetailContent>{ticket.description}</S.DetailContent>
+              <S.DetailContent>
+                <div dangerouslySetInnerHTML={{ __html: marked(ticket.description) }} />
+              </S.DetailContent>
             </S.InfoSection>
 
             <S.InfoSection>
