@@ -35,18 +35,11 @@ export const Title = styled.h2`
   text-align: center;
 `;
 
-export const Description = styled.p`
-  font-size: 14px;
-  text-align: center;
-  color: ${color.textSecondary};
-  margin-bottom: 16px;
-`;
-
 export const InputWrapper = styled.div`
   display: flex;
   flex-direction: row;
   gap: 8px;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 
   label {
     font-size: 14px;
@@ -56,12 +49,14 @@ export const InputWrapper = styled.div`
 
 export const Label = styled.div`
   display: flex;
-  width: 116px;
+  width: 150px;
   height: 48px;
   align-items: center;
 `;
+
 export const ButtonRow = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 12px;
+  margin-top: 16px;
 `;

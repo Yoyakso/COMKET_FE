@@ -1,16 +1,6 @@
 import styled from 'styled-components';
 import { color } from '@/styles/color';
 
-export const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-  background-color: ${color.white};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
 export const Modal = styled.div`
   width: 720px;
   background-color: white;
