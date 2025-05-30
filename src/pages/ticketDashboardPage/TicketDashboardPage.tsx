@@ -250,29 +250,32 @@ export const TicketDashboardPage = () => {
           )}
         </S.Wrapper>
 
-        {isTemplateModalOpen && projectName && (
+        {isTemplateModalOpen && (
           <TicketTemplateModal
             isOpen={isTemplateModalOpen}
             onClose={() => setIsTemplateModalOpen(false)}
             onSelectTemplate={(template) => {
               setSelectedTemplate(template);
-              setIsTemplateModalOpen(false);  // 모달 닫기
-              setIsCreateModalOpen(true);     // 생성 모달 열기
+              setIsTemplateModalOpen(false);
+              setIsCreateModalOpen(true);
             }}
           />
         )}
-        {isCreateModalOpen && projectName && selectedTemplate && (
+
+        {isCreateModalOpen && projectName && (
           <CreateTicketModal
-            projectId={Number(projectId)}
-            projectName={projectName}
-            template={selectedTemplate}
             onClose={() => {
               setIsCreateModalOpen(false);
               setSelectedTemplate(null);
             }}
             onSubmit={handleTicketCreate}
+            projectName={projectName}
+            projectId={Number(projectId)}
+            parentTicketId={null}
+            template={selectedTemplate!}
           />
         )}
+
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
             onMouseEnter={() => { }}

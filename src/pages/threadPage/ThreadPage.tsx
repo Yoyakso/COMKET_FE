@@ -13,6 +13,7 @@ import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { useUserStore } from '@/stores/userStore';
 import { CreateTicketModal } from '@/components/ticketModal/CreateTicketModal';
 import { mapTicketFromResponse } from '@/utils/ticketMapper';
+import { TicketTemplate } from '@/types/ticketTemplate';
 
 interface ThreadMessage {
   ticketId: number;
@@ -37,6 +38,7 @@ export const ThreadPage = () => {
   const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null);
 
   useEffect(() => {
     if (!ticket && ticketId && projectName) {
@@ -154,7 +156,7 @@ export const ThreadPage = () => {
                   sendMessage={sendMessage}
                 />
                 {ticket ? (
-                  <ThreadInfo projectName={projectName} ticket={ticket} />
+                  <ThreadInfo projectName={projectName} />
                 ) : (
                   <p>티켓 정보를 불러오는 중입니다...</p>
                 )}
@@ -173,6 +175,7 @@ export const ThreadPage = () => {
           projectId={Number(projectId)}
           projectName={projectName}
           parentTicketId={Number(ticketId)}
+          template={selectedTemplate}
           onClose={() => setIsCreateModalOpen(false)}
           onSubmit={(newTicket) => {
             setIsCreateModalOpen(false)

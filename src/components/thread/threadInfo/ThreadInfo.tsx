@@ -9,7 +9,6 @@ import { editSingleTicket, getTicketById } from "@/api/Ticket";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProjectMembers } from "@/api/Project";
 import { useWorkspaceStore } from "@/stores/workspaceStore";
-import { Ticket } from "@/types/ticket";
 
 interface TicketUpdatePayload {
   ticket_name: string;
@@ -21,15 +20,13 @@ interface TicketUpdatePayload {
   description: string;
   assignee_member_id: number | null;
   parent_ticket_id: number | null;
-  subtickets: any[];
 }
 
 interface ThreadInfoProps {
-  ticket: Ticket;
   projectName?: string;
 }
 
-export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
+export const ThreadInfo = ({ projectName }: ThreadInfoProps) => {
   const { projectId, ticketId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -53,6 +50,7 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
       subtickets: data.subtickets || [],
     }),
   });
+
   const { workspaceName } = useWorkspaceStore();
   const {
     data: projectMembers = [],
@@ -67,21 +65,20 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedTicket, setEditedTicket] = useState<TicketUpdatePayload | null>(null);
   useEffect(() => {
-    if (ticket) {
+    if (fetchedTicket) {
       setEditedTicket({
-        ticket_name: ticket.title,
-        ticket_type: ticket.type,
-        ticket_priority: ticket.priority,
-        ticket_state: ticket.status,
-        start_date: ticket.startDate,
-        end_date: ticket.endDate,
-        description: ticket.description,
-        assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
-        parent_ticket_id: ticket.parentId ?? null,
-        subtickets: ticket.subtickets,
+        ticket_name: fetchedTicket.title,
+        ticket_type: fetchedTicket.type,
+        ticket_priority: fetchedTicket.priority,
+        ticket_state: fetchedTicket.status,
+        start_date: fetchedTicket.startDate,
+        end_date: fetchedTicket.endDate,
+        description: fetchedTicket.description,
+        assignee_member_id: fetchedTicket.assignee_member?.projectMemberId ?? null,
+        parent_ticket_id: fetchedTicket.parentId ?? null,
       });
     }
-  }, [ticket]);
+  }, [fetchedTicket]);
 
   const mutation = useMutation({
     mutationFn: (updatedFields: TicketUpdatePayload) =>
@@ -103,18 +100,17 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
 
   const handleCancel = () => {
     setIsEditMode(false);
-    if (ticket) {
+    if (fetchedTicket) {
       setEditedTicket({
-        ticket_name: ticket.title,
-        ticket_type: ticket.type,
-        ticket_priority: ticket.priority,
-        ticket_state: ticket.status,
-        start_date: ticket.startDate,
-        end_date: ticket.endDate,
-        description: ticket.description,
-        assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
-        parent_ticket_id: ticket.parentId ?? null,
-        subtickets: ticket.subtickets,
+        ticket_name: fetchedTicket.title,
+        ticket_type: fetchedTicket.type,
+        ticket_priority: fetchedTicket.priority,
+        ticket_state: fetchedTicket.status,
+        start_date: fetchedTicket.startDate,
+        end_date: fetchedTicket.endDate,
+        description: fetchedTicket.description,
+        assignee_member_id: fetchedTicket.assignee_member?.projectMemberId ?? null,
+        parent_ticket_id: fetchedTicket.parentId ?? null,
       });
     }
   };
@@ -134,7 +130,7 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
   };
 
   if (isLoading) return <div>불러오는 중...</div>;
-  if (isError || !ticket || !editedTicket) return <div>티켓 정보를 불러오지 못했습니다.</div>;
+  if (isError || !fetchedTicket || !editedTicket) return <div>티켓 정보를 불러오지 못했습니다.</div>;
 
   return (
     <S.Container>
@@ -151,7 +147,7 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
             <S.InfoTitle><Tag size={14} />유형</S.InfoTitle>
             <S.InfoContent>
               <S.TypeContainer>
-                <S.TagBadge>{ticket.type}</S.TagBadge>
+                <S.TagBadge>{fetchedTicket.type}</S.TagBadge>
                 {isEditMode ? (
                   <S.StyledSelect
                     value={editedTicket.ticket_priority}
@@ -162,7 +158,7 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
                     <option value="HIGH">HIGH</option>
                   </S.StyledSelect>
                 ) : (
-                  <PriorityBadge priority={ticket.priority} />
+                  <PriorityBadge priority={fetchedTicket.priority} />
                 )}
               </S.TypeContainer>
             </S.InfoContent>
@@ -182,7 +178,7 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
                     <option value="DONE">DONE</option>
                   </S.StyledSelect>
                 ) : (
-                  <StatusBadge status={ticket.status} />
+                  <StatusBadge status={fetchedTicket.status} />
                 )}
               </S.StatusBadgeContainer>
             </S.InfoContent>
@@ -198,7 +194,7 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
                   onChange={(e) => setEditedTicket({ ...editedTicket, start_date: e.target.value })}
                 />
               ) : (
-                <S.DateText>{formatDate(ticket.startDate)}</S.DateText>
+                <S.DateText>{formatDate(fetchedTicket.startDate)}</S.DateText>
               )}
             </S.InfoContent>
           </S.InfoSection>
@@ -227,17 +223,17 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
                 ) : (
                   <S.UserDisplay>
                     <S.SmallAvatar>
-                      {ticket.assignee_member?.profileUrl ? (
+                      {fetchedTicket.assignee_member?.profileUrl ? (
                         <S.AvatarImage
-                          src={ticket.assignee_member.profileUrl}
-                          alt={ticket.assignee_member.name || "미배정"}
+                          src={fetchedTicket.assignee_member.profileUrl}
+                          alt={fetchedTicket.assignee_member.name || "미배정"}
                         />
                       ) : (
-                        ticket.assignee_member?.name?.slice(0, 2) || "미"
+                        fetchedTicket.assignee_member?.name?.slice(0, 2) || "미"
                       )}
                     </S.SmallAvatar>
                     <S.UserInfo>
-                      <span>{ticket.assignee_member?.name || "미배정"}</span>
+                      <span>{fetchedTicket.assignee_member?.name || "미배정"}</span>
                     </S.UserInfo>
                   </S.UserDisplay>
                 )}
@@ -250,10 +246,10 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
             <S.InfoContent>
               <S.UserDisplay>
                 <S.SmallAvatar>
-                  <S.AvatarImage src={ticket.creator_member?.profileUrl || "/images/avatar-1.png"} alt={ticket.creator_member?.name || "미지정"} />
+                  <S.AvatarImage src={fetchedTicket.creator_member?.profileUrl || "/images/avatar-1.png"} alt={fetchedTicket.creator_member?.name || "미지정"} />
                 </S.SmallAvatar>
                 <S.UserInfo>
-                  <span>{ticket.creator_member?.name || "미지정"}</span>
+                  <span>{fetchedTicket.creator_member?.name || "미지정"}</span>
                 </S.UserInfo>
               </S.UserDisplay>
             </S.InfoContent>
@@ -269,7 +265,7 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
                   onChange={(e) => setEditedTicket({ ...editedTicket, end_date: e.target.value })}
                 />
               ) : (
-                <S.DateText>{formatDate(ticket.endDate)}</S.DateText>
+                <S.DateText>{formatDate(fetchedTicket.endDate)}</S.DateText>
               )}
             </S.InfoContent>
           </S.InfoSection>
@@ -284,8 +280,8 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
                 onChange={(e) => setEditedTicket({ ...editedTicket, description: e.target.value })}
                 placeholder="상세 내용을 입력하세요..."
               />
-            ) : ticket.description ? (
-              <div dangerouslySetInnerHTML={{ __html: ticket.description }} />
+            ) : fetchedTicket.description ? (
+              <div dangerouslySetInnerHTML={{ __html: fetchedTicket.description }} />
             ) : (
               <S.PlaceholderText>상세 내용이 없습니다.</S.PlaceholderText>
             )}
@@ -306,13 +302,13 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
         )}
       </S.Section>
 
-      {ticket.subtickets && ticket.subtickets.length > 0 && (
+      {fetchedTicket.subtickets && fetchedTicket.subtickets.length > 0 && (
         <S.Section>
           <S.SectionHeader>
             <S.SectionTitle>하위 티켓</S.SectionTitle>
           </S.SectionHeader>
           <S.SubticketList>
-            {ticket.subtickets.map((childTicket) => (
+            {fetchedTicket.subtickets.map((childTicket) => (
               <S.SubticketItem
                 key={childTicket.id}
                 onClick={() =>

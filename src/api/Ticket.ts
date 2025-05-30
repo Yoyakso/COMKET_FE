@@ -3,16 +3,17 @@ import { Ticket } from '@/types/ticket';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-interface CreateTicketDto {
+export interface CreateTicketDto {
   ticket_name: string;
   description: string;
   ticket_type?: string | null;
-  ticket_priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT' | null;
+  ticket_priority?: 'LOW' | 'MEDIUM' | 'HIGH' | null;
   ticket_state?: 'TODO' | 'IN_PROGRESS' | 'DONE' | 'HOLD' | 'DROP' | 'BACKLOG' | 'DELETED';
   start_date: string;
   end_date: string;
   parent_ticket_id: null;
   assignee_member_id: number;
+  additional_info?: Record<string, any> | null;
 }
 
 /**
