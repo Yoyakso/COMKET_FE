@@ -1,7 +1,7 @@
 import * as S from "./ThreadAiSummary.Style"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Loader2, Bot, Sparkles } from "lucide-react"
-import { getAiSummary } from "@/api/Ai"
+import { getAiSummary, getAiHistory } from "@/api/Ai"
 import { Priority } from "@/types/filter"
 
 interface ActionItem {
@@ -17,18 +17,38 @@ interface ActionItem {
 interface ThreadAiSummaryProps {
   ticketId: number
   placeholderMessage?: string
-  // onGenerateSummary?: () => Promise<string>
 }
 
 export const ThreadAiSummary = ({
   ticketId,
   placeholderMessage,
-  // onGenerateSummary
 }: ThreadAiSummaryProps) => {
-
   const [isLoading, setIsLoading] = useState(false)
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [actionItems, setActionItems] = useState<ActionItem[]>([])
+
+  useEffect(() => {
+    const fetchAiHistory = async () => {
+      try {
+        const historyList = await getAiHistory(ticketId);
+        if (Array.isArray(historyList) && historyList.length > 0) {
+          const latest = historyList.sort(
+            (a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
+          )[0];
+
+          setAiSummary(latest.summary || null);
+          setActionItems(latest.actionItems || []);
+        } else {
+          setAiSummary(null);
+          setActionItems([]);
+        }
+      } catch (error) {
+        console.error("AI 요약 히스토리 불러오기 실패:", error);
+      }
+    };
+
+    fetchAiHistory();
+  }, [ticketId]);
 
   const handleGenerateSummary = async () => {
     setIsLoading(true);
