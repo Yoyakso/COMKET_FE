@@ -38,15 +38,6 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
   const writerColor = getColorFromString(ticket.creator_member.name)
   const assigneeColor = getColorFromString(ticket.assignee_member.name)
 
-  // const startThread = () => {
-  //   navigate(`/${projectId}/tickets/${ticket.id}/thread`, {
-  //     state: {
-  //       ticket,
-  //       projectName
-  //     }
-  //   })
-  // }
-
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
     return date.toLocaleString("ko-KR", {
@@ -155,27 +146,6 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
               </S.DateColumn>
             </S.DateSection>
 
-            <S.AttachmentSection>
-              <S.InfoLabel>첨부 파일</S.InfoLabel>
-              <S.AttachmentList>
-                <S.AttachmentItem>
-                  <Paperclip width={16} height={16} color="black" />
-                  <S.AttachmentName>{"{fileName}.jpg"}</S.AttachmentName>
-                </S.AttachmentItem>
-                <S.AttachmentItem>
-                  <Paperclip width={16} height={16} color="black" />
-                  <S.AttachmentName>{"{fileName}.jpg"}</S.AttachmentName>
-                </S.AttachmentItem>
-                <S.AttachmentItem>
-                  <Paperclip width={16} height={16} color="black" />
-                  <S.AttachmentName>{"{fileName}.jpg"}</S.AttachmentName>
-                </S.AttachmentItem>
-              </S.AttachmentList>
-              <S.AddAttachmentButton>
-                <Paperclip width={16} height={16} color="black" />
-                파일 첨부하기
-              </S.AddAttachmentButton>
-            </S.AttachmentSection>
             <S.Divider />
             <S.SubTicketSection>
               <S.CreateSubTicketButton>
