@@ -10,18 +10,6 @@ const spin = keyframes`
   }
 `
 
-const buttonHover = keyframes`
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-1px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-`
-
 export const SpinnerIcon = styled.div`
   animation: ${spin} 1s linear infinite;
   display: inline-flex;
@@ -48,6 +36,12 @@ export const SectionTitle = styled.h2`
   font-weight: 600;
   color: ${color.basic700};
   margin-left: 6px;
+`
+
+export const ButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `
 
 export const GenerateButton = styled.button`
@@ -121,6 +115,113 @@ export const ButtonIcon = styled.div`
   }
 `
 
+export const DropdownContainer = styled.div`
+  position: relative;
+  display: inline-block;
+`
+
+export const EyeLevelButton = styled.button<{ $isOpen: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.25);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px 0 rgba(16, 185, 129, 0.35);
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active {
+    transform: translateY(0px);
+    box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.15);
+    
+    &:hover {
+      transform: none;
+      box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.15);
+      
+      &::before {
+        left: -100%;
+      }
+    }
+  }
+
+  svg:last-child {
+    transform: ${(props) => (props.$isOpen ? "rotate(180deg)" : "rotate(0deg)")};
+    transition: transform 0.2s ease;
+  }
+`
+
+export const DropdownMenu = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 50;
+  min-width: 160px;
+  overflow: hidden;
+`
+
+export const DropdownItem = styled.button<{ $isSelected: boolean }>`
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  color: ${(props) => (props.$isSelected ? "#10b981" : color.basic900)};
+  background-color: ${(props) => (props.$isSelected ? "#f0fdf4" : "white")};
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f9fafb;
+    color: #10b981;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f3f4f6;
+  }
+`
+
 export const LoadingContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -155,68 +256,90 @@ export const AiSummaryContent = styled.p`
   font-size: 13px;
   line-height: 1.5;
   color: ${color.textSecondary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  height: 100%;
 `
 
 export const ActionItemsContainer = styled.div`
   background-color: white;
-  border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
   overflow-x: auto;
 `
 
-export const ActionItemsTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
+export const ActionItemsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `
 
-export const TableHeader = styled.thead`
-  border-bottom: 1px solid #e5e7eb;
-`
+export const ActionItemCard = styled.div<{ $priority: string }>`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid ${color.basic100};
+  border-left: 4px solid ${(props) => {
+    switch (props.$priority) {
+      case "HIGH":
+        return "#DC2626" // 빨간색
+      case "MEDIUM":
+        return "#F97316" // 주황색
+      case "LOW":
+        return "#22C55E" // 초록색
+      default:
+        return "#E5E7EB"
+    }
+  }};
+  border-radius: 6px;
+  background-color: white;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
 
-export const TableHeaderCell = styled.th`
-  text-align: left;
-  padding: 8px 6px;
-  font-size: 11px;
-  font-weight: 500;
-  color: ${color.basic700};
-`
-
-export const TableBody = styled.tbody``
-
-export const TableRow = styled.tr`
-  border-bottom: 1px solid #f3f4f6;
-  &:last-child {
-    border-bottom: none;
+  &:hover {
+    background-color: #f9fafb;
   }
 `
 
-export const TableCell = styled.td`
-  padding: 8px 6px;
+export const ActionItemLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+`
+
+export const ActionItemTitle = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${color.basic900};
+  line-height: 1.4;
+  margin-bottom: 4px;
+`
+
+export const ActionItemRight = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 80px;
+`
+
+export const DueDate = styled.span`
   font-size: 12px;
-  color: ${color.basic900};;
+  color: ${color.textSecondary};
+  font-weight: 400;
+  text-align: right;
+  margin-top: 4px;
 `
 
 export const AssigneeDisplay = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
-`
-
-export const SmallAvatar = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #e5e7eb;
-  flex-shrink: 0;
-`
-
-export const AvatarImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  font-size: 12px;
 `
 
 export const PriorityBadge = styled.span<{ $priority: string }>`
@@ -231,7 +354,7 @@ export const PriorityBadge = styled.span<{ $priority: string }>`
     switch (props.$priority) {
       case "HIGH": return "#fee2e2"
       case "MEDIUM": return "#fef3c7"
-      case "LOW": return "#dbeafe"
+      case "LOW": return "#22C55E20"
       default: return "#f3f4f6"
     }
   }};
@@ -239,7 +362,7 @@ export const PriorityBadge = styled.span<{ $priority: string }>`
     switch (props.$priority) {
       case "HIGH": return "#b91c1c"
       case "MEDIUM": return "#b45309"
-      case "LOW": return "#1d4ed8"
+      case "LOW": return "#22C55E"
       default: return "#4b5563"
     }
   }};
@@ -248,7 +371,7 @@ export const PriorityBadge = styled.span<{ $priority: string }>`
     switch (props.$priority) {
       case "HIGH": return "#fecaca"
       case "MEDIUM": return "#fde68a"
-      case "LOW": return "#bfdbfe"
+      case "LOW": return "#22C55E"
       default: return "#e5e7eb"
     }
   }};
