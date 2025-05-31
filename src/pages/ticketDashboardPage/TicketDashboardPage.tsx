@@ -194,6 +194,11 @@ export const TicketDashboardPage = () => {
     }
   };
 
+  const handleInfoClick = (ticket: Ticket) => {
+    setSelectedTicket(ticket)
+    setHoveredTicket(null)
+  }
+
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -237,9 +242,9 @@ export const TicketDashboardPage = () => {
             <TicketListView
               ticketList={tickets}
               onTicketClick={handleTicketClick}
-              onTicketHover={handleTicketHover}
               onDeleteTickets={() => setShowDeleteModal(true)}
               projectName={projectName}
+              onInfoClick={handleInfoClick}
             />
           ) : (
             <TicketBoardView

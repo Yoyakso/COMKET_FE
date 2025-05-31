@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { useNavigate, useParams } from 'react-router-dom'
+import { useRef } from "react"
+import { useOutsideClick } from "@/hooks/useOutsideClick"
 import { X, ExternalLink, MessageSquarePlus, ChevronLeft, ChevronRight, Paperclip, Plus } from "lucide-react"
 import * as S from "./TicketDetailPanel.Style"
 import { Ticket } from "@/types/ticket"
@@ -7,6 +8,7 @@ import { StatusBadge } from "@/components/ticket/StatusBadge"
 import { PriorityBadge } from "@components/ticket/PriorityBadge"
 import { getColorFromString } from "@/utils/avatarColor"
 import { marked } from "marked"
+import { motion } from 'framer-motion';
 
 interface User {
   id: number
@@ -32,11 +34,10 @@ interface TicketDetailPanelProps {
 export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: TicketDetailPanelProps) => {
   const [showThread, setShowThread] = useState(false)
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
-  const navigate = useNavigate()
-  const { projectId } = useParams()
-
+  const modalRef = useRef<HTMLDivElement>(null)
   const writerColor = getColorFromString(ticket.creator_member.name)
   const assigneeColor = getColorFromString(ticket.assignee_member.name)
+  useOutsideClick(modalRef, onClose);
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
@@ -49,7 +50,14 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
   }
 
   return (
-    <S.PanelContainer>
+    <S.PanelContainer
+      as={motion.div}
+      ref={modalRef}
+      initial={{ opacity: 0, x: 24 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 24 }}
+      transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
+    >
       <S.PanelHeader>
         <S.PanelTitle>{ticket.title}</S.PanelTitle>
         <S.HeaderActions>

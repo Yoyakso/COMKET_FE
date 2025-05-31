@@ -104,3 +104,26 @@ export const ThreadIcon = styled.div`
 //     background-color: ${color.teal500};
 //   }
 // `;
+
+export const InfoButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+
+  &:active {
+    background-color: #e5e7eb;
+  }
+`
