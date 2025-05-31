@@ -21,6 +21,7 @@ export const SectionHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 40px;
 `
 
 export const SectionTitle = styled.h2`
@@ -299,11 +300,11 @@ export const StyledInput = styled.input`
 `
 
 export const StyledSelect = styled.select`
-  width: 100%;
-  padding: 8px 12px;
+  width: 80%;
+  padding: 6px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 12px;
   color: ${color.textPrimary};
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
   transition: all 0.2s ease;

@@ -13,13 +13,7 @@ import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { useUserStore } from '@/stores/userStore';
 import { CreateTicketModal } from '@/components/ticketModal/CreateTicketModal';
 import { mapTicketFromResponse } from '@/utils/ticketMapper';
-
-interface Assignee {
-  id: number;
-  name: string;
-  avatar?: string;
-  code?: string;
-}
+import { TicketTemplate } from '@/types/ticketTemplate';
 
 interface ThreadMessage {
   ticketId: number;
@@ -30,45 +24,10 @@ interface ThreadMessage {
   isCurrentUser: boolean;
 }
 
-interface ActionItem {
-  id: number;
-  assignee: Assignee;
-  task: string;
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
-  status: 'TODO' | 'IN PROGRESS' | 'DONE';
-}
-
-const SAMPLE_ACTION_ITEMS: ActionItem[] = [
-  {
-    id: 1,
-    assignee: { id: 1, name: '이태경', avatar: '/images/avatar-2.png' },
-    task: '로그인 기능 구현',
-    priority: 'HIGH',
-    status: 'TODO',
-  },
-  {
-    id: 2,
-    assignee: { id: 2, name: '팀원2', avatar: '/images/avatar-3.png' },
-    task: 'API 연동 작업',
-    priority: 'MEDIUM',
-    status: 'IN PROGRESS',
-  },
-  {
-    id: 3,
-    assignee: { id: 3, name: '팀원3', avatar: '/images/avatar-5.png' },
-    task: '테스트 계정 생성',
-    priority: 'LOW',
-    status: 'DONE',
-  },
-];
-
-const mockAiSummary = `이번 회의에서는 Q4 마케팅 캠페인 전략에 대해 논의했습니다. 주요 결정사항으로는 소셜미디어 광고 예산을 30% 증액하고, 인플루언서 마케팅을 강화하기로 했습니다. 또한 새로운 제품 런칭을 위한 티저 캠페인을 12월 첫째 주에 시작하기로 결정했습니다. 팀 간 협업을 위해 주간 스탠드업 미팅을 도입하고, 프로젝트 진행상황을 실시간으로 공유할 수 있는 대시보드를 구축하기로 했습니다.`;
 export const ThreadPage = () => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
-  const actionItems = SAMPLE_ACTION_ITEMS
   const [newMessage, setNewMessage] = useState("")
-  const [aiSummary, setAiSummary] = useState<string | null>(mockAiSummary)
   const token = localStorage.getItem("accessToken")
   const location = useLocation()
   const navigate = useNavigate()
@@ -79,6 +38,7 @@ export const ThreadPage = () => {
   const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null);
 
   useEffect(() => {
     if (!ticket && ticketId && projectName) {
@@ -195,15 +155,15 @@ export const ThreadPage = () => {
                   setNewMessage={setNewMessage}
                   sendMessage={sendMessage}
                 />
-                 {ticket ? (
-                  <ThreadInfo projectName={projectName} ticket={ticket} />
+                {ticket ? (
+                  <ThreadInfo projectName={projectName} />
                 ) : (
                   <p>티켓 정보를 불러오는 중입니다...</p>
                 )}
               </S.LeftColumn>
 
               <S.RightColumn>
-                <ThreadAiSummary aiSummary={aiSummary} actionItems={actionItems} />
+                <ThreadAiSummary ticketId={Number(ticketId)} />
               </S.RightColumn>
             </S.ContentBody>
           </S.ContentContainer>
@@ -215,6 +175,7 @@ export const ThreadPage = () => {
           projectId={Number(projectId)}
           projectName={projectName}
           parentTicketId={Number(ticketId)}
+          template={selectedTemplate}
           onClose={() => setIsCreateModalOpen(false)}
           onSubmit={(newTicket) => {
             setIsCreateModalOpen(false)
