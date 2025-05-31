@@ -1,8 +1,9 @@
 import * as S from "./ThreadAiSummary.Style"
 import { useState, useEffect } from "react"
 import { Loader2, Bot, Sparkles, Eye, ChevronDown } from "lucide-react"
-import { getAiSummary, getAiHistory } from "@/api/Ai"
+import { getAiSummary, getAiHistory, getEyelevelSummary } from "@/api/Ai"
 import { Priority } from "@/types/filter"
+import { EyelevelPerspective } from "@/types/eyeLevel"
 
 interface ActionItem {
   title: string
@@ -19,13 +20,23 @@ interface ThreadAiSummaryProps {
   placeholderMessage?: string
 }
 
-type JobRole = "DEVELOPER" | "PROJECT_MANAGER" | "DESIGNER" | "DATA_ANALYST"
+type perspective = EyelevelPerspective
 
-const JOB_ROLE_LABELS: Record<JobRole, string> = {
+const PERSPECTIVE_LABELS: Record<perspective, string> = {
   DEVELOPER: "개발자",
   PROJECT_MANAGER: "PM/기획자",
   DESIGNER: "디자이너",
   DATA_ANALYST: "데이터 엔지니어",
+}
+
+const parseStringArray = (str: string): string[] => {
+  if (!str) return []
+
+  if (str.startsWith("[") && str.endsWith("]")) {
+    const content = str.slice(1, -1)
+    return content.split(", ").map((item) => item.trim())
+  }
+  return [str]
 }
 
 export const ThreadAiSummary = ({
@@ -34,36 +45,69 @@ export const ThreadAiSummary = ({
 }: ThreadAiSummaryProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isEyeLevelLoading, setIsEyeLevelLoading] = useState(false)
-  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [aiSummary, setAiSummary] = useState<string | string[] | null>(null)
   const [actionItems, setActionItems] = useState<ActionItem[]>([])
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [selectedJobRole, setSelectedJobRole] = useState<JobRole>("DEVELOPER")
+  const [selectedJobRole, setSelectedJobRole] = useState<perspective | null>(null)
+  const [currentLoadingRole, setCurrentLoadingRole] = useState<perspective | null>(null)
 
   useEffect(() => {
     const fetchAiHistory = async () => {
       try {
-        const historyList = await getAiHistory(ticketId);
-        if (Array.isArray(historyList) && historyList.length > 0) {
-          const latest = historyList.sort(
-            (a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
-          )[0];
+        const historyList = await getAiHistory(ticketId)
+        console.log("AI History Response:", historyList) // 디버깅용 로그 추가
 
-          setAiSummary(latest.summary || null);
-          setActionItems(latest.actionItems || []);
+        if (Array.isArray(historyList) && historyList.length > 0) {
+          const sortedHistory = historyList.sort(
+            (a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime(),
+          )
+
+          const latest = sortedHistory[0]
+          console.log("Latest history item:", latest)
+
+          // 히스토리 응답이 문자열 형태의 배열일 경우 파싱
+          let summary = latest.summary || null
+          if (typeof summary === "string" && summary.startsWith("[") && summary.endsWith("]")) {
+            summary = parseStringArray(summary)
+          }
+
+          setAiSummary(summary)
+
+          // actionItems가 있는 가장 최근 항목 찾기
+          const latestWithActionItems = sortedHistory.find((item) => {
+            const actionItems = item.actionItems || item.actionItem || item.actions || []
+            return Array.isArray(actionItems) && actionItems.length > 0
+          })
+
+          if (latestWithActionItems) {
+            const actionItems =
+              latestWithActionItems.actionItems ||
+              latestWithActionItems.actionItem ||
+              latestWithActionItems.actions ||
+              []
+            setActionItems(Array.isArray(actionItems) ? actionItems : [])
+          } else {
+            console.log("No action items found in history")
+            setActionItems([])
+          }
         } else {
-          setAiSummary(null);
-          setActionItems([]);
+          console.log("No history found, resetting states")
+          setAiSummary(null)
+          setActionItems([])
         }
       } catch (error) {
-        console.error("AI 요약 히스토리 불러오기 실패:", error);
+        console.error("AI 요약 히스토리 불러오기 실패:", error)
+        setAiSummary(null)
+        setActionItems([])
       }
-    };
+    }
 
-    fetchAiHistory();
-  }, [ticketId]);
+    fetchAiHistory()
+  }, [ticketId])
 
   const handleGenerateSummary = async () => {
     setIsLoading(true);
+    setCurrentLoadingRole(null)
     try {
       const result = await getAiSummary(ticketId);
       setAiSummary(result.summary);
@@ -75,17 +119,19 @@ export const ThreadAiSummary = ({
     }
   };
 
-  const handleEyeLevelSummary = async (jobRole: JobRole) => {
+  const handleEyeLevelSummary = async (perspective: perspective) => {
     setIsEyeLevelLoading(true)
     setIsDropdownOpen(false)
+    setSelectedJobRole(perspective)
+    setCurrentLoadingRole(perspective)
     try {
-      // const result = await getAiSummary(ticketId, { jobRole })
-      // setAiSummary(result.summary)
-      // setActionItems(result.actionItems || [])
+      const result = await getEyelevelSummary(ticketId, perspective)
+      setAiSummary(result.summary || [])
     } catch (error) {
       console.error("눈높이 요약 생성 실패:", error)
     } finally {
       setIsEyeLevelLoading(false)
+      setCurrentLoadingRole(null)
     }
   }
 
@@ -138,10 +184,10 @@ export const ThreadAiSummary = ({
 
             {isDropdownOpen && (
               <S.DropdownMenu>
-                {Object.entries(JOB_ROLE_LABELS).map(([role, label]) => (
+                {Object.entries(PERSPECTIVE_LABELS).map(([role, label]) => (
                   <S.DropdownItem
                     key={role}
-                    onClick={() => handleEyeLevelSummary(role as JobRole)}
+                    onClick={() => handleEyeLevelSummary(role as perspective)}
                     $isSelected={selectedJobRole === role}
                   >
                     {label}
@@ -155,15 +201,33 @@ export const ThreadAiSummary = ({
       </S.SectionTitleContainer >
 
       <S.AiSummaryBox>
-        {isLoading ? (
+        {isLoading || isEyeLevelLoading ? (
           <S.LoadingContainer>
             <S.LoadingSpinner>
               <Bot size={32} />
             </S.LoadingSpinner>
-            <S.LoadingText>AI가 회의 내용을 요약하고 있습니다...</S.LoadingText>
+            <S.LoadingText>
+              {isEyeLevelLoading
+                ? `${PERSPECTIVE_LABELS[selectedJobRole]} 눈높이로 요약하고 있습니다...`
+                : "AI가 회의 내용을 요약하고 있습니다..."}
+            </S.LoadingText>
           </S.LoadingContainer>
         ) : (
-          <S.AiSummaryContent>{aiSummary || "스레드 내용을 AI로 정리해보세요!"}</S.AiSummaryContent>
+          <S.AiSummaryContent>
+            {aiSummary ? (
+              Array.isArray(aiSummary) ? (
+                <S.SummaryList>
+                  {aiSummary.map((item, index) => (
+                    <S.SummaryItem key={index}>{item.replace(/^-\s*/, "")}</S.SummaryItem>
+                  ))}
+                </S.SummaryList>
+              ) : (
+                <span>{aiSummary}</span>
+              )
+            ) : (
+              <span>"스레드 내용을 AI로 정리해보세요!"</span>
+            )}
+          </S.AiSummaryContent>
         )}
       </S.AiSummaryBox>
 

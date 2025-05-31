@@ -252,7 +252,7 @@ export const AiSummaryBox = styled.div`
   }
 `
 
-export const AiSummaryContent = styled.p`
+export const AiSummaryContent = styled.div`
   font-size: 13px;
   line-height: 1.5;
   color: ${color.textSecondary};
@@ -261,6 +261,46 @@ export const AiSummaryContent = styled.p`
   justify-content: center;
   text-align: center;
   height: 100%;
+  min-height: 120px;
+  margin: 0;
+  width: 100%;
+
+  &:has(ul) {
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 8px;
+  }
+`
+
+export const SummaryList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left;
+`
+
+export const SummaryItem = styled.li`
+  font-size: 13px;
+  line-height: 1.6;
+  color: ${color.basic900};
+  margin-bottom: 8px;
+  padding-left: 14px;
+  position: relative;
+
+  &:before {
+    content: '•';
+    color: #10b981;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 `
 
 export const ActionItemsContainer = styled.div`
