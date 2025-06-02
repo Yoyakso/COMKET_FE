@@ -76,6 +76,17 @@ export const InfoContent = styled.div`
   color: ${color.textPrimary};
 `
 
+export const AdditionalInfoContent = styled.div`
+  font-size: 12px;
+  color: ${color.textSecondary};
+  line-height: 1.4;
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  padding: 10px 0;
+`
+
 export const TypeContainer = styled.div`
   display: flex;
   align-items: center;
@@ -168,8 +179,9 @@ export const DetailContent = styled.div`
 `
 
 export const PlaceholderText = styled.div`
-  color: ${color.textSecondary};
+  color: ${color.textPlaceholder};
   font-style: italic;
+  font-size: 11px;
 `
 
 export const AttachmentsGrid = styled.div`
