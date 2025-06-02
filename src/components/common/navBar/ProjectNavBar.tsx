@@ -65,7 +65,7 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
         title={p.name}
         onClick={() => {
           onNavigateProject?.();
-          navigate(`/${slug}/project/${p.id}`);
+          navigate(`/${p.id}/tickets`);
         }}
         style={{
           backgroundColor: pathname.includes(`/project/${p.id}`) ? '#f3f4f6' : 'transparent',
