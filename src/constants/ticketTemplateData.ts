@@ -109,9 +109,9 @@ export const TICKET_TEMPLATE_DATA: TicketTemplate[] = [
   },
   {
     id: "meeting-scrum",
-    name: "회의/스크럼",
+    name: "회의/논의",
     purpose: "회의 내용 정리 및 공유",
-    type: "회의",
+    type: "회의/논의",
     color: "#10b981",
     icon: "Users",
     fields: [

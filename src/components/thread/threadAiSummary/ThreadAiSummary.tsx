@@ -305,6 +305,12 @@ export const ThreadAiSummary = ({
           projectId={Number(projectId)}
           projectName={projectName}
           parentTicketId={ticketId}
+          initialData={{
+            title: selectedActionItem.title,
+            assignee_member_id: selectedActionItem.memberInfo?.projectMemberId || null,
+            priority: selectedActionItem.priority,
+            start_date: new Date().toISOString().split("T")[0],
+          }}
           onSubmit={(newTicket) => {
             setSelectedTemplate(null)
             setSelectedActionItem(null)

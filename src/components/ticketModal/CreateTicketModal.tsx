@@ -26,6 +26,13 @@ interface CreateTicketModalProps {
   projectId: number
   parentTicketId?: number
   template?: TicketTemplate
+  initialData?: {
+    title?: string
+    assignee_member_id?: number | null
+    priority?: string
+    start_date?: string
+    end_date?: string
+  }
 }
 
 const TYPE_OPTIONS = ["개발", "디자인", "기획", "테스트", "버그", "회의/논의", "문서화", "기타"]
@@ -39,13 +46,14 @@ export const CreateTicketModal = ({
   projectId,
   parentTicketId,
   template,
+  initialData,
 }: CreateTicketModalProps) => {
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
   const [members, setMembers] = useState<Member[]>([])
   const { name, memberId } = useUserStore()
   const [ticketData, setTicketData] = useState({
     type: template?.type || "",
-    title: "",
+    title: initialData?.title || "",
     content: "",
     priority: template ? "MEDIUM" : "",
     status: "TODO",
@@ -107,7 +115,7 @@ export const CreateTicketModal = ({
       setTicketData((prev) => ({
         ...prev,
         type: template.type || "",
-        title: "",
+        title: prev.title || "",
         content: "",
         priority: "MEDIUM",
         status: "TODO",
@@ -291,6 +299,21 @@ export const CreateTicketModal = ({
               />
             </S.FormRow>
           </>
+        )
+
+      case "meeting-scrum":
+        return (
+          <S.FormRow>
+            <S.FormLabel>회의 내용 요약</S.FormLabel>
+            <S.EditorWrapper>
+              <MarkdownEditor
+                initialValue={additionalFields.description || ""}
+                onChange={(value) =>
+                  handleAdditionalFieldChange("description", value)
+                }
+              />
+            </S.EditorWrapper>
+          </S.FormRow>
         )
 
       case "data-analysis":
