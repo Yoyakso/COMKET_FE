@@ -1,16 +1,19 @@
 import * as S from './MyTicketPage.Style';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ListChecks, Rows2 } from 'lucide-react';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
 import { TicketListView } from '@/components/ticketView/TicketListView';
 import { TicketBoardView } from '@/components/ticketView/TicketBoardView';
 import { Ticket } from '@/types/ticket';
-
-const mockMyTickets: Ticket[] = [];
+import { getMyTickets } from '@/api/Ticket';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
 
 export const MyTicketPage = () => {
+  const workspaceName = useWorkspaceStore(s => s.workspaceName);
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
+  const [myTickets, setMyTickets] = useState<Ticket[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleTicketClick = (ticket: Ticket) => {
     console.log('티켓 클릭됨:', ticket);
@@ -19,6 +22,34 @@ export const MyTicketPage = () => {
   const handleTicketDrop = (ticketId: number, newStatus: string) => {
     console.log('드래그 상태 변경:', ticketId, newStatus);
   };
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      if (!workspaceName) return;
+      try {
+        setIsLoading(true);
+        const data = await getMyTickets(workspaceName);
+        const normalized = data.map(
+          (t: any): Ticket => ({
+            ...t,
+            title: t.ticket_name,
+            type: t.ticket_type,
+            priority: t.ticket_priority,
+            status: t.ticket_state,
+            startDate: t.start_date,
+            endDate: t.end_date,
+          }),
+        );
+
+        setMyTickets(normalized);
+      } catch (err) {
+        console.error('내 티켓 조회 실패:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTickets();
+  }, [workspaceName]);
 
   return (
     <S.PageContainer>
@@ -51,16 +82,21 @@ export const MyTicketPage = () => {
             </S.ViewTabBar>
           </S.Header>
 
-          {viewType === 'list' ? (
-            <TicketListView
-              ticketList={mockMyTickets}
-              onTicketClick={handleTicketClick}
-              onDeleteTickets={() => { }}
-              projectName="내 티켓"
-            />
+          {isLoading ? (
+            <div>로딩 중...</div>
+          ) : viewType === 'list' ? (
+            <>
+              {console.log('내 티켓 목록:', myTickets)}
+              <TicketListView
+                ticketList={myTickets}
+                onTicketClick={handleTicketClick}
+                onDeleteTickets={() => {}}
+                projectName="내 티켓"
+              />
+            </>
           ) : (
             <TicketBoardView
-              ticketList={mockMyTickets}
+              ticketList={myTickets}
               onTicketClick={handleTicketClick}
               onTicketDrop={handleTicketDrop}
             />

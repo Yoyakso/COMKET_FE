@@ -20,17 +20,19 @@ export const TicketListView = ({
   onTicketClick,
   onDeleteTickets,
   onTicketHover,
-  projectName
+  projectName,
 }: TicketListViewProps) => {
   const { selectedPriorities, selectedStatuses, selectedTypes } = TicketFilterStore();
 
-  const { tickets, updateManyTicketType, updateManyTicketStatus } = TicketDropdownStore();
+  const { tickets, setTickets, updateManyTicketType, updateManyTicketStatus } =
+    TicketDropdownStore();
 
   const { selectedIds, toggleSingle, toggleWithSubtickets, clearSelection, setInitialTickets } =
     TicketSelectionStore();
 
   useEffect(() => {
     setInitialTickets(ticketList);
+    setTickets(ticketList);
   }, [ticketList]);
 
   const [searchValue, setSearchValue] = useState('');
