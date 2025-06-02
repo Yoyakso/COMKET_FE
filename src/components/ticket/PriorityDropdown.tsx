@@ -1,40 +1,40 @@
-import { useRef, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { TicketDropdownStore } from "@/stores/ticketStore"
-import * as S from "./PriorityDropdown.Style"
-import { useOutsideClick } from "@/hooks/useOutsideClick"
-import type { Priority } from "@/types/filter"
-import { PortalDropdown } from "@/utils/PortalDropdown"
-import { editSingleTicket } from "@/api/Ticket"
-import { toast } from "react-toastify"
+import { useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TicketDropdownStore } from '@/stores/ticketStore';
+import * as S from './PriorityDropdown.Style';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
+import type { Priority } from '@/types/filter';
+import { PortalDropdown } from '@/utils/PortalDropdown';
+import { editSingleTicket } from '@/api/Ticket';
+import { toast } from 'react-toastify';
 
 interface PriorityDropdownProps {
-  ticketId: number
-  projectName: string
+  ticketId: number;
+  projectName: string;
 }
 
 const findTicketById = (tickets: any[], id: number) => {
   for (const t of tickets) {
-    if (t.id === id) return t
-    const found = t.subtickets?.find((st: any) => st.id === id)
-    if (found) return found
+    if (t.id === id) return t;
+    const found = t.subtickets?.find((st: any) => st.id === id);
+    if (found) return found;
   }
-  return undefined
-}
+  return undefined;
+};
 
 export const PriorityDropdown = ({ ticketId, projectName }: PriorityDropdownProps) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const [hovered, setHovered] = useState<Priority | null>(null)
-  const { tickets, openDropdown, setOpenDropdown, updateTicketPriority } = TicketDropdownStore()
-  const ticket = findTicketById(tickets, ticketId)
-  const currentPriority = ticket?.priority ?? "LOW"
-  const isOpen = openDropdown?.ticketId === ticketId && openDropdown.field === "priority"
+  const ref = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState<Priority | null>(null);
+  const { tickets, openDropdown, setOpenDropdown, updateTicketPriority } = TicketDropdownStore();
+  const ticket = findTicketById(tickets, ticketId);
+  const currentPriority = ticket?.priority ?? 'LOW';
+  const isOpen = openDropdown?.ticketId === ticketId && openDropdown.field === 'priority';
 
-  useOutsideClick(ref, () => isOpen && setOpenDropdown(null))
+  useOutsideClick(ref, () => isOpen && setOpenDropdown(null));
 
   const handleSelect = async (priority: Priority) => {
-    updateTicketPriority(ticketId, priority)
-    setOpenDropdown(null)
+    updateTicketPriority(ticketId, priority);
+    setOpenDropdown(null);
 
     try {
       const payload = {
@@ -47,21 +47,21 @@ export const PriorityDropdown = ({ ticketId, projectName }: PriorityDropdownProp
         end_date: ticket.endDate ?? null,
         parent_ticket_id: ticket.parentId ?? null,
         assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
-      }
+      };
 
-      await editSingleTicket(ticketId, projectName, payload)
-      toast.success("우선순위가 변경되었습니다.")
+      await editSingleTicket(ticketId, projectName, payload);
+      toast.success('우선순위가 변경되었습니다.');
     } catch (error) {
-      console.error("우선순위 서버 반영 실패", error)
-      toast.error("우선순위 변경에 실패했습니다.")
+      console.error('우선순위 서버 반영 실패', error);
+      toast.error('우선순위 변경에 실패했습니다.');
     }
-  }
+  };
 
-  const options: Priority[] = ["HIGH", "MEDIUM", "LOW"]
+  const options: Priority[] = ['HIGH', 'MEDIUM', 'LOW'];
 
   return (
     <S.Positioner ref={ref}>
-      <S.Wrapper onClick={() => setOpenDropdown(isOpen ? null : { ticketId, field: "priority" })}>
+      <S.Wrapper onClick={() => setOpenDropdown(isOpen ? null : { ticketId, field: 'priority' })}>
         <S.PriorityDot priority={currentPriority} />
         {currentPriority}
       </S.Wrapper>
@@ -76,7 +76,7 @@ export const PriorityDropdown = ({ ticketId, projectName }: PriorityDropdownProp
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
             >
-              {options.map((p) => (
+              {options.map(p => (
                 <S.Option
                   key={p}
                   onMouseEnter={() => setHovered(p)}
@@ -93,5 +93,5 @@ export const PriorityDropdown = ({ ticketId, projectName }: PriorityDropdownProp
         )}
       </AnimatePresence>
     </S.Positioner>
-  )
-}
+  );
+};

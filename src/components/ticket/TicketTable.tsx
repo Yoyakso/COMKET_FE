@@ -195,18 +195,21 @@ export const TicketTable = ({
           </S.HeaderRow>
         </S.TableHeader>
         <S.TableBody>
-          {sortedTickets.map(ticket => (
-            <TicketRow
-              key={ticket.id}
-              ticket={ticket}
-              isChecked={id => selectedIds?.includes(id) ?? false}
-              toggleSingle={toggleSingle}
-              toggleWithSubtickets={toggleWithSubtickets}
-              onTicketClick={onTicketClick}
-              onTicketHover={onTicketHover}
-              projectName={projectName}
-            />
-          ))}
+          {sortedTickets.map(ticket => {
+            if (!ticket.id) console.warn('🚨 ticket without ID:', ticket);
+            return (
+              <TicketRow
+                key={ticket.id}
+                ticket={ticket}
+                isChecked={id => selectedIds?.includes(id) ?? false}
+                toggleSingle={toggleSingle}
+                toggleWithSubtickets={toggleWithSubtickets}
+                onTicketClick={onTicketClick}
+                onTicketHover={onTicketHover}
+                projectName={projectName}
+              />
+            );
+          })}
         </S.TableBody>
       </S.Table>
     </S.TableWrapper>
