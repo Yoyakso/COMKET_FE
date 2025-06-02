@@ -45,6 +45,7 @@ export const TicketDashboardPage = () => {
   const [members, setMembers] = useState<MemberData[]>([]);
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
   const [alarms, setAlarms] = useState<TicketAlarm[]>([]);
+  const [alarmTicketIds, setAlarmTicketIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -106,6 +107,21 @@ export const TicketDashboardPage = () => {
     fetchTickets();
   }, [projectName]);
 
+  useEffect(() => {
+    if (!isAlarmOpen && projectId) {
+      getTicketAlarms(Number(projectId))
+        .then(result => {
+          setAlarms(result);
+          const alarmIds = result.map(alarm => alarm.ticket_id);
+          console.log('알림 티켓 ID:', alarmIds);
+          setAlarmTicketIds(new Set(alarmIds));
+        })
+        .catch(e => {
+          console.error('알림 불러오기 실패:', e);
+        });
+    }
+  }, [isAlarmOpen, projectId]);
+
   const handleTicketClick = (ticket: Ticket) => {
     if (!projectId) return;
 
@@ -122,9 +138,9 @@ export const TicketDashboardPage = () => {
       const updated = tickets.map(ticket =>
         ticket.id === newTicket.parentId
           ? {
-              ...ticket,
-              subtickets: [...(ticket.subtickets ?? []), newTicket],
-            }
+            ...ticket,
+            subtickets: [...(ticket.subtickets ?? []), newTicket],
+          }
           : ticket,
       );
       setTickets(updated);
@@ -291,6 +307,7 @@ export const TicketDashboardPage = () => {
               onDeleteTickets={() => setShowDeleteModal(true)}
               projectName={projectName}
               onInfoClick={handleInfoClick}
+              alarmTicketIds={alarmTicketIds}
             />
           ) : (
             <TicketBoardView
@@ -329,7 +346,7 @@ export const TicketDashboardPage = () => {
 
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => {}}
+            onMouseEnter={() => { }}
             onMouseLeave={() => {
               if (!selectedTicket) setHoveredTicket(null);
             }}

@@ -13,6 +13,7 @@ interface TicketListViewProps {
   onDeleteTickets: () => void;
   onInfoClick?: (ticket: Ticket) => void;
   projectName: string;
+  alarmTicketIds?: Set<number>;
 }
 
 export const TicketListView = ({
@@ -21,6 +22,7 @@ export const TicketListView = ({
   onDeleteTickets,
   onInfoClick,
   projectName,
+  alarmTicketIds,
 }: TicketListViewProps) => {
   const { selectedPriorities, selectedStatuses, selectedTypes } = TicketFilterStore();
 
@@ -67,6 +69,7 @@ export const TicketListView = ({
         onTicketClick={onTicketClick}
         onInfoClick={onInfoClick}
         projectName={projectName}
+        alarmTicketIds={alarmTicketIds}
       />
     </S.Wrapper>
   );

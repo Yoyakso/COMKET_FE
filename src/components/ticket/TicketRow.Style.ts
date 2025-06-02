@@ -127,3 +127,23 @@ export const InfoButton = styled.button`
     background-color: #e5e7eb;
   }
 `
+
+export const Alarm = styled.div<{ $visible?: boolean }>`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  visibility: ${({ $visible }) => ($visible ? 'visible' : 'hidden')};
+`
+
+export const InfoAlarmCell = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 80px;
+  min-width: 80px;
+`
