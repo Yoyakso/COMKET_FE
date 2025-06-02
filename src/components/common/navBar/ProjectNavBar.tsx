@@ -31,8 +31,8 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
   const [myProjects, setMyProjects] = useState<Project[]>([]);
   const [alarmCounts, setAlarmCounts] = useState<Record<string, number>>({});
 
-  const [isAllOpen, setAllOpen] = useState(true);
-  const [isMyOpen, setMyOpen] = useState(false);
+  const [isAllOpen, setAllOpen] = useState(false);
+  const [isMyOpen, setMyOpen] = useState(true);
 
   useEffect(() => {
     if (!name) return;
