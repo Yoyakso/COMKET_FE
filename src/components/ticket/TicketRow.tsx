@@ -9,6 +9,7 @@ import { TypeBadge } from './TypeBadge';
 import { PriorityDropdown } from './PriorityDropdown';
 import { StatusDropdown } from './StatusDropdown';
 import { AssigneeCell } from '@/components/ticket/AssignCell';
+import { Info } from 'lucide-react';
 
 interface TicketRowProps {
   ticket: Ticket;
@@ -17,6 +18,7 @@ interface TicketRowProps {
   toggleWithSubtickets: (ticket: Ticket) => void;
   onTicketClick?: (ticket: Ticket) => void;
   onTicketHover?: (ticket: Ticket | null) => void;
+  onInfoClick?: (ticket: Ticket) => void;
   projectName: string;
   depth?: number;
 }
@@ -28,6 +30,7 @@ export const TicketRow = ({
   toggleWithSubtickets,
   onTicketClick,
   onTicketHover,
+  onInfoClick,
   projectName,
   depth = 0,
 }: TicketRowProps) => {
@@ -83,6 +86,13 @@ export const TicketRow = ({
             }
           />
         </S.TableCell>
+
+        <S.TableCell $align="center">
+          <S.InfoButton onClick={() => onInfoClick?.(ticket)}>
+            <Info size={16} />
+          </S.InfoButton>
+        </S.TableCell>
+
         <S.TableCell
           onClick={() => onTicketClick?.(ticket)}
           onMouseEnter={() => onTicketHover?.(ticket)}

@@ -1,92 +1,246 @@
 import * as S from "./ThreadAiSummary.Style"
-import { useState } from "react"
-import { Loader2, Bot, Sparkles } from "lucide-react"
-
-interface Assignee {
-  id: number
-  name: string
-  avatar?: string
-  code?: string
-}
+import { useState, useEffect } from "react"
+import { Loader2, Bot, Sparkles, Eye, ChevronDown } from "lucide-react"
+import { getAiSummary, getAiHistory, getEyelevelSummary } from "@/api/Ai"
+import { Priority } from "@/types/filter"
+import { EyelevelPerspective } from "@/types/eyeLevel"
+import { TicketTemplateModal } from "@/components/ticketModal/TicketTemplateModal"
+import { TicketTemplate } from "@/types/ticketTemplate"
+import { CreateTicketModal } from "@/components/ticketModal/CreateTicketModal"
+import { useParams } from "react-router-dom"
 
 interface ActionItem {
-  id: number
-  assignee: Assignee
-  task: string
-  priority: "HIGH" | "MEDIUM" | "LOW"
-  status: "TODO" | "IN PROGRESS" | "DONE"
+  title: string
+  priority: Priority
+  dueDate?: string
+  memberInfo?: {
+    name: string
+    projectMemberId: number
+  }
 }
 
 interface ThreadAiSummaryProps {
-  aiSummary: string | null
-  actionItems: ActionItem[]
+  ticketId: number
   placeholderMessage?: string
-  onGenerateSummary?: () => Promise<string>
+  projectName?: string
 }
 
-// 목업 데이터
-const mockAiSummary = `이번 회의에서는 Q4 마케팅 캠페인 전략에 대해 논의했습니다. 주요 결정사항으로는 소셜미디어 광고 예산을 30% 증액하고, 인플루언서 마케팅을 강화하기로 했습니다. 또한 새로운 제품 런칭을 위한 티저 캠페인을 12월 첫째 주에 시작하기로 결정했습니다. 팀 간 협업을 위해 주간 스탠드업 미팅을 도입하고, 프로젝트 진행상황을 실시간으로 공유할 수 있는 대시보드를 구축하기로 했습니다.`
+type perspective = EyelevelPerspective
+
+const PERSPECTIVE_LABELS: Record<perspective, string> = {
+  DEVELOPER: "개발자",
+  PROJECT_MANAGER: "PM/기획자",
+  DESIGNER: "디자이너",
+  DATA_ANALYST: "데이터 엔지니어",
+}
+
+const parseStringArray = (str: string): string[] => {
+  if (!str) return []
+
+  if (str.startsWith("[") && str.endsWith("]")) {
+    const content = str.slice(1, -1)
+    return content.split(", ").map((item) => item.trim())
+  }
+  return [str]
+}
 
 export const ThreadAiSummary = ({
-  aiSummary: initialAiSummary,
-  actionItems,
+  ticketId,
   placeholderMessage,
-  onGenerateSummary
+  projectName,
 }: ThreadAiSummaryProps) => {
-
   const [isLoading, setIsLoading] = useState(false)
-  const [aiSummary, setAiSummary] = useState<string | null>(initialAiSummary || mockAiSummary)
+  const [isEyeLevelLoading, setIsEyeLevelLoading] = useState(false)
+  const [aiSummary, setAiSummary] = useState<string | string[] | null>(null)
+  const [actionItems, setActionItems] = useState<ActionItem[]>([])
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [selectedJobRole, setSelectedJobRole] = useState<perspective | null>(null)
+  const [currentLoadingRole, setCurrentLoadingRole] = useState<perspective | null>(null)
+  // 모달 열림 여부와 선택된 액션아이템 저장
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
+  const [selectedActionItem, setSelectedActionItem] = useState<ActionItem | null>(null)
+  const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null)
+  const { projectId } = useParams<{ projectId: string; }>()
+  // console.log("ThreadAiSummary Props:", { ticketId, placeholderMessage, projectId, projectName })
+  useEffect(() => {
+    const fetchAiHistory = async () => {
+      try {
+        const historyList = await getAiHistory(ticketId)
+        console.log("AI History Response:", historyList)
+
+        if (Array.isArray(historyList) && historyList.length > 0) {
+          const sortedHistory = historyList.sort(
+            (a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime(),
+          )
+
+          const latest = sortedHistory[0]
+          console.log("Latest history item:", latest)
+
+          let summary = latest.summary || null
+          if (typeof summary === "string" && summary.startsWith("[") && summary.endsWith("]")) {
+            summary = parseStringArray(summary)
+          }
+
+          setAiSummary(summary)
+          const latestWithActionItems = sortedHistory.find((item) => {
+            const actionItems = item.actionItems || item.actionItem || item.actions || []
+            return Array.isArray(actionItems) && actionItems.length > 0
+          })
+
+          if (latestWithActionItems) {
+            const actionItems =
+              latestWithActionItems.actionItems ||
+              latestWithActionItems.actionItem ||
+              latestWithActionItems.actions ||
+              []
+            setActionItems(Array.isArray(actionItems) ? actionItems : [])
+          } else {
+            console.log("No action items found in history")
+            setActionItems([])
+          }
+        } else {
+          console.log("No history found, resetting states")
+          setAiSummary(null)
+          setActionItems([])
+        }
+      } catch (error) {
+        console.error("AI 요약 히스토리 불러오기 실패:", error)
+        setAiSummary(null)
+        setActionItems([])
+      }
+    }
+
+    fetchAiHistory()
+  }, [ticketId])
 
   const handleGenerateSummary = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
+    setCurrentLoadingRole(null)
     try {
-      if (onGenerateSummary) {
-        const summary = await onGenerateSummary()
-        setAiSummary(summary)
-      } else {
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        setAiSummary(mockAiSummary)
-      }
+      const result = await getAiSummary(ticketId);
+      setAiSummary(result.summary);
+      setActionItems(result.actionItems || []);
     } catch (error) {
-      console.error("요약 생성 중 오류 발생:", error)
+      console.error("AI 요약 생성 실패:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
+  };
+
+  const handleEyeLevelSummary = async (perspective: perspective) => {
+    setIsEyeLevelLoading(true)
+    setIsDropdownOpen(false)
+    setSelectedJobRole(perspective)
+    setCurrentLoadingRole(perspective)
+    try {
+      const result = await getEyelevelSummary(ticketId, perspective)
+      setAiSummary(result.summary || [])
+    } catch (error) {
+      console.error("눈높이 요약 생성 실패:", error)
+    } finally {
+      setIsEyeLevelLoading(false)
+      setCurrentLoadingRole(null)
+    }
+  }
+
+  const handleClickActionItem = (item: ActionItem) => {
+    setSelectedActionItem(item)
+    setIsTemplateModalOpen(true)
   }
 
   return (
     <>
       <S.SectionTitleContainer>
         <S.SectionTitle>AI 요약</S.SectionTitle>
-        <S.GenerateButton onClick={handleGenerateSummary} disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <S.SpinnerIcon>
-                <Loader2 size={16} />
-              </S.SpinnerIcon>
-              <span>요약 생성 중...</span>
-            </>
-          ) : (
-            <>
-              <S.ButtonIcon>
-                <Sparkles size={16} />
-              </S.ButtonIcon>
-              <span>AI 요약 생성</span>
-            </>
-          )}
-        </S.GenerateButton>
-      </S.SectionTitleContainer>
+        <S.ButtonGroup>
+          <S.GenerateButton onClick={handleGenerateSummary} disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <S.SpinnerIcon>
+                  <Loader2 size={16} />
+                </S.SpinnerIcon>
+                <span>요약 생성 중...</span>
+              </>
+            ) : (
+              <>
+                <S.ButtonIcon>
+                  <Sparkles size={16} />
+                </S.ButtonIcon>
+                <span>AI 요약 생성</span>
+              </>
+            )}
+          </S.GenerateButton>
+
+          <S.DropdownContainer>
+            <S.EyeLevelButton
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              disabled={isLoading || isEyeLevelLoading}
+              $isOpen={isDropdownOpen}
+            >
+              {isEyeLevelLoading ? (
+                <>
+                  <S.SpinnerIcon>
+                    <Loader2 size={16} />
+                  </S.SpinnerIcon>
+                  <span>눈높이 요약 중...</span>
+                </>
+              ) : (
+                <>
+                  <S.ButtonIcon>
+                    <Eye size={16} />
+                  </S.ButtonIcon>
+                  <span>눈높이 요약</span>
+                  <ChevronDown size={16} />
+                </>
+              )}
+            </S.EyeLevelButton>
+
+            {isDropdownOpen && (
+              <S.DropdownMenu>
+                {Object.entries(PERSPECTIVE_LABELS).map(([role, label]) => (
+                  <S.DropdownItem
+                    key={role}
+                    onClick={() => handleEyeLevelSummary(role as perspective)}
+                    $isSelected={selectedJobRole === role}
+                  >
+                    {label}
+                  </S.DropdownItem>
+                ))}
+              </S.DropdownMenu>
+            )}
+          </S.DropdownContainer>
+
+        </S.ButtonGroup>
+      </S.SectionTitleContainer >
 
       <S.AiSummaryBox>
-        {isLoading ? (
+        {isLoading || isEyeLevelLoading ? (
           <S.LoadingContainer>
             <S.LoadingSpinner>
               <Bot size={32} />
             </S.LoadingSpinner>
-            <S.LoadingText>AI가 회의 내용을 요약하고 있습니다...</S.LoadingText>
+            <S.LoadingText>
+              {isEyeLevelLoading
+                ? `${PERSPECTIVE_LABELS[selectedJobRole]} 눈높이로 요약하고 있습니다...`
+                : "AI가 회의 내용을 요약하고 있습니다..."}
+            </S.LoadingText>
           </S.LoadingContainer>
         ) : (
-          <S.AiSummaryContent>{aiSummary}</S.AiSummaryContent>
+          <S.AiSummaryContent>
+            {aiSummary ? (
+              Array.isArray(aiSummary) ? (
+                <S.SummaryList>
+                  {aiSummary.map((item, index) => (
+                    <S.SummaryItem key={index}>{item.replace(/^-\s*/, "")}</S.SummaryItem>
+                  ))}
+                </S.SummaryList>
+              ) : (
+                <span>{aiSummary}</span>
+              )
+            ) : (
+              <span>"스레드 내용을 AI로 정리해보세요!"</span>
+            )}
+          </S.AiSummaryContent>
         )}
       </S.AiSummaryBox>
 
@@ -94,43 +248,75 @@ export const ThreadAiSummary = ({
       <S.ActionItemsContainer>
         {placeholderMessage ? (
           <S.PlaceholderMessage>{placeholderMessage}</S.PlaceholderMessage>
+        ) : actionItems && actionItems.length > 0 ? (
+          <S.ActionItemsList>
+            {actionItems.map((item, index) => (
+              <S.ActionItemCard
+                $priority={item.priority}
+                key={`${item.title}-${index}`}
+                onClick={() => handleClickActionItem(item)}
+              >
+                <S.ActionItemLeft>
+                  <S.ActionItemTitle>{item.title}</S.ActionItemTitle>
+                  <S.AssigneeDisplay>
+                    <span>{item.memberInfo?.name}</span>
+                  </S.AssigneeDisplay>
+                </S.ActionItemLeft>
+                <S.ActionItemRight>
+                  <S.PriorityBadge $priority={item.priority}>{item.priority}</S.PriorityBadge>
+                  <S.DueDate>{item.dueDate || "미정"}</S.DueDate>
+                </S.ActionItemRight>
+              </S.ActionItemCard>
+            ))}
+          </S.ActionItemsList>
         ) : (
-          <S.ActionItemsTable>
-            <S.TableHeader>
-              <S.TableRow>
-                <S.TableHeaderCell>담당자</S.TableHeaderCell>
-                <S.TableHeaderCell>작업 상세 내용</S.TableHeaderCell>
-                <S.TableHeaderCell>우선순위</S.TableHeaderCell>
-                <S.TableHeaderCell>상태</S.TableHeaderCell>
-              </S.TableRow>
-            </S.TableHeader>
-            <S.TableBody>
-              {actionItems && actionItems.map((item) => (
-                <S.TableRow key={item.id}>
-                  <S.TableCell>
-                    <S.AssigneeDisplay>
-                      <S.SmallAvatar>
-                        <S.AvatarImage
-                          src={item.assignee.avatar || ""}
-                          alt={item.assignee.name}
-                        />
-                      </S.SmallAvatar>
-                      <span>{item.assignee.name}</span>
-                    </S.AssigneeDisplay>
-                  </S.TableCell>
-                  <S.TableCell>{item.task}</S.TableCell>
-                  <S.TableCell>
-                    <S.PriorityBadge $priority={item.priority}>{item.priority}</S.PriorityBadge>
-                  </S.TableCell>
-                  <S.TableCell>
-                    <S.StatusBadge $status={item.status}>{item.status}</S.StatusBadge>
-                  </S.TableCell>
-                </S.TableRow>
-              ))}
-            </S.TableBody>
-          </S.ActionItemsTable>
+          <S.PlaceholderMessage>추출된 액션아이템이 없습니다.</S.PlaceholderMessage>
         )}
-      </S.ActionItemsContainer>
+      </S.ActionItemsContainer >
+
+      {isTemplateModalOpen && selectedActionItem && (
+        <TicketTemplateModal
+          isOpen={isTemplateModalOpen}
+          onClose={() => {
+            setIsTemplateModalOpen(false)
+          }}
+          initialData={{
+            ticket_name: selectedActionItem.title,
+            ticket_priority: selectedActionItem.priority,
+            assignee_member_id: selectedActionItem.memberInfo?.projectMemberId || null,
+            due_date: selectedActionItem.dueDate || null,
+            ticket_type: "기본형",
+            description: "",
+            parent_ticket_id: ticketId,
+          }}
+          onSelectTemplate={(template) => {
+            setSelectedTemplate(template)
+          }}
+        />
+      )}
+
+      {selectedTemplate && selectedActionItem && projectId && projectName && (
+        <CreateTicketModal
+          onClose={() => {
+            setSelectedTemplate(null)
+            setSelectedActionItem(null)
+          }}
+          template={selectedTemplate}
+          projectId={Number(projectId)}
+          projectName={projectName}
+          parentTicketId={ticketId}
+          initialData={{
+            title: selectedActionItem.title,
+            assignee_member_id: selectedActionItem.memberInfo?.projectMemberId || null,
+            priority: selectedActionItem.priority,
+            start_date: new Date().toISOString().split("T")[0],
+          }}
+          onSubmit={(newTicket) => {
+            setSelectedTemplate(null)
+            setSelectedActionItem(null)
+          }}
+        />
+      )}
     </>
   )
 }

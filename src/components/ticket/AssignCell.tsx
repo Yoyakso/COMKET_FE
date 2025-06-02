@@ -15,9 +15,10 @@ interface Props {
 
 export const AssigneeCell = ({ members }: Props) => {
   console.log('AssigneeCell 렌더링', members);
-  if (!members || members.length === 0) return <span>없음</span>;
+  const validMembers = members.filter(m => m && m.name);
+  if (!validMembers || validMembers.length === 0) return <span>미지정</span>;
   const [isHovered, setIsHovered] = useState(false);
-  const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedMembers = [...validMembers].sort((a, b) => a.name.localeCompare(b.name));
   const main = sortedMembers[0];
   const others = sortedMembers.slice(1);
 

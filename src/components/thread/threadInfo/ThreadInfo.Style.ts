@@ -5,13 +5,25 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 95%;
+  max-width: 1500px;
+  margin: 0 auto;
+  max-height: 350px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
 `
 
 export const Section = styled.div`
   background-color: white;
-  border: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
   border-radius: 6px;
-  overflow: hidden;
+  overflow: visible;
+  
+  &:last-child {
+    border-bottom: none;
+  }
 `
 
 export const SectionHeader = styled.div`
@@ -21,6 +33,7 @@ export const SectionHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 40px;
 `
 
 export const SectionTitle = styled.h2`
@@ -49,7 +62,7 @@ export const EditButton = styled.button`
 export const InfoGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 10px;
   padding: 16px;
   max-height: 150px;
 `
@@ -73,6 +86,17 @@ export const InfoTitle = styled.h3`
 export const InfoContent = styled.div`
   font-size: 13px;
   color: ${color.textPrimary};
+`
+
+export const AdditionalInfoContent = styled.div`
+  font-size: 12px;
+  color: ${color.textSecondary};
+  line-height: 1.4;
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  padding: 10px 0;
 `
 
 export const TypeContainer = styled.div`
@@ -167,8 +191,9 @@ export const DetailContent = styled.div`
 `
 
 export const PlaceholderText = styled.div`
-  color: ${color.textSecondary};
+  color: ${color.textPlaceholder};
   font-style: italic;
+  font-size: 11px;
 `
 
 export const AttachmentsGrid = styled.div`
@@ -299,11 +324,11 @@ export const StyledInput = styled.input`
 `
 
 export const StyledSelect = styled.select`
-  width: 100%;
-  padding: 8px 12px;
+  width: 80%;
+  padding: 6px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 12px;
   color: ${color.textPrimary};
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
   transition: all 0.2s ease;
