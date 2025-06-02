@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+interface WorkspaceMemberProfile {
+  name: string;
+  email: string;
+  profileFileUrl: string;
+  role?: string;
+  position?: string;
+}
+
 interface WorkspaceState {
   // 전역으로 관리할 값들
   workspaceName: string;
@@ -34,17 +42,34 @@ interface WorkspaceState {
 
   //워크스페이스 slug를 상태에 저장하는 함수
   setWorkspaceSlug: (slug: string) => void;
+
+  // 워크스페이스 멤버 프로필을 설정하는 함수
+  myProfileMap: Record<number, WorkspaceMemberProfile>;
+  setMyProfileFor: (workspaceId: number, profile: WorkspaceMemberProfile) => void;
+  getMyProfileFor: (workspaceId: number) => WorkspaceMemberProfile | null;
 }
 
 export const useWorkspaceStore = create<WorkspaceState>()(
   persist(
-    set => ({
+    (set, get) => ({
       // 초기값
       workspaceName: '',
       workspaceSlug: '',
       workspaceId: null,
       profileFileUrl: '',
       myWorkspaces: [],
+
+      myProfileMap: {},
+
+      setMyProfileFor: (workspaceId, profile) =>
+        set(state => ({
+          myProfileMap: {
+            ...state.myProfileMap,
+            [workspaceId]: profile,
+          },
+        })),
+
+      getMyProfileFor: workspaceId => get().myProfileMap[workspaceId] || null,
 
       // 전체 상태를 한 번에 설정할 수 있는 함수
       setWorkspaceStore: ({ workspaceName, workspaceSlug, workspaceId, profileFileUrl }) =>
@@ -69,6 +94,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           workspaceId: null,
           profileFileUrl: '',
           myWorkspaces: [],
+          myProfileMap: {},
         }),
 
       // 이미지 URL만 개별적으로 업데이트할 수 있는 함수

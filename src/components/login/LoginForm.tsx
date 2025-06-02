@@ -36,7 +36,7 @@ export const LoginForm = () => {
         name: data.name,
         memberId: data.memberId,
         loginPlatformInfo: data.loginPlatformInfo,
-        profileFileUrl: '',
+        profileFileUrl: data.profileFileUrl,
       });
 
       if (inviteCodeParam) {

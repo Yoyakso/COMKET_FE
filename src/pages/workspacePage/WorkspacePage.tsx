@@ -5,6 +5,7 @@ import { Button } from '@/components/common/button/Button';
 import { Dropdown, DropdownOption } from '@/components/common/dropdown/Dropdown';
 import { useNavigate } from 'react-router-dom';
 import { fetchMyWorkspaces } from '@/api/Workspace';
+import { getMyProfile } from '@/api/Member';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?url';
 
@@ -13,7 +14,8 @@ export const WorkspacePage = () => {
   const [options, setOptions] = useState<DropdownOption[]>([]);
   const [selectedSlug, setSelectedSlug] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
-  const { setWorkspaceSlug } = useWorkspaceStore.getState();
+  const workspaceId = useWorkspaceStore.getState().workspaceId;
+  // const myProfile = useWorkspaceStore.getState().getMyProfileFor(workspaceId);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 40 },
@@ -63,10 +65,29 @@ export const WorkspacePage = () => {
     fetchData();
   }, []);
 
-  const handleJoin = () => {
-    if (selectedSlug) {
-      setWorkspaceSlug(selectedSlug);
+  const handleJoin = async () => {
+    if (!selectedSlug) return;
+
+    try {
+      const workspaces = await fetchMyWorkspaces();
+      const selectedWorkspace = workspaces.find(ws => ws.slug === selectedSlug);
+      if (!selectedWorkspace) throw new Error('선택된 워크스페이스가 없습니다.');
+
+      const selectedId = Number(selectedWorkspace.id);
+
+      useWorkspaceStore.getState().setWorkspaceStore({
+        workspaceName: selectedWorkspace.name,
+        workspaceSlug: selectedWorkspace.slug,
+        workspaceId: Number(selectedWorkspace.id),
+        profileFileUrl: selectedWorkspace.profileFileUrl || '',
+      });
+
+      const profileData = await getMyProfile();
+      // console.log('내 프로필 데이터:', profileData);
+      // useWorkspaceStore.getState().setMyProfileFor(selectedId, profileData);
       navigate(`/${selectedSlug}/project`);
+    } catch (err) {
+      console.error('워크스페이스 입장 실패:', err);
     }
   };
 
@@ -135,7 +156,7 @@ export const WorkspacePage = () => {
               <Button
                 $variant="neutralOutlined"
                 size="lg"
-                onClick={() => navigate('workspaces/invite')}
+                onClick={() => navigate('/workspaces/invite')}
               >
                 초대 코드로 입장
               </Button>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import * as S from './NavProfile.Style';
 import { useUserStore } from '@/stores/userStore';
 import { useUserStatusStore } from '@/stores/userStatusStore';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
 
 export type UserStatus = '온라인' | '오프라인' | '자리 비움' | '다른 용무 중';
 
@@ -13,20 +14,21 @@ export interface NavProfileProps {
 
 export function NavProfile({ name, defaultImage }: NavProfileProps) {
   const email = useUserStore(state => state.email);
-  const status = useUserStatusStore(state => state.statusMap[email] || '온라인');
-  const [image, setImage] = useState(defaultImage);
+  // const workspaceId = useWorkspaceStore(state => state.workspaceId);
+  // const myProfile = useWorkspaceStore(state => state.getMyProfileFor(workspaceId));
+  // const profileImg = myProfile?.profileFileUrl;
+  // console.log('NavProfile', { name, email, profileImg, defaultImage });
   const profileImg = useUserStore(state => state.profileFileUrl);
+  const status = useUserStatusStore(state => state.statusMap[email] || '온라인');
 
-  useEffect(() => {
-    if (profileImg) setImage(profileImg);
-  }, [profileImg]);
+  const avatarSrc = profileImg || defaultImage;
 
   return (
     <S.ProfileContainer>
       <S.AvatarContainer>
         <S.Avatar>
-          {profileImg || image ? (
-            <S.AvatarImage src={profileImg || image} alt={name ?? '프로필 이미지'} />
+          {avatarSrc ? (
+            <S.AvatarImage src={avatarSrc} alt={name ?? '프로필 이미지'} />
           ) : (
             (name?.slice?.(0, 2) ?? '??')
           )}
