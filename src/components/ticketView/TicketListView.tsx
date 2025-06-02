@@ -11,7 +11,7 @@ interface TicketListViewProps {
   ticketList: Ticket[];
   onTicketClick: (ticket: Ticket) => void;
   onDeleteTickets: () => void;
-  onInfoClick?: (ticket: Ticket) => void
+  onInfoClick?: (ticket: Ticket) => void;
   projectName: string;
 }
 
@@ -20,7 +20,6 @@ export const TicketListView = ({
   onTicketClick,
   onDeleteTickets,
   onInfoClick,
-  onTicketHover
   projectName,
 }: TicketListViewProps) => {
   const { selectedPriorities, selectedStatuses, selectedTypes } = TicketFilterStore();

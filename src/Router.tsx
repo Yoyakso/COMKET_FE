@@ -6,7 +6,7 @@ import { CreateWorkspacePage } from './pages/workspaceCreatePage/workspaceCreate
 import { FindPasswordPage } from './pages/findPasswordPage/FindPasswordPage';
 import { FindPasswordCompletePage } from './pages/findPasswordCompletePage/FindPasswordCompletePage';
 import { ResetPasswordPage } from './pages/resetPasswordPage/ResetPasswordPage';
-import { ResetPasswordCompletePage } from './pages/resetPasswordCompletePage/resetPasswordCompletePage';
+import { ResetPasswordCompletePage } from './pages/resetPasswordCompletePage/ResetPasswordCompletePage';
 import { SignUpPage } from './pages/signUpPage/SignUpPage';
 import { SignUpCompletePage } from './pages/signUpCompletePage/SignUpCompletePage';
 import { MemberPage } from './pages/memberPage/MemberPage';

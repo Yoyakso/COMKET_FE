@@ -56,12 +56,11 @@ export const ThreadAiSummary = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [selectedJobRole, setSelectedJobRole] = useState<perspective | null>(null)
   const [currentLoadingRole, setCurrentLoadingRole] = useState<perspective | null>(null)
-  // 모달 열림 여부와 선택된 액션아이템 저장
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
   const [selectedActionItem, setSelectedActionItem] = useState<ActionItem | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null)
   const { projectId } = useParams<{ projectId: string; }>()
-  // console.log("ThreadAiSummary Props:", { ticketId, placeholderMessage, projectId, projectName })
+
   useEffect(() => {
     const fetchAiHistory = async () => {
       try {
