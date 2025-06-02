@@ -174,7 +174,7 @@ export const ThreadPage = () => {
             </S.PageHeader>
             {ticket ? (
               <div>
-                <ThreadInfo projectName={projectName} />
+                <ThreadInfo projectName={projectName} ticket={ticket} />
               </div>
             ) : (
               <div>
