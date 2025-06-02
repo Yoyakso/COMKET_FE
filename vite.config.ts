@@ -63,4 +63,7 @@ export default defineConfig({
       '@api': '/src/api',
     },
   },
+  optimizeDeps: {
+    exclude: ['react-toastify'],
+  },
 });
