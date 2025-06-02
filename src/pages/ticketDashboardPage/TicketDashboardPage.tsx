@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { TicketListView } from '@/components/ticketView/TicketListView';
 import { TicketBoardView } from '@/components/ticketView/TicketBoardView';
-import { ListChecks, Rows2, Plus } from 'lucide-react';
+import { ListChecks, Rows2, Plus, Bell } from 'lucide-react';
 import { Button } from '@components/common/button/Button';
 import { CreateTicketModal } from '@components/ticketModal/CreateTicketModal';
 import { TicketTemplateModal } from '@/components/ticketModal/TicketTemplateModal';
@@ -22,6 +22,8 @@ import { DeleteModal } from '@/components/common/modal/DeleteModal';
 import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
 import { mapTicketFromResponse } from '@/utils/ticketMapper';
 import { Status } from '@/types/filter';
+import { AlarmPopover } from '@/components/alarm/AlarmPopover';
+import { getTicketAlarms, TicketAlarm } from '@/api/Alarm';
 import { TicketTemplate } from '@/types/ticketTemplate';
 
 export const TicketDashboardPage = () => {
@@ -41,6 +43,8 @@ export const TicketDashboardPage = () => {
   const [hoveredTicket, setHoveredTicket] = useState<Ticket | null>(null);
   const navigate = useNavigate();
   const [members, setMembers] = useState<MemberData[]>([]);
+  const [isAlarmOpen, setIsAlarmOpen] = useState(false);
+  const [alarms, setAlarms] = useState<TicketAlarm[]>([]);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -118,9 +122,9 @@ export const TicketDashboardPage = () => {
       const updated = tickets.map(ticket =>
         ticket.id === newTicket.parentId
           ? {
-            ...ticket,
-            subtickets: [...(ticket.subtickets ?? []), newTicket],
-          }
+              ...ticket,
+              subtickets: [...(ticket.subtickets ?? []), newTicket],
+            }
           : ticket,
       );
       setTickets(updated);
@@ -195,10 +199,9 @@ export const TicketDashboardPage = () => {
   };
 
   const handleInfoClick = (ticket: Ticket) => {
-    setSelectedTicket(ticket)
-    setHoveredTicket(null)
-  }
-
+    setSelectedTicket(ticket);
+    setHoveredTicket(null);
+  };
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -212,10 +215,53 @@ export const TicketDashboardPage = () => {
         <S.Wrapper>
           <S.Header>
             <S.TitleGroup>
-              <div style={{ width: 'calc(100% - 100px)' }}>
+              <div
+                style={{
+                  width: 'calc(100% - 160px)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'start',
+                }}
+              >
                 <S.Title>{projectName}</S.Title>
                 <S.Description>{projectDescription}</S.Description>
               </div>
+
+              <div style={{ position: 'relative', marginRight: '12px' }}>
+                <button
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    paddingTop: '16px',
+                  }}
+                  onClick={async () => {
+                    setIsAlarmOpen(prev => !prev);
+                    if (!isAlarmOpen && projectId) {
+                      try {
+                        const result = await getTicketAlarms(Number(projectId));
+                        setAlarms(result);
+                      } catch (e) {
+                        console.error('알림 불러오기 실패:', e);
+                      }
+                    }
+                  }}
+                >
+                  <Bell size={20} />
+                </button>
+
+                {isAlarmOpen && (
+                  <AlarmPopover
+                    alarms={alarms}
+                    onClick={ticketId => {
+                      navigate(`/${projectId}/tickets/${ticketId}/thread`);
+                      setIsAlarmOpen(false);
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* 기존 티켓 생성 버튼 */}
               <Button size="md" $variant="tealFilled" onClick={() => setIsTemplateModalOpen(true)}>
                 <span style={{ marginRight: '4px' }}>
                   <Plus width="14px" height="14px" />
@@ -259,7 +305,7 @@ export const TicketDashboardPage = () => {
           <TicketTemplateModal
             isOpen={isTemplateModalOpen}
             onClose={() => setIsTemplateModalOpen(false)}
-            onSelectTemplate={(template) => {
+            onSelectTemplate={template => {
               setSelectedTemplate(template);
               setIsTemplateModalOpen(false);
               setIsCreateModalOpen(true);
@@ -283,7 +329,7 @@ export const TicketDashboardPage = () => {
 
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => { }}
+            onMouseEnter={() => {}}
             onMouseLeave={() => {
               if (!selectedTicket) setHoveredTicket(null);
             }}

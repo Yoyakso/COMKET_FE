@@ -4,6 +4,9 @@ import { LoginPage } from './pages/loginPage/LoginPage';
 import { WorkspacePage } from './pages/workspacePage/WorkspacePage';
 import { CreateWorkspacePage } from './pages/workspaceCreatePage/workspaceCreatePage';
 import { FindPasswordPage } from './pages/findPasswordPage/FindPasswordPage';
+import { FindPasswordCompletePage } from './pages/findPasswordCompletePage/FindPasswordCompletePage';
+import { ResetPasswordPage } from './pages/resetPasswordPage/ResetPasswordPage';
+import { ResetPasswordCompletePage } from './pages/resetPasswordCompletePage/resetPasswordCompletePage';
 import { SignUpPage } from './pages/signUpPage/SignUpPage';
 import { SignUpCompletePage } from './pages/signUpCompletePage/SignUpCompletePage';
 import { MemberPage } from './pages/memberPage/MemberPage';
@@ -43,6 +46,18 @@ export const Router = createBrowserRouter([
       {
         path: 'findPassword',
         element: <FindPasswordPage />,
+      },
+      {
+        path: 'findPassword/complete',
+        element: <FindPasswordCompletePage />,
+      },
+      {
+        path: 'resetPassword',
+        element: <ResetPasswordPage />,
+      },
+      {
+        path: 'resetPassword/complete',
+        element: <ResetPasswordCompletePage />,
       },
       {
         path: 'signup',
