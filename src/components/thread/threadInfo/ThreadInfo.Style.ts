@@ -17,7 +17,7 @@ export const Container = styled.div`
 
 export const Section = styled.div`
   background-color: white;
-  border-bottom: 1px solid #e5e7eb;
+  // border-bottom: 1px solid #e5e7eb;
   border-radius: 6px;
   overflow: visible;
   
@@ -30,6 +30,7 @@ export const SectionHeader = styled.div`
   padding: 12px 16px;
   border-bottom: 1px solid #e5e7eb;
   background-color: #f9fafb;
+  border-radius: 6px 6px 0 0;
   display: flex;
   align-items: center;
   justify-content: space-between;

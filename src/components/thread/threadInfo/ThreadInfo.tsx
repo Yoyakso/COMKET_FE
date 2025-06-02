@@ -12,6 +12,7 @@ import { useWorkspaceStore } from "@/stores/workspaceStore";
 import { MarkdownEditor } from "@/components/common/markdownEditor/MarkdownEditor";
 import { marked } from "marked";
 import { TICKET_TEMPLATE_DATA } from "@/constants/ticketTemplateData";
+import { Ticket } from "@/types/ticket";
 
 interface TicketUpdatePayload {
   ticket_name: string;
@@ -27,9 +28,10 @@ interface TicketUpdatePayload {
 
 interface ThreadInfoProps {
   projectName?: string;
+  ticket: Ticket | null;
 }
 
-export const ThreadInfo = ({ projectName }: ThreadInfoProps) => {
+export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
   const { projectId, ticketId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -352,13 +354,13 @@ export const ThreadInfo = ({ projectName }: ThreadInfoProps) => {
         )}
       </S.Section>
 
-      {fetchedTicket.subtickets && fetchedTicket.subtickets.length > 0 && (
+      {ticket?.subtickets && ticket.subtickets.length > 0 && (
         <S.Section>
           <S.SectionHeader>
             <S.SectionTitle>하위 티켓</S.SectionTitle>
           </S.SectionHeader>
           <S.SubticketList>
-            {fetchedTicket.subtickets.map((childTicket) => (
+            {ticket.subtickets.map((childTicket) => (
               <S.SubticketItem
                 key={childTicket.id}
                 onClick={() =>
