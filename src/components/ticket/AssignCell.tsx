@@ -14,7 +14,6 @@ interface Props {
 }
 
 export const AssigneeCell = ({ members }: Props) => {
-  console.log('AssigneeCell 렌더링', members);
   if (!members || members.length === 0) return <span>없음</span>;
   const [isHovered, setIsHovered] = useState(false);
   const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
