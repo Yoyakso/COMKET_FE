@@ -1,22 +1,16 @@
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { Footer } from '@/components/common/footer/Footer';
 import { PageTransitionWrapper } from '@/components/common/wrapper/PageTransitionWrapper';
-import { FindPassword } from '@/components/password/FindPassword';
-import * as S from './FindPasswordPage.Style';
-import { useNavigate } from 'react-router-dom';
+import { ResetPassword } from '@/components/password/ResetPassword';
+import * as S from './ResetPasswordPage.Style';
 
-export const FindPasswordPage = () => {
-  const navigate = useNavigate();
-
+export const ResetPasswordPage = () => {
   return (
     <PageTransitionWrapper>
       <div>
         <GlobalNavBar />
         <S.PageContainer>
-          <FindPassword
-            onBack={() => navigate('/login')}
-            onNext={email => console.log('입력된 이메일:', email)}
-          />
+          <ResetPassword />
         </S.PageContainer>
         <Footer type="default" />
       </div>

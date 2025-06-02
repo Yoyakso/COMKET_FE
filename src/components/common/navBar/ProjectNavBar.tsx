@@ -1,28 +1,18 @@
-'use client';
-
 import * as S from './LocalNavBar.Style';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { useUserStore } from '@/stores/userStore';
 import { NavProfile } from './NavProfile';
-import { FolderIcon, ChevronRight, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { Globe, Lock, ChevronRight, ChevronDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { getAllProjects, getMyProjects } from '@/api/Project';
+import { getAlarmCountPerProject } from '@/api/Alarm';
 
-const mockAllProjects = [
-  { id: 'p1', name: '1', ticketCount: 0 },
-  { id: 'p2', name: '2', ticketCount: 2 },
-  { id: 'p3', name: '3', ticketCount: 0 },
-  { id: 'p4', name: '4', ticketCount: 9 },
-  { id: 'p5', name: '5', ticketCount: 0 },
-  { id: 'p6', name: '6', ticketCount: 3 },
-  { id: 'p7', name: '7', ticketCount: 4 },
-  { id: 'p8', name: '8', ticketCount: 0 },
-];
-
-const mockMyProjects = [
-  { id: 'p2', name: '4', ticketCount: 2 },
-  { id: 'p3', name: '6', ticketCount: 0 },
-  { id: 'p4', name: '8', ticketCount: 9 },
-];
+type Project = {
+  id: string;
+  name: string;
+  isPublic: boolean;
+};
 
 interface ProjectNavBarProps {
   onNavigateProject?: () => void;
@@ -30,36 +20,82 @@ interface ProjectNavBarProps {
 
 export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const slug = useWorkspaceStore(s => s.workspaceSlug);
   const name = useWorkspaceStore(s => s.workspaceName);
-  const profileFileUrl = useWorkspaceStore(s => s.profileFileUrl);
+  const workspaceId = useWorkspaceStore(s => s.workspaceId);
+  const userName = useUserStore(s => s.name);
+  const userProfile = useUserStore(s => s.profileFileUrl);
 
-  const [isAllProjectsOpen, setIsAllProjectsOpen] = useState(true);
-  const [isMyProjectsOpen, setIsMyProjectsOpen] = useState(false);
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
+  const [myProjects, setMyProjects] = useState<Project[]>([]);
+  const [alarmCounts, setAlarmCounts] = useState<Record<string, number>>({});
 
-  const renderProjectList = (projects: typeof mockAllProjects, selectedProjectId?: string) => {
-    return projects.map(project => (
-      <S.ProjectItem
-        key={project.id}
-        onClick={() => {
-          onNavigateProject?.();
-          navigate(`/${slug}/project/${project.id}`);
-        }}
-        title={project.name}
-        style={{
-          backgroundColor: selectedProjectId === project.id ? '#f3f4f6' : 'transparent',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <FolderIcon size={16} />
-          <span>{project.name}</span>
-        </div>
-        {project.ticketCount > 0 && (
-          <S.Badge>{project.ticketCount > 9 ? '9+' : project.ticketCount}</S.Badge>
-        )}
-      </S.ProjectItem>
-    ));
-  };
+  const [isAllOpen, setAllOpen] = useState(false);
+  const [isMyOpen, setMyOpen] = useState(true);
+
+  useEffect(() => {
+    if (!name) return;
+    localStorage.setItem('workspaceName', name);
+    localStorage.setItem('workspaceId', String(workspaceId));
+
+    (async () => {
+      try {
+        const all = await getAllProjects(name);
+        setAllProjects(
+          all.map((p: any) => ({
+            id: String(p.projectId),
+            name: p.projectName,
+            isPublic: p.isPublic,
+          })),
+        );
+
+        const mine = await getMyProjects();
+        setMyProjects(
+          mine.map((p: any) => ({
+            id: String(p.projectId),
+            name: p.projectName,
+            isPublic: p.isPublic,
+          })),
+        );
+        const alarmData = await getAlarmCountPerProject(String(workspaceId));
+        const countMap: Record<string, number> = {};
+        alarmData.forEach((item: { project_id: number; alarm_count: number }) => {
+          countMap[String(item.project_id)] = item.alarm_count;
+        });
+        setAlarmCounts(countMap);
+        console.log('alarmCounts 상태:', countMap);
+      } catch (e) {
+        console.error('ProjectNavBar 데이터 로드 실패', e);
+      }
+    })();
+  }, [slug]);
+
+  const renderProjectList = (projects: Project[]) =>
+    projects.map(p => {
+      const count = alarmCounts[p.id] || 0;
+
+      return (
+        <S.ProjectItem
+          key={p.id}
+          title={p.name}
+          onClick={() => {
+            onNavigateProject?.();
+            navigate(`/${p.id}/tickets`);
+          }}
+          style={{
+            backgroundColor: pathname.includes(`/${p.id}/tickets`) ? '#f3f4f6' : 'transparent',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%' }}>
+            {p.isPublic ? <Globe size={16} /> : <Lock size={16} />}
+            <span>{p.name}</span>
+
+            {count > 0 && <S.CountBadge>{count}</S.CountBadge>}
+          </div>
+        </S.ProjectItem>
+      );
+    });
 
   return (
     <S.NavContainer>
@@ -73,31 +109,27 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
 
         <S.SectionContainer>
           <S.ProjectSectionHeader>
-            <S.ProjectSectionTitle onClick={() => setIsAllProjectsOpen(!isAllProjectsOpen)}>
-              {isAllProjectsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            <S.ProjectSectionTitle onClick={() => setAllOpen(!isAllOpen)}>
+              {isAllOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
               전체 프로젝트
             </S.ProjectSectionTitle>
           </S.ProjectSectionHeader>
-          {isAllProjectsOpen && (
-            <S.ItemsContainer>{renderProjectList(mockAllProjects, 'p3')}</S.ItemsContainer>
-          )}
+          {isAllOpen && <S.ItemsContainer>{renderProjectList(allProjects)}</S.ItemsContainer>}
         </S.SectionContainer>
 
         <S.SectionContainer>
           <S.ProjectSectionHeader>
-            <S.ProjectSectionTitle onClick={() => setIsMyProjectsOpen(!isMyProjectsOpen)}>
-              {isMyProjectsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}내 프로젝트
+            <S.ProjectSectionTitle onClick={() => setMyOpen(!isMyOpen)}>
+              {isMyOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}내 프로젝트
             </S.ProjectSectionTitle>
           </S.ProjectSectionHeader>
-          {isMyProjectsOpen && (
-            <S.ItemsContainer>{renderProjectList(mockMyProjects)}</S.ItemsContainer>
-          )}
+          {isMyOpen && <S.ItemsContainer>{renderProjectList(myProjects)}</S.ItemsContainer>}
         </S.SectionContainer>
       </S.NavContent>
 
       <S.Divider />
       <S.NavProfileContainer>
-        <NavProfile name={name} defaultImage={profileFileUrl} />
+        <NavProfile name={userName} defaultImage={userProfile} />
       </S.NavProfileContainer>
     </S.NavContainer>
   );
