@@ -11,6 +11,7 @@ import { getProjectMembers } from "@/api/Project";
 import { useWorkspaceStore } from "@/stores/workspaceStore";
 import { MarkdownEditor } from "@/components/common/markdownEditor/MarkdownEditor";
 import { marked } from "marked";
+import { TICKET_TEMPLATE_DATA } from "@/constants/ticketTemplateData";
 
 interface TicketUpdatePayload {
   ticket_name: string;
@@ -66,6 +67,8 @@ export const ThreadInfo = ({ projectName }: ThreadInfoProps) => {
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedTicket, setEditedTicket] = useState<TicketUpdatePayload | null>(null);
+  const [editedAdditionalInfo, setEditedAdditionalInfo] = useState<Record<string, string>>({});
+
   useEffect(() => {
     if (fetchedTicket) {
       setEditedTicket({
@@ -79,6 +82,12 @@ export const ThreadInfo = ({ projectName }: ThreadInfoProps) => {
         assignee_member_id: fetchedTicket.assignee_member?.projectMemberId ?? null,
         parent_ticket_id: fetchedTicket.parentId ?? null,
       });
+    }
+  }, [fetchedTicket]);
+
+  useEffect(() => {
+    if (fetchedTicket?.additional_info) {
+      setEditedAdditionalInfo({ ...fetchedTicket.additional_info });
     }
   }, [fetchedTicket]);
 
@@ -131,8 +140,13 @@ export const ThreadInfo = ({ projectName }: ThreadInfoProps) => {
     return `${Math.round(kb)}KB`;
   };
 
+  const handleAdditionalInfoChange = (key: string, value: string) => {
+    setEditedAdditionalInfo((prev) => ({ ...prev, [key]: value }));
+  };
+
   if (isLoading) return <div>불러오는 중...</div>;
   if (isError || !fetchedTicket || !editedTicket) return <div>티켓 정보를 불러오지 못했습니다.</div>;
+  const currentTemplate = TICKET_TEMPLATE_DATA.find((t) => t.name === fetchedTicket.type);
 
   return (
     <S.Container>
@@ -288,6 +302,41 @@ export const ThreadInfo = ({ projectName }: ThreadInfoProps) => {
             )}
           </S.DetailContent>
         </S.DescriptionSection>
+
+        {currentTemplate && fetchedTicket.additional_info && (
+          <S.DescriptionSection>
+
+            {currentTemplate.fields.map((field) => {
+              const snakeKey = field.key
+                .replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+              const value = fetchedTicket.additional_info[snakeKey];
+
+              if (
+                ["title", "priority", "description", "ticketType", "startDate", "endDate", "assignee", "creator"].includes(field.key)
+              ) {
+                return null;
+              }
+
+              return (
+                <S.InfoSection key={snakeKey}>
+                  <S.InfoTitle>{field.label}</S.InfoTitle>
+                  <S.AdditionalInfoContent>
+                    {isEditMode ? (
+                      <MarkdownEditor
+                        initialValue={value || ""}
+                        onChange={(val) => handleAdditionalInfoChange(snakeKey, val)}
+                      />
+                    ) : value ? (
+                      <div dangerouslySetInnerHTML={{ __html: marked(value) }} />
+                    ) : (
+                      <S.PlaceholderText>입력된 값이 없습니다.</S.PlaceholderText>
+                    )}
+                  </S.AdditionalInfoContent>
+                </S.InfoSection>
+              );
+            })}
+          </S.DescriptionSection>
+        )}
 
         {isEditMode && (
           <S.ButtonContainer>

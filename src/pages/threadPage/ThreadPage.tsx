@@ -14,6 +14,7 @@ import { useUserStore } from '@/stores/userStore';
 import { CreateTicketModal } from '@/components/ticketModal/CreateTicketModal';
 import { mapTicketFromResponse } from '@/utils/ticketMapper';
 import { TicketTemplate } from '@/types/ticketTemplate';
+import { TicketTemplateModal } from '@/components/ticketModal/TicketTemplateModal';
 
 interface ThreadMessage {
   ticketId: number;
@@ -38,6 +39,7 @@ export const ThreadPage = () => {
   const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null);
 
   useEffect(() => {
@@ -113,7 +115,31 @@ export const ThreadPage = () => {
   };
 
   const handleCreateSubTicket = () => {
+    setIsTemplateModalOpen(true);
+  }
+
+  const handleTemplateSelect = (template: TicketTemplate) => {
+    setSelectedTemplate(template)
+    setIsTemplateModalOpen(false)
     setIsCreateModalOpen(true)
+  }
+
+  const handleTicketCreated = (newTicket: Ticket) => {
+    setIsCreateModalOpen(false)
+    setSelectedTemplate(null)
+
+    // 하위 티켓을 현재 티켓의 subtickets에 추가
+    setTicket((prev) =>
+      prev
+        ? {
+          ...prev,
+          subtickets: [...(prev.subtickets ?? []), newTicket],
+        }
+        : prev,
+    )
+
+    // 페이지 새로고침 또는 티켓 목록 업데이트
+    // 필요에 따라 추가 로직 구현
   }
 
   const handleBack = () => {
@@ -146,6 +172,15 @@ export const ThreadPage = () => {
                 </S.CreateSubTicketButton>
               </S.PageHeaderActions>
             </S.PageHeader>
+            {ticket ? (
+              <div>
+                <ThreadInfo projectName={projectName} />
+              </div>
+            ) : (
+              <div>
+                <p>티켓 정보를 불러오는 중입니다...</p>
+              </div>
+            )}
 
             <S.ContentBody>
               <S.LeftColumn>
@@ -155,11 +190,6 @@ export const ThreadPage = () => {
                   setNewMessage={setNewMessage}
                   sendMessage={sendMessage}
                 />
-                {ticket ? (
-                  <ThreadInfo projectName={projectName} />
-                ) : (
-                  <p>티켓 정보를 불러오는 중입니다...</p>
-                )}
               </S.LeftColumn>
 
               <S.RightColumn>
@@ -167,6 +197,7 @@ export const ThreadPage = () => {
               </S.RightColumn>
             </S.ContentBody>
           </S.ContentContainer>
+
         </S.MainContainer>
       </S.PageContainer>
 
@@ -190,6 +221,19 @@ export const ThreadPage = () => {
           }}
         />
       )}
+      {
+        isTemplateModalOpen && ticket && projectName && (
+          <TicketTemplateModal
+            isOpen={isTemplateModalOpen}
+            onClose={() => setIsTemplateModalOpen(false)}
+            onSelectTemplate={(template) => {
+              setSelectedTemplate(template);
+              setIsCreateModalOpen(true);
+            }}
+          />
+        )
+      }
     </>
   );
 };
+
