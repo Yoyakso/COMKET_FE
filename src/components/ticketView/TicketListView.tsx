@@ -11,7 +11,7 @@ interface TicketListViewProps {
   ticketList: Ticket[];
   onTicketClick: (ticket: Ticket) => void;
   onDeleteTickets: () => void;
-  onTicketHover?: (ticket: Ticket | null) => void;
+  onInfoClick?: (ticket: Ticket) => void
   projectName: string;
 }
 
@@ -19,7 +19,8 @@ export const TicketListView = ({
   ticketList,
   onTicketClick,
   onDeleteTickets,
-  onTicketHover,
+  onInfoClick,
+  onTicketHover
   projectName,
 }: TicketListViewProps) => {
   const { selectedPriorities, selectedStatuses, selectedTypes } = TicketFilterStore();
@@ -65,7 +66,7 @@ export const TicketListView = ({
         toggleSingle={toggleSingle}
         toggleWithSubtickets={toggleWithSubtickets}
         onTicketClick={onTicketClick}
-        onTicketHover={onTicketHover}
+        onInfoClick={onInfoClick}
         projectName={projectName}
       />
     </S.Wrapper>

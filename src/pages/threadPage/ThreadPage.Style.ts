@@ -43,13 +43,13 @@ export const ContentContainer = styled.div`
   padding: 14px;
   margin-left: 230px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: auto;
 `
 
 export const PageHeader = styled.div`
   display: flex;
   align-items: center;
-  padding: 16px;
+  padding: 16px 32px;
   height: 60px;
   box-sizing: border-box;
 `
@@ -63,7 +63,6 @@ export const BackButton = styled.button`
   color: ${color.textSecondary};
   font-size: 13px;
   cursor: pointer;
-  padding: 6px;
   border-radius: 4px;
   
   &:hover {
@@ -110,7 +109,7 @@ export const ContentBody = styled.div`
   flex: 1;
   gap: 16px;
   padding: 0 32px 32px;
-  overflow: auto;
+  margin-top: 16px;
 `
 
 export const LeftColumn = styled.div`

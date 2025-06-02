@@ -18,5 +18,5 @@ export const EditorWrapper = styled.div`
   .toastui-editor-defaultUI-toolbar {
     border-bottom: 1px solid #eee;
   }
-    width: 625px;
+    width: 600px;
 `;

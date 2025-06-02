@@ -49,6 +49,16 @@ export const Form = styled.form`
   gap: 20px;
 `
 
+export const TypeDisplay = styled.div`
+  padding: 8px;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: ${color.textPrimary};
+  font-weight: 500;
+  font-size: 12px;
+`
+
 export const FormRow = styled.div`
   display: flex;
   align-items: flex-start;
@@ -67,13 +77,13 @@ export const TextField = styled.input`
   flex: 1;
   height: 40px;
   padding: 0 12px;
-  border: 1px solid ${color.basic0};
+  border: 1px solid ${color.basic100};
   border-radius: 4px;
   font-size: 14px;
   
   &:focus {
     outline: none;
-    border-color: ${color.basic0};
+    border-color: ${color.basic200};
   }
   
   &::placeholder {
@@ -328,4 +338,29 @@ export const DateField = styled.input`
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 14px;
+`;
+
+export const TextAreaField = styled.textarea`
+  width: 100%;
+  min-height: 120px;
+  padding: 12px 14px;
+  border: 1px solid ${color.basic100};
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  background-color: #fff;
+  color: #111827;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  transition: border-color 0.2s, box-shadow 0.2s;
 `;

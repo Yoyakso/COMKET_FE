@@ -52,13 +52,15 @@ interface TicketTableProps {
   toggleSingle?: (id: number) => void;
   toggleWithSubtickets?: (ticket: Ticket) => void;
   onTicketClick: (ticket: Ticket) => void;
-  onTicketHover: (ticket: Ticket | null) => void;
+  onInfoClick?: (ticket: Ticket) => void;
+  onTicketHover?: (ticket: Ticket | null) => void;
   projectName: string;
 }
 
 export const TicketTable = ({
   tickets,
   onTicketClick,
+  onInfoClick,
   onTicketHover,
   projectName,
 }: TicketTableProps) => {
@@ -196,7 +198,6 @@ export const TicketTable = ({
         </S.TableHeader>
         <S.TableBody>
           {sortedTickets.map(ticket => {
-            if (!ticket.id) console.warn('🚨 ticket without ID:', ticket);
             return (
               <TicketRow
                 key={ticket.id}
@@ -205,6 +206,7 @@ export const TicketTable = ({
                 toggleSingle={toggleSingle}
                 toggleWithSubtickets={toggleWithSubtickets}
                 onTicketClick={onTicketClick}
+                onInfoClick={onInfoClick}
                 onTicketHover={onTicketHover}
                 projectName={projectName}
               />

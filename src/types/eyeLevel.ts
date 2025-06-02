@@ -1,0 +1,6 @@
+export enum EyelevelPerspective {
+  DEVELOPER = 'DEVELOPER',
+  PROJECT_MANAGER = 'PROJECT_MANAGER',
+  DESIGNER = 'DESIGNER',
+  DATA_ANALYST = 'DATA_ANALYST',
+}

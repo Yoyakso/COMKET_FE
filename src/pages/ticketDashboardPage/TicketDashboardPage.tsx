@@ -6,6 +6,7 @@ import { TicketBoardView } from '@/components/ticketView/TicketBoardView';
 import { ListChecks, Rows2, Plus, Bell } from 'lucide-react';
 import { Button } from '@components/common/button/Button';
 import { CreateTicketModal } from '@components/ticketModal/CreateTicketModal';
+import { TicketTemplateModal } from '@/components/ticketModal/TicketTemplateModal';
 import { TicketDetailPanel } from '@components/ticketDetailPanel/TicketDetailPanel';
 import { Ticket } from '@/types/ticket';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
@@ -23,10 +24,13 @@ import { mapTicketFromResponse } from '@/utils/ticketMapper';
 import { Status } from '@/types/filter';
 import { AlarmPopover } from '@/components/alarm/AlarmPopover';
 import { getTicketAlarms, TicketAlarm } from '@/api/Alarm';
+import { TicketTemplate } from '@/types/ticketTemplate';
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const { projectId } = useParams<{ projectId: string }>();
   const [projectName, setProjectName] = useState<string | null>(null);
@@ -128,7 +132,7 @@ export const TicketDashboardPage = () => {
       setTickets([newTicket, ...tickets]);
     }
 
-    setIsModalOpen(false);
+    setIsTemplateModalOpen(false);
   };
 
   const handleClosePanel = () => {
@@ -193,6 +197,11 @@ export const TicketDashboardPage = () => {
       console.error('드래그 상태 변경 실패:', e);
     }
   };
+
+  const handleInfoClick = (ticket: Ticket) => {
+    setSelectedTicket(ticket);
+    setHoveredTicket(null);
+  };
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -253,7 +262,7 @@ export const TicketDashboardPage = () => {
               </div>
 
               {/* 기존 티켓 생성 버튼 */}
-              <Button size="md" $variant="tealFilled" onClick={() => setIsModalOpen(true)}>
+              <Button size="md" $variant="tealFilled" onClick={() => setIsTemplateModalOpen(true)}>
                 <span style={{ marginRight: '4px' }}>
                   <Plus width="14px" height="14px" />
                 </span>
@@ -274,14 +283,14 @@ export const TicketDashboardPage = () => {
           </S.Header>
 
           {tickets.length === 0 ? (
-            <EmptyTicket onCreateTicket={() => setIsModalOpen(true)} />
+            <EmptyTicket onCreateTicket={() => setIsTemplateModalOpen(true)} />
           ) : viewType === 'list' ? (
             <TicketListView
               ticketList={tickets}
               onTicketClick={handleTicketClick}
-              onTicketHover={handleTicketHover}
               onDeleteTickets={() => setShowDeleteModal(true)}
               projectName={projectName}
+              onInfoClick={handleInfoClick}
             />
           ) : (
             <TicketBoardView
@@ -292,14 +301,32 @@ export const TicketDashboardPage = () => {
           )}
         </S.Wrapper>
 
-        {isModalOpen && projectName && (
-          <CreateTicketModal
-            projectId={Number(projectId)}
-            projectName={projectName}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handleTicketCreate}
+        {isTemplateModalOpen && (
+          <TicketTemplateModal
+            isOpen={isTemplateModalOpen}
+            onClose={() => setIsTemplateModalOpen(false)}
+            onSelectTemplate={template => {
+              setSelectedTemplate(template);
+              setIsTemplateModalOpen(false);
+              setIsCreateModalOpen(true);
+            }}
           />
         )}
+
+        {isCreateModalOpen && projectName && (
+          <CreateTicketModal
+            onClose={() => {
+              setIsCreateModalOpen(false);
+              setSelectedTemplate(null);
+            }}
+            onSubmit={handleTicketCreate}
+            projectName={projectName}
+            projectId={Number(projectId)}
+            parentTicketId={null}
+            template={selectedTemplate!}
+          />
+        )}
+
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
             onMouseEnter={() => {}}
