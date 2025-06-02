@@ -117,7 +117,7 @@ export const CreateTicketModal = ({
         type: template.type || "",
         title: prev.title || "",
         content: "",
-        priority: "MEDIUM",
+        priority: initialData?.priority || "MEDIUM",
         status: "TODO",
       }))
     }

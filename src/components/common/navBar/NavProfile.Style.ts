@@ -1,14 +1,14 @@
-import styled from "styled-components";
-import { color } from "@/styles/color";
-import type { UserStatus } from "./NavProfile"
+import styled from 'styled-components';
+import { color } from '@/styles/color';
+import type { UserStatus } from './NavProfile';
 
 export const ProfileContainer = styled.div`
   width: 150px;
-  height: 48px;
+  height: 100%;
   display: flex;
   align-items: center;
   position: relative;
-`
+`;
 
 export const AvatarContainer = styled.div`
   position: relative;
@@ -19,7 +19,7 @@ export const AvatarContainer = styled.div`
   &:hover .avatar-overlay {
     opacity: 1;
   }
-`
+`;
 
 export const Avatar = styled.div`
   width: 100%;
@@ -32,13 +32,13 @@ export const Avatar = styled.div`
   font-weight: 400px;
   font-size: 14px;
   overflow: hidden;
-`
+`;
 
 export const AvatarImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-`
+`;
 
 export const AvatarOverlay = styled.div`
   position: absolute;
@@ -54,19 +54,19 @@ export const AvatarOverlay = styled.div`
   opacity: 0;
   transition: opacity 0.2s;
   color: white;
-`
+`;
 
 export const UserInfo = styled.div`
   margin-left: 12px;
   flex: 1;
-`
+`;
 
 export const UserName = styled.p`
   font-size: 14px;
   font-weight: 500;
   color: ${color.textPrimary};
   margin: 0;
-`
+`;
 
 export const UserStatusContainer = styled.div`
   font-size: 12px;
@@ -74,7 +74,7 @@ export const UserStatusContainer = styled.div`
   display: flex;
   align-items: center;
   margin-top: 5px;
-`
+`;
 
 export const StatusIndicator = styled.span<{ $status: UserStatus }>`
   display: inline-block;
@@ -83,26 +83,26 @@ export const StatusIndicator = styled.span<{ $status: UserStatus }>`
   border-radius: 50%;
   margin-right: 4px;
 
-  background-color: ${(props) => {
+  background-color: ${props => {
     switch (props.$status) {
-      case "온라인":
-        return `${color.success}`
-      case "오프라인":
-        return `${color.basic300}`
-      case "자리 비움":
-        return `${color.warning}`
-      case "다른 용무 중":
-        return `${color.error}`
+      case '온라인':
+        return `${color.success}`;
+      case '오프라인':
+        return `${color.basic300}`;
+      case '자리 비움':
+        return `${color.warning}`;
+      case '다른 용무 중':
+        return `${color.error}`;
       default:
-        return "#9ca3af"
+        return '#9ca3af';
     }
   }};
-`
+`;
 
 export const StatusText = styled.span`
   display: inline-block;
-`
+`;
 
 export const FileInput = styled.input`
   display: none;
-`
+`;

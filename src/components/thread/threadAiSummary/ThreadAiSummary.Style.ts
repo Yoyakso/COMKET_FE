@@ -124,7 +124,7 @@ export const EyeLevelButton = styled.button<{ $isOpen: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(${color.teal500}, ${color.teal600});
   color: white;
   border: none;
   border-radius: 12px;
@@ -151,7 +151,7 @@ export const EyeLevelButton = styled.button<{ $isOpen: boolean }>`
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px 0 rgba(16, 185, 129, 0.35);
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    background: linear-gradient(${color.teal500}, ${color.teal600});
     
     &::before {
       left: 100%;
@@ -325,11 +325,11 @@ export const ActionItemCard = styled.div<{ $priority: string }>`
   border-left: 4px solid ${(props) => {
     switch (props.$priority) {
       case "HIGH":
-        return "#DC2626" // 빨간색
+        return "#DC2626"
       case "MEDIUM":
-        return "#F97316" // 주황색
+        return "#F97316"
       case "LOW":
-        return "#22C55E" // 초록색
+        return "#22C55E"
       default:
         return "#E5E7EB"
     }

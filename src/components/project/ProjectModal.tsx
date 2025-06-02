@@ -75,11 +75,14 @@ export const ProjectModal = ({
   }
 
   const handleTagInputKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (isComposing) return
+
     if (e.key === "Enter" || e.key === "," || e.key === " ") {
       e.preventDefault()
       handleAddTag()
     }
   }
+
 
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove))
@@ -171,7 +174,6 @@ export const ProjectModal = ({
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagInputKeyDown}
-                onBlur={handleAddTag}
                 onCompositionStart={() => setIsComposing(true)}
                 onCompositionEnd={() => setIsComposing(false)}
               />
