@@ -193,7 +193,7 @@ export const ThreadPage = () => {
               </S.LeftColumn>
 
               <S.RightColumn>
-                <ThreadAiSummary ticketId={Number(ticketId)} />
+                <ThreadAiSummary ticketId={Number(ticketId)} projectName={projectName} />
               </S.RightColumn>
             </S.ContentBody>
           </S.ContentContainer>
@@ -226,6 +226,7 @@ export const ThreadPage = () => {
           <TicketTemplateModal
             isOpen={isTemplateModalOpen}
             onClose={() => setIsTemplateModalOpen(false)}
+            projectName={projectName}
             onSelectTemplate={(template) => {
               setSelectedTemplate(template);
               setIsCreateModalOpen(true);
