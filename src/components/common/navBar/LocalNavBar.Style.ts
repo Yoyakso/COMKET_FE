@@ -89,7 +89,7 @@ export const ProjectItem = styled.div`
   }
 `;
 
-export const Badge = styled.span`
+export const CountBadge = styled.span`
   background-color: #e23e3e;
   color: white;
   font-size: 11px;

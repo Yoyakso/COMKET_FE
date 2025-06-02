@@ -1,10 +1,12 @@
 import * as S from './LocalNavBar.Style';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { useUserStore } from '@/stores/userStore';
 import { NavProfile } from './NavProfile';
 import { Globe, Lock, ChevronRight, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getAllProjects, getMyProjects } from '@/api/Project';
+import { getAlarmCountPerProject } from '@/api/Alarm';
 
 type Project = {
   id: string;
@@ -21,10 +23,13 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
   const { pathname } = useLocation();
   const slug = useWorkspaceStore(s => s.workspaceSlug);
   const name = useWorkspaceStore(s => s.workspaceName);
-  const profileFileUrl = useWorkspaceStore(s => s.profileFileUrl);
+  const workspaceId = useWorkspaceStore(s => s.workspaceId);
+  const userName = useUserStore(s => s.name);
+  const userProfile = useUserStore(s => s.profileFileUrl);
 
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [myProjects, setMyProjects] = useState<Project[]>([]);
+  const [alarmCounts, setAlarmCounts] = useState<Record<string, number>>({});
 
   const [isAllOpen, setAllOpen] = useState(true);
   const [isMyOpen, setMyOpen] = useState(false);
@@ -32,6 +37,7 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
   useEffect(() => {
     if (!name) return;
     localStorage.setItem('workspaceName', name);
+    localStorage.setItem('workspaceId', String(workspaceId));
 
     (async () => {
       try {
@@ -52,6 +58,13 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
             isPublic: p.isPublic,
           })),
         );
+        const alarmData = await getAlarmCountPerProject(String(workspaceId));
+        const countMap: Record<string, number> = {};
+        alarmData.forEach((item: { project_id: number; alarm_count: number }) => {
+          countMap[String(item.project_id)] = item.alarm_count;
+        });
+        setAlarmCounts(countMap);
+        console.log('alarmCounts 상태:', countMap);
       } catch (e) {
         console.error('ProjectNavBar 데이터 로드 실패', e);
       }
@@ -59,24 +72,30 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
   }, [slug]);
 
   const renderProjectList = (projects: Project[]) =>
-    projects.map(p => (
-      <S.ProjectItem
-        key={p.id}
-        title={p.name}
-        onClick={() => {
-          onNavigateProject?.();
-          navigate(`/${p.id}/tickets`);
-        }}
-        style={{
-          backgroundColor: pathname.includes(`/project/${p.id}`) ? '#f3f4f6' : 'transparent',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {p.isPublic ? <Globe size={16} /> : <Lock size={16} />}
-          <span>{p.name}</span>
-        </div>
-      </S.ProjectItem>
-    ));
+    projects.map(p => {
+      const count = alarmCounts[p.id] || 0;
+
+      return (
+        <S.ProjectItem
+          key={p.id}
+          title={p.name}
+          onClick={() => {
+            onNavigateProject?.();
+            navigate(`/${p.id}/tickets`);
+          }}
+          style={{
+            backgroundColor: pathname.includes(`/${p.id}/tickets`) ? '#f3f4f6' : 'transparent',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%' }}>
+            {p.isPublic ? <Globe size={16} /> : <Lock size={16} />}
+            <span>{p.name}</span>
+
+            {count > 0 && <S.CountBadge>{count}</S.CountBadge>}
+          </div>
+        </S.ProjectItem>
+      );
+    });
 
   return (
     <S.NavContainer>
@@ -110,7 +129,7 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
 
       <S.Divider />
       <S.NavProfileContainer>
-        <NavProfile name={name} defaultImage={profileFileUrl} />
+        <NavProfile name={userName} defaultImage={userProfile} />
       </S.NavProfileContainer>
     </S.NavContainer>
   );
