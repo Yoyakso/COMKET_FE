@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchMyWorkspaces } from '@/api/Workspace';
 import { getMyProfile } from '@/api/Member';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { useUserStore } from '@/stores/userStore';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?url';
 
 export const WorkspacePage = () => {
@@ -83,6 +84,10 @@ export const WorkspacePage = () => {
       });
 
       const profileData = await getMyProfile();
+      useUserStore.getState().setProfileInfo({
+        name: profileData.realName ?? '',
+        profileFileUrl: profileData.profileFileUrl ?? '',
+      });
       // console.log('내 프로필 데이터:', profileData);
       // useWorkspaceStore.getState().setMyProfileFor(selectedId, profileData);
       navigate(`/${selectedSlug}/project`);
