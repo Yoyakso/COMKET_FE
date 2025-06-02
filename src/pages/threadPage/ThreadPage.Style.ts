@@ -43,7 +43,7 @@ export const ContentContainer = styled.div`
   padding: 14px;
   margin-left: 230px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: auto;
 `
 
 export const PageHeader = styled.div`
@@ -110,7 +110,7 @@ export const ContentBody = styled.div`
   flex: 1;
   gap: 16px;
   padding: 0 32px 32px;
-  overflow: auto;
+  margin-top: 16px;
 `
 
 export const LeftColumn = styled.div`

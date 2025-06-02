@@ -5,13 +5,25 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 95%;
+  max-width: 1500px;
+  margin: 0 auto;
+  max-height: 350px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
 `
 
 export const Section = styled.div`
   background-color: white;
-  border: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
   border-radius: 6px;
-  overflow: hidden;
+  overflow: visible;
+  
+  &:last-child {
+    border-bottom: none;
+  }
 `
 
 export const SectionHeader = styled.div`
@@ -50,7 +62,7 @@ export const EditButton = styled.button`
 export const InfoGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 10px;
   padding: 16px;
   max-height: 150px;
 `
