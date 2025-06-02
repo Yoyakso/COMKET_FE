@@ -9,16 +9,17 @@ export const NavContainer = styled.div<{ $variant?: 'default' | 'settings' }>`
   height: 100vh;
   border-right: 1px solid #9ba8c63d;
   background-color: ${color.white};
-  padding: 15px;
+  position: relative;
 `;
 
 export const NavContent = styled.div`
   flex: 1;
   width: 100%;
-  overflow: auto;
+  overflow-y: auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  padding: 20px 10px;
 `;
 
 export const SectionContainer = styled.div`
@@ -105,19 +106,14 @@ export const IconWrapper = styled.span`
   align-items: center;
 `;
 
-export const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: #e5e7eb;
-`;
-
 export const NavProfileContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
+  justify-content: center;
+  border-top: 1px solid #e5e7eb;
   width: 100%;
-  padding: 10px 24px;
+  height: 80px;
 `;
 
 export const IconContainer = styled.div`
