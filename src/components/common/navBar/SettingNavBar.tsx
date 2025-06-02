@@ -72,7 +72,6 @@ export const SettingNavBar = () => {
           </S.SectionContainer>
         ))}
       </S.NavContent>
-      <S.Divider />
       <S.NavProfileContainer>
         <NavProfile name={name} defaultImage={profileImg} />
       </S.NavProfileContainer>

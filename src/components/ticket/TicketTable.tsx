@@ -158,7 +158,7 @@ export const TicketTable = ({
   }[] = [
     { key: 'expander', label: '', resizable: true, sortable: false, align: 'center' },
     { key: 'checkbox', label: '', resizable: true, sortable: false, align: 'center' },
-    // { key: 'id', label: '티켓 ID', resizable: true, sortable: true, align: 'center' },
+    { key: 'id', label: '', resizable: true, sortable: false, align: 'center' },
     { key: 'title', label: '티켓', resizable: true, sortable: true, align: 'left' },
     { key: 'type', label: '유형', resizable: true, sortable: true, align: 'center' },
     { key: 'assignee', label: '담당자', resizable: true, sortable: true, align: 'left' },

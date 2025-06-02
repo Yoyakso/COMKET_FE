@@ -4,6 +4,7 @@ import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { X } from 'lucide-react';
 import { POSITION_OPTIONS, DEPARTMENT_OPTIONS } from '@/constants/profileOptions';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { updateProfile, getMyProfile } from '@/api/Member';
 import { uploadProfileImage } from '@/api/Workspace';
 import { useUserStore } from '@/stores/userStore';
@@ -23,7 +24,10 @@ export const ProfilePage = () => {
   const globalName = useUserStore(s => s.name);
   const globalEmail = useUserStore(s => s.email);
   const globalProfileImage = useUserStore(s => s.profileFileUrl);
+  // const workspaceId = useWorkspaceStore(s => s.workspaceId);
+  // const setMyProfileFor = useWorkspaceStore(s => s.setMyProfileFor);
   const setProfileInfo = useUserStore(s => s.setProfileInfo);
+
   const [profile, setProfile] = useState<ProfileData>({
     name: globalName,
     email: globalEmail,
@@ -33,19 +37,36 @@ export const ProfilePage = () => {
     profileImage: globalProfileImage || null,
     profileImageFile: null,
   });
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [initialProfile, setInitialProfile] = useState<ProfileData | null>(null);
+
+  const resetFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   useEffect(() => {
     const fetchLatestProfile = async () => {
       try {
         const res = await getMyProfile();
+        console.log('불러온 프로필 정보:', res);
 
-        // 전역 상태 동기화
         setProfileInfo({
           name: res.realName ?? '',
           profileFileUrl: res.profileFileUrl ?? '',
         });
+
+        // if (workspaceId !== null) {
+        //   setMyProfileFor(workspaceId, {
+        //     name: res.realName ?? '',
+        //     email: res.email ?? '',
+        //     profileFileUrl: res.profileFileUrl ?? '',
+        //     role: res.role ?? '',
+        //     position: res.department ?? '',
+        //   });
+        // }
 
         const fetched: ProfileData = {
           name: res.realName ?? '',
@@ -56,21 +77,14 @@ export const ProfilePage = () => {
           profileImage: res.profileFileUrl ?? null,
           profileImageFile: null,
         };
-        // setProfile({
-        //   name: res.realName ?? '',
-        //   email: res.email ?? '',
-        //   organization: res.responsibility ?? '',
-        //   position: res.role ?? '',
-        //   department: res.department ?? '',
-        //   profileImage: res.profileFileUrl ?? null,
-        //   profileImageFile: null,
-        // });
+
         setProfile(fetched);
         setInitialProfile(fetched);
       } catch (err) {
-        console.error('프로필 정보 불러오기 실패', err);
+        console.error('프로필 정보 불러오기 실패:', err);
       }
     };
+
     fetchLatestProfile();
   }, [setProfileInfo]);
 
@@ -84,43 +98,36 @@ export const ProfilePage = () => {
 
     const reader = new FileReader();
     reader.onload = () => {
-      setProfile({
-        ...profile,
+      setProfile(prev => ({
+        ...prev,
         profileImage: reader.result as string,
         profileImageFile: file,
-      });
+      }));
     };
     reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = () => {
-    setProfile({
-      ...profile,
+    setProfile(prev => ({
+      ...prev,
       profileImage: null,
       profileImageFile: null,
-    });
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    }));
+    resetFileInput();
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setProfile({
-      ...profile,
+    setProfile(prev => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const handleCancel = () => {
     if (!initialProfile) return;
-
     setProfile({ ...initialProfile });
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-
+    resetFileInput();
     toast.error('변경 사항을 취소했습니다.');
   };
 
@@ -146,11 +153,9 @@ export const ProfilePage = () => {
       });
 
       const updated = await getMyProfile();
-      setProfileInfo({
-        name: updated.realName,
-        profileFileUrl: updated.profileFileUrl ?? '',
-      });
-      setInitialProfile({
+
+      // 상태 일괄 업데이트
+      const updatedProfile: ProfileData = {
         name: updated.realName ?? '',
         email: updated.email ?? '',
         organization: updated.responsibility ?? '',
@@ -158,12 +163,30 @@ export const ProfilePage = () => {
         department: updated.department ?? '',
         profileImage: updated.profileFileUrl ?? null,
         profileImageFile: null,
+      };
+
+      setProfile(updatedProfile);
+      setInitialProfile(updatedProfile);
+
+      setProfileInfo({
+        name: updated.realName,
+        profileFileUrl: updated.profileFileUrl ?? '',
       });
+
+      // if (workspaceId !== null) {
+      //   setMyProfileFor(workspaceId, {
+      //     name: updated.realName ?? '',
+      //     email: updated.email ?? '',
+      //     profileFileUrl: updated.profileFileUrl ?? '',
+      //     role: updated.role ?? '',
+      //     position: updated.department ?? '',
+      //   });
+      // }
 
       toast.success('프로필 수정이 완료되었습니다.');
     } catch (error) {
-      console.error('저장 실패:', error);
-      toast.error('프로필 저장에 실패했습니다.');
+      console.error('저장 실패:', error?.response || error);
+      toast.error('프로필 저장 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
     }
   };
 
@@ -286,6 +309,7 @@ export const ProfilePage = () => {
                 </S.SelectInput>
               </S.InputContainer>
             </S.FormRow>
+
             <S.ButtonContainer>
               <S.CancelButton onClick={handleCancel}>취소</S.CancelButton>
               <S.SaveButton onClick={handleSave}>저장</S.SaveButton>

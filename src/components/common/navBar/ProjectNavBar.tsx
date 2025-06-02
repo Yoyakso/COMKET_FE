@@ -126,8 +126,6 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
           {isMyOpen && <S.ItemsContainer>{renderProjectList(myProjects)}</S.ItemsContainer>}
         </S.SectionContainer>
       </S.NavContent>
-
-      <S.Divider />
       <S.NavProfileContainer>
         <NavProfile name={userName} defaultImage={userProfile} />
       </S.NavProfileContainer>

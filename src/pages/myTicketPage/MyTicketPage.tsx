@@ -44,7 +44,7 @@ export const MyTicketPage = () => {
           }),
         )
         .filter(
-          (t: Ticket) => t.assignee_member?.email === userEmail, // ✅ 이메일로 필터링
+          (t: Ticket) => t.assignee_member?.email === userEmail, //이메일로 필터링
         );
 
       setMyTickets(normalized);
