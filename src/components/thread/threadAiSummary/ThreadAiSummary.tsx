@@ -4,6 +4,10 @@ import { Loader2, Bot, Sparkles, Eye, ChevronDown } from "lucide-react"
 import { getAiSummary, getAiHistory, getEyelevelSummary } from "@/api/Ai"
 import { Priority } from "@/types/filter"
 import { EyelevelPerspective } from "@/types/eyeLevel"
+import { TicketTemplateModal } from "@/components/ticketModal/TicketTemplateModal"
+import { TicketTemplate } from "@/types/ticketTemplate"
+import { CreateTicketModal } from "@/components/ticketModal/CreateTicketModal"
+import { useParams } from "react-router-dom"
 
 interface ActionItem {
   title: string
@@ -18,6 +22,7 @@ interface ActionItem {
 interface ThreadAiSummaryProps {
   ticketId: number
   placeholderMessage?: string
+  projectName?: string
 }
 
 type perspective = EyelevelPerspective
@@ -42,6 +47,7 @@ const parseStringArray = (str: string): string[] => {
 export const ThreadAiSummary = ({
   ticketId,
   placeholderMessage,
+  projectName,
 }: ThreadAiSummaryProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isEyeLevelLoading, setIsEyeLevelLoading] = useState(false)
@@ -50,12 +56,17 @@ export const ThreadAiSummary = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [selectedJobRole, setSelectedJobRole] = useState<perspective | null>(null)
   const [currentLoadingRole, setCurrentLoadingRole] = useState<perspective | null>(null)
-
+  // 모달 열림 여부와 선택된 액션아이템 저장
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
+  const [selectedActionItem, setSelectedActionItem] = useState<ActionItem | null>(null)
+  const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null)
+  const { projectId } = useParams<{ projectId: string; }>()
+  // console.log("ThreadAiSummary Props:", { ticketId, placeholderMessage, projectId, projectName })
   useEffect(() => {
     const fetchAiHistory = async () => {
       try {
         const historyList = await getAiHistory(ticketId)
-        console.log("AI History Response:", historyList) // 디버깅용 로그 추가
+        console.log("AI History Response:", historyList)
 
         if (Array.isArray(historyList) && historyList.length > 0) {
           const sortedHistory = historyList.sort(
@@ -65,15 +76,12 @@ export const ThreadAiSummary = ({
           const latest = sortedHistory[0]
           console.log("Latest history item:", latest)
 
-          // 히스토리 응답이 문자열 형태의 배열일 경우 파싱
           let summary = latest.summary || null
           if (typeof summary === "string" && summary.startsWith("[") && summary.endsWith("]")) {
             summary = parseStringArray(summary)
           }
 
           setAiSummary(summary)
-
-          // actionItems가 있는 가장 최근 항목 찾기
           const latestWithActionItems = sortedHistory.find((item) => {
             const actionItems = item.actionItems || item.actionItem || item.actions || []
             return Array.isArray(actionItems) && actionItems.length > 0
@@ -133,6 +141,11 @@ export const ThreadAiSummary = ({
       setIsEyeLevelLoading(false)
       setCurrentLoadingRole(null)
     }
+  }
+
+  const handleClickActionItem = (item: ActionItem) => {
+    setSelectedActionItem(item)
+    setIsTemplateModalOpen(true)
   }
 
   return (
@@ -238,7 +251,11 @@ export const ThreadAiSummary = ({
         ) : actionItems && actionItems.length > 0 ? (
           <S.ActionItemsList>
             {actionItems.map((item, index) => (
-              <S.ActionItemCard $priority={item.priority} key={`${item.title}-${index}`}>
+              <S.ActionItemCard
+                $priority={item.priority}
+                key={`${item.title}-${index}`}
+                onClick={() => handleClickActionItem(item)}
+              >
                 <S.ActionItemLeft>
                   <S.ActionItemTitle>{item.title}</S.ActionItemTitle>
                   <S.AssigneeDisplay>
@@ -255,7 +272,45 @@ export const ThreadAiSummary = ({
         ) : (
           <S.PlaceholderMessage>추출된 액션아이템이 없습니다.</S.PlaceholderMessage>
         )}
-      </S.ActionItemsContainer>
+      </S.ActionItemsContainer >
+
+      {isTemplateModalOpen && selectedActionItem && (
+        <TicketTemplateModal
+          isOpen={isTemplateModalOpen}
+          onClose={() => {
+            setIsTemplateModalOpen(false)
+          }}
+          initialData={{
+            ticket_name: selectedActionItem.title,
+            ticket_priority: selectedActionItem.priority,
+            assignee_member_id: selectedActionItem.memberInfo?.projectMemberId || null,
+            due_date: selectedActionItem.dueDate || null,
+            ticket_type: "기본형",
+            description: "",
+            parent_ticket_id: ticketId,
+          }}
+          onSelectTemplate={(template) => {
+            setSelectedTemplate(template)
+          }}
+        />
+      )}
+
+      {selectedTemplate && selectedActionItem && projectId && projectName && (
+        <CreateTicketModal
+          onClose={() => {
+            setSelectedTemplate(null)
+            setSelectedActionItem(null)
+          }}
+          template={selectedTemplate}
+          projectId={Number(projectId)}
+          projectName={projectName}
+          parentTicketId={ticketId}
+          onSubmit={(newTicket) => {
+            setSelectedTemplate(null)
+            setSelectedActionItem(null)
+          }}
+        />
+      )}
     </>
   )
 }

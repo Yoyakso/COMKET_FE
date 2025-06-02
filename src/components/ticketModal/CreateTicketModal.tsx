@@ -144,7 +144,6 @@ export const CreateTicketModal = ({
       if (typeof ticketData.parentTicketId === "number") {
         dto.parent_ticket_id = ticketData.parentTicketId
       }
-
       try {
         const response = await createTicket(projectName, dto)
         const mappedTicket = mapTicketFromResponse(response)
@@ -312,29 +311,6 @@ export const CreateTicketModal = ({
                 placeholder="분석 결과 링크 (완료 후 입력)"
                 value={additionalFields.resultLink || ""}
                 onChange={(e) => handleAdditionalFieldChange("resultLink", e.target.value)}
-              />
-            </S.FormRow>
-          </>
-        )
-
-      case "guide-onboarding":
-        return (
-          <>
-            <S.FormRow>
-              <S.FormLabel>작성 요청 항목 또는 문서 범위</S.FormLabel>
-              <S.EditorWrapper>
-                <MarkdownEditor
-                  initialValue={additionalFields.documentScope || ""}
-                  onChange={(value) => handleAdditionalFieldChange("documentScope", value)}
-                />
-              </S.EditorWrapper>
-            </S.FormRow>
-            <S.FormRow>
-              <S.FormLabel>참고 자료 또는 예시 링크</S.FormLabel>
-              <S.TextField
-                placeholder="참고할 수 있는 자료나 예시 링크를 입력하세요"
-                value={additionalFields.referenceLinks || ""}
-                onChange={(e) => handleAdditionalFieldChange("referenceLinks", e.target.value)}
               />
             </S.FormRow>
           </>

@@ -4,6 +4,7 @@ import { FileText, Code, Lightbulb, Users, ClipboardCheck, Bug, BarChart3, BookO
 import type { TicketTemplate } from "@/types/ticketTemplate"
 import { TICKET_TEMPLATE_DATA } from "@/constants/ticketTemplateData"
 import * as S from "./TicketTemplateModal.Style"
+import type { Priority } from "@/types/filter"
 
 const iconMap = {
   FileText,
@@ -20,9 +21,19 @@ interface TicketTemplateModalProps {
   isOpen: boolean
   onClose: () => void
   onSelectTemplate?: (template: TicketTemplate) => void
+  initialData?: {
+    ticket_name?: string
+    ticket_priority?: Priority
+    assignee_member_id?: number | null
+    due_date?: string | null
+    ticket_type?: string
+    description?: string
+    parent_ticket_id?: number
+  }
+  projectName?: string
 }
 
-export const TicketTemplateModal = ({ isOpen, onClose, onSelectTemplate }: TicketTemplateModalProps) => {
+export const TicketTemplateModal = ({ isOpen, onClose, onSelectTemplate, initialData, projectName }: TicketTemplateModalProps) => {
   const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null)
 
   if (!isOpen) return null

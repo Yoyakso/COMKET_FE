@@ -49,7 +49,7 @@ export const ContentContainer = styled.div`
 export const PageHeader = styled.div`
   display: flex;
   align-items: center;
-  padding: 16px;
+  padding: 16px 32px;
   height: 60px;
   box-sizing: border-box;
 `
@@ -63,7 +63,6 @@ export const BackButton = styled.button`
   color: ${color.textSecondary};
   font-size: 13px;
   cursor: pointer;
-  padding: 6px;
   border-radius: 4px;
   
   &:hover {
