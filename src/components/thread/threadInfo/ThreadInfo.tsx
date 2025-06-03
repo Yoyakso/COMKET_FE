@@ -93,14 +93,24 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
     }
   }, [fetchedTicket]);
 
-  const mutation = useMutation({
-    mutationFn: (updatedFields: TicketUpdatePayload) =>
-      editSingleTicket(Number(ticketId), projectName, updatedFields),
-    onSuccess: () => {
-      toast.success("정보가 수정되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
+  const mutation = useMutation<void, Error, TicketUpdatePayload>({
+    mutationFn: () =>
+      editSingleTicket(Number(ticketId), projectName, {
+        ...editedTicket,
+        additional_info: editedAdditionalInfo,
+      }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
+      const updated = queryClient.getQueryData(["ticket", ticketId]) as Ticket | undefined;
+
+      if (updated?.additional_info) {
+        setEditedAdditionalInfo({ ...updated.additional_info });
+      }
+
       setIsEditMode(false);
+      toast.success("정보가 수정되었습니다.");
     },
+
     onError: () => {
       toast.error("정보 수정에 실패했습니다. 다시 시도해주세요.");
     },
