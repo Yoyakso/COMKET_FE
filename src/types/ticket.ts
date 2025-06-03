@@ -27,4 +27,5 @@ export interface Ticket {
     email: string;
     projectMemberId: number | null;
   };
+  additional_info?: Record<string, string>;
 }

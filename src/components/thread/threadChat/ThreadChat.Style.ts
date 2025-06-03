@@ -1,6 +1,17 @@
 import { styled, keyframes } from "styled-components"
 import { color } from "@/styles/color"
 
+const slideUp = keyframes`
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+`
+
 export const SectionTitle = styled.h2`
   font-size: 14px;
   font-weight: 600;
@@ -16,7 +27,7 @@ export const ThreadContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 450px;
+  height: 400px;
   overflow-y: auto;
   min-height: 300px;
   max-height: 500px;
@@ -148,5 +159,75 @@ export const SendButton = styled.button`
   &:disabled {
     background-color: ${color.basic400};
     cursor: not-allowed;
+  }
+`
+
+export const MessagePreview = styled.div`
+  position: absolute;
+  bottom: 80px;
+  left: 16px;
+  right: 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  animation: ${slideUp} 0.3s ease-out;
+  z-index: 10;
+  
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+`
+
+export const PreviewContent = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+`
+
+export const PreviewAvatar = styled.div`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+`
+
+export const PreviewText = styled.div`
+  flex: 1;
+  min-width: 0;
+`
+
+export const PreviewSender = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  color: ${color.textPrimary};
+  margin-bottom: 2px;
+`
+
+export const PreviewMessage = styled.div`
+  font-size: 13px;
+  color: ${color.textSecondary};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+export const PreviewCloseButton = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: ${color.textSecondary};
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  
+  &:hover {
+    background-color: #f3f4f6;
+    color: ${color.textPrimary};
   }
 `

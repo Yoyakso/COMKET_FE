@@ -1,40 +1,42 @@
-import { CheckCircle, Tag, User, FileText, Calendar, Pencil, Save, X } from "lucide-react";
-import * as S from "./ThreadInfo.Style";
-import { StatusBadge } from "@components/ticket/StatusBadge";
-import { useNavigate, useParams } from "react-router-dom";
-import { PriorityBadge } from "@/components/ticket/PriorityBadge";
-import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
-import { editSingleTicket, getTicketById } from "@/api/Ticket";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProjectMembers } from "@/api/Project";
-import { useWorkspaceStore } from "@/stores/workspaceStore";
-import { MarkdownEditor } from "@/components/common/markdownEditor/MarkdownEditor";
-import { marked } from "marked";
-import { TICKET_TEMPLATE_DATA } from "@/constants/ticketTemplateData";
-import { Ticket } from "@/types/ticket";
+import { CheckCircle, Tag, User, Calendar, Pencil, Save, X } from "lucide-react"
+import * as S from "./ThreadInfo.Style"
+import { StatusBadge } from "@components/ticket/StatusBadge"
+import { useNavigate, useParams } from "react-router-dom"
+import { PriorityBadge } from "@/components/ticket/PriorityBadge"
+import { useState, useEffect } from "react"
+import { toast } from "react-toastify"
+import { editSingleTicket, getTicketById } from "@/api/Ticket"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { getProjectMembers } from "@/api/Project"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
+import { MarkdownEditor } from "@/components/common/markdownEditor/MarkdownEditor"
+import { marked } from "marked"
+import { TICKET_TEMPLATE_DATA } from "@/constants/ticketTemplateData"
+import type { Ticket } from "@/types/ticket"
+import { mapTicketFromResponse } from "@/utils/ticketMapper"
 
 interface TicketUpdatePayload {
-  ticket_name: string;
-  ticket_type: string;
-  ticket_priority: string;
-  ticket_state: string;
-  start_date: string;
-  end_date: string;
-  description: string;
-  assignee_member_id: number | null;
-  parent_ticket_id: number | null;
+  ticket_name: string
+  ticket_type: string
+  ticket_priority: string
+  ticket_state: string
+  start_date: string
+  end_date: string
+  description: string
+  assignee_member_id: number | null
+  parent_ticket_id: number | null
 }
 
 interface ThreadInfoProps {
-  projectName?: string;
-  ticket: Ticket | null;
+  projectName?: string
+  ticket: Ticket | null
+  onUpdateTicket?: (updated: Ticket) => void
 }
 
-export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
-  const { projectId, ticketId } = useParams();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoProps) => {
+  const { projectId, ticketId } = useParams()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const {
     data: fetchedTicket,
     isLoading,
@@ -54,9 +56,9 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
       parentId: data.parent_ticket_id,
       subtickets: data.subtickets || [],
     }),
-  });
+  })
 
-  const { workspaceName } = useWorkspaceStore();
+  const { workspaceName } = useWorkspaceStore()
   const {
     data: projectMembers = [],
     isLoading: isMembersLoading,
@@ -65,11 +67,11 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
     queryKey: ["projectMembers", projectId],
     queryFn: () => getProjectMembers(workspaceName, Number(projectId)),
     enabled: !!projectId,
-  });
+  })
 
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editedTicket, setEditedTicket] = useState<TicketUpdatePayload | null>(null);
-  const [editedAdditionalInfo, setEditedAdditionalInfo] = useState<Record<string, string>>({});
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editedTicket, setEditedTicket] = useState<TicketUpdatePayload | null>(null)
+  const [editedAdditionalInfo, setEditedAdditionalInfo] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (fetchedTicket) {
@@ -83,36 +85,48 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
         description: fetchedTicket.description,
         assignee_member_id: fetchedTicket.assignee_member?.projectMemberId ?? null,
         parent_ticket_id: fetchedTicket.parentId ?? null,
-      });
+      })
     }
-  }, [fetchedTicket]);
+  }, [fetchedTicket])
 
   useEffect(() => {
     if (fetchedTicket?.additional_info) {
-      setEditedAdditionalInfo({ ...fetchedTicket.additional_info });
+      setEditedAdditionalInfo({ ...fetchedTicket.additional_info })
     }
-  }, [fetchedTicket]);
+  }, [fetchedTicket])
 
-  const mutation = useMutation({
-    mutationFn: (updatedFields: TicketUpdatePayload) =>
-      editSingleTicket(Number(ticketId), projectName, updatedFields),
-    onSuccess: () => {
-      toast.success("정보가 수정되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
-      setIsEditMode(false);
+  const mutation = useMutation<void, Error, TicketUpdatePayload>({
+    mutationFn: () =>
+      editSingleTicket(Number(ticketId), projectName, {
+        ...editedTicket,
+        additional_info: editedAdditionalInfo,
+      }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] })
+
+      const updatedRaw = await getTicketById(Number(ticketId), projectName);
+      const mapped = mapTicketFromResponse(updatedRaw);
+
+      onUpdateTicket?.(mapped);
+      if (mapped.additional_info) {
+        setEditedAdditionalInfo({ ...mapped.additional_info });
+      }
+      setIsEditMode(false)
+      toast.success("정보가 수정되었습니다.")
     },
+
     onError: () => {
-      toast.error("정보 수정에 실패했습니다. 다시 시도해주세요.");
+      toast.error("정보 수정에 실패했습니다. 다시 시도해주세요.")
     },
-  });
+  })
 
   const handleSave = () => {
-    if (!editedTicket) return;
-    mutation.mutate(editedTicket);
-  };
+    if (!editedTicket) return
+    mutation.mutate(editedTicket)
+  }
 
   const handleCancel = () => {
-    setIsEditMode(false);
+    setIsEditMode(false)
     if (fetchedTicket) {
       setEditedTicket({
         ticket_name: fetchedTicket.title,
@@ -124,31 +138,31 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
         description: fetchedTicket.description,
         assignee_member_id: fetchedTicket.assignee_member?.projectMemberId ?? null,
         parent_ticket_id: fetchedTicket.parentId ?? null,
-      });
+      })
     }
-  };
+  }
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return "YYYY-MM-DD (W)";
-    const date = new Date(dateString);
-    const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
-    const weekday = weekdays[date.getDay()];
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} (${weekday})`;
-  };
+    if (!dateString) return "YYYY-MM-DD (W)"
+    const date = new Date(dateString)
+    const weekdays = ["일", "월", "화", "수", "목", "금", "토"]
+    const weekday = weekdays[date.getDay()]
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} (${weekday})`
+  }
 
   const formatFileSize = (bytes: number) => {
-    if (!bytes) return "0KB";
-    const kb = bytes / 1024;
-    return `${Math.round(kb)}KB`;
-  };
+    if (!bytes) return "0KB"
+    const kb = bytes / 1024
+    return `${Math.round(kb)}KB`
+  }
 
   const handleAdditionalInfoChange = (key: string, value: string) => {
-    setEditedAdditionalInfo((prev) => ({ ...prev, [key]: value }));
-  };
+    setEditedAdditionalInfo((prev) => ({ ...prev, [key]: value }))
+  }
 
-  if (isLoading) return <div>불러오는 중...</div>;
-  if (isError || !fetchedTicket || !editedTicket) return <div>티켓 정보를 불러오지 못했습니다.</div>;
-  const currentTemplate = TICKET_TEMPLATE_DATA.find((t) => t.name === fetchedTicket.type);
+  if (isLoading) return <div>불러오는 중...</div>
+  if (isError || !fetchedTicket || !editedTicket) return <div>티켓 정보를 불러오지 못했습니다.</div>
+  const currentTemplate = TICKET_TEMPLATE_DATA.find((t) => t.name === fetchedTicket.type)
 
   return (
     <S.Container>
@@ -160,9 +174,24 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
           </S.EditButton>
         </S.SectionHeader>
 
+        {isEditMode && (
+          <S.DescriptionSection style={{ width: "61%" }}>
+            <S.InfoTitle style={{ marginBottom: 10 }}>티켓 제목</S.InfoTitle>
+            <S.StyledInput
+              type="text"
+              value={editedTicket.ticket_name}
+              onChange={(e) => setEditedTicket({ ...editedTicket, ticket_name: e.target.value })}
+              placeholder="티켓 제목을 입력하세요"
+            />
+          </S.DescriptionSection>
+        )}
+
         <S.InfoGrid style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
           <S.InfoSection>
-            <S.InfoTitle><Tag size={14} />유형</S.InfoTitle>
+            <S.InfoTitle>
+              <Tag size={14} />
+              유형
+            </S.InfoTitle>
             <S.InfoContent>
               <S.TypeContainer>
                 <S.TagBadge>{fetchedTicket.type}</S.TagBadge>
@@ -203,7 +232,10 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
           </S.InfoSection>
 
           <S.InfoSection>
-            <S.InfoTitle><Calendar size={14} />시작 일자</S.InfoTitle>
+            <S.InfoTitle>
+              <Calendar size={14} />
+              시작 일자
+            </S.InfoTitle>
             <S.InfoContent>
               {isEditMode ? (
                 <S.StyledInput
@@ -218,7 +250,10 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
           </S.InfoSection>
 
           <S.InfoSection>
-            <S.InfoTitle><User size={14} />담당자</S.InfoTitle>
+            <S.InfoTitle>
+              <User size={14} />
+              담당자
+            </S.InfoTitle>
             <S.InfoContent>
               <S.UserDisplay>
                 {isEditMode ? (
@@ -260,11 +295,17 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
           </S.InfoSection>
 
           <S.InfoSection>
-            <S.InfoTitle><User size={16} />요청자</S.InfoTitle>
+            <S.InfoTitle>
+              <User size={16} />
+              요청자
+            </S.InfoTitle>
             <S.InfoContent>
               <S.UserDisplay>
                 <S.SmallAvatar>
-                  <S.AvatarImage src={fetchedTicket.creator_member?.profileUrl || "/images/avatar-1.png"} alt={fetchedTicket.creator_member?.name || "미지정"} />
+                  <S.AvatarImage
+                    src={fetchedTicket.creator_member?.profileUrl || "/images/avatar-1.png"}
+                    alt={fetchedTicket.creator_member?.name || "미지정"}
+                  />
                 </S.SmallAvatar>
                 <S.UserInfo>
                   <span>{fetchedTicket.creator_member?.name || "미지정"}</span>
@@ -274,7 +315,10 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
           </S.InfoSection>
 
           <S.InfoSection>
-            <S.InfoTitle><Calendar size={14} />마감 일자</S.InfoTitle>
+            <S.InfoTitle>
+              <Calendar size={14} />
+              마감 일자
+            </S.InfoTitle>
             <S.InfoContent>
               {isEditMode ? (
                 <S.StyledInput
@@ -290,7 +334,7 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
         </S.InfoGrid>
 
         <S.DescriptionSection>
-          <S.InfoTitle>상세 내용</S.InfoTitle>
+          <S.InfoTitle style={{ marginLeft: 10 }}>상세 내용</S.InfoTitle>
           <S.DetailContent>
             {isEditMode ? (
               <MarkdownEditor
@@ -307,21 +351,28 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
 
         {currentTemplate && fetchedTicket.additional_info && (
           <S.DescriptionSection>
-
             {currentTemplate.fields.map((field) => {
-              const snakeKey = field.key
-                .replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-              const value = fetchedTicket.additional_info[snakeKey];
+              const snakeKey = field.key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+              const value = fetchedTicket.additional_info[snakeKey]
 
               if (
-                ["title", "priority", "description", "ticketType", "startDate", "endDate", "assignee", "creator"].includes(field.key)
+                [
+                  "title",
+                  "priority",
+                  "description",
+                  "ticketType",
+                  "startDate",
+                  "endDate",
+                  "assignee",
+                  "creator",
+                ].includes(field.key)
               ) {
-                return null;
+                return null
               }
 
               return (
-                <S.InfoSection key={snakeKey}>
-                  <S.InfoTitle>{field.label}</S.InfoTitle>
+                <S.InfoSection key={snakeKey} style={{ marginBottom: 10 }}>
+                  <S.InfoTitle style={{ marginLeft: 10 }}>{field.label}</S.InfoTitle>
                   <S.AdditionalInfoContent>
                     {isEditMode ? (
                       <MarkdownEditor
@@ -335,7 +386,7 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
                     )}
                   </S.AdditionalInfoContent>
                 </S.InfoSection>
-              );
+              )
             })}
           </S.DescriptionSection>
         )}
@@ -376,7 +427,6 @@ export const ThreadInfo = ({ projectName, ticket }: ThreadInfoProps) => {
           </S.SubticketList>
         </S.Section>
       )}
-
     </S.Container>
-  );
-};
+  )
+}

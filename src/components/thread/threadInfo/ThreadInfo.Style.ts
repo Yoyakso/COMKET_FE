@@ -71,7 +71,7 @@ export const InfoGrid = styled.div`
 export const InfoSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
 `
 
 export const InfoTitle = styled.h3`
@@ -97,7 +97,7 @@ export const AdditionalInfoContent = styled.div`
   white-space: pre-wrap;
   overflow-wrap: break-word;
   overflow-y: auto;
-  padding: 10px 0;
+  padding: 10px;
 `
 
 export const TypeContainer = styled.div`
@@ -172,10 +172,11 @@ export const UserId = styled.span`
 export const DescriptionSection = styled.div`
   padding: 16px;
   width: 100%;
+  margin-top: 8px;
 `
 
 export const DetailContent = styled.div`
-  padding: 10px 0;
+  padding: 10px;
   font-size: 12px;
   line-height: 1.5;
   color: ${color.textPrimary};
@@ -300,7 +301,7 @@ export const SubticketItem = styled.li`
 
 export const StyledInput = styled.input`
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
   font-size: 13px;
@@ -449,6 +450,7 @@ export const CancelButton = styled.button`
 
 export const ButtonContainer = styled.div`
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   padding: 0 16px 16px;
 `
