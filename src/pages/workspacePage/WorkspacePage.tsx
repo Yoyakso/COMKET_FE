@@ -116,8 +116,37 @@ export const WorkspacePage = () => {
                 <S.Line />
               </S.DividerBox>
 
+<<<<<<< Updated upstream
               <Button $variant="tealFilled" size="lg" onClick={() => navigate('/workspace/create')}>
                 워크스페이스 생성
+=======
+            <Button $variant="tealFilled" size="lg" onClick={() => navigate('/workspaces/create')}>
+              워크스페이스 생성
+            </Button>
+            <Button $variant="neutralOutlined" size="lg" onClick={() => navigate('/workspaces')}>
+              초대 코드로 입장
+            </Button>
+          </>
+        ) : (
+          <>
+            <S.WorkspaceRow>
+              <Dropdown
+                options={options}
+                value={selectedSlug}
+                onChange={value => {
+                  if (typeof value === 'string') {
+                    setSelectedSlug(value);
+                  }
+                }}
+                placeholder="워크스페이스 선택"
+                size="md"
+                $variant="activated"
+                type="single-image"
+                iconLeft
+              />
+              <Button $variant="neutralFilled" size="md" onClick={handleJoin}>
+                참여
+>>>>>>> Stashed changes
               </Button>
               <Button
                 $variant="neutralOutlined"

@@ -1,5 +1,9 @@
 import React, { useRef, useState } from 'react';
+<<<<<<< Updated upstream
 import { ChevronDown, ChevronUp } from '@/assets/icons';
+=======
+import { ChevronDown } from '@/assets/icons';
+>>>>>>> Stashed changes
 import * as S from './WorkspaceSelector.Style';
 import { WorkspaceSelectorDropdown } from '@/components/workspace/WorkspaceSelectorDropdown';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
@@ -27,7 +31,11 @@ export const WorkspaceSelector = () => {
 
         <S.TextBox>
           <S.WorkspaceName>{workspaceName ?? 'workspace'}</S.WorkspaceName>
+<<<<<<< Updated upstream
           {open ? <ChevronUp /> : <ChevronDown />}
+=======
+          <ChevronDown />
+>>>>>>> Stashed changes
         </S.TextBox>
 
         {open && <WorkspaceSelectorDropdown triggerRef={triggerRef} close={() => setOpen(false)} />}
