@@ -15,7 +15,6 @@ interface Props {
 
 export const AssigneeCell = ({ members }: Props) => {
   if (!members || members.length === 0) return <span>없음</span>;
-  console.log('AssigneeCell 렌더링', members);
   const validMembers = members.filter(m => m && m.name);
   if (!validMembers || validMembers.length === 0) return <span>미지정</span>;
   const [isHovered, setIsHovered] = useState(false);

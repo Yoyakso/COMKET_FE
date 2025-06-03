@@ -9,7 +9,7 @@ import { TypeBadge } from './TypeBadge';
 import { PriorityDropdown } from './PriorityDropdown';
 import { StatusDropdown } from './StatusDropdown';
 import { AssigneeCell } from '@/components/ticket/AssignCell';
-import { Info } from 'lucide-react';
+import { Info, Bell } from 'lucide-react';
 
 interface TicketRowProps {
   ticket: Ticket;
@@ -21,6 +21,8 @@ interface TicketRowProps {
   onInfoClick?: (ticket: Ticket) => void;
   projectName: string;
   depth?: number;
+  hasAlarm?: boolean;
+  alarmTicketIds?: Set<number>;
 }
 
 export const TicketRow = ({
@@ -33,6 +35,7 @@ export const TicketRow = ({
   onInfoClick,
   projectName,
   depth = 0,
+  hasAlarm = false,
 }: TicketRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(prev => !prev);
@@ -88,9 +91,25 @@ export const TicketRow = ({
         </S.TableCell>
 
         <S.TableCell $align="center">
-          <S.InfoButton onClick={() => onInfoClick?.(ticket)}>
-            <Info size={16} />
-          </S.InfoButton>
+          <S.InfoAlarmCell>
+            <S.InfoButton onClick={() => onInfoClick?.(ticket)}>
+              <Info size={16} />
+            </S.InfoButton>
+            <S.Alarm $visible={hasAlarm}>
+              <Bell size={16} color="#3b82f6" />
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-2px',
+                  right: '0px',
+                  width: '8px',
+                  height: '8px',
+                  backgroundColor: '#ef4444',
+                  borderRadius: '50%',
+                }}
+              />
+            </S.Alarm>
+          </S.InfoAlarmCell>
         </S.TableCell>
 
         <S.TableCell
