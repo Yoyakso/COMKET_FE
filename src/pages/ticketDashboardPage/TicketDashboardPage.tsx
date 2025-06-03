@@ -1,20 +1,12 @@
 import * as S from './TicketDashboardPage.Style';
-<<<<<<< Updated upstream
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-=======
-import { useState } from 'react';
->>>>>>> Stashed changes
 import { TicketListView } from '@/components/ticketView/TicketListView';
 import { TicketBoardView } from '@/components/ticketView/TicketBoardView';
 import { ListChecks, Rows2, Plus, Bell } from 'lucide-react';
 import { Button } from '@components/common/button/Button';
 import { CreateTicketModal } from '@components/ticketModal/CreateTicketModal';
-<<<<<<< Updated upstream
 import { TicketTemplateModal } from '@/components/ticketModal/TicketTemplateModal';
-=======
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
 import { TicketDetailPanel } from '@components/ticketDetailPanel/TicketDetailPanel';
 import { Ticket } from '@/types/ticket';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
@@ -28,7 +20,6 @@ import { EmptyTicket } from '@/components/ticket/EmptyTicket';
 import { deleteTickets, editSingleTicket } from '@/api/Ticket';
 import { DeleteModal } from '@/components/common/modal/DeleteModal';
 import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
-<<<<<<< Updated upstream
 import { mapTicketFromResponse } from '@/utils/ticketMapper';
 import { Status } from '@/types/filter';
 import { AlarmPopover } from '@/components/alarm/AlarmPopover';
@@ -40,15 +31,6 @@ export const TicketDashboardPage = () => {
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-=======
-=======
->>>>>>> Stashed changes
-
-export const TicketDashboardPage = () => {
-  const [viewType, setViewType] = useState<'list' | 'board'>('list');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const { projectId } = useParams<{ projectId: string }>();
   const [projectName, setProjectName] = useState<string | null>(null);
@@ -156,9 +138,9 @@ export const TicketDashboardPage = () => {
       const updated = tickets.map(ticket =>
         ticket.id === newTicket.parentId
           ? {
-            ...ticket,
-            subtickets: [...(ticket.subtickets ?? []), newTicket],
-          }
+              ...ticket,
+              subtickets: [...(ticket.subtickets ?? []), newTicket],
+            }
           : ticket,
       );
       setTickets(updated);
@@ -364,7 +346,7 @@ export const TicketDashboardPage = () => {
 
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => { }}
+            onMouseEnter={() => {}}
             onMouseLeave={() => {
               if (!selectedTicket) setHoveredTicket(null);
             }}
@@ -402,54 +384,5 @@ export const TicketDashboardPage = () => {
         )}
       </S.MainContainer>
     </S.PageContainer>
-=======
-
-  const handleCreateTicket = () => {
-    setIsModalOpen(true);
-  };
-
-  return (
-    <>
-      <S.Wrapper>
-        <S.Header>
-          <S.TitleGroup>
-            <div style={{ width: 'calc(100% - 100px)' }}>
-              <S.Title>COMKET_통합</S.Title>
-              <S.Description>
-                프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다프로젝트설명입니다
-              </S.Description>
-            </div>
-            <Button size="md" $variant="tealFilled" onClick={handleCreateTicket}>
-              <span style={{ marginRight: '4px' }}>
-                <Plus width={'14px'} height={'14px'} />
-              </span>
-              티켓 생성
-            </Button>
-          </S.TitleGroup>
-
-          <S.ViewTabBar>
-            <S.ViewTab $active={viewType === 'list'} onClick={() => setViewType('list')}>
-              <ListChecks size={16} />
-              <span>목록</span>
-            </S.ViewTab>
-            <S.ViewTab $active={viewType === 'board'} onClick={() => setViewType('board')}>
-              <Rows2 size={16} />
-              <span>보드</span>
-            </S.ViewTab>
-          </S.ViewTabBar>
-        </S.Header>
-        {viewType === 'list' ? <TicketListView /> : <TicketBoardView />}
-      </S.Wrapper>
-      {isModalOpen && (
-        <CreateTicketModal
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={data => {
-            console.log('등록된 티켓:', data);
-            setIsModalOpen(false);
-          }}
-        />
-      )}
-    </>
->>>>>>> Stashed changes
   );
 };
