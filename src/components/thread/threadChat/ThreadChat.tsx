@@ -3,7 +3,7 @@ import { Send, X } from "lucide-react"
 import * as S from "./ThreadChat.Style"
 import { formatDateTime } from "@/utils/formatDateTime"
 
-interface Message {
+export interface Message {
   sentAt: string
   senderMemberId: string
   senderName: string
@@ -30,8 +30,6 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }:
     if (!messages || messages.length === 0) return
 
     const latestMessage = messages[messages.length - 1]
-
-    // 메시지 ID 또는 고유 식별자가 없으므로 내용과 시간으로 비교
     const messageKey = `${latestMessage.senderMemberId}-${latestMessage.sentAt}-${latestMessage.content}`
 
     // 이전에 처리한 메시지와 다르고, 현재 사용자가 보낸 메시지가 아닌 경우에만 미리보기 표시
@@ -40,10 +38,8 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }:
       setMessagePreview(latestMessage)
       setShowPreview(true)
 
-      // 메시지 키 업데이트
       lastMessageRef.current = messageKey
 
-      // 3초 후 자동으로 미리보기 숨김
       const timer = setTimeout(() => {
         setShowPreview(false)
       }, 5000)
@@ -51,7 +47,6 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }:
       return () => clearTimeout(timer)
     }
 
-    // 첫 렌더링 시에도 마지막 메시지 키 저장
     if (lastMessageRef.current === null) {
       lastMessageRef.current = messageKey
     }
