@@ -1,16 +1,67 @@
 import { useEffect, useRef, useState } from "react"
-import { Send } from "lucide-react"
+import { Send, X } from "lucide-react"
 import * as S from "./ThreadChat.Style"
 import { formatDateTime } from "@/utils/formatDateTime"
 
-export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }) => {
+interface Message {
+  sentAt: string
+  senderMemberId: string
+  senderName: string
+  content: string
+  isCurrentUser: boolean
+}
+
+interface ThreadChatProps {
+  messages: Message[]
+  newMessage: string
+  setNewMessage: (message: string) => void
+  sendMessage: () => void
+}
+
+export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }: ThreadChatProps) => {
   const messagesEndRef = useRef(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isComposing, setIsComposing] = useState(false)
+  const [messagePreview, setMessagePreview] = useState<Message | null>(null)
+  const [showPreview, setShowPreview] = useState(false)
+  const lastMessageRef = useRef<string | null>(null)
 
-  // useEffect(() => {
-  //   scrollToBottom()
-  // }, [messages])
+  useEffect(() => {
+    if (!messages || messages.length === 0) return
+
+    const latestMessage = messages[messages.length - 1]
+
+    // 메시지 ID 또는 고유 식별자가 없으므로 내용과 시간으로 비교
+    const messageKey = `${latestMessage.senderMemberId}-${latestMessage.sentAt}-${latestMessage.content}`
+
+    // 이전에 처리한 메시지와 다르고, 현재 사용자가 보낸 메시지가 아닌 경우에만 미리보기 표시
+    if (messageKey !== lastMessageRef.current && !latestMessage.isCurrentUser) {
+      console.log("새 메시지 감지:", latestMessage)
+      setMessagePreview(latestMessage)
+      setShowPreview(true)
+
+      // 메시지 키 업데이트
+      lastMessageRef.current = messageKey
+
+      // 3초 후 자동으로 미리보기 숨김
+      const timer = setTimeout(() => {
+        setShowPreview(false)
+      }, 5000)
+
+      return () => clearTimeout(timer)
+    }
+
+    // 첫 렌더링 시에도 마지막 메시지 키 저장
+    if (lastMessageRef.current === null) {
+      lastMessageRef.current = messageKey
+    }
+  }, [messages])
+
+  useEffect(() => {
+    if (showPreview) {
+      console.log("미리보기 표시됨:", messagePreview)
+    }
+  }, [showPreview, messagePreview])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -31,6 +82,16 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
     }
     const avatarIndex = (index % 5) + 1
     return `/images/avatar-${avatarIndex}.png`
+  }
+
+  const handlePreviewClick = () => {
+    setShowPreview(false)
+    scrollToBottom()
+  }
+
+  const handleClosePreview = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setShowPreview(false)
   }
 
   return (
@@ -63,9 +124,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
                       ))}
                     </S.MessageContent>
                   </S.MessageBubble>
-                  <S.MessageTime $isCurrentUser={message.isCurrentUser}>
-                    {formatDateTime(message.sentAt)}
-                  </S.MessageTime>
+                  <S.MessageTime $isCurrentUser={message.isCurrentUser}>{formatDateTime(message.sentAt)}</S.MessageTime>
                 </S.MessageBubbleContainer>
               </S.SenderInfo>
             </S.MessageWrapper>
@@ -79,6 +138,37 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
       </S.ThreadContainer>
 
       <S.MessageInputContainer>
+        {showPreview && messagePreview && (
+          <S.MessagePreview
+            onClick={handlePreviewClick}
+            style={{
+              position: "fixed",
+              bottom: "100px",
+              left: "45%",
+              transform: "translateX(-50%)",
+              width: "40%",
+              maxWidth: "40%",
+              zIndex: 1000,
+            }}
+          >
+            <S.PreviewContent>
+              <S.PreviewAvatar>
+                <S.AvatarImage src={getAvatarImage(0, false)} alt={`${messagePreview.senderName} 아바타`} />
+              </S.PreviewAvatar>
+              <S.PreviewText>
+                <S.PreviewSender>{messagePreview.senderName}</S.PreviewSender>
+                <S.PreviewMessage>
+                  {messagePreview.content.length > 50
+                    ? `${messagePreview.content.substring(0, 50)}...`
+                    : messagePreview.content}
+                </S.PreviewMessage>
+              </S.PreviewText>
+            </S.PreviewContent>
+            <S.PreviewCloseButton onClick={handleClosePreview}>
+              <X size={14} />
+            </S.PreviewCloseButton>
+          </S.MessagePreview>
+        )}
         <S.MessageInput
           placeholder="메시지를 입력해주세요."
           value={newMessage}
