@@ -43,7 +43,7 @@ export const ThreadPage = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null);
 
   useEffect(() => {
-    if (!ticket && ticketId && projectName) {
+    if (ticketId && projectName) {
       const fetchTicket = async () => {
         try {
           const data = await getTicketById(Number(ticketId), projectName)
@@ -60,7 +60,7 @@ export const ThreadPage = () => {
       }
       fetchTicket()
     }
-  }, [ticket, ticketId, projectName])
+  }, [ticketId, projectName])
 
   const handleMessage = useCallback((data: ThreadMessage | ThreadMessage[]) => {
     const normalizedMessages = Array.isArray(data) ? data : [data]
@@ -118,30 +118,6 @@ export const ThreadPage = () => {
     setIsTemplateModalOpen(true);
   }
 
-  const handleTemplateSelect = (template: TicketTemplate) => {
-    setSelectedTemplate(template)
-    setIsTemplateModalOpen(false)
-    setIsCreateModalOpen(true)
-  }
-
-  const handleTicketCreated = (newTicket: Ticket) => {
-    setIsCreateModalOpen(false)
-    setSelectedTemplate(null)
-
-    // 하위 티켓을 현재 티켓의 subtickets에 추가
-    setTicket((prev) =>
-      prev
-        ? {
-          ...prev,
-          subtickets: [...(prev.subtickets ?? []), newTicket],
-        }
-        : prev,
-    )
-
-    // 페이지 새로고침 또는 티켓 목록 업데이트
-    // 필요에 따라 추가 로직 구현
-  }
-
   const handleBack = () => {
     navigate(-1)
   }
@@ -174,7 +150,11 @@ export const ThreadPage = () => {
             </S.PageHeader>
             {ticket ? (
               <div>
-                <ThreadInfo projectName={projectName} ticket={ticket} />
+                <ThreadInfo
+                  projectName={projectName}
+                  ticket={ticket}
+                  onUpdateTicket={(updated) => setTicket(updated)}
+                />
               </div>
             ) : (
               <div>
