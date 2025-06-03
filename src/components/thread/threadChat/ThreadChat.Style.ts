@@ -16,7 +16,7 @@ export const ThreadContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 450px;
+  height: 400px;
   overflow-y: auto;
   min-height: 300px;
   max-height: 500px;

@@ -8,9 +8,9 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage })
   const containerRef = useRef<HTMLDivElement>(null)
   const [isComposing, setIsComposing] = useState(false)
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+  // useEffect(() => {
+  //   scrollToBottom()
+  // }, [messages])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
