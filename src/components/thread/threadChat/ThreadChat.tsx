@@ -134,18 +134,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }:
 
       <S.MessageInputContainer>
         {showPreview && messagePreview && (
-          <S.MessagePreview
-            onClick={handlePreviewClick}
-            style={{
-              position: "fixed",
-              bottom: "100px",
-              left: "45%",
-              transform: "translateX(-50%)",
-              width: "40%",
-              maxWidth: "40%",
-              zIndex: 1000,
-            }}
-          >
+          <S.MessagePreview onClick={handlePreviewClick}>
             <S.PreviewContent>
               <S.PreviewAvatar>
                 <S.AvatarImage src={getAvatarImage(0, false)} alt={`${messagePreview.senderName} 아바타`} />

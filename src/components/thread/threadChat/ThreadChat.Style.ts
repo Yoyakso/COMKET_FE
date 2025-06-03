@@ -125,6 +125,7 @@ export const MessageInputContainer = styled.div`
   display: flex;
   gap: 6px;
   margin-top: 4px;
+  position: relative;
 `
 
 export const MessageInput = styled.textarea`
@@ -164,9 +165,10 @@ export const SendButton = styled.button`
 
 export const MessagePreview = styled.div`
   position: absolute;
-  bottom: 80px;
-  left: 16px;
-  right: 16px;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 8px;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
