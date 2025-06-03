@@ -303,7 +303,7 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
               <S.UserDisplay>
                 <S.SmallAvatar>
                   <S.AvatarImage
-                    src={fetchedTicket.creator_member?.profileUrl || "/images/avatar-1.png"}
+                    src={fetchedTicket.creator_member?.profileUrl || "/images/avatar-me.png"}
                     alt={fetchedTicket.creator_member?.name || "미지정"}
                   />
                 </S.SmallAvatar>
