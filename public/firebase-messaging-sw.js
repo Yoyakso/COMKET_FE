@@ -14,24 +14,24 @@ const messaging = firebase.messaging();
 
 /**
  * 백그라운드 푸시 수신
- *  └ 브라우저가 notification-payload를 이미 처리한 경우 → skip
- *  └ 열려있는 창(탭)이 있으면 → Foreground에서 처리하도록 skip
- *  └ data-only 메시지일 때만 직접 알림 표시
+ *  브라우저가 notification-payload를 이미 처리한 경우 → skip
+ *  열려있는 창(탭)이 있으면 → Foreground에서 처리하도록 skip
+ *  data-only 메시지일 때만 직접 알림 표시
  */
 messaging.onBackgroundMessage(async payload => {
   console.log('[SW] background message:', payload);
 
-  /* 1) 창 열려 있으면 skip */
+  /* 창 열려 있으면 skip */
   const clients = await self.clients.matchAll({
     type: 'window',
     includeUncontrolled: true,
   });
   if (clients.length) return;
 
-  /* 2) notification 필드가 있으면 브라우저 기본 알림으로 이미 표시됨 → skip */
+  /* notification 필드가 있으면 브라우저 기본 알림으로 이미 표시됨 → skip */
   if (payload.notification) return;
 
-  /* 3) data-only 메시지라면 우리가 직접 표시 */
+  /* data-only 메시지라면 우리가 직접 표시 */
   const { title, body, url } = payload.data ?? {};
   if (!title || !body) return;
 
