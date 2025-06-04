@@ -138,9 +138,9 @@ export const TicketDashboardPage = () => {
       const updated = tickets.map(ticket =>
         ticket.id === newTicket.parentId
           ? {
-            ...ticket,
-            subtickets: [...(ticket.subtickets ?? []), newTicket],
-          }
+              ...ticket,
+              subtickets: [...(ticket.subtickets ?? []), newTicket],
+            }
           : ticket,
       );
       setTickets(updated);
@@ -346,7 +346,7 @@ export const TicketDashboardPage = () => {
 
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => { }}
+            onMouseEnter={() => {}}
             onMouseLeave={() => {
               if (!selectedTicket) setHoveredTicket(null);
             }}
