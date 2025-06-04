@@ -8,6 +8,7 @@ export const AppInitializer = () => {
   // useUserStatusSocket();
 
   useEffect(() => {
+    console.log('현재 알림 권한 상태:', Notification.permission);
     requestFcmPermission();
     listenToForegroundMessages();
   }, []);
