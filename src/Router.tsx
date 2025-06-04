@@ -21,10 +21,10 @@ import { AccountInfoPage } from './pages/accountInfoPage/AccountInfoPage';
 import { ProfilePage } from './pages/profilePage/profilePage';
 import { MyTicketPage } from './pages/myTicketPage/MyTicketPage';
 import { TicketDashboardPage } from './pages/ticketDashboardPage/TicketDashboardPage';
-import { ThreadPage } from './pages/threadPage/ThreadPage';
 import { ThreadPageWrapper } from './pages/threadPage/TreadPageWrapper';
 import { MainPage } from './pages/mainPage/MainPage';
 import { PlanPage } from './pages/planPage/PlanPage';
+import { NotFoundPage } from './pages/notFoundPage/NotFoundPage';
 
 export const Router = createBrowserRouter([
   {
@@ -139,6 +139,10 @@ export const Router = createBrowserRouter([
         path: 'plan',
         element: <PlanPage />,
       },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      }
     ],
   },
 ]);
