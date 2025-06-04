@@ -181,16 +181,16 @@ export const SignupButton = styled.button`
   }
 `;
 
-export const ErrorMessage = styled.div<{ show: boolean }>`
+export const ErrorMessage = styled.div<{ $show: boolean }>`
   color: red;
   font-size: 12px;
   margin-bottom: 10px;
   margin-left: 136px;
-  max-height: ${props => (props.show ? '50px' : '0')};
-  opacity: ${props => (props.show ? '1' : '0')};
-  transform: translateY(${props => (props.show ? '0' : '-8px')});
-  visibility: ${props => (props.show ? 'visible' : 'hidden')};
+  max-height: ${props => (props.$show ? '50px' : '0')};
+  opacity: ${props => (props.$show ? '1' : '0')};
+  transform: translateY(${props => (props.$show ? '0' : '-8px')});
+  visibility: ${props => (props.$show ? 'visible' : 'hidden')};
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  padding-top: ${props => (props.show ? '0' : '0')};
+  padding-top: ${props => (props.$show ? '0' : '0')};
 `;

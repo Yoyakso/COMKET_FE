@@ -7,6 +7,7 @@ export const Row = styled.tr`
   &:hover {
     background-color: #f8f9fa;
   }
+  cursor: pointer;
 `
 
 export const Cell = styled.td<{ $isCentered?: boolean }>`

@@ -214,7 +214,7 @@ export const SignUpForm = () => {
               }}
             />
           </S.FormRow>
-          <S.ErrorMessage show={!!passwordError}>{passwordError}</S.ErrorMessage>
+          <S.ErrorMessage $show={!!passwordError}>{passwordError}</S.ErrorMessage>
         </S.FormGroup>
 
         <S.FormGroup>
@@ -228,7 +228,7 @@ export const SignUpForm = () => {
               onChange={e => setConfirmPassword(e.target.value)}
             />
           </S.FormRow>
-          <S.ErrorMessage show={isPasswordMismatch}>비밀번호가 일치하지 않습니다.</S.ErrorMessage>
+          <S.ErrorMessage $show={isPasswordMismatch}>비밀번호가 일치하지 않습니다.</S.ErrorMessage>
         </S.FormGroup>
 
         <S.CheckboxContainer>
