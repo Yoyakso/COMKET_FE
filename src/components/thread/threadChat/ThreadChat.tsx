@@ -30,9 +30,11 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }:
     if (!messages || messages.length === 0) return
 
     const latestMessage = messages[messages.length - 1]
+    if (latestMessage.isCurrentUser) {
+      scrollToBottom();
+    }
     const messageKey = `${latestMessage.senderMemberId}-${latestMessage.sentAt}-${latestMessage.content}`
 
-    // 이전에 처리한 메시지와 다르고, 현재 사용자가 보낸 메시지가 아닌 경우에만 미리보기 표시
     if (messageKey !== lastMessageRef.current && !latestMessage.isCurrentUser) {
       console.log("새 메시지 감지:", latestMessage)
       setMessagePreview(latestMessage)
@@ -59,7 +61,13 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage }:
   }, [showPreview, messagePreview])
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    const container = containerRef.current;
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth",
+      })
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
