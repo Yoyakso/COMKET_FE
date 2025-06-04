@@ -116,6 +116,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         workspaceSlug: state.workspaceSlug,
         workspaceId: state.workspaceId,
         profileFileUrl: state.profileFileUrl,
+        myWorkspaces: state.myWorkspaces,
       }),
     },
   ),

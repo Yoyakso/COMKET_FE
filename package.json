@@ -15,6 +15,7 @@
     "@toast-ui/editor": "^3.2.2",
     "@uiw/react-md-editor": "^4.0.6",
     "axios": "^1.9.0",
+    "firebase": "^11.8.1",
     "framer-motion": "^12.11.0",
     "hangul-util": "^0.1.6",
     "inko": "^1.1.1",

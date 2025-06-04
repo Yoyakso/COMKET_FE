@@ -15,19 +15,11 @@ import { CreateTicketModal } from '@/components/ticketModal/CreateTicketModal';
 import { mapTicketFromResponse } from '@/utils/ticketMapper';
 import { TicketTemplate } from '@/types/ticketTemplate';
 import { TicketTemplateModal } from '@/components/ticketModal/TicketTemplateModal';
-
-interface ThreadMessage {
-  ticketId: number;
-  senderMemberId: number;
-  senderName: string;
-  content: string;
-  sentAt: string;
-  isCurrentUser: boolean;
-}
+import { Message } from '@/components/thread/threadChat/ThreadChat';
 
 export const ThreadPage = () => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
-  const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
+  const [threadMessages, setThreadMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState("")
   const token = localStorage.getItem("accessToken")
   const location = useLocation()
@@ -62,11 +54,15 @@ export const ThreadPage = () => {
     }
   }, [ticketId, projectName])
 
-  const handleMessage = useCallback((data: ThreadMessage | ThreadMessage[]) => {
+  const handleMessage = useCallback((data: Message | Message[]) => {
     const normalizedMessages = Array.isArray(data) ? data : [data]
+
     const processed = normalizedMessages.map((msg) => ({
-      ...msg,
-      isCurrentUser: msg.senderMemberId === memberId,
+      sentAt: msg.sentAt,
+      senderMemberId: String(msg.senderMemberId),
+      senderName: msg.senderName,
+      content: msg.content,
+      isCurrentUser: String(msg.senderMemberId) === String(memberId),
     }))
     setThreadMessages((prev) => {
       const seen = new Set(prev.map((m) => m.sentAt + m.senderMemberId))
@@ -104,8 +100,11 @@ export const ThreadPage = () => {
       sentAt: formatDateToServerFormat(new Date()),
     };
 
-    const uiMessage: ThreadMessage = {
-      ...messageToSend,
+    const uiMessage: Message = {
+      sentAt: messageToSend.sentAt,
+      senderMemberId: String(messageToSend.senderMemberId),
+      senderName: messageToSend.senderName,
+      content: messageToSend.content,
       isCurrentUser: true,
     };
 
@@ -217,4 +216,3 @@ export const ThreadPage = () => {
     </>
   );
 };
-
