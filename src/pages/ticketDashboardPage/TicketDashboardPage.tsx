@@ -138,9 +138,9 @@ export const TicketDashboardPage = () => {
       const updated = tickets.map(ticket =>
         ticket.id === newTicket.parentId
           ? {
-              ...ticket,
-              subtickets: [...(ticket.subtickets ?? []), newTicket],
-            }
+            ...ticket,
+            subtickets: [...(ticket.subtickets ?? []), newTicket],
+          }
           : ticket,
       );
       setTickets(updated);
@@ -277,7 +277,6 @@ export const TicketDashboardPage = () => {
                 )}
               </div>
 
-              {/* 기존 티켓 생성 버튼 */}
               <Button size="md" $variant="tealFilled" onClick={() => setIsTemplateModalOpen(true)}>
                 <span style={{ marginRight: '4px' }}>
                   <Plus width="14px" height="14px" />
@@ -346,7 +345,7 @@ export const TicketDashboardPage = () => {
 
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => {}}
+            onMouseEnter={() => { }}
             onMouseLeave={() => {
               if (!selectedTicket) setHoveredTicket(null);
             }}

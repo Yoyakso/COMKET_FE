@@ -1,7 +1,8 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import * as S from "./ProjectHeader.Style"
 import { Search } from "../common/search/Search"
 import { Dropdown, type DropdownOption } from "@/components/common/dropdown/Dropdown"
+import { useDebounce } from "@/utils/useDebounce"
 
 interface ProjectHeaderProps {
   projectCount: number
@@ -13,13 +14,18 @@ interface ProjectHeaderProps {
 export const ProjectHeader = ({ projectCount, onSearch, onCreateProject, onFilter }: ProjectHeaderProps) => {
   const [searchValue, setSearchValue] = useState("")
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
-
   const filterButtonRef = useRef<HTMLDivElement>(null)
-
+  const debouncedSearchValue = useDebounce(searchValue, 200)
   const filterOptions: DropdownOption[] = [
     { label: "전체 공개", value: "public", groupName: "공개 범위" },
     { label: "멤버 공개", value: "private", groupName: "공개 범위" },
   ]
+
+  useEffect(() => {
+    if (onSearch) {
+      onSearch(debouncedSearchValue)
+    }
+  }, [debouncedSearchValue])
 
   const handleFilterChange = (values: string | string[]) => {
     if (Array.isArray(values)) {
@@ -32,7 +38,6 @@ export const ProjectHeader = ({ projectCount, onSearch, onCreateProject, onFilte
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value)
-    onSearch(value)
   }
 
   return (
