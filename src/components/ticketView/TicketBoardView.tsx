@@ -15,13 +15,29 @@ const statusGroups = [
   { title: "OTHERS", key: "OTHERS", icon: <Layers size={16} /> }, // DROP / HOLD / BACKLOG
 ]
 
+const flattenTickets = (tickets: Ticket[]): Ticket[] => {
+  const result: Ticket[] = [];
+
+  const dfs = (ticket: Ticket) => {
+    result.push(ticket);
+    if (ticket.subtickets) {
+      ticket.subtickets.forEach(dfs);
+    }
+  };
+
+  tickets.forEach(dfs);
+  return result;
+};
+
 export const TicketBoardView = ({ ticketList, onTicketClick, onTicketDrop
 }: TicketBoardViewProps & { onTicketDrop: (ticketId: number, newStatus: string) => void }) => {
+  const flatTickets = flattenTickets(ticketList);
+
   const groupedTickets = {
-    TODO: ticketList.filter(t => t.status === 'TODO'),
-    IN_PROGRESS: ticketList.filter(t => t.status === 'IN_PROGRESS'),
-    DONE: ticketList.filter(t => t.status === 'DONE'),
-    OTHERS: ticketList.filter(t => ['DROP', 'HOLD', 'BACKLOG'].includes(t.status)),
+    TODO: flatTickets.filter(t => t.status === 'TODO'),
+    IN_PROGRESS: flatTickets.filter(t => t.status === 'IN_PROGRESS'),
+    DONE: flatTickets.filter(t => t.status === 'DONE'),
+    OTHERS: flatTickets.filter(t => ['DROP', 'HOLD', 'BACKLOG'].includes(t.status)),
   };
 
   return (
