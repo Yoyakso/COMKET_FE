@@ -5,6 +5,11 @@ let swRegistration: ServiceWorkerRegistration | null = null;
 
 /** FCM 권한 요청 + 토큰 발급(단 1회) */
 export const requestFcmPermission = async (): Promise<string | null> => {
+  if (typeof window === 'undefined' || !('Notification' in window)) {
+    console.warn('브라우저 환경이 아니거나 Notification API 사용 불가');
+    return null;
+  }
+
   try {
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
@@ -12,18 +17,18 @@ export const requestFcmPermission = async (): Promise<string | null> => {
       return null;
     }
 
-    /* (1) Service-Worker가 아직 없으면 한 번만 register */
+    /* Service-Worker가 아직 없으면 한 번만 register */
     if (!swRegistration) {
       swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     }
 
-    /* (2) 반드시 등록된 SW를 넘겨줘야 firebase가 push-scope SW를 또 생성하지 않음 */
+    /* 반드시 등록된 SW를 넘겨줘야 firebase가 push-scope SW를 또 생성하지 않음 */
     const token = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: swRegistration,
     });
 
-    console.log('📌 FCM token:', token);
+    console.log('FCM token:', token);
     return token;
   } catch (err) {
     console.error('FCM 토큰 발급 실패:', err);
