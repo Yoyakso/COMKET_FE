@@ -28,16 +28,44 @@ interface TicketDetailPanelProps {
   ticket: Ticket
   projectName: string
   onClose: () => void
-  onNavigate?: (direction: "prev" | "next") => void
+  ticketList: Ticket[]
+  setTicket: (ticket: Ticket) => void
 }
 
-export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: TicketDetailPanelProps) => {
+
+export const TicketDetailPanel = ({ ticket, projectName, onClose, ticketList, setTicket }: TicketDetailPanelProps) => {
   const [showThread, setShowThread] = useState(false)
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
   const modalRef = useRef<HTMLDivElement>(null)
   const writerColor = getColorFromString(ticket.creator_member.name)
   const assigneeColor = getColorFromString(ticket.assignee_member.name)
   useOutsideClick(modalRef, onClose);
+
+  function flattenTickets(tickets: Ticket[]): Ticket[] {
+    const result: Ticket[] = []
+    for (const ticket of tickets) {
+      result.push(ticket)
+      if (ticket.subtickets) {
+        result.push(...flattenTickets(ticket.subtickets))
+      }
+    }
+    return result
+  }
+
+  const flatList = flattenTickets(ticketList)
+  const currentIndex = flatList.findIndex(t => t.id === ticket.id)
+
+  const goPrev = () => {
+    if (currentIndex > 0) {
+      setTicket(flatList[currentIndex - 1])
+    }
+  }
+
+  const goNext = () => {
+    if (currentIndex < flatList.length - 1) {
+      setTicket(flatList[currentIndex + 1])
+    }
+  }
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp)
@@ -167,15 +195,16 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, onNavigate }: 
       </S.ContentScrollArea>
 
       <S.PanelFooter>
-        <S.Button $variant="outline" $size="sm" onClick={() => onNavigate?.("prev")}>
+        <S.Button $variant="outline" $size="sm" onClick={goPrev}>
           <ChevronLeft width={16} height={16} />
           이전
         </S.Button>
-        <S.Button $variant="outline" $size="sm" onClick={() => onNavigate?.("next")}>
+        <S.Button $variant="outline" $size="sm" onClick={goNext}>
           다음
           <ChevronRight width={16} height={16} />
         </S.Button>
       </S.PanelFooter>
+
     </S.PanelContainer>
   )
 }

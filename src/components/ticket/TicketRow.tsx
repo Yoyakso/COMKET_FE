@@ -1,6 +1,5 @@
 import * as S from './TicketRow.Style';
 import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { AvatarWithName } from './AvatarWithName';
 import { Ticket } from '@/types/ticket';
 import { CheckBox } from '../common/checkbox/CheckBox';
@@ -159,6 +158,7 @@ export const TicketRow = ({
             toggleSingle={toggleSingle}
             toggleWithSubtickets={toggleWithSubtickets}
             onTicketClick={onTicketClick}
+            onInfoClick={onInfoClick}
             onTicketHover={onTicketHover}
             projectName={projectName}
             depth={depth + 1}

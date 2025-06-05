@@ -25,6 +25,7 @@ import { Status } from '@/types/filter';
 import { AlarmPopover } from '@/components/alarm/AlarmPopover';
 import { getTicketAlarms, TicketAlarm } from '@/api/Alarm';
 import { TicketTemplate } from '@/types/ticketTemplate';
+import { useMemo } from 'react';
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
@@ -46,6 +47,20 @@ export const TicketDashboardPage = () => {
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
   const [alarms, setAlarms] = useState<TicketAlarm[]>([]);
   const [alarmTicketIds, setAlarmTicketIds] = useState<Set<number>>(new Set());
+
+  const flattenTickets = (tickets: Ticket[]): Ticket[] => {
+    const result: Ticket[] = [];
+    const dfs = (ticket: Ticket) => {
+      result.push(ticket);
+      if (ticket.subtickets) {
+        ticket.subtickets.forEach(dfs);
+      }
+    };
+    tickets.forEach(dfs);
+    return result;
+  };
+
+  const flattenedTickets = useMemo(() => flattenTickets(tickets), [tickets]);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -243,6 +258,7 @@ export const TicketDashboardPage = () => {
     setSelectedTicket(ticket);
     setHoveredTicket(null);
   };
+
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -379,13 +395,14 @@ export const TicketDashboardPage = () => {
               ticket={selectedTicket ?? hoveredTicket}
               projectName={projectName}
               onClose={() => {
-                if (selectedTicket) {
-                  setSelectedTicket(null);
-                } else {
-                  setHoveredTicket(null);
-                }
+                if (selectedTicket) setSelectedTicket(null);
+                else setHoveredTicket(null);
               }}
-              onNavigate={handleNavigateTicket}
+              ticketList={flattenedTickets}
+              setTicket={(ticket) => {
+                setSelectedTicket(ticket);
+                setHoveredTicket(null);
+              }}
             />
           </S.PanelWrapper>
         )}
