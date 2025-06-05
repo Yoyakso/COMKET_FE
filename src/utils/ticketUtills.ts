@@ -4,10 +4,15 @@ export function updateNestedTickets(
   tickets: Ticket[],
   updater: (t: Ticket) => Ticket
 ): Ticket[] {
-  return tickets.map((t) => ({
-    ...updater(t),
-    subtickets: t.subtickets?.map(updater),
-  }));
+  return tickets.map((t) => {
+    const updatedTicket = updater(t);
+    return {
+      ...updatedTicket,
+      subtickets: updatedTicket.subtickets
+        ? updateNestedTickets(updatedTicket.subtickets, updater)
+        : undefined,
+    };
+  });
 }
 
 export function deleteNestedTickets(
