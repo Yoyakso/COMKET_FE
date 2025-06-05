@@ -21,3 +21,14 @@ export function deleteNestedTickets(
       subtickets: t.subtickets?.filter((st) => !idsToDelete.includes(st.id)),
     }));
 }
+
+export const findTicketById = (tickets: Ticket[], id: number): Ticket | undefined => {
+  for (const t of tickets) {
+    if (t.id === id) return t;
+    if (t.subtickets && t.subtickets.length > 0) {
+      const found = findTicketById(t.subtickets, id);
+      if (found) return found;
+    }
+  }
+  return undefined;
+};
