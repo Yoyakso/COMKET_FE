@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { ProjectHeader } from '@/components/project/ProjectHeader';
@@ -141,12 +140,12 @@ export const ProjectPage = () => {
         prev.map(p =>
           p.id === projectId
             ? {
-                ...p,
-                name: updatedData.name,
-                description: updatedData.description,
-                tag: updatedData.tags.join(', '),
-                visibility: updatedData.isPublic ? '전체 공개' : '멤버 공개',
-              }
+              ...p,
+              name: updatedData.name,
+              description: updatedData.description,
+              tag: updatedData.tags.join(', '),
+              visibility: updatedData.isPublic ? '전체 공개' : '멤버 공개',
+            }
             : p,
         ),
       );

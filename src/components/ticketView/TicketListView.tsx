@@ -40,13 +40,16 @@ export const TicketListView = ({
   const [searchValue, setSearchValue] = useState('');
 
   const filteredTickets = tickets.filter(ticket => {
+    const keyword = searchValue.toLowerCase();
+
     const isPriorityMatch =
       selectedPriorities.length === 0 || selectedPriorities.includes(ticket.priority);
     const isStatusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(ticket.status);
     const isTypeMatch = selectedTypes.length === 0 || selectedTypes.includes(ticket.type);
     const isSearchMatch =
-      typeof ticket.title === 'string' &&
-      ticket.title.toLowerCase().includes(searchValue.toLowerCase());
+      ticket.title?.toLowerCase().includes(keyword) ||
+      ticket.type?.toLowerCase().includes(keyword) ||
+      ticket.assignee_member?.name?.toLowerCase().includes(keyword);
 
     return isPriorityMatch && isStatusMatch && isTypeMatch && isSearchMatch;
   });

@@ -12,7 +12,7 @@ import { Ticket } from '@/types/ticket';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
 import { getProjectById, getProjectMembers } from '@/api/Project';
-import { getTicketsByProjectName, getTicketById } from '@/api/Ticket';
+import { getTicketsByProjectName } from '@/api/Ticket';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { MemberData } from '@/types/member';
 import { TicketDropdownStore } from '@/stores/ticketStore';
@@ -25,6 +25,7 @@ import { Status } from '@/types/filter';
 import { AlarmPopover } from '@/components/alarm/AlarmPopover';
 import { getTicketAlarms, TicketAlarm } from '@/api/Alarm';
 import { TicketTemplate } from '@/types/ticketTemplate';
+import { useMemo } from 'react';
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
@@ -46,6 +47,20 @@ export const TicketDashboardPage = () => {
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
   const [alarms, setAlarms] = useState<TicketAlarm[]>([]);
   const [alarmTicketIds, setAlarmTicketIds] = useState<Set<number>>(new Set());
+
+  const flattenTickets = (tickets: Ticket[]): Ticket[] => {
+    const result: Ticket[] = [];
+    const dfs = (ticket: Ticket) => {
+      result.push(ticket);
+      if (ticket.subtickets) {
+        ticket.subtickets.forEach(dfs);
+      }
+    };
+    tickets.forEach(dfs);
+    return result;
+  };
+
+  const flattenedTickets = useMemo(() => flattenTickets(tickets), [tickets]);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -138,9 +153,9 @@ export const TicketDashboardPage = () => {
       const updated = tickets.map(ticket =>
         ticket.id === newTicket.parentId
           ? {
-              ...ticket,
-              subtickets: [...(ticket.subtickets ?? []), newTicket],
-            }
+            ...ticket,
+            subtickets: [...(ticket.subtickets ?? []), newTicket],
+          }
           : ticket,
       );
       setTickets(updated);
@@ -149,14 +164,6 @@ export const TicketDashboardPage = () => {
     }
 
     setIsTemplateModalOpen(false);
-  };
-
-  const handleClosePanel = () => {
-    setSelectedTicket(null);
-  };
-
-  const handleTicketHover = (ticket: Ticket | null) => {
-    setHoveredTicket(ticket);
   };
 
   const handleNavigateTicket = (direction: 'prev' | 'next') => {
@@ -190,11 +197,41 @@ export const TicketDashboardPage = () => {
     }
   };
 
+  const findTicketById = (tickets: Ticket[], id: number): Ticket | undefined => {
+    for (const ticket of tickets) {
+      if (ticket.id === id) return ticket;
+      if (ticket.subtickets) {
+        const found = findTicketById(ticket.subtickets, id);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  };
+
+  const updateTicketStatusRecursive = (
+    tickets: Ticket[],
+    ticketId: number,
+    newStatus: Status
+  ): Ticket[] => {
+    return tickets.map(ticket => {
+      if (ticket.id === ticketId) {
+        return { ...ticket, status: newStatus };
+      }
+      if (ticket.subtickets && ticket.subtickets.length > 0) {
+        return {
+          ...ticket,
+          subtickets: updateTicketStatusRecursive(ticket.subtickets, ticketId, newStatus),
+        };
+      }
+      return ticket;
+    });
+  };
+
   const handleTicketDrop = async (ticketId: number, newStatus: Status) => {
     if (!projectName) return;
 
     try {
-      const ticket = tickets.find(t => t.id === ticketId);
+      const ticket = findTicketById(tickets, ticketId);
       if (!ticket) throw new Error('티켓 정보를 찾을 수 없습니다.');
 
       await editSingleTicket(ticketId, projectName, {
@@ -208,7 +245,10 @@ export const TicketDashboardPage = () => {
         assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
         parent_ticket_id: ticket.parentId ?? null,
       });
-      TicketDropdownStore.getState().updateTicketStatus(ticketId, newStatus);
+      // TicketDropdownStore.getState().updateTicketStatus(ticketId, newStatus);
+      const updatedTickets = updateTicketStatusRecursive(tickets, ticketId, newStatus);
+      setTickets(updatedTickets);
+      TicketDropdownStore.getState().setTickets(updatedTickets);
     } catch (e) {
       console.error('드래그 상태 변경 실패:', e);
     }
@@ -218,6 +258,7 @@ export const TicketDashboardPage = () => {
     setSelectedTicket(ticket);
     setHoveredTicket(null);
   };
+
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -277,7 +318,6 @@ export const TicketDashboardPage = () => {
                 )}
               </div>
 
-              {/* 기존 티켓 생성 버튼 */}
               <Button size="md" $variant="tealFilled" onClick={() => setIsTemplateModalOpen(true)}>
                 <span style={{ marginRight: '4px' }}>
                   <Plus width="14px" height="14px" />
@@ -346,7 +386,7 @@ export const TicketDashboardPage = () => {
 
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => {}}
+            onMouseEnter={() => { }}
             onMouseLeave={() => {
               if (!selectedTicket) setHoveredTicket(null);
             }}
@@ -355,13 +395,14 @@ export const TicketDashboardPage = () => {
               ticket={selectedTicket ?? hoveredTicket}
               projectName={projectName}
               onClose={() => {
-                if (selectedTicket) {
-                  setSelectedTicket(null);
-                } else {
-                  setHoveredTicket(null);
-                }
+                if (selectedTicket) setSelectedTicket(null);
+                else setHoveredTicket(null);
               }}
-              onNavigate={handleNavigateTicket}
+              ticketList={flattenedTickets}
+              setTicket={(ticket) => {
+                setSelectedTicket(ticket);
+                setHoveredTicket(null);
+              }}
             />
           </S.PanelWrapper>
         )}

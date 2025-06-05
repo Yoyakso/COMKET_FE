@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import * as S from './TicketToolbar.Style';
 import { Filter } from '@/components/common/dropdown/Filter';
 import { Search } from '@/components/common/search/Search';
@@ -10,8 +10,8 @@ import { TicketType, Status } from '@/types/filter';
 import { TYPE, STATUS } from '@/constants/filterData';
 
 interface TicketToolbarProps {
-  selectedTicketIds: number[]; //체크된 티켓들
-  onDeleteTickets: () => void; //삭제 핸들러 (부모에서 전달)
+  selectedTicketIds: number[];
+  onDeleteTickets: () => void;
   onChangeType: (newType: string) => void;
   onChangeStatus: (newStatus: string) => void;
   searchValue: string;
