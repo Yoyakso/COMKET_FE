@@ -2,8 +2,7 @@ import { ChevronDown, COMKET, InfoIcon, QuestionIcon } from '@assets/icons';
 import { useNavigate } from 'react-router-dom';
 import * as S from './GlobalNavBar.Style';
 import { WorkspaceSelector } from './WorkspaceSelector';
-import { NavProfile } from './NavProfile';
-import { useUserStore } from '@/stores/userStore';
+import { Search } from '@/components/common/search/Search';
 
 type GNBVariant = 'default' | 'white' | 'workspace';
 
@@ -13,8 +12,6 @@ interface GNBProps {
 
 export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
   const navigate = useNavigate();
-  const userName = useUserStore(s => s.name);
-  const userProfile = useUserStore(s => s.profileFileUrl);
 
   const handleLoginButton = () => {
     navigate('/login');
@@ -55,13 +52,14 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
         </S.AuthContainer>
       )}
 
-      {variant === 'workspace' && (
-        <S.NavProfileContainer onClick={() => navigate('/profile')}>
-          <NavProfile name={userName} defaultImage={userProfile} />
-        </S.NavProfileContainer>
-      )}
+      {variant === 'workspace' && <S.SearchContainter></S.SearchContainter>}
 
-      {variant !== 'default' && <></>}
+      {variant !== 'default' && (
+        <S.IconContainer>
+          <InfoIcon />
+          <QuestionIcon />
+        </S.IconContainer>
+      )}
     </S.NavbarContainer>
   );
 };
