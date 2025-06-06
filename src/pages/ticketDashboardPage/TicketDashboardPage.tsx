@@ -1,5 +1,5 @@
 import * as S from './TicketDashboardPage.Style';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { TicketListView } from '@/components/ticketView/TicketListView';
 import { TicketBoardView } from '@/components/ticketView/TicketBoardView';
@@ -11,7 +11,7 @@ import { TicketDetailPanel } from '@components/ticketDetailPanel/TicketDetailPan
 import { Ticket } from '@/types/ticket';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
-import { getProjectById, getProjectMembers } from '@/api/Project';
+import { getProjectById, getProjectMembers, getAllProjects, getMyProjects } from '@/api/Project';
 import { getTicketsByProjectName } from '@/api/Ticket';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { MemberData } from '@/types/member';
@@ -26,6 +26,7 @@ import { AlarmPopover } from '@/components/alarm/AlarmPopover';
 import { getTicketAlarms, TicketAlarm } from '@/api/Alarm';
 import { TicketTemplate } from '@/types/ticketTemplate';
 import { useMemo } from 'react';
+import { toast } from 'react-toastify';
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
@@ -43,6 +44,7 @@ export const TicketDashboardPage = () => {
   const { selectedIds, clearSelection } = TicketSelectionStore();
   const [hoveredTicket, setHoveredTicket] = useState<Ticket | null>(null);
   const navigate = useNavigate();
+  const hasShownToast = useRef(false);
   const [members, setMembers] = useState<MemberData[]>([]);
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
   const [alarms, setAlarms] = useState<TicketAlarm[]>([]);
@@ -75,18 +77,35 @@ export const TicketDashboardPage = () => {
   }, [workspaceName, projectId]);
 
   useEffect(() => {
-    const fetchProjectName = async () => {
-      if (!projectId) return;
+    if (!projectId || !workspaceName || hasShownToast.current) return;
+
+    const fetchProjectInfoAndCheckAccess = async () => {
       try {
+        // 1. 프로젝트 정보 가져오기
         const response = await getProjectById(workspaceName, projectId);
         setProjectName(response.name);
         setProjectDescription(response.description);
+
+        // 2. 프로젝트 접근 권한 확인
+        const [all, mine] = await Promise.all([getAllProjects(workspaceName), getMyProjects()]);
+
+        const allProject = all.find(p => String(p.id) === String(projectId));
+        const isMine = mine.some(p => String(p.id) === String(projectId));
+
+        if (allProject && allProject.isPublic && !isMine) {
+          toast.info('이 프로젝트는 전체공개 상태이며, 조회만 가능합니다.', {
+            position: 'top-center',
+            autoClose: 4000,
+          });
+          hasShownToast.current = true;
+        }
       } catch (error) {
-        console.error('프로젝트 이름 조회 실패:', error);
+        console.error('프로젝트 정보 또는 권한 확인 실패:', error);
       }
     };
-    fetchProjectName();
-  }, [projectId]);
+
+    fetchProjectInfoAndCheckAccess();
+  }, [projectId, workspaceName]);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -153,9 +172,9 @@ export const TicketDashboardPage = () => {
       const updated = tickets.map(ticket =>
         ticket.id === newTicket.parentId
           ? {
-            ...ticket,
-            subtickets: [...(ticket.subtickets ?? []), newTicket],
-          }
+              ...ticket,
+              subtickets: [...(ticket.subtickets ?? []), newTicket],
+            }
           : ticket,
       );
       setTickets(updated);
@@ -211,7 +230,7 @@ export const TicketDashboardPage = () => {
   const updateTicketStatusRecursive = (
     tickets: Ticket[],
     ticketId: number,
-    newStatus: Status
+    newStatus: Status,
   ): Ticket[] => {
     return tickets.map(ticket => {
       if (ticket.id === ticketId) {
@@ -386,7 +405,7 @@ export const TicketDashboardPage = () => {
 
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => { }}
+            onMouseEnter={() => {}}
             onMouseLeave={() => {
               if (!selectedTicket) setHoveredTicket(null);
             }}
@@ -399,7 +418,7 @@ export const TicketDashboardPage = () => {
                 else setHoveredTicket(null);
               }}
               ticketList={flattenedTickets}
-              setTicket={(ticket) => {
+              setTicket={ticket => {
                 setSelectedTicket(ticket);
                 setHoveredTicket(null);
               }}

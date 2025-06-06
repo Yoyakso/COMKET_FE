@@ -1,14 +1,12 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useUserStore } from '@/stores/userStore';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { PortalDropdown } from '@/utils/PortalDropdown';
 import * as S from './WorkspaceSelectorDropdown.Style';
-import { fetchMyWorkspaces, exitWorkspace } from '@/api/Workspace';
-import { getWorkspaceMembers } from '@/api/Member';
+import { fetchMyWorkspaces } from '@/api/Workspace';
 import { logOut } from '@/api/Oauth';
-import { WorkspaceExit } from './WorkspaceExit';
 import { ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
@@ -26,9 +24,7 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
 
   const [showSub, setShowSub] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
   const { clearUser } = useUserStore();
-  const fetchedRef = useRef(false);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -41,16 +37,6 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
       setMyWorkspaces(list);
     })();
   }, [showSub, setMyWorkspaces]);
-
-  useEffect(() => {
-    if (!email || !workspaceId) return;
-
-    (async () => {
-      const members = await getWorkspaceMembers(workspaceId);
-      const me = members.find(m => m.email === email);
-      setIsOwner(me?.positionType === 'OWNER');
-    })();
-  }, [email, workspaceId]);
 
   const handleSelect = (ws: (typeof myWorkspaces)[number]) => {
     setWorkspaceStore({
@@ -73,10 +59,12 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
       toast.error('로그아웃에 실패했습니다.');
     }
   };
+
   const enter = () => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
     setShowSub(true);
   };
+
   const leave = () => {
     hideTimer.current = setTimeout(() => setShowSub(false), 120);
   };

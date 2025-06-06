@@ -9,6 +9,7 @@ import { getMyProfile } from '@/api/Member';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useUserStore } from '@/stores/userStore';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?url';
+import { NotificationPermissionBanner } from '@/components/common/banner/NotificationPermissionBanner';
 
 export const WorkspacePage = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export const WorkspacePage = () => {
   const [selectedSlug, setSelectedSlug] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const workspaceId = useWorkspaceStore.getState().workspaceId;
+  const [showBanner, setShowBanner] = useState(false);
   // const myProfile = useWorkspaceStore.getState().getMyProfileFor(workspaceId);
 
   const cardVariants = {
@@ -29,6 +31,19 @@ export const WorkspacePage = () => {
       },
     },
   };
+
+  useEffect(() => {
+    const alreadyAsked = localStorage.getItem('fcmPermissionAsked');
+
+    if (
+      Notification.permission !== 'granted' &&
+      Notification.permission !== 'denied' &&
+      !alreadyAsked
+    ) {
+      setShowBanner(true);
+      localStorage.setItem('fcmPermissionAsked', 'true');
+    }
+  }, []);
 
   interface Workspace {
     id: string;
@@ -98,6 +113,7 @@ export const WorkspacePage = () => {
 
   return (
     <S.Container>
+      {showBanner && <NotificationPermissionBanner />}
       {isLoading ? null : (
         <MotionCard variants={cardVariants} initial="hidden" animate="visible">
           <S.Title>워크스페이스 선택</S.Title>

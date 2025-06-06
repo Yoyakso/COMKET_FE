@@ -9,13 +9,9 @@ import {
   KeyIcon,
   AlarmIcon,
 } from '@/assets/icons';
-import { NavProfile } from './NavProfile';
-import { useUserStore } from '@/stores/userStore';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 
 export const SettingNavBar = () => {
-  const name = useUserStore(state => state.name);
-  const profileImg = useUserStore(state => state.profileFileUrl);
   const workspaceSlug = useWorkspaceStore(state => state.workspaceSlug);
 
   const sections = [
@@ -72,9 +68,6 @@ export const SettingNavBar = () => {
           </S.SectionContainer>
         ))}
       </S.NavContent>
-      <S.NavProfileContainer>
-        <NavProfile name={name} defaultImage={profileImg} />
-      </S.NavProfileContainer>
     </S.NavContainer>
   );
 };

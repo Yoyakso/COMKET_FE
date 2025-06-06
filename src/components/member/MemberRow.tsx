@@ -8,18 +8,15 @@ import { formatDate } from '@/utils/dateFormat';
 import { deleteWorkspaceMember, updateWorkspaceMember } from '@/api/Member';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { toast } from 'react-toastify';
-import { MemberDetailPanel } from '@/components/memberDetailPanel/MemberDetailPanel';
 
 interface MemberRowProps {
   member: MemberData;
-  onUpdateMember: (email: string, newRole: 'OWNER' | 'ADMIN' | 'MEMBER') => void;
+  onUpdateMember: (email: string, newRole: 'ADMIN' | 'MEMBER') => void;
   onClickDetail?: (memberId: number) => void;
 }
 
 const translateRole = (positionType: string) => {
   switch (positionType) {
-    case 'OWNER':
-      return '워크스페이스 소유자';
     case 'ADMIN':
       return '워크스페이스 관리자';
     case 'MEMBER':
@@ -43,7 +40,6 @@ const translateState = (state: string) => {
 };
 
 const roleMap = {
-  OWNER: '워크스페이스 소유자',
   ADMIN: '워크스페이스 관리자',
   MEMBER: '일반 멤버',
 } as const;
@@ -88,7 +84,6 @@ export const MemberRow = ({ member, onUpdateMember, onClickDetail }: MemberRowPr
     };
   }, []);
 
-  console.log('멤버:', member);
   const toggleMemberDeleteDropdown = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
     setShowRoleDropdown(false);
@@ -109,15 +104,14 @@ export const MemberRow = ({ member, onUpdateMember, onClickDetail }: MemberRowPr
     try {
       await updateWorkspaceMember(workspaceId, {
         workspace_member_email: member.email,
-        position_type: newPositionType as 'OWNER' | 'ADMIN' | 'MEMBER',
+        position_type: newPositionType as 'ADMIN' | 'MEMBER',
         state: member.state as 'ACTIVE' | 'INACTIVE' | 'DELETED',
       });
-      console.log(`역할이 ${newPositionType}로 변경됨`);
-      onUpdateMember(member.email, newPositionType as 'OWNER' | 'ADMIN' | 'MEMBER');
+      onUpdateMember(member.email, newPositionType as 'ADMIN' | 'MEMBER');
       toast.success('역할 변경이 완료됐습니다.');
     } catch (error) {
       console.error('역할 변경 실패:', error);
-      toast.error('역할 변경에 실패했습니다. 다시 시도해주세요');
+      toast.error('역할 변경에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -125,7 +119,6 @@ export const MemberRow = ({ member, onUpdateMember, onClickDetail }: MemberRowPr
     e.stopPropagation();
     setIsRemoveModalOpen(true);
     setActiveDropdownId(null);
-    console.log('Opening remove modal for:', member.name);
   };
 
   const closeRemoveModal = () => {
@@ -135,7 +128,6 @@ export const MemberRow = ({ member, onUpdateMember, onClickDetail }: MemberRowPr
   const handleRemoveMember = async () => {
     try {
       await deleteWorkspaceMember(workspaceId, member.email);
-      console.log(`멤버 ${member.name}(${member.email}) 제거 완료`);
       toast.success('멤버 제거를 완료했습니다.');
       setIsRemoveModalOpen(false);
     } catch (error) {
@@ -151,7 +143,7 @@ export const MemberRow = ({ member, onUpdateMember, onClickDetail }: MemberRowPr
             <S.UserAvatar color={color}>{member.name?.[0] ?? '?'}</S.UserAvatar>
             <S.UserName
               onClick={() => {
-                onClickDetail(member.workspaceMemberid);
+                onClickDetail?.(member.workspaceMemberid);
               }}
               style={{ cursor: 'pointer' }}
             >
@@ -171,11 +163,7 @@ export const MemberRow = ({ member, onUpdateMember, onClickDetail }: MemberRowPr
                   <S.RoleDropdownItem
                     key={role}
                     $active={translateRole(member.positionType) === role}
-                    onClick={() => {
-                      setCurrentRole(role);
-                      setShowRoleDropdown(false);
-                      handleRoleChange(role);
-                    }}
+                    onClick={() => handleRoleChange(role)}
                   >
                     {role}
                   </S.RoleDropdownItem>
