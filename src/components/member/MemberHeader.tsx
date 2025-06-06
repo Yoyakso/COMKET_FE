@@ -12,7 +12,7 @@ interface MemberHeaderProps {
   onUpdateMemberList?: (members: MemberData[]) => void;
 }
 
-const allFilterValues = ['owner', 'admin', 'member', 'active', 'inactive', 'removed'];
+const allFilterValues = ['admin', 'member', 'active', 'inactive', 'removed'];
 
 export const MemberHeader = ({
   memberCount,
@@ -26,17 +26,14 @@ export const MemberHeader = ({
   const filterButtonRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const roles = allFilterValues.filter(v => ['owner', 'admin', 'member'].includes(v));
+    const roles = allFilterValues.filter(v => ['admin', 'member'].includes(v));
     const states = allFilterValues.filter(v => ['active', 'inactive', 'removed'].includes(v));
-
     onFilter?.({ roles, states });
   }, []);
 
   const filterOptions: DropdownOption[] = [
-    { label: '워크스페이스 소유자', value: 'owner', groupName: '역할' },
     { label: '워크스페이스 관리자', value: 'admin', groupName: '역할' },
     { label: '일반 멤버', value: 'member', groupName: '역할' },
-
     { label: '활성', value: 'active', groupName: '계정 상태' },
     { label: '비활성', value: 'inactive', groupName: '계정 상태' },
     { label: '제거', value: 'removed', groupName: '계정 상태' },
@@ -50,6 +47,7 @@ export const MemberHeader = ({
   const openInviteModal = () => {
     setInviteModalOpen(true);
   };
+
   const closeInviteModal = () => {
     setInviteModalOpen(false);
   };
@@ -58,7 +56,7 @@ export const MemberHeader = ({
     if (!Array.isArray(values)) return;
 
     setSelectedFilters(values);
-    const roles = values.filter(v => ['owner', 'admin', 'member'].includes(v));
+    const roles = values.filter(v => ['admin', 'member'].includes(v));
     const states = values.filter(v => ['active', 'inactive', 'removed'].includes(v));
 
     if (onFilter) {

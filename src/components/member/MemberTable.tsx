@@ -7,7 +7,7 @@ import { MemberDetailPanel } from '@/components/memberDetailPanel/MemberDetailPa
 
 interface MemberTableProps {
   members: MemberData[];
-  onUpdateMember: (email: string, newRole: 'OWNER' | 'ADMIN' | 'MEMBER') => void;
+  onUpdateMember: (email: string, newRole: 'ADMIN' | 'MEMBER') => void;
 }
 
 type SortField = 'name' | 'email' | 'positionType' | 'state' | 'updatedAt' | 'createdAt';

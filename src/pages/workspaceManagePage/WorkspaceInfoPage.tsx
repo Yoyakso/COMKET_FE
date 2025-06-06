@@ -9,7 +9,6 @@ import { WorkspaceDelete } from '@/components/workspace/WorkspaceDelete';
 import { WorkspaceExit } from '@/components/workspace/WorkspaceExit';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMyWorkspaces, updateWorkspace, deleteWorkspace, exitWorkspace } from '@api/Workspace';
-import { getWorkspaceMembers } from '@api/Member';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useUserStore } from '@/stores/userStore';
 import { toast } from 'react-toastify';
@@ -21,7 +20,7 @@ export const WorkspaceInfoPage = () => {
   const profileFileUrl = useWorkspaceStore(s => s.profileFileUrl);
   const setProfileFileUrl = useWorkspaceStore(s => s.setProfileFileUrl);
   const setWorkspaceStore = useWorkspaceStore.getState().setWorkspaceStore;
-  const email = useUserStore(s => s.email);
+  const navigate = useNavigate();
 
   const [workspace, setWorkspace] = useState<any>(null);
   const [description, setDescription] = useState('');
@@ -31,10 +30,8 @@ export const WorkspaceInfoPage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isExitModalOpen, setExitModalOpen] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
 
   const isValid = description.trim() !== '';
-  const navigate = useNavigate();
 
   const fetchWorkspaceInfo = async () => {
     const res = await fetchMyWorkspaces();
@@ -63,15 +60,6 @@ export const WorkspaceInfoPage = () => {
     }
     fetchWorkspaceInfo();
   }, [workspaceSlug]);
-
-  useEffect(() => {
-    if (!workspaceId || !email) return;
-    (async () => {
-      const members = await getWorkspaceMembers(workspaceId);
-      const me = members.find((m: any) => m.email === email);
-      setIsOwner((me?.positionType ?? '').toUpperCase() === 'OWNER');
-    })();
-  }, [workspaceId, email]);
 
   const handleImageSelect = ({
     file_id,
@@ -114,7 +102,7 @@ export const WorkspaceInfoPage = () => {
       navigate('/workspace');
     } catch (error: any) {
       if (error?.response?.status === 403) {
-        toast.error('삭제 권한이 없습니다. OWNER만 삭제할 수 있습니다.');
+        toast.error('삭제 권한이 없습니다.');
       } else {
         toast.error('워크스페이스 삭제에 실패했습니다.');
       }
@@ -249,7 +237,6 @@ export const WorkspaceInfoPage = () => {
 
       {isExitModalOpen && (
         <WorkspaceExit
-          isOwner={isOwner}
           onClose={() => setExitModalOpen(false)}
           onExit={async () => {
             try {

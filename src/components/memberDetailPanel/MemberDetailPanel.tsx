@@ -41,8 +41,6 @@ export const MemberDetailPanel = ({ memberId, onClose }: MemberDetailPanelProps)
 
   const getKoreanRoleLabel = (positionType: string) => {
     switch (positionType) {
-      case 'OWNER':
-        return '워크스페이스 소유자';
       case 'ADMIN':
         return '워크스페이스 관리자';
       case 'MEMBER':

@@ -13,9 +13,10 @@ export const MemberPage = () => {
   const [members, setMembers] = useState<MemberData[]>([]);
   const [filteredMembers, setFilteredMembers] = useState<MemberData[]>([]);
   const [activeFilter, setActiveFilter] = useState<{ roles: string[]; states: string[] }>({
-    roles: ['owner', 'admin', 'member'],
+    roles: ['admin', 'member'],
     states: ['active', 'inactive', 'deleted'],
   });
+
   const workspaceId = useWorkspaceStore(state => state.workspaceId);
 
   useEffect(() => {
@@ -47,9 +48,8 @@ export const MemberPage = () => {
 
   useEffect(() => {
     if (members.length > 0) {
-      const defaultRoles = ['owner', 'admin', 'member'];
+      const defaultRoles = ['admin', 'member'];
       const defaultStates = ['active', 'inactive', 'deleted'];
-
       handleFilter({ roles: defaultRoles, states: defaultStates });
     }
   }, [members]);
@@ -61,17 +61,6 @@ export const MemberPage = () => {
       setMembers([]);
     }
   };
-
-  // const handleFilter = ({ roles, states }: { roles: string[]; states: string[] }) => {
-  //   setActiveFilter({ roles, states });
-
-  //   const filtered = members.filter(member => {
-  //     const roleMatch = roles.includes(member.positionType.toLowerCase());
-  //     const stateMatch = states.includes(member.state.toLowerCase());
-  //     return roleMatch && stateMatch;
-  //   });
-  //   setFilteredMembers(filtered);
-  // };
 
   const finalFilteredMembers = filteredMembers.filter(member => {
     const nameMatch = member.name?.includes(searchQuery);
@@ -85,7 +74,7 @@ export const MemberPage = () => {
     setSearchQuery(query);
   };
 
-  const handleMemberUpdate = (email: string, newRole: 'OWNER' | 'ADMIN' | 'MEMBER') => {
+  const handleMemberUpdate = (email: string, newRole: 'ADMIN' | 'MEMBER') => {
     const updated = members.map(m => (m.email === email ? { ...m, positionType: newRole } : m));
     setMembers(updated);
 
