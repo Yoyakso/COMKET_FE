@@ -43,8 +43,8 @@ export const MemberTable = ({ members, onUpdateMember }: MemberTableProps) => {
 
     if (!sortField) return 0;
 
-    let valueA = '';
-    let valueB = '';
+    let valueA: string | number = '';
+    let valueB: string | number = '';
     switch (sortField) {
       case 'name':
         valueA = a.name;
@@ -55,20 +55,21 @@ export const MemberTable = ({ members, onUpdateMember }: MemberTableProps) => {
         valueB = b.email;
         break;
       case 'positionType':
-        valueA = a.positionType;
-        valueB = b.positionType;
+        const roleRank = { OWNER: 0, ADMIN: 1, MEMBER: 2 } as const;
+        valueA = roleRank[a.positionType] ?? 99;
+        valueB = roleRank[b.positionType] ?? 99;
         break;
       case 'state':
         valueA = a.state;
         valueB = b.state;
         break;
       case 'createdAt':
-        valueA = a.createdAt;
-        valueB = b.createdAt;
+        valueA = new Date(a.createdAt).getTime();
+        valueB = new Date(b.createdAt).getTime();
         break;
       case 'updatedAt':
-        valueA = a.updatedAt;
-        valueB = b.updatedAt;
+        valueA = new Date(a.updatedAt).getTime();
+        valueB = new Date(b.updatedAt).getTime();
         break;
       default:
         return 0;
