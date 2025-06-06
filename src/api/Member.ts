@@ -34,10 +34,7 @@ export const getWorkspaceMembers = async workspaceId => {
  * 내 프로필 정보 수정
  */
 export interface UpdateProfileParams {
-  real_name: string;
-  department: string;
-  role: string;
-  responsibility: string;
+  full_name: string;
   profile_file_id: number | null;
 }
 
@@ -57,6 +54,13 @@ export const updateProfile = async (params: UpdateProfileParams) => {
 
   return response.data;
 };
+
+export interface MyProfileResponse {
+  email: string;
+  member_id: number;
+  full_name: string;
+  profile_file_url: string | null;
+}
 
 export const getMyProfile = async () => {
   const token = localStorage.getItem('accessToken');

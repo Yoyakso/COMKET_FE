@@ -145,10 +145,7 @@ export const ProfilePage = () => {
       }
 
       await updateProfile({
-        real_name: profile.name,
-        department: profile.department || '',
-        role: profile.position || '',
-        responsibility: profile.organization || '',
+        full_name: profile.name,
         profile_file_id: fileId,
       });
 
