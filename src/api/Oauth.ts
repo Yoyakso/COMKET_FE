@@ -53,24 +53,23 @@ export const logIn = async ({ email, password }: { email: string; password: stri
  * 이메일로 회원가입하기
  * @param email 사용자가 입력한 이메일
  * @param password 사용자가 입력한 비밀번호
- * @param nickname 닉네임
- * @param real_name 본명
+ * @param full_name 사용자 이름
  * @returns
  */
 export const registerUser = async ({
   email,
   password,
-  real_name,
+  full_name,
 }: {
   email: string;
   password: string;
-  real_name: string;
+  full_name: string;
 }) => {
   try {
     const response = await axios.post(`${BASE_URL}/api/v1/members/register`, {
       email,
       password,
-      real_name,
+      full_name,
     });
     return response.data;
   } catch (error) {

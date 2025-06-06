@@ -229,3 +229,23 @@ export const deleteWorkspace = async (workspaceId: string) => {
 
   return response.data;
 };
+
+/**
+ * 내 프로필 정보 조회
+ */
+
+export const getMyWorkspaceProfile = async (workspaceId: number) => {
+  const token = localStorage.getItem('accessToken');
+  if (!token) {
+    throw new Error('로그인 토큰이 없습니다.');
+  }
+
+  const response = await axios.get(`${BASE_URL}/api/v1/workspaces/${workspaceId}/member`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    }
+  });
+
+  return response.data;
+}

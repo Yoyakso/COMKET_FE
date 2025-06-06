@@ -35,7 +35,8 @@ export const getWorkspaceMembers = async workspaceId => {
  */
 export interface UpdateProfileParams {
   full_name: string;
-  profile_file_id: number | null;
+  // profile_file_id: number | null;
+  email: string;
 }
 
 export const updateProfile = async (params: UpdateProfileParams) => {
@@ -51,6 +52,39 @@ export const updateProfile = async (params: UpdateProfileParams) => {
     },
     withCredentials: true,
   });
+
+  return response.data;
+};
+
+/**
+ * 워크스페이스 멤버 프로필 업데이트 API
+ * @param workspaceId 워크스페이스 ID
+ * @param body 업데이트할 필드들 (nickname, department, responsibility, profile_file_id)
+ */
+export const updateWorkspaceMemberProfile = async (
+  workspaceId: number,
+  body: {
+    nickname?: string;
+    department?: string;
+    responsibility?: string;
+    profile_file_id?: string;
+  }
+) => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) throw new Error('로그인 토큰이 없습니다.');
+  if (!workspaceId) throw new Error('워크스페이스 ID가 없습니다.');
+
+  const response = await axios.patch(
+    `${BASE_URL}/api/v1/workspaces/${workspaceId}/members/info`,
+    body,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    }
+  );
 
   return response.data;
 };
