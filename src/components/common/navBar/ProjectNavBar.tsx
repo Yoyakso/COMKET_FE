@@ -81,12 +81,10 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
         <S.ProjectItem
           key={p.id}
           title={p.name}
+          $active={pathname.includes(`/${p.id}/tickets`)}
           onClick={() => {
             onNavigateProject?.();
             navigate(`/${p.id}/tickets`);
-          }}
-          style={{
-            backgroundColor: pathname.includes(`/${p.id}/tickets`) ? '#f3f4f6' : 'transparent',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, width: '100%' }}>
