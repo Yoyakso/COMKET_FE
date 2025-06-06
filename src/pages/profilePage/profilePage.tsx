@@ -206,7 +206,10 @@ export const ProfilePage = () => {
         </S.LNBContainer>
 
         <S.Content>
-          <S.Title>프로필 설정</S.Title>
+          <S.TitleSection>
+            <S.Title>프로필 설정</S.Title>
+            <S.Description>각 워크스페이스에서 나만의 프로필을 만들 수 있어요.</S.Description>
+          </S.TitleSection>
 
           <S.FormSection>
             <S.FormRow>
@@ -269,25 +272,6 @@ export const ProfilePage = () => {
                   onChange={handleInputChange}
                   placeholder="소속 입력"
                 />
-              </S.InputContainer>
-            </S.FormRow>
-
-            <S.Divider />
-
-            <S.FormRow>
-              <S.Label>직책</S.Label>
-              <S.InputContainer>
-                <S.SelectInput
-                  name="position"
-                  value={profile.position ?? ''}
-                  onChange={handleInputChange}
-                >
-                  {POSITION_OPTIONS.map(option => (
-                    <option key={option.value} value={option.value} disabled={option.disabled}>
-                      {option.label}
-                    </option>
-                  ))}
-                </S.SelectInput>
               </S.InputContainer>
             </S.FormRow>
 
