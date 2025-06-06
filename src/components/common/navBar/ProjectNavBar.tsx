@@ -4,7 +4,7 @@ import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { Globe, Lock, ChevronRight, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getAllProjects, getMyProjects } from '@/api/Project';
-import { getAlarmCountPerProject } from '@/api/Alarm';
+import { getAlarmCountPerProject, markAllAlarmsByProject } from '@/api/Alarm';
 import { useUserStore } from '@/stores/userStore';
 import { NavProfile } from './NavProfile';
 
@@ -85,8 +85,21 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
           key={p.id}
           title={p.name}
           $active={pathname.includes(`/${p.id}/tickets`)}
-          onClick={() => {
+          onClick={async () => {
             onNavigateProject?.();
+
+            if (alarmCounts[p.id] > 0) {
+              try {
+                await markAllAlarmsByProject(Number(p.id)); // 새로 만든 함수 사용
+                setAlarmCounts(prev => ({
+                  ...prev,
+                  [p.id]: 0,
+                }));
+              } catch (e) {
+                console.error('알림 읽음 처리 실패:', e);
+              }
+            }
+
             navigate(`/${p.id}/tickets`);
           }}
         >
