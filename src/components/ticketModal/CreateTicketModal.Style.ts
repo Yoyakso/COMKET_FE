@@ -118,6 +118,13 @@ export const AssigneeText = styled.span`
   color: #aaa;
 `
 
+export const AssigneeButton = styled.span`
+  font-size: 14px;
+  color: ${color.lightBlue600};
+  margin-left: 125px;
+  cursor: pointer;
+`
+
 export const EditorContainer = styled.div`
   flex: 1;
   border: 1px solid ${color.basic0};

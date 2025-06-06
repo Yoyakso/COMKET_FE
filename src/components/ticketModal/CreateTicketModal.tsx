@@ -17,6 +17,7 @@ interface Member {
   memberId: number
   name: string
   projectMemberId: number
+  email?: string
 }
 
 interface CreateTicketModalProps {
@@ -50,7 +51,7 @@ export const CreateTicketModal = ({
 }: CreateTicketModalProps) => {
   const workspaceName = useWorkspaceStore((state) => state.workspaceName)
   const [members, setMembers] = useState<Member[]>([])
-  const { name, memberId } = useUserStore()
+  const { name, email, memberId } = useUserStore()
   const [ticketData, setTicketData] = useState({
     type: template?.type || "",
     title: initialData?.title || "",
@@ -133,6 +134,25 @@ export const CreateTicketModal = ({
       [key]: value,
     }))
   }
+
+  const handleSelfAssign = () => {
+    if (!members || members.length === 0) {
+      toast.error("멤버 목록을 불러오지 못했습니다.");
+      return;
+    }
+
+    const self = members.find((m) => m.email === email || m.name === name);
+
+    if (self) {
+      setTicketData((prev) => ({
+        ...prev,
+        assignee_member_id: self.projectMemberId,
+      }));
+      toast.success("담당자가 나로 설정되었습니다.");
+    } else {
+      toast.error("현재 멤버 목록에서 본인을 찾을 수 없습니다.");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -514,6 +534,7 @@ export const CreateTicketModal = ({
                 )}
               </S.SelectField>
             </S.FormRow>
+            <S.AssigneeButton onClick={handleSelfAssign}>나에게 할당</S.AssigneeButton>
           </S.Form>
         </S.ModalContent>
 
