@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+import axiosInstance from './axiosInstance';
 
 /**
  * 워크스페이스 목록 조회
@@ -8,14 +6,9 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
  */
 export const fetchMyWorkspaces = async () => {
   try {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.get(`${BASE_URL}/api/v1/workspaces?includePublic=false`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      withCredentials: true,
+    const response = await axiosInstance.get(`/api/v1/workspaces`, {
+      params: { includePublic: false },
     });
-
     return response.data;
   } catch (error) {
     console.error('워크스페이스 API 오류:', error);
@@ -42,32 +35,17 @@ export interface WorkspaceCreateParams {
 }
 
 export const workspaceCreate = async (params: WorkspaceCreateParams) => {
-  const token = localStorage.getItem('accessToken');
-
-  if (!token) {
-    throw new Error('인증 토큰이 존재하지 않습니다.');
-  }
-
   try {
-    const response = await axios.post(
-      `${BASE_URL}/api/v1/workspaces`,
+    const response = await axiosInstance.post(
+      `/api/v1/workspaces`,
       {
         ...params,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-
-        withCredentials: true,
-      },
     );
-
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error('서버 응답 에러:', error.response.data); // ✅ 핵심
+      console.error('서버 응답 에러:', error.response.data);
     } else {
       console.error('에러:', error.message);
     }
@@ -82,16 +60,13 @@ export const workspaceCreate = async (params: WorkspaceCreateParams) => {
  */
 
 export const fetchWorkspaceBySlug = async (slug: string) => {
-  const token = localStorage.getItem('accessToken');
-
-  const response = await axios.get(`${BASE_URL}/api/v1/workspaces/slug/${slug}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    withCredentials: true,
-  });
-
-  return response.data;
+  try {
+    const response = await axiosInstance.get(`/api/v1/workspaces/slug/${slug}`);
+    return response.data;
+  } catch (error) {
+    console.error('슬러그 조회 실패:', error);
+    throw error;
+  }
 };
 
 /**
@@ -100,16 +75,13 @@ export const fetchWorkspaceBySlug = async (slug: string) => {
  * @returns
  */
 export const fetchWorkspaceByInviteCode = async (inviteCode: string) => {
-  const token = localStorage.getItem('accessToken');
-
-  const response = await axios.get(`${BASE_URL}/api/v1/workspaces/invite/${inviteCode}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    withCredentials: true,
-  });
-
-  return response.data;
+  try {
+    const response = await axiosInstance.get(`/api/v1/workspaces/invite/${inviteCode}`);
+    return response.data;
+  } catch (error) {
+    console.error('초대 코드 조회 실패:', error);
+    throw error;
+  }
 };
 
 export interface UploadResponse {
@@ -130,17 +102,14 @@ export const uploadProfileImage = async (
   category: 'WORKSPACE_PROFILE' | 'MEMBER_PROFILE' | 'PROJECT_PROFILE',
 ): Promise<UploadResponse> => {
   try {
-    const token = localStorage.getItem('accessToken');
     const formData = new FormData();
     formData.append('multipartFile', file);
     formData.append('fileCategory', category);
 
-    const response = await axios.post(`${BASE_URL}/api/v1/file/upload/profile`, formData, {
+    const response = await axiosInstance.post('/api/v1/file/upload/profile', formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       },
-      withCredentials: true,
     });
 
     return {
@@ -169,18 +138,13 @@ export interface UpdateWorkspacePayload {
 }
 
 export const updateWorkspace = async (workspaceId: string, payload: UpdateWorkspacePayload) => {
-  const token = localStorage.getItem('accessToken');
-  console.log('token', token);
-
-  const response = await axios.patch(`${BASE_URL}/api/v1/workspaces/${workspaceId}`, payload, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    withCredentials: true,
-  });
-
-  return response.data;
+  try {
+    const response = await axiosInstance.patch(`/api/v1/workspaces/${workspaceId}`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('워크스페이스 수정 실패:', error);
+    throw error;
+  }
 };
 
 /**
@@ -197,16 +161,14 @@ export const exitWorkspace = async ({
   workspaceId: string;
   email: string;
 }) => {
-  const token = localStorage.getItem('accessToken');
-
-  await axios.delete(`${BASE_URL}/api/v1/workspaces/${workspaceId}/members`, {
-    params: {
-      targetMemberEmail: email,
-    },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  try {
+    await axiosInstance.delete(`/api/v1/workspaces/${workspaceId}/members`, {
+      params: { targetMemberEmail: email },
+    });
+  } catch (error) {
+    console.error('워크스페이스 나가기 실패:', error);
+    throw error;
+  }
 };
 
 /**
@@ -216,18 +178,13 @@ export const exitWorkspace = async ({
  * @returns
  */
 export const deleteWorkspace = async (workspaceId: string) => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) throw new Error('No access token');
-
-  const response = await axios.delete(`${BASE_URL}/api/v1/workspaces/${workspaceId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    withCredentials: true,
-  });
-
-  return response.data;
+  try {
+    const response = await axiosInstance.delete(`/api/v1/workspaces/${workspaceId}`);
+    return response.data;
+  } catch (error) {
+    console.error('워크스페이스 삭제 실패:', error);
+    throw error;
+  }
 };
 
 /**
@@ -235,17 +192,11 @@ export const deleteWorkspace = async (workspaceId: string) => {
  */
 
 export const getMyWorkspaceProfile = async (workspaceId: number) => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) {
-    throw new Error('로그인 토큰이 없습니다.');
+  try {
+    const response = await axiosInstance.get(`/api/v1/workspaces/${workspaceId}/member`);
+    return response.data;
+  } catch (error) {
+    console.error('워크스페이스 내 프로필 조회 실패:', error);
+    throw error;
   }
-
-  const response = await axios.get(`${BASE_URL}/api/v1/workspaces/${workspaceId}/member`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    }
-  });
-
-  return response.data;
 }

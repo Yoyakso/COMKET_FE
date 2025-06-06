@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import qs from 'qs';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -8,14 +8,9 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
  */
 export const getWorkspaceMembers = async workspaceId => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceId) throw new Error('워크스페이스 정보가 없습니다.');
 
-    const response = await axios.get(`${BASE_URL}/api/v1/workspaces/${workspaceId}/members`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const response = await axiosInstance.get(`api/v1/workspaces/${workspaceId}/members`, {
       params: {
         positionTypes: ['ADMIN', 'MEMBER'],
         memberStates: ['INACTIVE', 'ACTIVE', 'DELETED'],
@@ -40,20 +35,13 @@ export interface UpdateProfileParams {
 }
 
 export const updateProfile = async (params: UpdateProfileParams) => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) {
-    throw new Error('로그인 토큰이 없습니다.');
+  try {
+    const response = await axiosInstance.patch('/api/v1/members/me', params);
+    return response.data;
+  } catch (error) {
+    console.error('프로필 수정 실패:', error);
+    throw error;
   }
-
-  const response = await axios.patch(`${BASE_URL}/api/v1/members/me`, params, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    withCredentials: true,
-  });
-
-  return response.data;
 };
 
 /**
@@ -70,23 +58,19 @@ export const updateWorkspaceMemberProfile = async (
     profile_file_id?: string;
   }
 ) => {
-  const token = localStorage.getItem("accessToken");
-  if (!token) throw new Error('로그인 토큰이 없습니다.');
-  if (!workspaceId) throw new Error('워크스페이스 ID가 없습니다.');
+  try {
+    if (!workspaceId) throw new Error('워크스페이스 ID가 없습니다.');
 
-  const response = await axios.patch(
-    `${BASE_URL}/api/v1/workspaces/${workspaceId}/members/info`,
-    body,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true,
-    }
-  );
+    const response = await axiosInstance.patch(
+      `/api/v1/workspaces/${workspaceId}/members/info`,
+      body,
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    console.error('워크스페이스 멤버 프로필 수정 실패:', error);
+    throw error;
+  }
 };
 
 export interface MyProfileResponse {
@@ -97,17 +81,13 @@ export interface MyProfileResponse {
 }
 
 export const getMyProfile = async () => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-  const response = await axios.get(`${BASE_URL}/api/v1/members/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    withCredentials: true,
-  });
-
-  return response.data;
+  try {
+    const response = await axiosInstance.get('/api/v1/members/me');
+    return response.data;
+  } catch (error) {
+    console.error('내 프로필 조회 실패:', error);
+    throw error;
+  }
 };
 
 /**
@@ -115,15 +95,10 @@ export const getMyProfile = async () => {
  */
 export const deleteWorkspaceMember = async (workspaceId: number, targetMemberEmail: string) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceId) throw new Error('워크스페이스 정보가 없습니다.');
 
-    await axios.delete(`${BASE_URL}/api/v1/workspaces/${workspaceId}/members`, {
+    await axiosInstance.delete(`/api/v1/workspaces/${workspaceId}/members`, {
       params: { targetMemberEmail },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
   } catch (error) {
     console.error('워크스페이스 멤버 삭제 실패:', error);
@@ -142,18 +117,9 @@ export interface UpdateMemberParams {
  */
 export const updateWorkspaceMember = async (workspaceId: number, params: UpdateMemberParams) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.patch(
-      `${BASE_URL}/api/v1/workspaces/${workspaceId}/members`,
+    const response = await axiosInstance.patch(
+      `/api/v1/workspaces/${workspaceId}/members`,
       params,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
     );
 
     console.log('멤버 정보 수정 성공:', response.data);
@@ -175,18 +141,9 @@ export interface InviteMembersDto {
  */
 export const inviteWorkspaceMembers = async (workspaceId: number, payload: InviteMembersDto) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.post(
-      `${BASE_URL}/api/v1/workspaces/${workspaceId}/members`,
+    const response = await axiosInstance.post(
+      `/api/v1/workspaces/${workspaceId}/members`,
       payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
     );
     return response.data;
   } catch (error) {

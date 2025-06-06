@@ -1,6 +1,5 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 const REDIRECT_URI = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI;
 
 /**
@@ -12,7 +11,7 @@ export const googleLogin = async (code: string) => {
   try {
     localStorage.clear();
 
-    const response = await axios.get(`${BASE_URL}/api/v1/auth/oauth2/google/login`, {
+    const response = await axiosInstance.get('/api/v1/auth/oauth2/google/login', {
       params: {
         code,
         redirect: REDIRECT_URI,
@@ -32,7 +31,7 @@ export const googleLogin = async (code: string) => {
  */
 export const logIn = async ({ email, password }: { email: string; password: string }) => {
   try {
-    const response = await axios.post(`${BASE_URL}/api/v1/auth/login`, {
+    const response = await axiosInstance.post('/api/v1/auth/login', {
       email,
       password,
     });
@@ -66,7 +65,7 @@ export const registerUser = async ({
   full_name: string;
 }) => {
   try {
-    const response = await axios.post(`${BASE_URL}/api/v1/members/register`, {
+    const response = await axiosInstance.post('/api/v1/members/register', {
       email,
       password,
       full_name,
@@ -85,7 +84,7 @@ export const registerUser = async ({
  */
 export const sendVerificationCode = async (email: string) => {
   try {
-    const response = await axios.post(`${BASE_URL}/api/v1/email/verify/send`, { email });
+    const response = await axiosInstance.post('/api/v1/email/verify/send', { email });
     return response.data;
   } catch (error) {
     console.error('이메일 인증번호 발송 실패:', error);
@@ -101,7 +100,7 @@ export const sendVerificationCode = async (email: string) => {
  */
 export const checkVerificationCode = async (email: string, code: string) => {
   try {
-    const response = await axios.post(`${BASE_URL}/api/v1/email/verify/code`, { email, code });
+    const response = await axiosInstance.post('/api/v1/email/verify/code', { email, code });
     return response.data;
   } catch (error) {
     console.error('이메일 인증번호 검증 실패', error);
@@ -115,15 +114,7 @@ export const checkVerificationCode = async (email: string, code: string) => {
  */
 export const logOut = async () => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.post(`${BASE_URL}/api/v1/auth/logout`, null, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const response = await axiosInstance.post('/api/v1/auth/logout');
     return response.data;
   } catch (error) {
     console.error('로그아웃 실패', error);
