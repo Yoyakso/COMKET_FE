@@ -6,11 +6,12 @@ export interface OauthLoginButtonProps {
   onClick?: () => void;
   children?: React.ReactNode;
   buttonStyle: ButtonStyle;
+  type?: 'button' | 'submit';
 }
 
 export type ButtonStyle = 'Google';
 
-export const OauthLoginButton = ({ onClick, children, buttonStyle }: OauthLoginButtonProps) => {
+export const OauthLoginButton = ({ onClick, children, buttonStyle, type = 'button' }: OauthLoginButtonProps) => {
   const { search } = useLocation();
   const inviteCode = new URLSearchParams(search).get('inviteCode');
   const handleOauth = async () => {
@@ -33,7 +34,7 @@ export const OauthLoginButton = ({ onClick, children, buttonStyle }: OauthLoginB
   };
 
   return (
-    <S.ButtonContainer onClick={handleOauth}>
+    <S.ButtonContainer onClick={handleOauth} type={type}>
       <S.IconWrapper>{buttonStyle === 'Google' && <GoogleIcon />}</S.IconWrapper>
       <S.ButtonText>{children}</S.ButtonText>
     </S.ButtonContainer>

@@ -111,14 +111,14 @@ export const LoginForm = () => {
             </div>
           </S.RememberSignupRow>
 
-          <S.LoginButton type="submit">로그인</S.LoginButton>
+          <S.LoginButton type="submit" >로그인</S.LoginButton>
 
           <S.Divider>
             <S.DividerText>또는</S.DividerText>
           </S.Divider>
 
           <S.FormRow>
-            <OauthLoginButton buttonStyle="Google">Google 계정으로 로그인</OauthLoginButton>
+            <OauthLoginButton buttonStyle="Google" type="button">Google 계정으로 로그인</OauthLoginButton>
           </S.FormRow>
         </form>
       </S.FormWrapper>
