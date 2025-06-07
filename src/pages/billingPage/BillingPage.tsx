@@ -20,12 +20,14 @@ export const BillingPage = () => {
         </S.LNBContainer>
 
         <S.Content>
-          <S.Title>이달의 사용 현황</S.Title>
-          <S.Description>요금제, 팀 인원, 기능 사용량을 한눈에 확인해보세요</S.Description>
+          <S.TitleWrapper>
+            <S.Title>이달의 사용 현황</S.Title>
+            <S.Description>요금제, 팀 인원, 기능 사용량을 한눈에 확인해보세요</S.Description>
+          </S.TitleWrapper>
 
           <S.GridWrapper>
             <BillingChartSection />
-            <BillingPlanSection />
+            <BillingPlanSection planId="professional" currentUserCount={28} />
           </S.GridWrapper>
         </S.Content>
       </S.MainContainer>

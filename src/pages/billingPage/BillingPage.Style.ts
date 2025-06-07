@@ -43,6 +43,12 @@ export const Content = styled.div`
   background-color: ${color.white};
 `;
 
+export const TitleWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+`;
+
 export const Title = styled.h1`
   font-size: 18px;
   font-weight: 700;
@@ -53,7 +59,7 @@ export const Description = styled.p`
   font-size: 14px;
   font-weight: 400;
   color: ${color.textSecondary};
-  margin-top: 8px;
+  margin-top: 4px;
   margin-bottom: 24px;
 `;
 
