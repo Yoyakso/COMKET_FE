@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
 import { LocalNavBar } from "@/components/common/navBar/LocalNavBar"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import * as S from "./AccountInfoPage.Style"
@@ -6,12 +7,28 @@ import { GoogleIcon } from "@assets/icons"
 import { logOut } from "@/api/Oauth"
 import { toast } from "react-toastify"
 import { useUserStore } from "@/stores/userStore"
+import { getMyProfile } from "@/api/Member"
 
 export const AccountInfoPage = () => {
   const email = useUserStore((state) => state.email)
   const loginMethod = useUserStore((state) => state.loginPlatformInfo)
   const { clearUser } = useUserStore()
   const navigate = useNavigate()
+  const [name, setName] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await getMyProfile()
+        setName(res.full_name)
+      } catch (err) {
+        console.error("계정 정보 불러오기 실패:", err)
+        toast.error("계정 정보를 불러오지 못했습니다.")
+      }
+    }
+
+    fetchProfile()
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -49,6 +66,16 @@ export const AccountInfoPage = () => {
 
         <S.Content>
           <S.Title>계정 정보</S.Title>
+
+          <S.Section>
+            <S.SectionTitle>이름</S.SectionTitle>
+            <S.SectionContent>
+              <S.EmailText>{name}</S.EmailText>
+            </S.SectionContent>
+          </S.Section>
+
+          <S.Divider />
+
           <S.Section>
             <S.SectionTitle>이메일</S.SectionTitle>
             <S.SectionContent>

@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+import axiosInstance from './axiosInstance';
 
 /**
  * 워크스페이스 내 전체 프로젝트별 알람 개수 조회
@@ -9,17 +7,18 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
  * @returns 각 프로젝트별 알람 개수를 담은 배열 (projectId + alarmCount 포함)
  */
 export const getAlarmCountPerProject = async (workspaceId: string) => {
-  const token = localStorage.getItem('accessToken');
+  try {
+    if (!workspaceId) throw new Error('워크스페이스 ID 없음');
 
-  if (!token) throw new Error('로그인 필요');
-  if (!workspaceId) throw new Error('워크스페이스 ID 없음');
+    const res = await axiosInstance.get('/api/v1/alarm/project/count', {
+      params: { workspaceId },
+    });
 
-  const res = await axios.get(`${BASE_URL}/api/v1/alarm/project/count`, {
-    params: { workspaceId },
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  return res.data.projectAlarmList;
+    return res.data.projectAlarmList;
+  } catch (error) {
+    console.error('워크스페이스 알람 개수 조회 실패:', error);
+    throw error;
+  }
 };
 
 /**
@@ -40,13 +39,13 @@ export interface TicketAlarm {
  * @returns 티켓 알람 목록
  */
 export const getTicketAlarms = async (projectId: number): Promise<TicketAlarm[]> => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) throw new Error('로그인 필요');
-
-  const res = await axios.get(`${BASE_URL}/api/v1/alarm/tickets`, {
-    params: { projectId },
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  return res.data;
+  try {
+    const res = await axiosInstance.get('/api/v1/alarm/tickets', {
+      params: { projectId },
+    });
+    return res.data;
+  } catch (error) {
+    console.error('티켓 알람 조회 실패:', error);
+    throw error;
+  }
 };

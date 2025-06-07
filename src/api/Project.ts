@@ -1,7 +1,5 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import { ProjectData } from '../types/project';
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 /**
  * 프로젝트 목록 전체 조회
@@ -9,16 +7,9 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
  */
 export const getAllProjects = async (workspaceName: string) => {
   try {
-    const token = localStorage.getItem('accessToken');
-
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceName) throw new Error('워크스페이스 정보가 없습니다.');
 
-    const response = await axios.get(`${BASE_URL}/api/v1/${workspaceName}/project/all`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get(`/api/v1/${workspaceName}/project/all`);
 
     return response.data;
   } catch (error) {
@@ -37,16 +28,9 @@ export const getProjectById = async (
   projectId: string,
 ): Promise<ProjectData> => {
   try {
-    const token = localStorage.getItem('accessToken');
-
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceName) throw new Error('워크스페이스 정보가 없습니다.');
 
-    const response = await axios.get(`${BASE_URL}/api/v1/${workspaceName}/${projectId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get(`/api/v1/${workspaceName}/${projectId}`);
     const raw = response.data;
 
     return {
@@ -73,21 +57,10 @@ export const getProjectById = async (
  */
 export const getMyProjects = async (): Promise<ProjectData[]> => {
   try {
-    const token = localStorage.getItem('accessToken');
     const workspaceName = localStorage.getItem('workspaceName');
-
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceName) throw new Error('워크스페이스 정보가 없습니다.');
 
-    const response = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/v1/${workspaceName}/project/my`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
+    const response = await axiosInstance.get(`/api/v1/${workspaceName}/project/my`);
     return response.data;
   } catch (error) {
     console.error('내가 속한 프로젝트 조회 실패:', error);
@@ -111,16 +84,9 @@ interface CreateProjectDto {
  */
 export const createProject = async (workspaceName: string, projectData: CreateProjectDto) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceName) throw new Error('워크스페이스 정보가 없습니다.');
 
-    const response = await axios.post(`${BASE_URL}/api/v1/${workspaceName}/project`, projectData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const response = await axiosInstance.post(`/api/v1/${workspaceName}/project`, projectData);
     return response.data;
   } catch (error) {
     console.error('프로젝트 생성 실패:', error);
@@ -143,16 +109,9 @@ export interface UpdateProjectDto {
  */
 export const deleteProject = async (workspaceName: string, projectId: number) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     const encodedWorkspaceName = encodeURIComponent(workspaceName);
 
-    const response = await axios.delete(`${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const response = await axiosInstance.delete(`/api/v1/${encodedWorkspaceName}/${projectId}`);
     console.log('프로젝트 삭제 성공');
     return response.data;
   } catch (error) {
@@ -169,15 +128,7 @@ export const deleteProject = async (workspaceName: string, projectId: number) =>
  */
 export const leaveProject = async (workspaceName: string, projectId: number) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.delete(`${BASE_URL}/api/v1/${workspaceName}/${projectId}/exit`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const response = await axiosInstance.delete(`/api/v1/${workspaceName}/${projectId}/exit`);
     console.log('프로젝트 탈퇴 성공');
     return response.data;
   } catch (error) {
@@ -198,17 +149,11 @@ export const deleteProjectMember = async (
   projectMemberId: number,
 ) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.delete(
-      `${BASE_URL}/api/v1/${workspaceName}/${projectId}/edit/members`,
+    const response = await axiosInstance.delete(
+      `/api/v1/${workspaceName}/${projectId}/edit/members`,
       {
         params: {
           projectMemberId,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
         },
       },
     );
@@ -229,19 +174,11 @@ export const deleteProjectMember = async (
  */
 export const getProjectMembers = async (workspaceName: string, projectId: number) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceName) throw new Error('워크스페이스 정보가 없습니다.');
-
     const encodedWorkspaceName = encodeURIComponent(workspaceName);
 
-    const response = await axios.get(
-      `${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}/members`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+    const response = await axiosInstance.get(
+      `/api/v1/${encodedWorkspaceName}/${projectId}/members`,
     );
 
     console.log('프로젝트 멤버 조회 성공:', response.data);
@@ -269,21 +206,13 @@ export const inviteProjectMembers = async (
   payload: InviteProjectMembersDto,
 ) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceName) throw new Error('워크스페이스 정보가 없습니다.');
 
     const encodedWorkspaceName = encodeURIComponent(workspaceName);
 
-    const response = await axios.post(
-      `${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}/members`,
+    const response = await axiosInstance.post(
+      `/api/v1/${encodedWorkspaceName}/${projectId}/members`,
       payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
     );
 
     console.log('프로젝트 멤버 초대 성공:', response.data);
@@ -314,21 +243,13 @@ export const editProject = async (
   payload: EditProjectPayload,
 ) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceName) throw new Error('워크스페이스 정보가 없습니다.');
 
     const encodedWorkspaceName = encodeURIComponent(workspaceName);
 
-    const response = await axios.patch(
-      `${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}/edit`,
+    const response = await axiosInstance.patch(
+      `/api/v1/${encodedWorkspaceName}/${projectId}/edit`,
       payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
     );
 
     return response.data;
@@ -356,21 +277,13 @@ export const editProjectMemberRole = async (
   payload: EditProjectMemberDto,
 ) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
     if (!workspaceName) throw new Error('워크스페이스 정보가 없습니다.');
 
     const encodedWorkspaceName = encodeURIComponent(workspaceName);
 
-    const response = await axios.patch(
-      `${BASE_URL}/api/v1/${encodedWorkspaceName}/${projectId}/edit/members`,
+    const response = await axiosInstance.patch(
+      `/api/v1/${encodedWorkspaceName}/${projectId}/edit/members`,
       payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
     );
 
     console.log('역할 수정 성공:', response.data);
