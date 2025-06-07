@@ -25,6 +25,7 @@ import { ThreadPageWrapper } from './pages/threadPage/TreadPageWrapper';
 import { MainPage } from './pages/mainPage/MainPage';
 import { PlanPage } from './pages/planPage/PlanPage';
 import { NotFoundPage } from './pages/notFoundPage/NotFoundPage';
+import { BillingPage } from './pages/billingPage/BillingPage';
 
 export const Router = createBrowserRouter([
   {
@@ -140,9 +141,13 @@ export const Router = createBrowserRouter([
         element: <PlanPage />,
       },
       {
+        path: 'billing',
+        element: <BillingPage />,
+      },
+      {
         path: '*',
         element: <NotFoundPage />,
-      }
+      },
     ],
   },
 ]);
