@@ -3,21 +3,21 @@ import * as S from './profilePage.Style';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { X } from 'lucide-react';
-import { POSITION_OPTIONS, DEPARTMENT_OPTIONS } from '@/constants/profileOptions';
+import { DEPARTMENT_OPTIONS } from '@/constants/profileOptions';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
-import { updateProfile, getMyProfile } from '@/api/Member';
-import { uploadProfileImage } from '@/api/Workspace';
+import { uploadProfileImage, getMyWorkspaceProfile } from '@/api/Workspace';
+import { updateWorkspaceMemberProfile } from '@/api/Member';
 import { useUserStore } from '@/stores/userStore';
 import { toast } from 'react-toastify';
 
 interface ProfileData {
   name: string;
   email: string;
-  organization: string;
-  position: string;
-  department: string;
-  profileImage: string | null;
-  profileImageFile: File | null;
+  organization?: string;
+  position?: string;
+  department?: string;
+  profileImage?: string | null;
+  profileImageFile?: File | null;
 }
 
 export const ProfilePage = () => {
@@ -27,6 +27,7 @@ export const ProfilePage = () => {
   // const workspaceId = useWorkspaceStore(s => s.workspaceId);
   // const setMyProfileFor = useWorkspaceStore(s => s.setMyProfileFor);
   const setProfileInfo = useUserStore(s => s.setProfileInfo);
+  const workspaceId = useWorkspaceStore(s => s.workspaceId);
 
   const [profile, setProfile] = useState<ProfileData>({
     name: globalName,
@@ -50,43 +51,32 @@ export const ProfilePage = () => {
   useEffect(() => {
     const fetchLatestProfile = async () => {
       try {
-        const res = await getMyProfile();
-        console.log('불러온 프로필 정보:', res);
-
-        setProfileInfo({
-          name: res.realName ?? '',
-          profileFileUrl: res.profileFileUrl ?? '',
-        });
-
-        // if (workspaceId !== null) {
-        //   setMyProfileFor(workspaceId, {
-        //     name: res.realName ?? '',
-        //     email: res.email ?? '',
-        //     profileFileUrl: res.profileFileUrl ?? '',
-        //     role: res.role ?? '',
-        //     position: res.department ?? '',
-        //   });
-        // }
+        const wsProfile = await getMyWorkspaceProfile(workspaceId);
+        console.log('Tq', wsProfile);
 
         const fetched: ProfileData = {
-          name: res.realName ?? '',
-          email: res.email ?? '',
-          organization: res.responsibility ?? '',
-          position: res.role ?? '',
-          department: res.department ?? '',
-          profileImage: res.profileFileUrl ?? null,
+          name: wsProfile.name ?? '',
+          email: wsProfile.email ?? '',
+          organization: wsProfile.responsibility ?? '',
+          position: wsProfile.positionType ?? '',
+          department: wsProfile.department ?? '',
+          profileImage: wsProfile.profileFileUrl ?? null,
           profileImageFile: null,
         };
 
         setProfile(fetched);
         setInitialProfile(fetched);
+        setProfileInfo({
+          name: wsProfile.name ?? '',
+          profileFileUrl: wsProfile.profileFileUrl ?? '',
+        });
       } catch (err) {
         console.error('프로필 정보 불러오기 실패:', err);
       }
     };
 
     fetchLatestProfile();
-  }, [setProfileInfo]);
+  }, [workspaceId, setProfileInfo]);
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
@@ -144,22 +134,24 @@ export const ProfilePage = () => {
         console.log('업로드된 파일 ID:', fileId);
       }
 
-      await updateProfile({
-        real_name: profile.name,
-        department: profile.department || '',
-        role: profile.position || '',
-        responsibility: profile.organization || '',
-        profile_file_id: fileId,
-      });
+      const body: any = {
+        nickname: profile.name,
+        department: profile.department,
+        responsibility: profile.organization,
+      };
 
-      const updated = await getMyProfile();
+      if (fileId !== null) {
+        body.profile_file_id = fileId.toString();
+      }
 
-      // 상태 일괄 업데이트
+      await updateWorkspaceMemberProfile(workspaceId, body);
+
+      const updated = await getMyWorkspaceProfile(workspaceId);
       const updatedProfile: ProfileData = {
-        name: updated.realName ?? '',
+        name: updated.name ?? '',
         email: updated.email ?? '',
         organization: updated.responsibility ?? '',
-        position: updated.role ?? '',
+        position: updated.positionType ?? '',
         department: updated.department ?? '',
         profileImage: updated.profileFileUrl ?? null,
         profileImageFile: null,
@@ -169,19 +161,9 @@ export const ProfilePage = () => {
       setInitialProfile(updatedProfile);
 
       setProfileInfo({
-        name: updated.realName,
+        name: updated.name,
         profileFileUrl: updated.profileFileUrl ?? '',
       });
-
-      // if (workspaceId !== null) {
-      //   setMyProfileFor(workspaceId, {
-      //     name: updated.realName ?? '',
-      //     email: updated.email ?? '',
-      //     profileFileUrl: updated.profileFileUrl ?? '',
-      //     role: updated.role ?? '',
-      //     position: updated.department ?? '',
-      //   });
-      // }
 
       toast.success('프로필 수정이 완료되었습니다.');
     } catch (error) {
@@ -206,7 +188,10 @@ export const ProfilePage = () => {
         </S.LNBContainer>
 
         <S.Content>
-          <S.Title>프로필 설정</S.Title>
+          <S.TitleSection>
+            <S.Title>프로필 설정</S.Title>
+            <S.Description>각 워크스페이스에서 나만의 프로필을 만들 수 있어요.</S.Description>
+          </S.TitleSection>
 
           <S.FormSection>
             <S.FormRow>
@@ -269,25 +254,6 @@ export const ProfilePage = () => {
                   onChange={handleInputChange}
                   placeholder="소속 입력"
                 />
-              </S.InputContainer>
-            </S.FormRow>
-
-            <S.Divider />
-
-            <S.FormRow>
-              <S.Label>직책</S.Label>
-              <S.InputContainer>
-                <S.SelectInput
-                  name="position"
-                  value={profile.position ?? ''}
-                  onChange={handleInputChange}
-                >
-                  {POSITION_OPTIONS.map(option => (
-                    <option key={option.value} value={option.value} disabled={option.disabled}>
-                      {option.label}
-                    </option>
-                  ))}
-                </S.SelectInput>
               </S.InputContainer>
             </S.FormRow>
 

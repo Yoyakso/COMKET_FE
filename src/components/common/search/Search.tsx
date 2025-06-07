@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, use } from 'react'
+import { useDebounce } from '@/utils/useDebounce'
 import SearchIcon from '@/assets/icons/SearchIcon.svg?react'
 import ClearIcon from '@/assets/icons/ClearIcon.svg?react'
 import * as S from './Search.style'
@@ -47,6 +48,13 @@ export const Search = ({
 
   const isControlled = value !== undefined
   const inputValue = isControlled ? value : internalValue
+  const debouncedValue = useDebounce(inputValue, 200)
+
+  useEffect(() => {
+    if (onSearch) {
+      onSearch(debouncedValue)
+    }
+  }, [debouncedValue])
 
   const computedState: SearchState = useMemo(
     () =>

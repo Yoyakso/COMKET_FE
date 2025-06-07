@@ -1,7 +1,5 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import { EyelevelPerspective } from '@/types/eyeLevel';
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 /**
  * 스레드 내용 AI 요약
@@ -10,18 +8,7 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL;
  */
 export const getAiSummary = async (ticketId: number) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.get(
-      `${BASE_URL}/api/v1/${ticketId}/ai/summary`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
+    const response = await axiosInstance.get(`/api/v1/${ticketId}/ai/summary`);
     return response.data;
   } catch (error) {
     console.error('AI 응답 조회 실패:', error);
@@ -36,18 +23,7 @@ export const getAiSummary = async (ticketId: number) => {
  */
 export const getAiHistory = async (ticketId: number) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.get(
-      `${BASE_URL}/api/v1/${ticketId}/ai/history`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
+    const response = await axiosInstance.get(`/api/v1/${ticketId}/ai/history`);
     return response.data;
   } catch (error) {
     console.error('AI 히스토리 조회 실패:', error);
@@ -62,24 +38,15 @@ export const getAiHistory = async (ticketId: number) => {
  */
 export const getEyelevelSummary = async (ticketId: number, perspective: EyelevelPerspective) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.get(
-      `${BASE_URL}/api/v1/${ticketId}/ai/eyelevel`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          responsibility: perspective,
-        },
-      }
-    );
+    const response = await axiosInstance.get(`/api/v1/${ticketId}/ai/eyelevel`, {
+      params: {
+        responsibility: perspective,
+      },
+    });
 
     return response.data;
   } catch (error) {
-    console.error('AI 히스토리 조회 실패:', error);
+    console.error('눈높이 요약 조회 실패:', error);
     throw error;
   }
 }

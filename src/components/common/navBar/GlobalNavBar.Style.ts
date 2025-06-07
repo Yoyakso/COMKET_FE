@@ -1,6 +1,6 @@
-import styled from "styled-components"
-import { color } from "@/styles/color"
-import { Search } from "@/components/common/search/Search"
+import styled from 'styled-components';
+import { color } from '@/styles/color';
+import { Search } from '@/components/common/search/Search';
 
 export const NavbarContainer = styled.nav`
   display: flex;
@@ -9,21 +9,21 @@ export const NavbarContainer = styled.nav`
   padding: 1rem 2rem;
   border-bottom: 1px solid #f0f0f0;
   background-color: white;
-`
+`;
 
 export const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`
+`;
 
 export const LogoText = styled.span`
-  font-family: "Lexend";
+  font-family: 'Lexend';
   font-weight: 800;
   font-size: 22px;
   color: ${color.textPrimary};
   letter-spacing: -1.2px;
-`
+`;
 export const LeftSection = styled.div`
   display: flex;
   align-items: center;
@@ -37,7 +37,7 @@ export const NavLinks = styled.div`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-`
+`;
 
 export const NavLink = styled.a`
   color: ${color.textPrimary};
@@ -46,17 +46,17 @@ export const NavLink = styled.a`
   display: flex;
   align-items: center;
   cursor: pointer;
-  
+
   &:hover {
-    color:${color.teal600};
+    color: ${color.teal600};
   }
-`
+`;
 
 export const AuthContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
-`
+`;
 
 export const LoginButton = styled.button`
   width: 108px;
@@ -72,7 +72,7 @@ export const LoginButton = styled.button`
   &:hover {
     background-color: #9BA8C63D;
   }
-`
+`;
 
 export const StartButton = styled.button`
   background-color: ${color.teal500};
@@ -85,16 +85,16 @@ export const StartButton = styled.button`
   font-size: 0.9rem;
   cursor: pointer;
   font-weight: 500;
-  
+
   &:hover {
     background-color: ${color.teal700};
   }
-`
+`;
 
 export const IconContainer = styled.div`
   display: flex;
   gap: 12px;
-`
+`;
 
 export const SearchContainter = styled.div`
   display: flex;
@@ -103,7 +103,7 @@ export const SearchContainter = styled.div`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-`
+`;
 
 export const StyledSearch = styled(Search)`
   width: 100%;
@@ -116,4 +116,17 @@ export const StyledSearch = styled(Search)`
     width: 100%;
     box-sizing: border-box;
   }
-`
+`;
+export const NavProfileContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding-right: 16px;
+  height: 100%;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+  }
+`;

@@ -1,5 +1,5 @@
 import * as S from './TicketDashboardPage.Style';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { TicketListView } from '@/components/ticketView/TicketListView';
 import { TicketBoardView } from '@/components/ticketView/TicketBoardView';
@@ -11,8 +11,8 @@ import { TicketDetailPanel } from '@components/ticketDetailPanel/TicketDetailPan
 import { Ticket } from '@/types/ticket';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
-import { getProjectById, getProjectMembers } from '@/api/Project';
-import { getTicketsByProjectName, getTicketById } from '@/api/Ticket';
+import { getProjectById, getProjectMembers, getAllProjects, getMyProjects } from '@/api/Project';
+import { getTicketsByProjectName } from '@/api/Ticket';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { MemberData } from '@/types/member';
 import { TicketDropdownStore } from '@/stores/ticketStore';
@@ -25,6 +25,8 @@ import { Status } from '@/types/filter';
 import { AlarmPopover } from '@/components/alarm/AlarmPopover';
 import { getTicketAlarms, TicketAlarm } from '@/api/Alarm';
 import { TicketTemplate } from '@/types/ticketTemplate';
+import { useMemo } from 'react';
+import { toast } from 'react-toastify';
 
 export const TicketDashboardPage = () => {
   const [viewType, setViewType] = useState<'list' | 'board'>('list');
@@ -42,10 +44,25 @@ export const TicketDashboardPage = () => {
   const { selectedIds, clearSelection } = TicketSelectionStore();
   const [hoveredTicket, setHoveredTicket] = useState<Ticket | null>(null);
   const navigate = useNavigate();
+  const hasShownToast = useRef(false);
   const [members, setMembers] = useState<MemberData[]>([]);
   const [isAlarmOpen, setIsAlarmOpen] = useState(false);
   const [alarms, setAlarms] = useState<TicketAlarm[]>([]);
   const [alarmTicketIds, setAlarmTicketIds] = useState<Set<number>>(new Set());
+
+  const flattenTickets = (tickets: Ticket[]): Ticket[] => {
+    const result: Ticket[] = [];
+    const dfs = (ticket: Ticket) => {
+      result.push(ticket);
+      if (ticket.subtickets) {
+        ticket.subtickets.forEach(dfs);
+      }
+    };
+    tickets.forEach(dfs);
+    return result;
+  };
+
+  const flattenedTickets = useMemo(() => flattenTickets(tickets), [tickets]);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -60,18 +77,35 @@ export const TicketDashboardPage = () => {
   }, [workspaceName, projectId]);
 
   useEffect(() => {
-    const fetchProjectName = async () => {
-      if (!projectId) return;
+    if (!projectId || !workspaceName || hasShownToast.current) return;
+
+    const fetchProjectInfoAndCheckAccess = async () => {
       try {
+        // 1. 프로젝트 정보 가져오기
         const response = await getProjectById(workspaceName, projectId);
         setProjectName(response.name);
         setProjectDescription(response.description);
+
+        // 2. 프로젝트 접근 권한 확인
+        const [all, mine] = await Promise.all([getAllProjects(workspaceName), getMyProjects()]);
+
+        const allProject = all.find(p => String(p.id) === String(projectId));
+        const isMine = mine.some(p => String(p.id) === String(projectId));
+
+        if (allProject && allProject.isPublic && !isMine) {
+          toast.info('이 프로젝트는 전체공개 상태이며, 조회만 가능합니다.', {
+            position: 'top-center',
+            autoClose: 4000,
+          });
+          hasShownToast.current = true;
+        }
       } catch (error) {
-        console.error('프로젝트 이름 조회 실패:', error);
+        console.error('프로젝트 정보 또는 권한 확인 실패:', error);
       }
     };
-    fetchProjectName();
-  }, [projectId]);
+
+    fetchProjectInfoAndCheckAccess();
+  }, [projectId, workspaceName]);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -151,14 +185,6 @@ export const TicketDashboardPage = () => {
     setIsTemplateModalOpen(false);
   };
 
-  const handleClosePanel = () => {
-    setSelectedTicket(null);
-  };
-
-  const handleTicketHover = (ticket: Ticket | null) => {
-    setHoveredTicket(ticket);
-  };
-
   const handleNavigateTicket = (direction: 'prev' | 'next') => {
     if (!selectedTicket && hoveredTicket) {
       setSelectedTicket(hoveredTicket);
@@ -190,11 +216,41 @@ export const TicketDashboardPage = () => {
     }
   };
 
+  const findTicketById = (tickets: Ticket[], id: number): Ticket | undefined => {
+    for (const ticket of tickets) {
+      if (ticket.id === id) return ticket;
+      if (ticket.subtickets) {
+        const found = findTicketById(ticket.subtickets, id);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  };
+
+  const updateTicketStatusRecursive = (
+    tickets: Ticket[],
+    ticketId: number,
+    newStatus: Status,
+  ): Ticket[] => {
+    return tickets.map(ticket => {
+      if (ticket.id === ticketId) {
+        return { ...ticket, status: newStatus };
+      }
+      if (ticket.subtickets && ticket.subtickets.length > 0) {
+        return {
+          ...ticket,
+          subtickets: updateTicketStatusRecursive(ticket.subtickets, ticketId, newStatus),
+        };
+      }
+      return ticket;
+    });
+  };
+
   const handleTicketDrop = async (ticketId: number, newStatus: Status) => {
     if (!projectName) return;
 
     try {
-      const ticket = tickets.find(t => t.id === ticketId);
+      const ticket = findTicketById(tickets, ticketId);
       if (!ticket) throw new Error('티켓 정보를 찾을 수 없습니다.');
 
       await editSingleTicket(ticketId, projectName, {
@@ -208,7 +264,10 @@ export const TicketDashboardPage = () => {
         assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
         parent_ticket_id: ticket.parentId ?? null,
       });
-      TicketDropdownStore.getState().updateTicketStatus(ticketId, newStatus);
+      // TicketDropdownStore.getState().updateTicketStatus(ticketId, newStatus);
+      const updatedTickets = updateTicketStatusRecursive(tickets, ticketId, newStatus);
+      setTickets(updatedTickets);
+      TicketDropdownStore.getState().setTickets(updatedTickets);
     } catch (e) {
       console.error('드래그 상태 변경 실패:', e);
     }
@@ -218,6 +277,7 @@ export const TicketDashboardPage = () => {
     setSelectedTicket(ticket);
     setHoveredTicket(null);
   };
+
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -277,7 +337,6 @@ export const TicketDashboardPage = () => {
                 )}
               </div>
 
-              {/* 기존 티켓 생성 버튼 */}
               <Button size="md" $variant="tealFilled" onClick={() => setIsTemplateModalOpen(true)}>
                 <span style={{ marginRight: '4px' }}>
                   <Plus width="14px" height="14px" />
@@ -355,13 +414,14 @@ export const TicketDashboardPage = () => {
               ticket={selectedTicket ?? hoveredTicket}
               projectName={projectName}
               onClose={() => {
-                if (selectedTicket) {
-                  setSelectedTicket(null);
-                } else {
-                  setHoveredTicket(null);
-                }
+                if (selectedTicket) setSelectedTicket(null);
+                else setHoveredTicket(null);
               }}
-              onNavigate={handleNavigateTicket}
+              ticketList={flattenedTickets}
+              setTicket={ticket => {
+                setSelectedTicket(ticket);
+                setHoveredTicket(null);
+              }}
             />
           </S.PanelWrapper>
         )}

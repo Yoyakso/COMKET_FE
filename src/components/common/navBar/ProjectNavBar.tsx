@@ -1,8 +1,6 @@
 import * as S from './LocalNavBar.Style';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
-import { useUserStore } from '@/stores/userStore';
-import { NavProfile } from './NavProfile';
 import { Globe, Lock, ChevronRight, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getAllProjects, getMyProjects } from '@/api/Project';
@@ -24,8 +22,6 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
   const slug = useWorkspaceStore(s => s.workspaceSlug);
   const name = useWorkspaceStore(s => s.workspaceName);
   const workspaceId = useWorkspaceStore(s => s.workspaceId);
-  const userName = useUserStore(s => s.name);
-  const userProfile = useUserStore(s => s.profileFileUrl);
 
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [myProjects, setMyProjects] = useState<Project[]>([]);
@@ -42,22 +38,28 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
     (async () => {
       try {
         const all = await getAllProjects(name);
-        setAllProjects(
-          all.map((p: any) => ({
-            id: String(p.projectId),
-            name: p.projectName,
-            isPublic: p.isPublic,
-          })),
-        );
-
         const mine = await getMyProjects();
-        setMyProjects(
-          mine.map((p: any) => ({
+
+        const myProjectIds = new Set(mine.map((p: any) => String(p.projectId)));
+
+        // 전체 프로젝트 중 내가 속한 프로젝트 or 공개 프로젝트만 필터링
+        const filteredAll = all
+          .filter((p: any) => p.isPublic || myProjectIds.has(String(p.projectId)))
+          .map((p: any) => ({
             id: String(p.projectId),
             name: p.projectName,
             isPublic: p.isPublic,
-          })),
-        );
+          }));
+
+        const formattedMine = mine.map((p: any) => ({
+          id: String(p.projectId),
+          name: p.projectName,
+          isPublic: p.isPublic,
+        }));
+
+        setAllProjects(filteredAll);
+        setMyProjects(formattedMine);
+
         const alarmData = await getAlarmCountPerProject(String(workspaceId));
         const countMap: Record<string, number> = {};
         alarmData.forEach((item: { project_id: number; alarm_count: number }) => {
@@ -126,9 +128,6 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
           {isMyOpen && <S.ItemsContainer>{renderProjectList(myProjects)}</S.ItemsContainer>}
         </S.SectionContainer>
       </S.NavContent>
-      <S.NavProfileContainer>
-        <NavProfile name={userName} defaultImage={userProfile} />
-      </S.NavProfileContainer>
     </S.NavContainer>
   );
 };

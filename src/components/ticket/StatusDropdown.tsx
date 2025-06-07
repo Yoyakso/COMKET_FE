@@ -7,29 +7,21 @@ import * as S from "./StatusDropdown.Style"
 import type { Status } from "@/types/filter"
 import { editSingleTicket } from "@/api/Ticket"
 import { toast } from "react-toastify"
+import { findTicketById } from "@/utils/ticketUtills"
 
 interface StatusDropdownProps {
   ticketId: number
   projectName: string
 }
 
-const findTicketById = (tickets: any[], id: number) => {
-  for (const t of tickets) {
-    if (t.id === id) return t
-    const found = t.subtickets?.find((st: any) => st.id === id)
-    if (found) return found
-  }
-  return undefined
-}
-
 export const StatusDropdown = ({ ticketId, projectName }: StatusDropdownProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState<Status | null>(null)
 
-  const { tickets, openDropdown, setOpenDropdown, updateTicketStatus } = TicketDropdownStore()
+  const { tickets, openDropdown, setOpenDropdown, updateTicketStatus, setTickets } = TicketDropdownStore()
 
   const ticket = findTicketById(tickets, ticketId)
-  const currentStatus = ticket?.status ?? "TO DO"
+  const currentStatus = ticket?.status ?? "TODO"
   const isOpen = openDropdown?.ticketId === ticketId && openDropdown.field === "status"
 
   useOutsideClick(ref, () => isOpen && setOpenDropdown(null))

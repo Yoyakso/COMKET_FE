@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import * as S from './LoginForm.Style';
 import { OauthLoginButton } from './OauthLoginButton';
@@ -14,30 +14,40 @@ export const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { setUserState } = useUserStore();
+  const { setUserState, clearUser, email: savedEmail } = useUserStore();
   const { search } = useLocation();
   const inviteCodeParam = new URLSearchParams(search).get('inviteCode');
+
+  useEffect(() => {
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberEmail(true);
+    }
+  }, [savedEmail]);
 
   const handleCheckboxChange = () => {
     setRememberEmail(!rememberEmail);
   };
 
-  // 현재 구글 로그인 버튼을 누른 경우에도 logIn요청 감 수정 필요
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       const data = await logIn({ email, password });
-      console.log('로그인데이터', data);
       toast.success('로그인 성공!');
       localStorage.setItem('accessToken', data.accessToken);
-      setUserState({
-        email: data.email,
-        name: data.name,
-        memberId: data.memberId,
-        loginPlatformInfo: data.loginPlatformInfo,
-        profileFileUrl: data.profileFileUrl,
-      });
+
+      if (rememberEmail) {
+        setUserState({
+          email: data.email,
+          name: data.name,
+          memberId: data.memberId,
+          loginPlatformInfo: data.loginPlatformInfo,
+          profileFileUrl: data.profileFileUrl,
+        });
+      } else {
+        clearUser();
+      }
 
       if (inviteCodeParam) {
         navigate(`/workspaces/invite?code=${inviteCodeParam}`, { replace: true });
@@ -46,7 +56,7 @@ export const LoginForm = () => {
       }
     } catch (error) {
       console.error('로그인 실패:', error);
-      toast.error;
+      toast.error('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
     }
   };
 
@@ -101,14 +111,14 @@ export const LoginForm = () => {
             </div>
           </S.RememberSignupRow>
 
-          <S.LoginButton type="submit">로그인</S.LoginButton>
+          <S.LoginButton type="submit" >로그인</S.LoginButton>
 
           <S.Divider>
             <S.DividerText>또는</S.DividerText>
           </S.Divider>
 
           <S.FormRow>
-            <OauthLoginButton buttonStyle="Google">Google 계정으로 로그인</OauthLoginButton>
+            <OauthLoginButton buttonStyle="Google" type="button">Google 계정으로 로그인</OauthLoginButton>
           </S.FormRow>
         </form>
       </S.FormWrapper>

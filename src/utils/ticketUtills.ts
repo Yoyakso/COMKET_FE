@@ -4,10 +4,15 @@ export function updateNestedTickets(
   tickets: Ticket[],
   updater: (t: Ticket) => Ticket
 ): Ticket[] {
-  return tickets.map((t) => ({
-    ...updater(t),
-    subtickets: t.subtickets?.map(updater),
-  }));
+  return tickets.map((t) => {
+    const updatedTicket = updater(t);
+    return {
+      ...updatedTicket,
+      subtickets: updatedTicket.subtickets
+        ? updateNestedTickets(updatedTicket.subtickets, updater)
+        : undefined,
+    };
+  });
 }
 
 export function deleteNestedTickets(
@@ -21,3 +26,14 @@ export function deleteNestedTickets(
       subtickets: t.subtickets?.filter((st) => !idsToDelete.includes(st.id)),
     }));
 }
+
+export const findTicketById = (tickets: Ticket[], id: number): Ticket | undefined => {
+  for (const t of tickets) {
+    if (t.id === id) return t;
+    if (t.subtickets && t.subtickets.length > 0) {
+      const found = findTicketById(t.subtickets, id);
+      if (found) return found;
+    }
+  }
+  return undefined;
+};

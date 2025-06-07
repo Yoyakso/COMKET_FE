@@ -1,7 +1,5 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import { Ticket } from '@/types/ticket';
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export interface CreateTicketDto {
   ticket_name: string;
@@ -24,18 +22,9 @@ export interface CreateTicketDto {
  */
 export const createTicket = async (projectName: string, ticketData: CreateTicketDto) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.post(
-      `${BASE_URL}/api/v1/tickets?project_name=${encodeURIComponent(projectName)}`,
+    const response = await axiosInstance.post(
+      `/api/v1/tickets?project_name=${encodeURIComponent(projectName)}`,
       ticketData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
     );
 
     return response.data;
@@ -52,16 +41,8 @@ export const createTicket = async (projectName: string, ticketData: CreateTicket
  */
 export const getTicketsByProjectName = async (projectName: string): Promise<Ticket[]> => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.get(
-      `${BASE_URL}/api/v1/tickets?project_name=${encodeURIComponent(projectName)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+    const response = await axiosInstance.get(
+      `/api/v1/tickets?project_name=${encodeURIComponent(projectName)}`,
     );
     return response.data;
   } catch (error) {
@@ -78,18 +59,9 @@ export const getTicketsByProjectName = async (projectName: string): Promise<Tick
  */
 export const getTicketById = async (ticketId: number, projectName: string): Promise<Ticket> => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.get(
-      `${BASE_URL}/api/v1/tickets/${ticketId}?project_name=${encodeURIComponent(projectName)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+    const response = await axiosInstance.get(
+      `/api/v1/tickets/${ticketId}?project_name=${encodeURIComponent(projectName)}`,
     );
-
     return response.data;
   } catch (error) {
     console.error('티켓 단건 조회 실패:', error);
@@ -105,16 +77,9 @@ export const getTicketById = async (ticketId: number, projectName: string): Prom
  */
 export const deleteTickets = async (ids: number[], projectName: string) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.delete(
-      `${BASE_URL}/api/v1/tickets?project_name=${encodeURIComponent(projectName)}`,
+    const response = await axiosInstance.delete(
+      `/api/v1/tickets?project_name=${encodeURIComponent(projectName)}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         data: { ticket_ids: ids },
       },
     );
@@ -134,18 +99,9 @@ export const deleteTickets = async (ids: number[], projectName: string) => {
  */
 export const deleteTicket = async (ticketId: number, projectName: string) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.delete(
-      `${BASE_URL}/api/v1/tickets/${ticketId}?project_name=${encodeURIComponent(projectName)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+    const response = await axiosInstance.delete(
+      `/api/v1/tickets/${ticketId}?project_name=${encodeURIComponent(projectName)}`,
     );
-
     return response.data;
   } catch (error) {
     console.error('티켓 단건 삭제 실패:', error);
@@ -165,19 +121,10 @@ export const editSingleTicket = async (
   updatedFields: { [key: string]: any },
 ) => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.patch(
-      `${BASE_URL}/api/v1/tickets/${ticketId}?project_name=${encodeURIComponent(projectName)}`,
+    const response = await axiosInstance.patch(
+      `/api/v1/tickets/${ticketId}?project_name=${encodeURIComponent(projectName)}`,
       updatedFields,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
     );
-
     return response.data;
   } catch (error) {
     console.log('티겟 수정 실패:', error);
@@ -192,16 +139,8 @@ export const editSingleTicket = async (
  */
 export const getMyTickets = async (workspaceName: string): Promise<Ticket[]> => {
   try {
-    const token = localStorage.getItem('accessToken');
-    if (!token) throw new Error('로그인 토큰이 없습니다.');
-
-    const response = await axios.get(
-      `${BASE_URL}/api/v1/tickets/workspace?workspace_name=${encodeURIComponent(workspaceName)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+    const response = await axiosInstance.get(
+      `/api/v1/tickets/workspace?workspace_name=${encodeURIComponent(workspaceName)}`,
     );
 
     return response.data;

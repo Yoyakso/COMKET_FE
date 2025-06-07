@@ -7,20 +7,12 @@ import type { Priority } from '@/types/filter';
 import { PortalDropdown } from '@/utils/PortalDropdown';
 import { editSingleTicket } from '@/api/Ticket';
 import { toast } from 'react-toastify';
+import { findTicketById } from '@/utils/ticketUtills';
 
 interface PriorityDropdownProps {
   ticketId: number;
   projectName: string;
 }
-
-const findTicketById = (tickets: any[], id: number) => {
-  for (const t of tickets) {
-    if (t.id === id) return t;
-    const found = t.subtickets?.find((st: any) => st.id === id);
-    if (found) return found;
-  }
-  return undefined;
-};
 
 export const PriorityDropdown = ({ ticketId, projectName }: PriorityDropdownProps) => {
   const ref = useRef<HTMLDivElement>(null);

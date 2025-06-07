@@ -1,25 +1,28 @@
-import { ChevronDown, COMKET, InfoIcon, QuestionIcon } from "@assets/icons"
-import { useNavigate } from "react-router-dom"
-import * as S from "./GlobalNavBar.Style"
-import { WorkspaceSelector } from "./WorkspaceSelector"
-import { Search } from "@/components/common/search/Search"
+import { ChevronDown, COMKET, InfoIcon, QuestionIcon } from '@assets/icons';
+import { useNavigate } from 'react-router-dom';
+import * as S from './GlobalNavBar.Style';
+import { WorkspaceSelector } from './WorkspaceSelector';
+import { NavProfile } from './NavProfile';
+import { useUserStore } from '@/stores/userStore';
 
-type GNBVariant = "default" | "white" | "workspace"
+type GNBVariant = 'default' | 'white' | 'workspace';
 
 interface GNBProps {
-  variant?: GNBVariant
+  variant?: GNBVariant;
 }
 
 export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
   const navigate = useNavigate();
+  const userName = useUserStore(s => s.name);
+  const userProfile = useUserStore(s => s.profileFileUrl);
 
   const handleLoginButton = () => {
     navigate('/login');
-  }
+  };
 
   const handleStartButton = () => {
-    navigate('/signup')
-  }
+    navigate('/signup');
+  };
 
   const handleLogoClick = () => {
     navigate('/main');
@@ -27,17 +30,15 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
 
   return (
     <S.NavbarContainer>
-      {variant !== "workspace" && (
-        <S.LogoContainer onClick={handleLogoClick} style={{ cursor: "pointer" }}>
+      {variant !== 'workspace' && (
+        <S.LogoContainer onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
           <COMKET />
           <S.LogoText>COMKET</S.LogoText>
         </S.LogoContainer>
       )}
-      {variant === "workspace" && (
-        <WorkspaceSelector />
-      )}
+      {variant === 'workspace' && <WorkspaceSelector />}
 
-      {variant === "default" && (
+      {variant === 'default' && (
         <S.NavLinks>
           <S.NavLink href="#">서비스 소개</S.NavLink>
           <S.NavLink href="/plan">이용 요금</S.NavLink>
@@ -47,26 +48,20 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
           </S.NavLink>
         </S.NavLinks>
       )}
-      {variant === "default" && (
+      {variant === 'default' && (
         <S.AuthContainer>
           <S.LoginButton onClick={handleLoginButton}>로그인</S.LoginButton>
           <S.StartButton onClick={handleStartButton}>시작하기</S.StartButton>
         </S.AuthContainer>
       )}
 
-      {variant === "workspace" && (
-        <S.SearchContainter>
-          <Search $variant="filled" size="md" onSearch={(test) => console.log("검색키워드:", test)} ></Search>
-        </S.SearchContainter>
+      {variant === 'workspace' && (
+        <S.NavProfileContainer onClick={() => navigate('/profile')}>
+          <NavProfile name={userName} defaultImage={userProfile} />
+        </S.NavProfileContainer>
       )}
 
-      {variant !== "default" && (
-        <S.IconContainer>
-          <InfoIcon />
-          <QuestionIcon />
-        </S.IconContainer>
-      )}
-
+      {variant !== 'default' && <></>}
     </S.NavbarContainer>
-  )
-}
+  );
+};
