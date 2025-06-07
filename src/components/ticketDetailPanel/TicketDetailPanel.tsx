@@ -55,6 +55,10 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, ticketList, se
   const flatList = flattenTickets(ticketList)
   const currentIndex = flatList.findIndex(t => t.id === ticket.id)
 
+  marked.setOptions({
+    breaks: true,
+  });
+
   const goPrev = () => {
     if (currentIndex > 0) {
       setTicket(flatList[currentIndex - 1])
