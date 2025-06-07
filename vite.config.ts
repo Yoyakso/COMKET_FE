@@ -2,6 +2,10 @@ import svgr from 'vite-plugin-svgr';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import mkcert from 'vite-plugin-mkcert';
+import fs from 'fs';
+
+const isDev = process.env.NODE_ENV !== 'production';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -42,10 +46,17 @@ export default defineConfig({
         type: 'module',
       },
     }),
+    mkcert(),
   ],
   base: '/',
   server: {
     port: 3333,
+    https: isDev
+      ? {
+        key: fs.readFileSync('./localhost-key.pem'),
+        cert: fs.readFileSync('./localhost.pem'),
+      }
+      : undefined,
   },
   preview: {
     port: 3434,

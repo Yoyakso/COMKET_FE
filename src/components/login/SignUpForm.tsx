@@ -114,7 +114,7 @@ export const SignUpForm = () => {
       const res = await registerUser({
         email,
         password,
-        real_name: name,
+        full_name: name,
       });
 
       if (inviteCodeParam) {
