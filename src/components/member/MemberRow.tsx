@@ -140,7 +140,13 @@ export const MemberRow = ({ member, onUpdateMember, onClickDetail }: MemberRowPr
       <S.Row $isDeleted={member.state === 'DELETED'}>
         <S.Cell>
           <S.UserInfo>
-            <S.UserAvatar color={color}>{member.name?.[0] ?? '?'}</S.UserAvatar>
+            <S.UserAvatar color={color}>
+              {member.profileFileUrl ? (
+                <img src={member.profileFileUrl} alt={member.name} style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
+              ) : (
+                member.name?.[0] ?? '?'
+              )}
+            </S.UserAvatar>
             <S.UserName
               onClick={() => {
                 onClickDetail?.(member.workspaceMemberid);

@@ -5,7 +5,7 @@ import { Button } from '@/components/common/button/Button';
 import { Dropdown, DropdownOption } from '@/components/common/dropdown/Dropdown';
 import { useNavigate } from 'react-router-dom';
 import { fetchMyWorkspaces } from '@/api/Workspace';
-import { getMyProfile } from '@/api/Member';
+import { getMyWorkspaceProfile } from '@api/Workspace';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useUserStore } from '@/stores/userStore';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?url';
@@ -89,8 +89,6 @@ export const WorkspacePage = () => {
       const selectedWorkspace = workspaces.find(ws => ws.slug === selectedSlug);
       if (!selectedWorkspace) throw new Error('선택된 워크스페이스가 없습니다.');
 
-      const selectedId = Number(selectedWorkspace.id);
-
       useWorkspaceStore.getState().setWorkspaceStore({
         workspaceName: selectedWorkspace.name,
         workspaceSlug: selectedWorkspace.slug,
@@ -98,13 +96,11 @@ export const WorkspacePage = () => {
         profileFileUrl: selectedWorkspace.profileFileUrl || '',
       });
 
-      const profileData = await getMyProfile();
+      const profileData = await getMyWorkspaceProfile(workspaceId);
       useUserStore.getState().setProfileInfo({
-        name: profileData.realName ?? '',
+        name: profileData.name ?? '',
         profileFileUrl: profileData.profileFileUrl ?? '',
       });
-      // console.log('내 프로필 데이터:', profileData);
-      // useWorkspaceStore.getState().setMyProfileFor(selectedId, profileData);
       navigate(`/${selectedSlug}/project`);
     } catch (err) {
       console.error('워크스페이스 입장 실패:', err);

@@ -100,12 +100,6 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
     setShowMemberModal(false)
   }
 
-  const handleSaveMembers = async () => {
-    console.log("멤버 저장 로직 실행")
-    await new Promise((resolve) => setTimeout(resolve, 1000)) // 저장 시뮬레이션
-    return Promise.resolve()
-  }
-
   const avatarColor = getColorFromString(project.admin)
 
   const openRemoveModal = (e: React.MouseEvent) => {
@@ -167,7 +161,17 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
         </S.Cell>
         <S.Cell>
           <S.UserInfo>
-            <S.UserAvatar color={avatarColor}>{project.admin?.charAt(0).toUpperCase() ?? "?"}</S.UserAvatar>
+            <S.UserAvatar color={avatarColor}>
+              {project.adminProfileFileUrl ? (
+                <img
+                  src={project.adminProfileFileUrl}
+                  alt={project.admin}
+                />
+              ) : (
+                project.admin?.charAt(0).toUpperCase() ?? "?"
+              )}
+            </S.UserAvatar>
+
             <S.UserName>{project.admin}</S.UserName>
           </S.UserInfo>
         </S.Cell>
@@ -191,7 +195,7 @@ export const ProjectRow = ({ project, onViewProject, onDeleteProject }: ProjectR
         </S.Cell>
       </S.Row>
       {showMemberModal && (
-        <ProjectMemberModal projectId={Number(project.id)} projectName={project.name} onClose={closeMemberModal} onSave={handleSaveMembers} />
+        <ProjectMemberModal projectId={Number(project.id)} projectName={project.name} onClose={closeMemberModal} />
       )}
       {isRemoveModalOpen && (
         <RemoveProjectModal onClose={closeRemoveModal} onConfirm={handleRemoveProject} projectId={Number(project.id)} />

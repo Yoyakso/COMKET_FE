@@ -17,6 +17,7 @@ export interface ProjectData {
   memberCount: number;
   createdBy: string;
   createdAt: string;
+  adminProfileFileUrl?: string;
 }
 
 export interface ProjectFormData {
