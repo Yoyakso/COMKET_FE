@@ -62,6 +62,13 @@ export const UserAvatar = styled.div<UserAvatarProps>`
   justify-content: center;
   font-weight: 400;
   font-size: 14px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
 `
 
 export const UserName = styled.div`

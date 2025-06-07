@@ -8,11 +8,14 @@ import { logOut } from "@/api/Oauth"
 import { toast } from "react-toastify"
 import { useUserStore } from "@/stores/userStore"
 import { getMyProfile } from "@/api/Member"
+import { leaveService } from "@/api/Oauth"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 export const AccountInfoPage = () => {
   const email = useUserStore((state) => state.email)
   const loginMethod = useUserStore((state) => state.loginPlatformInfo)
   const { clearUser } = useUserStore()
+  const { clearWorkspace } = useWorkspaceStore()
   const navigate = useNavigate()
   const [name, setName] = useState<string | null>(null)
 
@@ -41,10 +44,16 @@ export const AccountInfoPage = () => {
     }
   }
 
-  const handleWithdraw = () => {
+  const handleWithdraw = async () => {
     if (window.confirm("정말로 탈퇴하시겠습니까? 모든 데이터가 삭제되며 복구할 수 없습니다.")) {
+      await leaveService()
+
+      clearUser()
+      clearWorkspace()
+      localStorage.clear()
+
       toast.success("탈퇴 처리되었습니다.")
-      //회원 탈퇴 API 호출
+      navigate("/login")
     }
   }
 

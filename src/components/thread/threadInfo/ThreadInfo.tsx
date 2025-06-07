@@ -95,6 +95,10 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
     }
   }, [fetchedTicket])
 
+  marked.setOptions({
+    breaks: true,
+  });
+
   const mutation = useMutation<void, Error, TicketUpdatePayload>({
     mutationFn: () =>
       editSingleTicket(Number(ticketId), projectName, {
@@ -148,12 +152,6 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
     const weekdays = ["일", "월", "화", "수", "목", "금", "토"]
     const weekday = weekdays[date.getDay()]
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} (${weekday})`
-  }
-
-  const formatFileSize = (bytes: number) => {
-    if (!bytes) return "0KB"
-    const kb = bytes / 1024
-    return `${Math.round(kb)}KB`
   }
 
   const handleAdditionalInfoChange = (key: string, value: string) => {

@@ -14,6 +14,7 @@ import { formatDate } from '@utils/dateFormat';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useInitializeWorkspace } from '@/hooks/useWorkspace';
 import { toast } from 'react-toastify';
+import { getWorkspaceMembers } from '@/api/Member';
 
 export const ProjectPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,13 +23,15 @@ export const ProjectPage = () => {
   const [projects, setProjects] = useState<ProjectTableData[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   useInitializeWorkspace();
+
+  const workspaceId = useWorkspaceStore(s => s.workspaceId);
   const workspaceName = useWorkspaceStore(state => state.workspaceName);
 
   useEffect(() => {
-    if (workspaceName) {
+    if (workspaceId && workspaceName) {
       handleNavigateProject();
     }
-  }, [workspaceName]);
+  }, [workspaceId, workspaceName]);
 
   const filteredProjects = projects.filter(project => {
     const matchesSearch =
@@ -65,21 +68,29 @@ export const ProjectPage = () => {
 
   const handleNavigateProject = async () => {
     try {
-      const data = await getAllProjects(workspaceName);
-      console.log('data', data);
+      const [projectsRes, membersRes] = await Promise.all([
+        getAllProjects(workspaceName),
+        getWorkspaceMembers(workspaceId),
+      ]);
 
-      const parsedProjects: ProjectTableData[] = data.map((project: any) => ({
+      const profileMap = new Map(
+        membersRes.map(m => [m.email, m.profileFileUrl])
+      );
+
+      const parsedProjects: ProjectTableData[] = projectsRes.map((project: any) => ({
         id: Number(project.projectId),
         name: project.projectName,
         description: project.projectDescription,
         tag: (project.projectTag || []).join(', '),
         visibility: project.isPublic ? '전체 공개' : '멤버 공개',
         admin: project.adminInfo.name,
+        adminProfileFileUrl: profileMap.get(project.adminInfo.email) || '',
         adminInfo: project.adminInfo,
         createdBy: '알 수 없음',
         createdAt: formatDate(project.createTime),
       }));
       setProjects(parsedProjects);
+      console.log("ddddddddddddddd", parsedProjects)
     } catch (error) {
       console.error('프로젝트 조회 실패:', error);
       setProjects([]);

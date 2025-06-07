@@ -18,6 +18,7 @@ export interface ProjectMember {
   role: '프로젝트 관리자' | '일반 멤버';
   initial: string;
   color: string;
+  profileFileUrl: string;
 }
 
 interface ProjectMemberModalProps {
@@ -100,6 +101,10 @@ export const ProjectMemberModal = ({
     const fetchProjectMembers = async () => {
       try {
         const data = await getProjectMembers(workspaceName, projectId);
+        const workspaceMembers = await getWorkspaceMembers(workspaceId); // 👉 추가
+        const memberMap = new Map(
+          workspaceMembers.map(m => [m.email, m.profileFileUrl])
+        );
 
         const mappedMembers: ProjectMember[] = data
           .filter((m: any) => m.state === 'ACTIVE')
@@ -107,10 +112,11 @@ export const ProjectMemberModal = ({
             email: m.email,
             id: m.projectMemberId,
             name: m.name,
-            position: '', // 현재 직무는 공백 상태
+            position: '',
             role: m.positionType === 'MEMBER' ? '일반 멤버' : '프로젝트 관리자',
             initial: m.name?.charAt(0) || '?',
             color: getColorFromString(m.name),
+            profileFileUrl: memberMap.get(m.email) || '',
           }));
 
         setMembers(mappedMembers);
@@ -127,20 +133,22 @@ export const ProjectMemberModal = ({
     const fetchWorkspaceMembers = async () => {
       try {
         const members = await getWorkspaceMembers(workspaceId);
+        console.log("memememe", members)
         const memberMap = new Map<
           string,
           {
             memberId: number;
             name: string;
             email: string;
+            profileFileUrl: string;
           }
         >();
-
         members.forEach(m => {
           memberMap.set(m.email, {
             memberId: m.workspaceMemberid,
             name: m.name,
             email: m.email,
+            profileFileUrl: m.profileFileUrl,
           });
         });
 
@@ -152,6 +160,9 @@ export const ProjectMemberModal = ({
 
     fetchWorkspaceMembers();
   }, []);
+
+  console.log("members", members);
+
 
   const addMembersToList = (newMembers: ProjectMember[]) => {
     setMembers(prev => [...prev, ...newMembers]);
@@ -328,7 +339,16 @@ export const ProjectMemberModal = ({
                 <S.Row key={member.id}>
                   <S.Cell>
                     <S.UserInfo>
-                      <S.Avatar $bgColor={member.color}>{member.initial}</S.Avatar>
+                      <S.Avatar $bgColor={member.color}>
+                        {member.profileFileUrl ? (
+                          <img
+                            src={member.profileFileUrl}
+                            alt={member.name}
+                          />
+                        ) : (
+                          member.initial
+                        )}
+                      </S.Avatar>
                       <S.UserName>
                         {member.name} [{member.email.split('@')[0]}]
                       </S.UserName>
