@@ -46,17 +46,17 @@ export default defineConfig({
         type: 'module',
       },
     }),
-    mkcert(),
+    // mkcert(),
   ],
   base: '/',
   server: {
     port: 3333,
-    https: isDev
-      ? {
-        key: fs.readFileSync('./localhost-key.pem'),
-        cert: fs.readFileSync('./localhost.pem'),
-      }
-      : undefined,
+    // https: isDev
+    //   ? {
+    //     key: fs.readFileSync('./localhost-key.pem'),
+    //     cert: fs.readFileSync('./localhost.pem'),
+    //   }
+    //   : undefined,
   },
   preview: {
     port: 3434,
