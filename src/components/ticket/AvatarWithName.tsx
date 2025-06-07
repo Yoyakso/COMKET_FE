@@ -5,7 +5,7 @@ interface AvatarWithNameProps {
   user: {
     name: string;
     nickname: string;
-    profileUrl?: string;
+    profileFileUrl?: string;
     email: string;
   };
 }
@@ -15,9 +15,9 @@ export const AvatarWithName = ({ user }: AvatarWithNameProps) => {
 
   return (
     <S.Container>
-      {user.profileUrl ? (
+      {user.profileFileUrl ? (
         <S.AvatarImage
-          src={user.profileUrl}
+          src={user.profileFileUrl}
           alt={`${user.email}의 프로필`}
           width={'20px'}
           height={'20px'}

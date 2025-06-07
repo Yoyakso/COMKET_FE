@@ -7,4 +7,5 @@ export interface MemberData {
   state: 'ACTIVE' | 'INACTIVE' | 'DELETED';
   createdAt: string;
   updatedAt: string;
+  profileFileUrl: string;
 }

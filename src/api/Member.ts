@@ -1,8 +1,6 @@
 import axiosInstance from './axiosInstance';
 import qs from 'qs';
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
 /**
  * 워크스페이스 멤버 전체 조회
  */

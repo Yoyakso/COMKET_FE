@@ -198,6 +198,13 @@ export const Avatar = styled.div<{ $bgColor: string }>`
   justify-content: center;
   font-size: 16px;
   font-weight: 500;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
 `
 
 export const UserName = styled.div`

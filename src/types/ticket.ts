@@ -8,7 +8,7 @@ export interface Ticket {
   assignee_member: {
     name: string;
     nickname: string;
-    profileUrl?: string;
+    profileFileUrl?: string;
     email: string;
     projectMemberId: number | null;
   };

@@ -121,3 +121,16 @@ export const logOut = async () => {
     throw error;
   }
 };
+
+/**
+ * 서비스 탈퇴
+ */
+export const leaveService = async () => {
+  try {
+    const response = await axiosInstance.delete('/api/v1/members/me');
+    return response.data;
+  } catch (error) {
+    console.log('서비스 탈퇴 실패', error);
+    throw error;
+  }
+};
