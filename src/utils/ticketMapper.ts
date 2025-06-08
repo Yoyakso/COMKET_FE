@@ -14,7 +14,7 @@ export function mapTicketFromResponse(response: any): Ticket {
     assignee_member: {
       name: response.assignee_member?.name ?? '',
       email: response.assignee_member?.email ?? '',
-      profileUrl: '',
+      profileFileUrl: response.assignee_member?.profileFileUr ?? '',
       nickname: '',
       projectMemberId: response.assignee_member?.projectMemberId ?? null,
     },

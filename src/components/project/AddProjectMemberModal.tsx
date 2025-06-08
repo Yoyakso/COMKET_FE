@@ -14,12 +14,15 @@ export interface Member {
   email: string;
   initial: string;
   color: string;
+  profileFileUrl: string;
 }
 
 interface AddProjectMemberModalProps {
   onClose: () => void;
   projectId: number;
-  memberMap: Map<string, { memberId: number; name: string; email: string }>;
+  memberMap: Map<string, {
+    profileFileUrl: string; memberId: number; name: string; email: string
+  }>;
   onAddSuccess: (newMembers: ProjectMember[]) => void;
 }
 
@@ -78,6 +81,7 @@ export const AddProjectMemberModal = ({
       email: m.email,
       initial: m.name?.charAt(0).toUpperCase() || m.email.charAt(0).toUpperCase(),
       color: getColorFromString(m.email),
+      profileFileUrl: m.profileFileUrl,
     }));
 
     setSuggestions(suggestionList);
@@ -113,7 +117,9 @@ export const AddProjectMemberModal = ({
     }
   };
 
-  const addMember = (m: { memberId: number; name: string; email: string }) => {
+  const addMember = (m: {
+    profileFileUrl: string; memberId: number; name: string; email: string
+  }) => {
     if (selectedMembers.some(member => member.email === m.email)) {
       toast.error('이미 추가된 이메일입니다.');
       return;
@@ -133,6 +139,7 @@ export const AddProjectMemberModal = ({
       email: m.email,
       initial,
       color,
+      profileFileUrl: m.profileFileUrl,
     };
 
     setSelectedMembers([...selectedMembers, newMember]);
@@ -172,6 +179,7 @@ export const AddProjectMemberModal = ({
           role: role === '프로젝트 관리자' ? '프로젝트 관리자' : '일반 멤버',
           initial: m.initial,
           color: m.color,
+          profileFileUrl: m.profileFileUrl,
         })),
       );
       toast.success('멤버 초대가 완료되었습니다.');
@@ -221,6 +229,7 @@ export const AddProjectMemberModal = ({
                           memberId: s.id,
                           name: s.name || '',
                           email: s.email,
+                          profileFileUrl: s.profileFileUrl,
                         })
                       }
                     >
