@@ -1,10 +1,10 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { color } from '@/styles/color';
 
 export const SectionWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 32px; // 조금 더 시각적으로 여유 있게
+  gap: 32px;
 `;
 
 export const Card = styled.div`
@@ -12,7 +12,7 @@ export const Card = styled.div`
   border: 1px solid ${color.textPlaceholder};
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // 살짝 그림자 줘서 입체감
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 `;
 
 export const TopRow = styled.div`
@@ -43,39 +43,12 @@ export const CardTitle = styled.h2`
   font-weight: 600;
 `;
 
-export const Subtitle = styled.p`
-  font-size: 13px;
-  color: ${color.textSecondary};
-  margin-top: 4px;
-`;
 export const MainValue = styled.div`
   font-size: 24px;
   font-weight: 700;
   color: ${color.textPrimary};
   margin-top: 8px;
 `;
-
-// export const BadgeGreen = styled.div`
-//   display: inline-block;
-//   background-color: #dcfce7;
-//   color: #15803d;
-//   font-size: 12px;
-//   font-weight: 500;
-//   padding: 4px 10px;
-//   margin-top: 4px;
-//   border-radius: 9999px;
-// `;
-
-// export const BadgePurple = styled.div`
-//   display: inline-block;
-//   background-color: #f3e8ff;
-//   color: #9333ea;
-//   font-size: 12px;
-//   font-weight: 500;
-//   padding: 4px 10px;
-//   margin-top: 4px;
-//   border-radius: 9999px;
-// `;
 
 export const ChartArea = styled.div`
   width: 100%;
@@ -90,4 +63,18 @@ export const ChartArea = styled.div`
     width: 100% !important;
     height: 100% !important;
   }
+`;
+
+const shimmer = keyframes`
+  0%   {opacity: .6;}
+  50%  {opacity: 1;}
+  100% {opacity: .6;}
+`;
+
+export const Skeleton = styled.div`
+  width: 100%;
+  height: 512px; /* 카드 2개 높이 */
+  border-radius: 12px;
+  background: ${color.textPlaceholder08 ?? '#f5f5f7'};
+  animation: ${shimmer} 1.5s ease-in-out infinite;
 `;

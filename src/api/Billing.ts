@@ -1,21 +1,11 @@
 import axiosInstance from './axiosInstance';
 
-const REDIRECT_URI = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URI;
-
+/**
+ * 빌링 정보 조회 API
+ * @param workspaceId 빌링 정보 조회를 위한 워크스페이스 ID
+ * @returns
+ */
 export const getBillingInfo = async (workspaceId: number) => {
-  const token = localStorage.getItem('accessToken');
-  const res = await fetch(`/api/v1/workspaces/${workspaceId}/billing`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error('요금제 정보 조회 실패');
-  }
-
-  const data = await res.json();
-  return data;
+  const res = await axiosInstance.get(`/api/v1/workspaces/${workspaceId}/billing`);
+  return res.data;
 };

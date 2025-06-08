@@ -15,7 +15,7 @@ export const BillingPage = () => {
   const [showPaymentCompleteModal, setShowPaymentCompleteModal] = useState(false);
   const [nextPlanId, setNextPlanId] = useState<string | null>(null);
   const [currentPlanId, setCurrentPlanId] = useState<
-    'personal' | 'startup' | 'professional' | 'enterprise'
+    'basic' | 'startup' | 'professional' | 'enterprise'
   >('startup');
 
   const handleUpgrade = (planId: string) => {

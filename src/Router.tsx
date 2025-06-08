@@ -141,7 +141,7 @@ export const Router = createBrowserRouter([
         element: <PlanPage />,
       },
       {
-        path: 'billing',
+        path: ':workspaceSlug/plan',
         element: <BillingPage />,
       },
       {

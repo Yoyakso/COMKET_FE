@@ -3,7 +3,6 @@
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  ChartOptions,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -11,147 +10,87 @@ import {
   Filler,
   Tooltip,
   Legend,
+  ChartOptions,
 } from 'chart.js';
 import { Users, CreditCard } from 'lucide-react';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { useBillingInfo } from '@/hooks/useBillingInfo';
+import { parseHistoryToMonthlyArray } from '@/types/billing';
 import * as S from './BillingChartSection.Style';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
-const labels = [
-  '1월',
-  '2월',
-  '3월',
-  '4월',
-  '5월',
-  '6월',
-  '7월',
-  '8월',
-  '9월',
-  '10월',
-  '11월',
-  '12월',
-];
-
-const memberData = {
-  labels,
-  datasets: [
-    {
-      label: '팀 멤버',
-      data: [15, 18, 22, 25, 28, 28, null, null, null, null, null, null],
-      borderColor: '#3b82f6',
-      backgroundColor: (ctx: any) => {
-        const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 200);
-        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.15)');
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-        return gradient;
-      },
-      fill: true,
-      tension: 0.4,
-      pointRadius: 4,
-    },
-  ],
-};
-
-const billingData = {
-  labels,
-  datasets: [
-    {
-      label: '사용 금액',
-      data: [150000, 180000, 220000, 250000, 280000, 280000, null, null, null, null, null, null],
-      borderColor: '#9333ea',
-      backgroundColor: (ctx: any) => {
-        const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 200);
-        gradient.addColorStop(0, 'rgba(147, 51, 234, 0.15)');
-        gradient.addColorStop(1, 'rgba(147, 51, 234, 0)');
-        return gradient;
-      },
-      fill: true,
-      tension: 0.4,
-      pointRadius: 4,
-    },
-  ],
-};
-
-const memberOptions: ChartOptions<'line'> = {
-  responsive: true,
-  maintainAspectRatio: false,
-  interaction: {
-    mode: 'index',
-    intersect: false,
-  },
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      enabled: true,
-      callbacks: {
-        label: context => `${context.parsed.y}명`,
-      },
-    },
-  },
-  scales: {
-    x: {
-      grid: { display: false },
-      ticks: { color: '#888' },
-    },
-    y: {
-      min: 10,
-      max: 50,
-      ticks: {
-        stepSize: 5,
-        callback: value => `${value}`,
-        color: '#666',
-      },
-      grid: {
-        display: true,
-        drawOnChartArea: true,
-        tickBorderDash: [4, 4],
-      },
-    },
-  },
-};
-
-const billingOptions: ChartOptions<'line'> = {
-  responsive: true,
-  maintainAspectRatio: false,
-  interaction: {
-    mode: 'index',
-    intersect: false,
-  },
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      enabled: true,
-      callbacks: {
-        label: context => `₩${context.parsed.y.toLocaleString('ko-KR')}`,
-      },
-    },
-  },
-  scales: {
-    x: {
-      grid: { display: false },
-      ticks: { color: '#888' },
-    },
-    y: {
-      min: 100000,
-      max: 300000,
-      ticks: {
-        stepSize: 50000,
-        callback: value => `₩${value.toLocaleString('ko-KR')}`,
-        color: '#666',
-      },
-      grid: {
-        display: true,
-        drawOnChartArea: true,
-        tickBorderDash: [4, 4],
-      },
-    },
-  },
-};
-
 export const BillingChartSection = () => {
+  const workspaceId = useWorkspaceStore(s => s.workspaceId);
+  const { data, isLoading } = useBillingInfo(workspaceId);
+
+  if (isLoading || !data) return <S.Skeleton />;
+
+  const labels = Array.from({ length: 12 }, (_, i) => `${i + 1}월`);
+  const memberArray = parseHistoryToMonthlyArray(data.memberCountHistory);
+  const amountArray = parseHistoryToMonthlyArray(data.billingAmountHistory);
+
+  const memberDataset = {
+    label: '팀 멤버',
+    data: memberArray,
+    borderColor: '#3b82f6',
+    backgroundColor: (ctx: any) => {
+      const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 200);
+      g.addColorStop(0, 'rgba(59,130,246,.15)');
+      g.addColorStop(1, 'rgba(59,130,246,0)');
+      return g;
+    },
+    fill: true,
+    tension: 0.4,
+    pointRadius: 4,
+  };
+
+  const billingDataset = {
+    label: '사용 금액',
+    data: amountArray,
+    borderColor: '#9333ea',
+    backgroundColor: (ctx: any) => {
+      const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 200);
+      g.addColorStop(0, 'rgba(147,51,234,.15)');
+      g.addColorStop(1, 'rgba(147,51,234,0)');
+      return g;
+    },
+    fill: true,
+    tension: 0.4,
+    pointRadius: 4,
+  };
+
+  const memberValues = memberArray.filter((v): v is number => v !== null);
+  const amountValues = amountArray.filter((v): v is number => v !== null);
+  const memberMax = Math.max(...memberValues, 5);
+  const amountMax = Math.max(...amountValues, 10_000);
+
+  const memberOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { min: 0, max: memberMax + 5, ticks: { stepSize: 5 } },
+    },
+    plugins: { legend: { display: false } },
+  };
+
+  const billingOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        min: 0,
+        max: amountMax * 1.2,
+        ticks: {
+          callback: v => `₩${(+v).toLocaleString('ko-KR')}`,
+        },
+      },
+    },
+    plugins: { legend: { display: false } },
+  };
+
   return (
     <S.SectionWrapper>
-      {/* 팀 인원 현황 */}
       <S.Card>
         <S.TopRow>
           <S.LeftBlock>
@@ -159,16 +98,14 @@ export const BillingChartSection = () => {
               <Users size={16} strokeWidth={1.5} />
               <S.CardTitle>팀 인원 현황</S.CardTitle>
             </S.TitleWrapper>
-            <S.MainValue>28명</S.MainValue>
-            {/* <S.BadgeGreen>프로페셔널 플랜 이용 중</S.BadgeGreen> */}
+            <S.MainValue>{data.memberCount}명</S.MainValue>
           </S.LeftBlock>
         </S.TopRow>
         <S.ChartArea>
-          <Line data={memberData} options={memberOptions} />
+          <Line data={{ labels, datasets: [memberDataset] }} options={memberOptions} />
         </S.ChartArea>
       </S.Card>
 
-      {/* 요금제 사용 현황 */}
       <S.Card>
         <S.TopRow>
           <S.LeftBlock>
@@ -176,12 +113,11 @@ export const BillingChartSection = () => {
               <CreditCard size={16} strokeWidth={1.5} />
               <S.CardTitle>요금제 사용 현황</S.CardTitle>
             </S.TitleWrapper>
-            <S.MainValue>₩280,000</S.MainValue>
-            {/* <S.BadgePurple>프로페셔널 플랜</S.BadgePurple> */}
+            <S.MainValue>₩{data.displayAmount.toLocaleString('ko-KR')}</S.MainValue>
           </S.LeftBlock>
         </S.TopRow>
         <S.ChartArea>
-          <Line data={billingData} options={billingOptions} />
+          <Line data={{ labels, datasets: [billingDataset] }} options={billingOptions} />
         </S.ChartArea>
       </S.Card>
     </S.SectionWrapper>

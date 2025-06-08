@@ -29,7 +29,7 @@ export const SettingNavBar = () => {
           href: `/${workspaceSlug}/settings`,
           icon: <InformationIcon />,
         },
-        { id: 'plan', label: '플랜 관리', href: '/plan', icon: <PlanIcon /> },
+        { id: 'plan', label: '플랜 관리', href: `/${workspaceSlug}/plan`, icon: <PlanIcon /> },
         {
           id: 'member',
           label: '워크스페이스 멤버',
