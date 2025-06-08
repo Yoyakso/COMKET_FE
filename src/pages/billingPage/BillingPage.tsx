@@ -8,9 +8,12 @@ import {
   BillingPlanSectionProps,
 } from '@/components/billing/BillingPlanSection';
 import { PlanSelectModal } from '@/components/billing/PlanSelectModal';
+import { PaymentModal } from '@/components/billing/PaymentModal';
+import { PLAN_DATA } from '@/constants/planData';
 
 export const BillingPage = () => {
-  const [showModal, setShowModal] = useState(false);
+  const [showSelectModal, setShowSelectModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [nextPlanId, setNextPlanId] = useState<string | null>(null);
   const [currentPlanId, setCurrentPlanId] = useState<
     'personal' | 'startup' | 'professional' | 'enterprise'
@@ -18,13 +21,23 @@ export const BillingPage = () => {
 
   const handleUpgrade = (planId: string) => {
     setNextPlanId(planId);
-    setShowModal(true);
+    setShowSelectModal(true);
   };
 
   const handleSelectPlan = (planId: string) => {
-    console.log('선택된 플랜:', planId);
-    setCurrentPlanId(planId as BillingPlanSectionProps['planId']);
-    setShowModal(false);
+    if (planId !== 'personal' && planId !== 'enterprise') {
+      setShowSelectModal(false);
+      setShowPaymentModal(true);
+    } else {
+      setCurrentPlanId(planId);
+      setShowSelectModal(false);
+    }
+  };
+
+  const handleConfirmPayment = () => {
+    if (nextPlanId)
+      setCurrentPlanId(nextPlanId as 'personal' | 'startup' | 'professional' | 'enterprise');
+    setShowPaymentModal(false);
   };
 
   return (
@@ -53,11 +66,21 @@ export const BillingPage = () => {
             />
           </S.GridWrapper>
 
-          {showModal && nextPlanId && (
+          {showSelectModal && nextPlanId && (
             <PlanSelectModal
               currentPlanId={currentPlanId}
               onSelect={handleSelectPlan}
-              onClose={() => setShowModal(false)}
+              onClose={() => setShowSelectModal(false)}
+            />
+          )}
+          {showPaymentModal && nextPlanId && (
+            <PaymentModal
+              selectedPlan={{
+                ...PLAN_DATA[nextPlanId],
+                price: parseFloat(PLAN_DATA[nextPlanId].price.replace('$', '')) || 0,
+              }}
+              onClose={() => setShowPaymentModal(false)}
+              onConfirm={handleConfirmPayment}
             />
           )}
         </S.Content>
