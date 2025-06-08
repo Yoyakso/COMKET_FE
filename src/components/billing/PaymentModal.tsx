@@ -10,24 +10,30 @@ interface PaymentModalProps {
     description: string;
   };
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (cardInfo: {
+    cardNumber: string;
+    cardholderName: string;
+    expiryDate: string;
+    cvc: string;
+  }) => Promise<void>;
 }
 
 export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalProps) => {
   const tax = Math.round(selectedPlan.price * 0.1 * 100) / 100;
   const total = selectedPlan.price + tax;
 
-  // 카드번호 4칸 분리
   const [cardParts, setCardParts] = useState(['', '', '', '']);
   const [cardTouched, setCardTouched] = useState(false);
   const inputRefs = [useRef<HTMLInputElement>(null), useRef(null), useRef(null), useRef(null)];
   const [cvc, setCvc] = useState('');
   const [cvcTouched, setCvcTouched] = useState(false);
-  const isCvcValid = /^\d{3}$/.test(cvc);
+  const [selectedMonth, setSelectedMonth] = useState('01');
+  const [selectedYear, setSelectedYear] = useState('2024');
+  const [cardholderName, setCardholderName] = useState('');
+  const [email, setEmail] = useState('');
 
   const handleCardChange = (value: string, index: number) => {
     if (!cardTouched) setCardTouched(true);
-
     const onlyNums = value.replace(/\D/g, '').slice(0, 4);
     const newParts = [...cardParts];
     newParts[index] = onlyNums;
@@ -38,6 +44,11 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
   };
 
   const isCardNumberValid = cardParts.every(p => p.length === 4);
+  const isCvcValid = /^\d{3}$/.test(cvc);
+  const isNameValid = cardholderName.trim().length > 0;
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const isFormValid = isCardNumberValid && isCvcValid && isNameValid && isEmailValid;
 
   return (
     <>
@@ -89,10 +100,7 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
                     onChange={e => handleCardChange(e.target.value, i)}
                     maxLength={4}
                     placeholder="0000"
-                    style={{
-                      width: '60px',
-                      textAlign: 'center',
-                    }}
+                    style={{ width: '60px', textAlign: 'center' }}
                   />
                 ))}
               </S.CardNumberWrapper>
@@ -101,7 +109,7 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
             <S.FormRow>
               <S.FormGroup>
                 <label>만료월</label>
-                <select>
+                <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)}>
                   {['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'].map(
                     m => (
                       <option key={m}>{m}</option>
@@ -111,7 +119,7 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
               </S.FormGroup>
               <S.FormGroup>
                 <label>만료년</label>
-                <select>
+                <select value={selectedYear} onChange={e => setSelectedYear(e.target.value)}>
                   {['2024', '2025', '2026', '2027', '2028'].map(y => (
                     <option key={y}>{y}</option>
                   ))}
@@ -124,8 +132,8 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
                   value={cvc}
                   onChange={e => {
                     if (!cvcTouched) setCvcTouched(true);
-                    const value = e.target.value.replace(/\D/g, '');
-                    if (value.length <= 3) setCvc(value);
+                    const val = e.target.value.replace(/\D/g, '');
+                    if (val.length <= 3) setCvc(val);
                   }}
                 />
               </S.FormGroup>
@@ -133,21 +141,37 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
 
             <S.FormGroup>
               <label>카드 소유자명</label>
-              <input placeholder="홍길동" />
+              <input
+                placeholder="홍길동"
+                value={cardholderName}
+                onChange={e => setCardholderName(e.target.value)}
+              />
             </S.FormGroup>
 
             <S.FormGroup>
               <label>이메일 주소</label>
-              <input placeholder="example@company.com" />
+              <input
+                placeholder="example@company.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+              />
             </S.FormGroup>
 
             <S.InfoText>결제 정보는 안전하게 암호화됩니다</S.InfoText>
+
             <Button
               style={{ width: '100%', marginTop: '3px' }}
               $variant="tealFilled"
               size="md"
-              disabled={!isCardNumberValid || !isCvcValid}
-              onClick={onConfirm}
+              disabled={!isFormValid}
+              onClick={() =>
+                onConfirm({
+                  cardNumber: cardParts.join(''),
+                  cardholderName,
+                  expiryDate: `${selectedMonth}/${selectedYear.slice(2)}`,
+                  cvc,
+                })
+              }
             >
               ${total.toFixed(2)} 결제하기 →
             </Button>

@@ -1,6 +1,5 @@
-'use client';
-
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
@@ -14,7 +13,16 @@ import { PLAN_DATA, PlanId } from '@/constants/planData';
 import { mapServerPlanToClientPlan } from '@/utils/mapPlanId';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useBillingInfo } from '@/hooks/useBillingInfo';
+import { registerCreditCard, getCreditCardInfo } from '@/api/Billing';
 import * as S from './BillingPage.Style';
+import { toast } from 'react-toastify';
+
+interface CardInfo {
+  cardNumber: string;
+  cardholderName: string;
+  expiryDate: string;
+  cvc: string;
+}
 
 const qc = new QueryClient();
 
@@ -28,6 +36,12 @@ const BillingPageInner = () => {
   const [showPaymentDoneModal, setShowPaymentDoneModal] = useState(false);
   const [showContactSalesModal, setShowContactSalesModal] = useState(false);
   const [nextPlanId, setNextPlanId] = useState<PlanId | null>(null);
+
+  const { data: creditCardInfo } = useQuery({
+    queryKey: ['creditCardInfo', workspaceId],
+    queryFn: () => getCreditCardInfo(workspaceId),
+    enabled: !!workspaceId,
+  });
 
   const handleUpgrade = (planId: PlanId) => {
     setNextPlanId(planId);
@@ -53,15 +67,26 @@ const BillingPageInner = () => {
     }
   };
 
-  const handleConfirmPayment = () => {
-    if (nextPlanId) {
-      queryClient.setQueryData(['billing', workspaceId], (prev: any) => ({
-        ...prev,
-        currentPlan: nextPlanId.toUpperCase(),
-      }));
+  const handleConfirmPayment = async (cardInfo: CardInfo) => {
+    if (!workspaceId || !nextPlanId) return;
+
+    try {
+      await registerCreditCard(workspaceId, {
+        cardNumber: cardInfo.cardNumber,
+        cardholderName: cardInfo.cardholderName,
+        expiryDate: cardInfo.expiryDate,
+        cvc: cardInfo.cvc,
+      });
+
+      toast.success('카드 등록이 완료되었어요!');
+      queryClient.invalidateQueries({ queryKey: ['billing', String(workspaceId)] });
+
+      setShowPaymentModal(false);
+      setShowPaymentDoneModal(true);
+    } catch (err) {
+      console.error('카드 등록 실패:', err);
+      toast.error('카드 등록에 실패했어요. 정보를 다시 확인해주세요.');
     }
-    setShowPaymentModal(false);
-    setShowPaymentDoneModal(true);
   };
 
   if (!billingInfo) return null;
@@ -86,10 +111,8 @@ const BillingPageInner = () => {
           <S.GridWrapper>
             <BillingChartSection />
             <BillingPlanSection
-              billingInfo={{
-                currentPlan: 'PROFESSIONAL', // or 'STARTUP' 등 서버에서 오는 값 흉내
-                memberCount: 25,
-              }}
+              billingInfo={billingInfo}
+              creditCardInfo={creditCardInfo}
               onUpgrade={handleUpgrade}
             />
           </S.GridWrapper>
@@ -97,7 +120,10 @@ const BillingPageInner = () => {
           {showSelectModal && nextPlanId && (
             <PlanSelectModal
               currentPlanId={mapServerPlanToClientPlan(billingInfo.currentPlan)}
-              onSelect={handleSelectPlan}
+              onSelect={planId => {
+                setShowSelectModal(false);
+                setShowPaymentModal(true);
+              }}
               onClose={() => setShowSelectModal(false)}
             />
           )}
@@ -111,10 +137,6 @@ const BillingPageInner = () => {
               onClose={() => setShowPaymentModal(false)}
               onConfirm={handleConfirmPayment}
             />
-          )}
-
-          {showPaymentDoneModal && (
-            <PaymentCompleteModal onClose={() => setShowPaymentDoneModal(false)} />
           )}
 
           {/* {showContactSalesModal && (

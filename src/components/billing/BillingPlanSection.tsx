@@ -47,7 +47,7 @@ export const BillingPlanSection = ({
   };
 
   const renderCardInfo = () => {
-    if (!creditCardInfo) return null;
+    if (!creditCardInfo) return <S.CardInfoBox>등록된 결제 카드가 없습니다.</S.CardInfoBox>;
 
     return (
       <S.CardInfoBox>
