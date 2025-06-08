@@ -250,7 +250,7 @@ export const SignUpForm = () => {
               checked={agreements.service}
               onChange={handleAgreementChange('service')}
             />
-            <S.TermLink href="#">약관 보기</S.TermLink>
+            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">약관 보기</S.TermLink>
           </S.TermRow>
 
           <S.TermRow>
@@ -261,7 +261,7 @@ export const SignUpForm = () => {
               checked={agreements.privacy}
               onChange={handleAgreementChange('privacy')}
             />
-            <S.TermLink href="#">약관 보기</S.TermLink>
+            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">약관 보기</S.TermLink>
           </S.TermRow>
 
           <S.TermRow>
@@ -272,7 +272,7 @@ export const SignUpForm = () => {
               checked={agreements.marketing}
               onChange={handleAgreementChange('marketing')}
             />
-            <S.TermLink href="#">약관 보기</S.TermLink>
+            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">약관 보기</S.TermLink>
           </S.TermRow>
 
           <S.TermRow>
@@ -283,7 +283,7 @@ export const SignUpForm = () => {
               checked={agreements.information}
               onChange={handleAgreementChange('information')}
             />
-            <S.TermLink href="#">약관 보기</S.TermLink>
+            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">약관 보기</S.TermLink>
           </S.TermRow>
         </S.CheckboxContainer>
 

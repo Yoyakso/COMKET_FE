@@ -190,11 +190,21 @@ export const deleteWorkspace = async (workspaceId: string) => {
 /**
  * 내 프로필 정보 조회
  */
-
 export const getMyWorkspaceProfile = async (workspaceId: number) => {
   try {
     const response = await axiosInstance.get(`/api/v1/workspaces/${workspaceId}/member`);
     return response.data;
+  } catch (error) {
+    console.error('워크스페이스 내 프로필 조회 실패:', error);
+    throw error;
+  }
+}
+
+
+export const leaveMyWorkspace = async () => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/workspaces/leave-all`);
+    return response;
   } catch (error) {
     console.error('워크스페이스 내 프로필 조회 실패:', error);
     throw error;

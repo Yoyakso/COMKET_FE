@@ -9,6 +9,7 @@ import { toast } from "react-toastify"
 import { useUserStore } from "@/stores/userStore"
 import { getMyProfile } from "@/api/Member"
 import { leaveService } from "@/api/Oauth"
+import { leaveMyWorkspace } from "@/api/Workspace"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 export const AccountInfoPage = () => {
@@ -18,6 +19,7 @@ export const AccountInfoPage = () => {
   const { clearWorkspace } = useWorkspaceStore()
   const navigate = useNavigate()
   const [name, setName] = useState<string | null>(null)
+  const workspaceId = useWorkspaceStore(s => s.workspaceId)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -46,14 +48,24 @@ export const AccountInfoPage = () => {
 
   const handleWithdraw = async () => {
     if (window.confirm("정말로 탈퇴하시겠습니까? 모든 데이터가 삭제되며 복구할 수 없습니다.")) {
-      await leaveService()
+      try {
+        const response = await leaveMyWorkspace()
 
-      clearUser()
-      clearWorkspace()
-      localStorage.clear()
+        if (response?.status === 200 || response?.status === 204) {
+          await leaveService()
+          clearUser()
+          clearWorkspace()
+          localStorage.clear()
 
-      toast.success("탈퇴 처리되었습니다.")
-      navigate("/login")
+          toast.success("탈퇴 처리되었습니다.")
+          navigate("/login")
+        } else {
+          toast.error("워크스페이스 탈퇴에 실패했습니다.")
+        }
+      } catch (err) {
+        console.error("탈퇴 처리 중 오류:", err)
+        toast.error("탈퇴에 실패했습니다.")
+      }
     }
   }
 

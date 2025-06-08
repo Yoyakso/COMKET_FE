@@ -15,7 +15,9 @@ import { CreateTicketModal } from '@/components/ticketModal/CreateTicketModal';
 import { mapTicketFromResponse } from '@/utils/ticketMapper';
 import { TicketTemplate } from '@/types/ticketTemplate';
 import { TicketTemplateModal } from '@/components/ticketModal/TicketTemplateModal';
-import { Message } from '@/components/thread/threadChat/ThreadChat';
+import { Message } from '@/types/message';
+import { editThreadMesaage, deleteThreadMesaage, replyThreadMesaage } from "@/api/Thread"
+import { toast } from 'react-toastify';
 
 export const ThreadPage = () => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
@@ -56,14 +58,20 @@ export const ThreadPage = () => {
 
   const handleMessage = useCallback((data: Message | Message[]) => {
     const normalizedMessages = Array.isArray(data) ? data : [data]
+    const processed = normalizedMessages
+      .filter((msg) => msg.messageState !== "DELETE")
+      .map((msg) => {
+        return {
+          threadId: msg.threadId,
+          ticketId: msg.ticketId,
+          sentAt: msg.sentAt,
+          senderMemberId: msg.senderMemberId,
+          senderName: msg.senderName,
+          content: msg.content,
+          isCurrentUser: String(msg.senderMemberId) === String(memberId),
+        };
+      });
 
-    const processed = normalizedMessages.map((msg) => ({
-      sentAt: msg.sentAt,
-      senderMemberId: String(msg.senderMemberId),
-      senderName: msg.senderName,
-      content: msg.content,
-      isCurrentUser: String(msg.senderMemberId) === String(memberId),
-    }))
     setThreadMessages((prev) => {
       const seen = new Set(prev.map((m) => m.sentAt + m.senderMemberId))
       const unique = processed.filter(
@@ -101,8 +109,9 @@ export const ThreadPage = () => {
     };
 
     const uiMessage: Message = {
+      ticketId: messageToSend.ticketId,
       sentAt: messageToSend.sentAt,
-      senderMemberId: String(messageToSend.senderMemberId),
+      senderMemberId: messageToSend.senderMemberId,
       senderName: messageToSend.senderName,
       content: messageToSend.content,
       isCurrentUser: true,
@@ -120,6 +129,70 @@ export const ThreadPage = () => {
   const handleBack = () => {
     navigate(-1)
   }
+
+  const handleEditMessage = async (threadId: number, newContent: string) => {
+    try {
+      await editThreadMesaage(
+        Number(threadId),
+        memberId,
+        newContent
+      );
+      setThreadMessages(prev =>
+        prev.map(msg =>
+          msg.threadId === threadId
+            ? { ...msg, content: newContent, isModified: true }
+            : msg
+        )
+      );
+    } catch (err) {
+      console.error("메시지 수정 실패", err);
+      toast.error("메시지 수정에 실패했습니다.");
+    }
+  };
+
+  const handleDeleteMessage = async (threadId: number) => {
+    try {
+      await deleteThreadMesaage(
+        Number(threadId),
+        memberId
+      );
+      setThreadMessages(prev =>
+        prev.filter(msg => msg.threadId !== threadId)
+      );
+    } catch (err) {
+      console.error("메시지 삭제 실패", err);
+      toast.error("메시지 삭제에 실패했습니다.");
+    }
+  };
+
+  const handleReplyToMessage = async ({
+    threadId,
+    senderName,
+    content
+  }: {
+    threadId: number;
+    senderName: string;
+    content: string;
+  }) => {
+    try {
+      const now = new Date();
+      const sentAt = now.toISOString().slice(0, 19);
+
+      await replyThreadMesaage({
+        ticketId: Number(ticketId),
+        parentThreadId: threadId,
+        senderMemberId: memberId,
+        senderName: memberName,
+        reply: newMessage,
+        sentAt
+      });
+
+      setNewMessage("");
+    } catch (err) {
+      console.error("답글 전송 실패", err);
+      toast.error("답글 전송에 실패했습니다.");
+    }
+  };
 
   return (
     <>
@@ -168,6 +241,9 @@ export const ThreadPage = () => {
                   newMessage={newMessage}
                   setNewMessage={setNewMessage}
                   sendMessage={sendMessage}
+                  onEditMessage={handleEditMessage}
+                  onDeleteMessage={handleDeleteMessage}
+                  onReplyToMessage={handleReplyToMessage}
                 />
               </S.LeftColumn>
 

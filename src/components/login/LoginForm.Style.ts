@@ -75,7 +75,7 @@ export const SignupLink = styled.a`
 export const LoginButton = styled.button`
   width: 100%;
   height: 56px;
-  background-color: ${color.teal500};
+  background: linear-gradient(135deg, #2dd4bf 0%, #22d3ee 100%);
   color: white;
   font-size: 18px;
   font-weight: 500;
