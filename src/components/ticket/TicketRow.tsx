@@ -131,7 +131,7 @@ export const TicketRow = ({
           <TypeBadge type={ticket.type} />
         </S.TableCell>
         <S.TableCell>
-          <AssigneeCell members={ticket.assignee_member_list ? [ticket.assignee_member_list] : []} />
+          <AssigneeCell members={ticket.assignee_member_list ?? []} />
         </S.TableCell>
         <S.TableCell $align="center">
           <PriorityDropdown ticketId={ticket.id} projectName={projectName} />

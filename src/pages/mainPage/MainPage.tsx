@@ -11,27 +11,27 @@ export const MainPage = () => {
   const onboardingSlides = [
     {
       id: 1,
-      title: "프로젝트 관리",
-      description: "팀의 모든 프로젝트를 한 곳에서 체계적으로 관리하세요",
-      image: "images/dummy-1.png",
+      title: "프로젝트 전반 관리",
+      description: "워크스페이스부터 프로젝트, 티켓까지 하나의 흐름으로 체계적으로 관리하세요.",
+      image: "images/demo-1.png",
     },
     {
       id: 2,
-      title: "티겟 생성",
-      description: "프로젝트 내에서 해결해야 할 이슈를 티켓으로 발행하세요.",
-      image: "images/dummy-1.png",
+      title: "티켓 기반 업무 분배",
+      description: "해야 할 업무는 티켓으로 빠르게 생성하고, 우선순위와 담당자를 설정하세요.",
+      image: "images/demo-2.png",
     },
     {
       id: 3,
-      title: "실시간 협업",
-      description: "팀원들과 실시간으로 소통하며 효율적으로 협업하세요",
-      image: "images/dummy-1.png",
+      title: "칸반보드로 한눈에 보기",
+      description: "티켓을 칸반보드에서 드래그하며 상태를 변경하고, 전체 흐름을 직관적으로 관리하세요.",
+      image: "images/demo-3.png",
     },
     {
       id: 4,
-      title: "AI요약",
-      description: "소통한 내용을 AI를 통해 요약하고, 액션아이템을 추출해보세요.",
-      image: "images/dummy-1.png",
+      title: "스레드 & AI 요약 & 액션 아이템",
+      description: "티켓 안에서 스레드로 대화를 주고받고, AI 요약과 액션아이템으로 다음 업무까지 연결하세요.",
+      image: "images/demo-4.png",
     },
   ]
 
@@ -63,17 +63,18 @@ export const MainPage = () => {
 
       <S.Main>
         <S.HeroSection>
-          <S.HeroTitle>COMKET과 함께 업무 흐름을 간소화하세요</S.HeroTitle>
+          <S.HeroTitle>COMKET과 함께, 협업의 흐름을 단순하게</S.HeroTitle>
           <S.HeroDescription>
-            비즈니스 프로세스를 간소화하고 생산성을 향상시키기 위해 설계된 올인원 플랫폼입니다.
+            티켓 중심의 업무 관리와 AI 기반 자동화로 <br />
+            더 빠르게, 더 똑똑하게 협업하세요.
           </S.HeroDescription>
           <S.HeroButtons>
             <Link to="/signup">
               <S.GetStartedButton>시작하기</S.GetStartedButton>
             </Link>
-            <Link to="#demo">
+            {/* <Link to="#demo">
               <S.WatchDemoButton>데모 보기</S.WatchDemoButton>
-            </Link>
+            </Link> */}
           </S.HeroButtons>
         </S.HeroSection>
 
@@ -145,9 +146,10 @@ export const MainPage = () => {
                 <path d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </S.FeatureIconWrapper>
-            <S.FeatureTitle>빠르고 효율적</S.FeatureTitle>
+            <S.FeatureTitle>더 빠르고 효율적인 협업</S.FeatureTitle>
             <S.FeatureDescription>
-              최대 효율성을 위해 설계된 초고속 플랫폼으로 워크플로우를 최적화하세요.
+              복잡한 커뮤니케이션과 업무 관리를 하나로! <br />
+              실시간 티켓 중심 워크플로우로 <br /> 생산성과 속도를 모두 잡아보세요.
             </S.FeatureDescription>
           </S.FeatureCard>
           <S.FeatureCard>
@@ -167,9 +169,10 @@ export const MainPage = () => {
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             </S.FeatureIconWrapper>
-            <S.FeatureTitle>안전하고 신뢰할 수 있음</S.FeatureTitle>
+            <S.FeatureTitle>놓치지 않는 핵심, 자동 정리</S.FeatureTitle>
             <S.FeatureDescription>
-              엔터프라이즈급 보안과 99.9% 가동 시간 보장으로 데이터를 보호합니다.
+              회의 끝나자마자 AI가 요약과 액션 아이템을 자동 추출해줍니다. <br />
+              중요한 논의가 흘러가지 않도록, 다음 행동으로 바로 이어지세요.
             </S.FeatureDescription>
           </S.FeatureCard>
           <S.FeatureCard>
@@ -191,8 +194,10 @@ export const MainPage = () => {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </S.FeatureIconWrapper>
-            <S.FeatureTitle>팀 협업</S.FeatureTitle>
-            <S.FeatureDescription>실시간 협업 도구와 공유 작업 공간으로 원활하게 함께 작업하세요.</S.FeatureDescription>
+            <S.FeatureTitle>진짜 팀워크를 위한 협업</S.FeatureTitle>
+            <S.FeatureDescription>단순 채팅을 넘어,
+              티켓과 스레드를 중심으로 <br />실시간 협업이 이어지는 공간입니다. <br />
+              모든 팀원이 하나의 흐름 속에서 일할 수 있어요.</S.FeatureDescription>
           </S.FeatureCard>
         </S.FeaturesSection>
       </S.Main>

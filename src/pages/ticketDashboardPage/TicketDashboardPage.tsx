@@ -259,13 +259,9 @@ export const TicketDashboardPage = () => {
         ticket_state: newStatus,
         start_date: ticket.startDate,
         end_date: ticket.endDate,
-        // assignee_member_id_list: ticket.assignee_member?.projectMemberId ?? null,
-        assignee_member_id_list:
-          Array.isArray(ticket.assignee_member_list)
-            ? ticket.assignee_member_list.map(m => m.projectMemberId)
-            : ticket.assignee_member_list?.projectMemberId
-              ? [ticket.assignee_member_list.projectMemberId]
-              : [],
+        assignee_member_id_list: (ticket.assignee_member_list ?? [])
+          .map(m => m.projectMemberId)
+          .filter((id): id is number => id !== null && id !== undefined),
         parent_ticket_id: ticket.parentId ?? null,
       });
       // TicketDropdownStore.getState().updateTicketStatus(ticketId, newStatus);
