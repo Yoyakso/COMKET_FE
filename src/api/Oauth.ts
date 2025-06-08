@@ -134,3 +134,13 @@ export const leaveService = async () => {
     throw error;
   }
 };
+
+/**
+ * 비밀번호 재설정 요청
+ * @param email 사용자가 입력한 이메일
+ * @returns
+ */
+export const sendResetPasswordEmail = async (email: string) => {
+  const res = await axiosInstance.post('/api/v1/email/password-reset/send', { email });
+  return res.data;
+};

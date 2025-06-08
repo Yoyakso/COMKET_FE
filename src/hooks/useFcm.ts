@@ -39,7 +39,7 @@ export const requestFcmPermission = async (): Promise<string | null> => {
 /** Foreground 수신 */
 export const listenToForegroundMessages = () => {
   onMessage(messaging, payload => {
-    console.log('📌 foreground message:', payload);
+    console.log('foreground message:', payload);
 
     /* notification + data 없는 pure notification → 브라우저가 이미 토스트 띄움 */
     if (payload.notification && !payload.data) return;

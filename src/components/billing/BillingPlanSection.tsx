@@ -1,8 +1,8 @@
-import { Badge } from '@/components/common/badge/Badge';
 import { Button } from '@/components/common/button/Button';
 import * as S from './BillingPlanSection.Style';
 import { PLAN_DATA, PlanId } from '@/constants/planData';
 import { mapServerPlanToClientPlan } from '@/utils/mapPlanId';
+import { CreditCard, Calendar } from 'lucide-react';
 
 interface BillingPlanSectionProps {
   billingInfo: {
@@ -15,66 +15,29 @@ interface BillingPlanSectionProps {
     expiryDate: string;
   };
   onUpgrade?: (target: PlanId) => void;
+  onChangeCard?: () => void;
 }
 
 export const BillingPlanSection = ({
   billingInfo,
   creditCardInfo,
   onUpgrade,
+  onChangeCard,
 }: BillingPlanSectionProps) => {
   const planId = mapServerPlanToClientPlan(billingInfo.currentPlan);
   const plan = PLAN_DATA[planId];
 
-  const totalPrice = plan.priceValue !== null ? plan.priceValue * billingInfo.memberCount : null;
-
   const atLimit = billingInfo.memberCount >= plan.maxUsers;
   const nextPlanId = plan.nextPlan;
 
-  const renderPriceSection = () => {
-    if (planId === 'enterprise' || plan.priceValue === 0) return null;
-
-    return (
-      <S.PriceSection>
-        <S.PriceRow>
-          <S.PriceLabel>월 요금</S.PriceLabel>
-          <S.PriceValue>₩{totalPrice!.toLocaleString('ko-KR')}</S.PriceValue>
-        </S.PriceRow>
-        <S.PriceDetail>
-          (₩{plan.priceValue!.toLocaleString('ko-KR')} × {billingInfo.memberCount}명)
-        </S.PriceDetail>
-      </S.PriceSection>
-    );
-  };
-
-  const renderCardInfo = () => {
-    if (!creditCardInfo) return <S.CardInfoBox>등록된 결제 카드가 없습니다.</S.CardInfoBox>;
-
-    return (
-      <S.CardInfoBox>
-        <S.CardInfoTitle>결제 카드 정보</S.CardInfoTitle>
-        <S.CardInfoItem>
-          <S.Label>카드번호</S.Label>
-          <S.Value>{creditCardInfo.maskedCardNumber}</S.Value>
-        </S.CardInfoItem>
-        <S.CardInfoItem>
-          <S.Label>소유자명</S.Label>
-          <S.Value>{creditCardInfo.cardholderName}</S.Value>
-        </S.CardInfoItem>
-        <S.CardInfoItem>
-          <S.Label>만료일</S.Label>
-          <S.Value>{creditCardInfo.expiryDate}</S.Value>
-        </S.CardInfoItem>
-      </S.CardInfoBox>
-    );
-  };
-
   const renderActionButton = () => {
-    if (planId === 'enterprise')
+    if (planId === 'enterprise') {
       return (
         <Button $variant="tealFilled" size="lg">
           영업팀 문의
         </Button>
       );
+    }
 
     return (
       <>
@@ -98,30 +61,68 @@ export const BillingPlanSection = ({
     );
   };
 
+  const getNextBillingDate = () => {
+    const today = new Date();
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 20);
+    return nextMonth.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   return (
     <S.Container>
       <S.Card>
-        <S.CardHeader>
-          <S.HeaderTop>
-            <S.TitleWrapper>
-              <S.PlanIcon />
-              <S.CardTitle>현재 요금제</S.CardTitle>
-            </S.TitleWrapper>
-            <Badge $variant="teal" $styleType="filled" size="md" shape="sqaure">
-              {plan.badge}
-            </Badge>
-          </S.HeaderTop>
-          <S.CardDescription>
-            {plan.userRange} / {plan.description}
-          </S.CardDescription>
-        </S.CardHeader>
+        <S.Header>
+          <S.Heading>현재 요금제</S.Heading>
+          <S.Sub>{plan.name} 플랜의 상세 정보</S.Sub>
+        </S.Header>
 
-        <S.CardContent>
-          {renderPriceSection()}
-          {renderCardInfo()}
-        </S.CardContent>
+        <S.PlanRow>
+          <S.PlanName>{plan.name}</S.PlanName>
+          <S.PlanBadge>{plan.badge}</S.PlanBadge>
+        </S.PlanRow>
+
+        {plan.priceValue !== null && (
+          <S.PriceRow>
+            <S.Price>₩{plan.priceValue.toLocaleString('ko-KR')}</S.Price>
+            <S.PriceUnit>/ 월 / 사용자</S.PriceUnit>
+          </S.PriceRow>
+        )}
+
+        <S.Divider />
+
+        <S.InfoList>
+          <li>팀 인원 · {plan.userRange}</li>
+          <li>{plan.description}</li>
+        </S.InfoList>
 
         <S.CardFooter>{renderActionButton()}</S.CardFooter>
+      </S.Card>
+
+      <S.Card>
+        <S.Header>
+          <S.Heading>결제 정보</S.Heading>
+        </S.Header>
+
+        <S.InfoLine>
+          <Calendar size={16} strokeWidth={1.5} />
+          <S.InfoLabel>다음 결제일</S.InfoLabel>
+          <S.InfoValue>{getNextBillingDate()}</S.InfoValue>
+        </S.InfoLine>
+
+        <S.InfoLine>
+          <CreditCard size={16} strokeWidth={1.5} />
+          <S.InfoLabel>결제 방법</S.InfoLabel>
+          <S.InfoValue>{creditCardInfo ? creditCardInfo.maskedCardNumber : '미등록'}</S.InfoValue>
+        </S.InfoLine>
+
+        <S.CardFooter>
+          <Button $variant="tealFilled" size="md" onClick={onChangeCard} style={{ width: '100%' }}>
+            결제 방법 변경
+          </Button>
+        </S.CardFooter>
       </S.Card>
     </S.Container>
   );
