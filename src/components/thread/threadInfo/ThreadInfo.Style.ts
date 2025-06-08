@@ -343,6 +343,43 @@ export const StyledSelect = styled.select`
   background-size: 16px;
   padding-right: 32px;
 
+  &[multiple] {
+    position: relative;
+    height: auto;
+    min-height: 120px;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 4px;
+    z-index: 9999;
+    background: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border: 2px solid ${color.primary};
+    
+    option {
+      padding: 8px 12px;
+      margin: 2px 0;
+      border-radius: 6px;
+      background-color: white;
+      color: ${color.textPrimary};
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:checked {
+        background: ${color.primary};
+        color: white;
+        font-weight: 600;
+      }
+      
+      &:hover {
+        background-color: #f3f4f6;
+      }
+      
+      &:checked:hover {
+        background: ${color.indigo300};
+      }
+    }
+  }
+
   &:focus {
     border-color: ${color.primary};
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -459,4 +496,68 @@ export const AssigneeWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-right: 8px;
+`
+
+export const SelectedAssigneesDisplay = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+  min-height: 24px;
+`
+
+export const SelectedAssigneeTag = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: ${color.indigo400};
+  font-weight: 500;
+`
+
+export const SelectedAssigneeAvatar = styled.div`
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 8px;
+  font-weight: 600;
+  flex-shrink: 0;
+`
+
+export const SelectedAssigneeAvatarImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`
+
+export const RemoveAssigneeButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  margin-left: 4px;
+  
+  &:hover {
+    color: #374151;
+  }
+`
+
+export const SelectLabel = styled.div`
+  font-size: 11px;
+  color: ${color.textSecondary};
+  margin-bottom: 4px;
+  font-weight: 500;
 `
