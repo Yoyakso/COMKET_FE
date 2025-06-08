@@ -8,8 +8,8 @@ export const PlanPage = () => {
   const navigate = useNavigate()
 
   const plans = {
-    personal: {
-      id: "personal",
+    basic: {
+      id: "basic",
       name: "개인",
       userRange: "1~5명",
       price: "무료",
@@ -164,7 +164,7 @@ export const PlanPage = () => {
             </S.PlanCardHeader>
             <S.PlanCardContent>
               <S.PlanButton $popular={currentPlan.popular} onClick={handleStart}>
-                {currentPlan.id === "personal"
+                {currentPlan.id === "basic"
                   ? "무료로 시작하기"
                   : "시작하기"}
                 <ArrowRight size={16} />
@@ -175,8 +175,8 @@ export const PlanPage = () => {
 
         {/* Feature Comparison */}
         <S.FeatureComparisonSection>
-          <S.SectionTitle>상세 기능 비교</S.SectionTitle>
-          <S.SectionDescription>각 플랜별로 제공되는 기능을 자세히 확인해보세요</S.SectionDescription>
+          <S.SectionTitle>상세 기능</S.SectionTitle>
+          <S.SectionDescription>COMKET의 상세 기능을 자세히 확인해보세요.</S.SectionDescription>
 
           {/* Feature List */}
           <S.FeatureList>

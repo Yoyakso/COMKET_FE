@@ -114,7 +114,7 @@ export const MessageContent = styled.p`
 `
 
 export const MessageTime = styled.span<{ $isCurrentUser: boolean }>`
-  font-size: 10px;
+  font-size: 8px;
   color: ${color.basic600};
   white-space: nowrap;
   align-self: flex-end;
@@ -231,5 +231,186 @@ export const PreviewCloseButton = styled.button`
   &:hover {
     background-color: #f3f4f6;
     color: ${color.textPrimary};
+  }
+`
+// 메시지 액션 관련 스타일
+export const MessageContentWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`
+
+export const MessageActions = styled.div<{ $isCurrentUser: boolean }>`
+  position: absolute;
+  top: 40%;
+  transform: translateY(-80%);
+  ${(props) => (props.$isCurrentUser ? "left: -60px" : "right: -40px")};
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 4px;
+  padding: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  z-index: 5;
+  flex-direction: ${(props) => (props.$isCurrentUser ? "row" : "row")};
+`
+
+export const ActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: ${color.basic500};
+  cursor: pointer;
+  transition: all 0.15s ease;
+  
+  &:hover {
+    background-color: #f1f5f9;
+    color: ${color.basic700};
+    transform: scale(1.1);
+  }
+`
+
+// 수정 모드 관련 스타일
+export const EditContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+`
+
+export const EditTextarea = styled.textarea`
+  width: 100%;
+  min-height: 60px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  resize: vertical;
+  font-family: inherit;
+  
+  &:focus {
+    outline: none;
+    border-color: ${color.teal800};
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  }
+`
+
+export const EditActions = styled.div`
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+`
+
+export const EditActionButton = styled.button<{ $type: "save" | "cancel" }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  ${(props) =>
+    props.$type === "save"
+      ? `
+    background-color: ${color.teal700};
+    color: white;
+    
+    &:hover {
+      background-color: ${color.teal800};
+    }
+  `
+      : `
+    background-color: #f3f4f6;
+    color: ${color.basic600};
+    
+    &:hover {
+      background-color: #e5e7eb;
+      color: ${color.basic800};
+    }
+  `}
+`
+
+// 답글 관련 스타일
+export const ReplyReference = styled.div<{ $isCurrentUser: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  font-size: 11px;
+  color: ${color.basic600};
+  ${(props) => (props.$isCurrentUser ? "margin-right: 8px;" : "margin-left: 8px;")}
+`
+
+export const ReplyIcon = styled.span`
+  font-size: 12px;
+  color: ${color.basic500};
+`
+
+export const ReplyText = styled.span`
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+export const ReplyingToContainer = styled.div`
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 50px;
+  margin-bottom: 4px;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 5;
+`
+
+export const ReplyingToContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+`
+
+export const ReplyingToText = styled.span`
+  font-size: 12px;
+  color: ${color.basic700};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+export const CancelReplyButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: ${color.basic500};
+  cursor: pointer;
+  flex-shrink: 0;
+  
+  &:hover {
+    background-color: #e5e7eb;
+    color: ${color.basic700};
   }
 `
