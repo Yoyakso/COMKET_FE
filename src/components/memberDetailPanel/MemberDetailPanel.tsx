@@ -86,15 +86,11 @@ export const MemberDetailPanel = ({ memberId, onClose }: MemberDetailPanelProps)
 
             <S.DetailItem>
               <S.DetailLabel>소속</S.DetailLabel>
-              <S.DetailValue>{user.department}</S.DetailValue>
-            </S.DetailItem>
-            <S.DetailItem>
-              <S.DetailLabel>직책</S.DetailLabel>
-              <S.DetailValue>{user.position}</S.DetailValue>
+              <S.DetailValue>{user.responsibility}</S.DetailValue>
             </S.DetailItem>
             <S.DetailItem>
               <S.DetailLabel>직무</S.DetailLabel>
-              <S.DetailValue>{user.jobTitle}</S.DetailValue>
+              <S.DetailValue>{user.department}</S.DetailValue>
             </S.DetailItem>
             <S.DetailItem>
               <S.DetailLabel>역할</S.DetailLabel>

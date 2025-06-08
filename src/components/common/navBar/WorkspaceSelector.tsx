@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { ChevronDown, ChevronUp } from '@/assets/icons';
 import * as S from './WorkspaceSelector.Style';
 import { WorkspaceSelectorDropdown } from '@/components/workspace/WorkspaceSelectorDropdown';

@@ -13,9 +13,8 @@ import { toast } from 'react-toastify';
 interface ProfileData {
   name: string;
   email: string;
-  organization?: string;
-  position?: string;
   department?: string;
+  responsibility?: string;
   profileImage?: string | null;
   profileImageFile?: File | null;
 }
@@ -32,8 +31,7 @@ export const ProfilePage = () => {
   const [profile, setProfile] = useState<ProfileData>({
     name: globalName,
     email: globalEmail,
-    organization: '',
-    position: '',
+    responsibility: '',
     department: '',
     profileImage: globalProfileImage || null,
     profileImageFile: null,
@@ -57,8 +55,7 @@ export const ProfilePage = () => {
         const fetched: ProfileData = {
           name: wsProfile.name ?? '',
           email: wsProfile.email ?? '',
-          organization: wsProfile.responsibility ?? '',
-          position: wsProfile.positionType ?? '',
+          responsibility: wsProfile.responsibility ?? '',
           department: wsProfile.department ?? '',
           profileImage: wsProfile.profileFileUrl ?? null,
           profileImageFile: null,
@@ -137,7 +134,7 @@ export const ProfilePage = () => {
       const body: any = {
         nickname: profile.name,
         department: profile.department,
-        responsibility: profile.organization,
+        responsibility: profile.responsibility,
       };
 
       if (fileId !== null) {
@@ -150,8 +147,7 @@ export const ProfilePage = () => {
       const updatedProfile: ProfileData = {
         name: updated.name ?? '',
         email: updated.email ?? '',
-        organization: updated.responsibility ?? '',
-        position: updated.positionType ?? '',
+        responsibility: updated.responsibility ?? '',
         department: updated.department ?? '',
         profileImage: updated.profileFileUrl ?? null,
         profileImageFile: null,
@@ -250,7 +246,7 @@ export const ProfilePage = () => {
                 <S.Input
                   type="text"
                   name="organization"
-                  value={profile.organization}
+                  value={profile.department}
                   onChange={handleInputChange}
                   placeholder="소속 입력"
                 />
@@ -264,7 +260,7 @@ export const ProfilePage = () => {
               <S.InputContainer>
                 <S.SelectInput
                   name="department"
-                  value={profile.department}
+                  value={profile.responsibility}
                   onChange={handleInputChange}
                 >
                   {DEPARTMENT_OPTIONS.map(option => (
