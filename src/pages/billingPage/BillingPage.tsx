@@ -3,17 +3,16 @@ import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
 import * as S from './BillingPage.Style';
 import { BillingChartSection } from '@/components/billing/BillingChartSection';
-import {
-  BillingPlanSection,
-  BillingPlanSectionProps,
-} from '@/components/billing/BillingPlanSection';
+import { BillingPlanSection } from '@/components/billing/BillingPlanSection';
 import { PlanSelectModal } from '@/components/billing/PlanSelectModal';
 import { PaymentModal } from '@/components/billing/PaymentModal';
+import { PaymentCompleteModal } from '@/components/billing/PaymentCompleteModal';
 import { PLAN_DATA } from '@/constants/planData';
 
 export const BillingPage = () => {
   const [showSelectModal, setShowSelectModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPaymentCompleteModal, setShowPaymentCompleteModal] = useState(false);
   const [nextPlanId, setNextPlanId] = useState<string | null>(null);
   const [currentPlanId, setCurrentPlanId] = useState<
     'personal' | 'startup' | 'professional' | 'enterprise'
@@ -38,6 +37,7 @@ export const BillingPage = () => {
     if (nextPlanId)
       setCurrentPlanId(nextPlanId as 'personal' | 'startup' | 'professional' | 'enterprise');
     setShowPaymentModal(false);
+    setShowPaymentCompleteModal(true);
   };
 
   return (
@@ -82,6 +82,9 @@ export const BillingPage = () => {
               onClose={() => setShowPaymentModal(false)}
               onConfirm={handleConfirmPayment}
             />
+          )}
+          {showPaymentCompleteModal && (
+            <PaymentCompleteModal onClose={() => setShowPaymentCompleteModal(false)} />
           )}
         </S.Content>
       </S.MainContainer>
