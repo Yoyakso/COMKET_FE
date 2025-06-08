@@ -49,6 +49,7 @@ export const ProjectMemberModal = ({
         memberId: number;
         name: string;
         email: string;
+        profileFileUrl: string;
       }
     >
   >(new Map());
@@ -101,7 +102,7 @@ export const ProjectMemberModal = ({
     const fetchProjectMembers = async () => {
       try {
         const data = await getProjectMembers(workspaceName, projectId);
-        const workspaceMembers = await getWorkspaceMembers(workspaceId); // 👉 추가
+        const workspaceMembers = await getWorkspaceMembers(workspaceId);
         const memberMap = new Map(
           workspaceMembers.map(m => [m.email, m.profileFileUrl])
         );
@@ -133,7 +134,6 @@ export const ProjectMemberModal = ({
     const fetchWorkspaceMembers = async () => {
       try {
         const members = await getWorkspaceMembers(workspaceId);
-        console.log("memememe", members)
         const memberMap = new Map<
           string,
           {

@@ -88,7 +88,7 @@ export const HeroButtons = styled.div`
 export const GetStartedButton = styled.button`
   padding: 12px 24px;
   border-radius: 6px;
-  background: linear-gradient(135deg, #2dd4bf 0%, #22d3ee 100%);
+  background: linear-gradient(135deg, #2dd4bf 0%, ${color.teal500} 100%);
   color: white;
   font-size: 16px;
   font-weight: 500;
@@ -162,11 +162,12 @@ export const SlideContent = styled.div`
 
 export const SlideImage = styled.div`
   flex: 1;
-  max-width: 650px;
+  min-width: 650px;
 
   img {
     width: 100%;
-    height: auto;
+    // height: auto;
+    height: 100%;
     border-radius: 12px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
@@ -182,15 +183,15 @@ export const SlideTextContent = styled.div`
 `
 
 export const SlideTitle = styled.h3`
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
   color: ${color.textPrimary};
   margin-bottom: 16px;
   animation: ${slideIn} 0.6s ease-out;
 `
 
 export const SlideDescription = styled.p`
-  font-size: 18px;
+  font-size: 16px;
   color: ${color.textSecondary};
   line-height: 1.6;
   animation: ${slideIn} 0.6s ease-out 0.1s both;

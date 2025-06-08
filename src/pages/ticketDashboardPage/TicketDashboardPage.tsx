@@ -81,12 +81,10 @@ export const TicketDashboardPage = () => {
 
     const fetchProjectInfoAndCheckAccess = async () => {
       try {
-        // 1. 프로젝트 정보 가져오기
         const response = await getProjectById(workspaceName, projectId);
         setProjectName(response.name);
         setProjectDescription(response.description);
 
-        // 2. 프로젝트 접근 권한 확인
         const [all, mine] = await Promise.all([getAllProjects(workspaceName), getMyProjects()]);
 
         const allProject = all.find(p => String(p.id) === String(projectId));
@@ -172,9 +170,9 @@ export const TicketDashboardPage = () => {
       const updated = tickets.map(ticket =>
         ticket.id === newTicket.parentId
           ? {
-              ...ticket,
-              subtickets: [...(ticket.subtickets ?? []), newTicket],
-            }
+            ...ticket,
+            subtickets: [...(ticket.subtickets ?? []), newTicket],
+          }
           : ticket,
       );
       setTickets(updated);
@@ -261,7 +259,9 @@ export const TicketDashboardPage = () => {
         ticket_state: newStatus,
         start_date: ticket.startDate,
         end_date: ticket.endDate,
-        assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
+        assignee_member_id_list: (ticket.assignee_member_list ?? [])
+          .map(m => m.projectMemberId)
+          .filter((id): id is number => id !== null && id !== undefined),
         parent_ticket_id: ticket.parentId ?? null,
       });
       // TicketDropdownStore.getState().updateTicketStatus(ticketId, newStatus);
@@ -405,7 +405,7 @@ export const TicketDashboardPage = () => {
 
         {(selectedTicket || hoveredTicket) && projectName && (
           <S.PanelWrapper
-            onMouseEnter={() => {}}
+            onMouseEnter={() => { }}
             onMouseLeave={() => {
               if (!selectedTicket) setHoveredTicket(null);
             }}

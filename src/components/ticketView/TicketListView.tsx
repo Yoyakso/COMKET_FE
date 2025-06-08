@@ -49,7 +49,10 @@ export const TicketListView = ({
     const isSearchMatch =
       ticket.title?.toLowerCase().includes(keyword) ||
       ticket.type?.toLowerCase().includes(keyword) ||
-      ticket.assignee_member?.name?.toLowerCase().includes(keyword);
+      (ticket.assignee_member_list &&
+        ticket.assignee_member_list.some(member =>
+          member.name?.toLowerCase().includes(keyword)
+        ));
 
     return isPriorityMatch && isStatusMatch && isTypeMatch && isSearchMatch;
   });

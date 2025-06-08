@@ -44,8 +44,10 @@ export const MyTicketPage = () => {
           }),
         )
         .filter(
-          (t: Ticket) => t.assignee_member?.email === userEmail, //이메일로 필터링
-        );
+          (t: Ticket) =>
+            Array.isArray(t.assignee_member_list) &&
+            t.assignee_member_list.some(member => member.email === userEmail)
+        )
 
       setMyTickets(normalized);
     } catch (err) {
@@ -106,7 +108,7 @@ export const MyTicketPage = () => {
               <TicketListView
                 ticketList={myTickets}
                 onTicketClick={handleTicketClick}
-                onDeleteTickets={() => {}}
+                onDeleteTickets={() => { }}
                 projectName="내 티켓"
               />
             </>
