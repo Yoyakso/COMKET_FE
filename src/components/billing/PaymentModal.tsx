@@ -1,4 +1,5 @@
 import * as S from './PaymentModal.Style';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/common/button/Button';
 
 interface PaymentModalProps {
@@ -15,6 +16,28 @@ interface PaymentModalProps {
 export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalProps) => {
   const tax = Math.round(selectedPlan.price * 0.1 * 100) / 100;
   const total = selectedPlan.price + tax;
+
+  // 카드번호 4칸 분리
+  const [cardParts, setCardParts] = useState(['', '', '', '']);
+  const [cardTouched, setCardTouched] = useState(false);
+  const inputRefs = [useRef<HTMLInputElement>(null), useRef(null), useRef(null), useRef(null)];
+  const [cvc, setCvc] = useState('');
+  const [cvcTouched, setCvcTouched] = useState(false);
+  const isCvcValid = /^\d{3}$/.test(cvc);
+
+  const handleCardChange = (value: string, index: number) => {
+    if (!cardTouched) setCardTouched(true);
+
+    const onlyNums = value.replace(/\D/g, '').slice(0, 4);
+    const newParts = [...cardParts];
+    newParts[index] = onlyNums;
+    setCardParts(newParts);
+    if (onlyNums.length === 4 && index < 3) {
+      inputRefs[index + 1].current?.focus();
+    }
+  };
+
+  const isCardNumberValid = cardParts.every(p => p.length === 4);
 
   return (
     <>
@@ -61,7 +84,22 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
           <S.PaymentForm>
             <S.FormGroup>
               <label>카드 번호</label>
-              <input placeholder="1234 5678 9012 3456" />
+              <S.CardNumberWrapper>
+                {cardParts.map((part, i) => (
+                  <input
+                    key={i}
+                    ref={inputRefs[i]}
+                    value={part}
+                    onChange={e => handleCardChange(e.target.value, i)}
+                    maxLength={4}
+                    placeholder="0000"
+                    style={{
+                      width: '60px',
+                      textAlign: 'center',
+                    }}
+                  />
+                ))}
+              </S.CardNumberWrapper>
             </S.FormGroup>
 
             <S.FormRow>
@@ -85,7 +123,15 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
               </S.FormGroup>
               <S.FormGroup>
                 <label>CVC</label>
-                <input placeholder="123" />
+                <input
+                  placeholder="123"
+                  value={cvc}
+                  onChange={e => {
+                    if (!cvcTouched) setCvcTouched(true);
+                    const value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 3) setCvc(value);
+                  }}
+                />
               </S.FormGroup>
             </S.FormRow>
 
@@ -104,6 +150,7 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
               style={{ width: '100%', marginTop: '3px' }}
               $variant="tealFilled"
               size="md"
+              disabled={!isCardNumberValid || !isCvcValid}
               onClick={onConfirm}
             >
               ${total.toFixed(2)} 결제하기 →

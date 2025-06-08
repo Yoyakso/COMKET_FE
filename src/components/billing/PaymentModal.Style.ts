@@ -63,11 +63,13 @@ export const PlanName = styled.h3`
   font-size: 16px;
   font-weight: 600;
   color: ${color.textPrimary};
+  padding-left: 6px;
 `;
 
 export const PlanDescription = styled.p`
   font-size: 14px;
   color: ${color.textSecondary};
+  padding-left: 6px;
 `;
 
 export const PriceBox = styled.div`
@@ -97,7 +99,7 @@ export const PriceSub = styled.span`
 `;
 
 export const FeatureList = styled.ul`
-  padding-left: 16px;
+  padding-left: 20px;
   font-size: 14px;
   color: ${color.textPrimary};
 `;
@@ -130,6 +132,12 @@ export const TotalAmount = styled.div`
   color: ${color.textPrimary};
 `;
 
+export const CardNumberWrapper = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+`;
+
 export const PaymentForm = styled.div`
   display: flex;
   flex-direction: column;
@@ -150,6 +158,14 @@ export const FormGroup = styled.div`
     font-size: 14px;
     color: ${color.textPrimary};
   }
+
+  input:focus,
+  select:focus {
+    outline: none;
+    border: 1px solid ${color.teal300};
+    box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.2);
+    transition: all 0.2s ease;
+  }
 `;
 
 export const FormRow = styled.div`
@@ -163,4 +179,10 @@ export const InfoText = styled.p`
   color: ${color.textPlaceholder};
   text-align: center;
   margin-top: 18px;
+`;
+
+export const ErrorText = styled.div`
+  font-size: 12px;
+  color: ${color.error};
+  margin-top: 4px;
 `;
