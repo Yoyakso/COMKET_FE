@@ -1,404 +1,538 @@
 import styled from "styled-components"
-import { color } from "@/styles/color"
+
+const colors = {
+  teal400: "#2dd4bf",
+  cyan400: "#22d3ee",
+  white: "#ffffff",
+  gray50: "#f9fafb",
+  gray100: "#f3f4f6",
+  gray200: "#e5e7eb",
+  gray300: "#d1d5db",
+  gray400: "#9ca3af",
+  gray500: "#6b7280",
+  gray600: "#4b5563",
+  gray700: "#374151",
+  gray800: "#1f2937",
+  gray900: "#111827",
+  orange400: "#fb923c",
+  orange200: "#fed7aa",
+}
 
 export const Container = styled.div`
   min-height: 100vh;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
+  background-color: ${colors.gray50};
 `
 
-export const HeaderWrapper = styled.header`
-  width: 100%;
-  background-color: white;
-  border-bottom: 1px solid #f0f0f0;
+export const Header = styled.header`
+  background-color: ${colors.white};
+  border-bottom: 1px solid ${colors.gray100};
+  position: sticky;
+  top: 0;
+  z-index: 50;
+`
+
+export const HeaderContent = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
+export const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`
+
+export const LogoBadge = styled.div`
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, ${colors.teal400} 0%, ${colors.cyan400} 100%);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  span {
+    color: ${colors.white};
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+`
+
+export const LogoText = styled.div`
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: ${colors.gray900};
+`
+
+export const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`
+
+export const GhostButton = styled.button`
+  background: transparent;
+  color: ${colors.gray600};
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  
+  &:hover {
+    color: ${colors.gray900};
+  }
+`
+
+export const PrimaryButton = styled.button`
+  background: linear-gradient(135deg, ${colors.teal400} 0%, ${colors.cyan400} 100%);
+  color: ${colors.white};
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  
+  &:hover {
+    opacity: 0.9;
+  }
 `
 
 export const Main = styled.main`
-  flex: 1;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  width: 100%;
-  padding: 32px;
+  padding: 2rem 1.5rem;
 `
 
+// 히어로 섹션
 export const HeroSection = styled.section`
   text-align: center;
-  margin-bottom: 48px;
-  padding-top: 32px;
+  margin-bottom: 4rem;
+`
+
+export const HeroBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, ${colors.teal400} 0%, ${colors.cyan400} 100%);
+  color: ${colors.white};
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  margin-bottom: 1.5rem;
 `
 
 export const HeroTitle = styled.h1`
-  font-size: 40px;
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 16px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: ${colors.gray900};
+  margin-bottom: 1.5rem;
   line-height: 1.2;
-
+  
   @media (min-width: 768px) {
-    font-size: 48px;
+    font-size: 3rem;
   }
+`
+
+export const GradientText = styled.span`
+  background: linear-gradient(135deg, ${colors.teal400} 0%, ${colors.cyan400} 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 `
 
 export const HeroDescription = styled.p`
-  font-size: 18px;
-  color: #64748b;
-  max-width: 672px;
+  font-size: 1.125rem;
+  color: ${colors.gray600};
+  max-width: 36rem;
   margin: 0 auto;
   line-height: 1.6;
-
-  @media (min-width: 768px) {
-    font-size: 20px;
-  }
 `
 
-export const PricingGrid = styled.div`
+// 플랜 선택기
+export const PlanSelectorSection = styled.section`
+  margin-bottom: 3rem;
+`
+
+export const PlanTabs = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 32px;
-  margin-bottom: 64px;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-
-  @media (min-width: 1200px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 32rem;
+  margin: 0 auto;
+  background-color: ${colors.gray100};
+  border-radius: 0.375rem;
+  overflow: hidden;
 `
 
-export const PricingCard = styled.div<{ $featured?: boolean; $selected?: boolean }>`
-  background-color: white;
-  border-radius: 16px;
-  padding: 32px;
-  min-height: 600px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: ${(props) =>
-    props.$featured
-      ? `2px solid ${color.teal500}`
-      : props.$selected
-        ? `2px solid ${color.teal300}`
-        : "1px solid #f1f5f9"};
-  position: relative;
-  transition: all 0.3s ease;
+export const PlanTab = styled.button<{ $active: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: ${(props) => (props.$active ? colors.white : "transparent")};
+  color: ${(props) => (props.$active ? colors.gray900 : colors.gray500)};
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
   cursor: pointer;
-  height: fit-content;
-
+  transition: all 0.2s;
+  
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    color: ${(props) => (props.$active ? colors.gray900 : colors.gray700)};
+  }
+  
+  @media (max-width: 640px) {
+    span {
+      display: none;
+    }
   }
 `
 
-export const RecommendedBadge = styled.div`
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, ${color.teal500} 0%, ${color.teal600} 100%);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+// 선택된 플랜 하이라이트
+export const SelectedPlanSection = styled.section`
+  margin-bottom: 4rem;
 `
 
-export const PlanHeader = styled.div`
+export const PlanCard = styled.div`
+  max-width: 30rem;
+  margin: 0 auto;
+  background-color: ${colors.white};
+  border: 2px solid ${colors.gray200};
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  position: relative;
+`
+
+export const PopularBadge = styled.div`
+  background: linear-gradient(135deg, ${colors.teal400} 0%, ${colors.cyan400} 100%);
+  color: ${colors.white};
   text-align: center;
-  margin-bottom: 32px;
-`
-
-export const PlanName = styled.h2`
-  font-size: 24px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 8px;
-`
-
-export const UserRange = styled.div`
-  font-size: 14px;
-  color: #64748b;
-  margin-bottom: 16px;
+  padding: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 500;
 `
 
-export const PriceContainer = styled.div`
+export const PlanCardHeader = styled.div`
+  padding: 2rem 1.5rem;
+  text-align: center;
+`
+
+export const PlanIconContainer = styled.div`
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, ${colors.teal400} 0%, ${colors.cyan400} 100%);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  color: ${colors.white};
+`
+
+export const PlanName = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: ${colors.gray900};
+  margin-bottom: 0.5rem;
+`
+
+export const PlanUserRange = styled.div`
+  font-size: 0.875rem;
+  color: ${colors.gray500};
+  margin-bottom: 1rem;
+`
+
+export const PlanPriceContainer = styled.div`
+  margin-bottom: 1rem;
+`
+
+export const PlanPrice = styled.div`
+  font-size: 2rem;
+  font-weight: 700;
+  color: ${colors.gray900};
   display: flex;
   align-items: baseline;
   justify-content: center;
-  margin-bottom: 16px;
 `
 
-export const Price = styled.span`
-  font-size: 40px;
-  font-weight: 800;
-  color: #0f172a;
+export const PlanPricePeriod = styled.span`
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: ${colors.gray500};
+  margin-left: 0.25rem;
 `
 
-export const PricePeriod = styled.span`
-  font-size: 16px;
-  color: #64748b;
-  margin-left: 8px;
+export const PlanPricePerUser = styled.div`
+  font-size: 0.75rem;
+  color: ${colors.gray400};
 `
 
 export const PlanDescription = styled.p`
-  font-size: 14px;
-  color: #64748b;
+  font-size: 0.875rem;
+  color: ${colors.gray600};
   line-height: 1.5;
 `
 
-export const FeatureSection = styled.div`
-  margin-bottom: 32px;
+export const PlanCardContent = styled.div`
+  padding: 1.5rem;
+  text-align: center;
 `
 
-export const FeatureTitle = styled.h3`
-  font-size: 16px;
-  font-weight: 600;
-  color: #0f172a;
-  margin-bottom: 16px;
-`
-
-export const FeatureList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0 0 24px 0;
-`
-
-export const FeatureItem = styled.li`
+export const PlanButton = styled.button<{ $popular: boolean }>`
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  font-size: 14px;
-  color: #0f172a;
-`
-
-export const CheckIcon = styled.div`
-  color: ${color.teal500};
-  flex-shrink: 0;
-`
-
-export const LimitationTitle = styled.h4`
-  font-size: 14px;
-  font-weight: 600;
-  color: #64748b;
-  margin-bottom: 12px
-`
-
-export const LimitationList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-`
-
-export const LimitationItem = styled.li`
-  display: flex;
-  align-items: center;
-  gap: 12px
-  padding: 4px 0;
-  font-size: 14px;
-  color: #64748b;
-`
-
-export const XIcon = styled.div`
-  color: #ef4444;
-  flex-shrink: 0;
-`
-
-export const CTAButton = styled.button<{ $primary: boolean; $free?: boolean }>`
+  justify-content: center;
+  gap: 0.5rem;
   width: 100%;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
+  border-radius: 0.375rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: ${(props) => (props.$primary ? "none" : `1px solid ${color.teal500}`)};
-  background-color: ${(props) => (props.$free ? "#f8fafc" : props.$primary ? color.teal500 : "white")};
-  color: ${(props) => (props.$free ? "#64748b" : props.$primary ? "white" : color.teal500)};
+  transition: all 0.2s;
+  
+  ${(props) =>
+    props.$popular
+      ? `
+    background: linear-gradient(135deg, ${colors.teal400} 0%, ${colors.cyan400} 100%);
+    color: ${colors.white};
+    border: none;
+    
+    &:hover {
+      opacity: 0.9;
+    }
+  `
+      : `
+    background-color: ${colors.white};
+    color: ${colors.gray700};
+    border: 1px solid ${colors.gray300};
+    
+    &:hover {
+      border-color: ${colors.gray400};
+    }
+  `}
+`
 
+export const PlanButtonSubtext = styled.p`
+  font-size: 0.75rem;
+  color: ${colors.gray500};
+  margin-top: 0.5rem;
+`
+
+// 기능 비교 섹션
+export const FeatureComparisonSection = styled.section`
+  margin-bottom: 4rem;
+`
+
+export const SectionTitle = styled.h2`
+  font-size: 2rem;
+  font-weight: 700;
+  color: ${colors.gray900};
+  text-align: center;
+  margin-bottom: 1rem;
+`
+
+export const SectionDescription = styled.p`
+  font-size: 1.125rem;
+  color: ${colors.gray600};
+  text-align: center;
+  margin-bottom: 3rem;
+`
+
+export const FeatureList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`
+
+export const FeatureCard = styled.div`
+  background-color: ${colors.white};
+  border: 1px solid ${colors.gray200};
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+`
+
+export const FeatureCardHeader = styled.div`
+  background-color: ${colors.gray50};
+  border-bottom: 1px solid ${colors.gray200};
+  padding: 1rem 1.5rem;
+`
+
+export const FeatureCardTitle = styled.h3`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: ${colors.gray900};
+`
+
+export const FeatureIconContainer = styled.div`
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, ${colors.teal400} 0%, ${colors.cyan400} 100%);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${colors.white};
+`
+
+export const FeatureCardContent = styled.div`
+  padding: 1.5rem;
+`
+
+export const FeatureGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`
+
+export const FeatureItem = styled.div`
+  padding: 0.5rem 0;
+  
+  span {
+    font-size: 0.875rem;
+    color: ${colors.gray700};
+    font-weight: 500;
+    line-height: 1.5;
+  }
+`
+
+// FAQ 섹션
+export const FAQSection = styled.section`
+  margin-bottom: 4rem;
+`
+
+export const FAQGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+  max-width: 48rem;
+  margin: 0 auto;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`
+
+export const FAQCard = styled.div`
+  background-color: ${colors.white};
+  border: 1px solid ${colors.gray200};
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s;
+  
   &:hover {
-    background-color: ${(props) => (props.$free ? "#f1f5f9" : props.$primary ? color.teal600 : "#f0fdfa")};
-    transform: translateY(-1px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 `
 
-export const ComparisonSection = styled.section`
-  margin-bottom: 64px;
-`
-
-export const SectionTitle = styled.h2`
-  font-size: 32px;
-  font-weight: 700;
-  color: #0f172a;
-  text-align: center;
-  margin-bottom: 32px;
-`
-
-export const ComparisonTableWrapper = styled.div`
-  overflow-x: auto;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  border: 1px solid #f1f5f9;
-`
-
-export const ComparisonTable = styled.div`
-  min-width: 600px;
-`
-
-export const TableHeader = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  background-color: #f8fafc;
-  border-bottom: 1px solid #f1f5f9;
-`
-
-export const FeatureColumn = styled.div`
-  padding: 16px 24px;
-  font-weight: 600;
-  color: #0f172a;
-  font-size: 14px;
-`
-
-export const PlanColumn = styled.div`
-  padding: 16px 16px;
-  font-weight: 600;
-  color: #0f172a;
-  text-align: center;
-  font-size: 14px;
-`
-
-export const CategorySection = styled.div``
-
-export const CategoryHeader = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  background-color: #fafbfc;
-  border-bottom: 1px solid #f1f5f9;
-`
-
-export const CategoryName = styled.div`
-  padding: 12px 24px;
-  font-weight: 600;
-  color: #374151;
-  font-size: 14px;
-`
-
-export const CategoryDivider = styled.div`
-  background-color: #f1f5f9;
-`
-
-export const TableRow = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  border-bottom: 1px solid #f1f5f9;
-
-  &:last-child {
-    border-bottom: none;
-  }
-`
-
-export const FeatureCell = styled.div`
-  padding: 16px 24px;
-  color: #0f172a;
-  font-size: 14px;
-`
-
-export const PlanCell = styled.div`
-  padding: 16px 16px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-export const CheckMark = styled.span`
-  color: ${color.teal500};
-  font-weight: 600;
-  font-size: 16px;
-`
-
-export const XMark = styled.span`
-  color: #ef4444;
-  font-weight: 600;
-  font-size: 16px;
-`
-
-export const LimitedText = styled.span`
-  color: #f59e0b;
-  font-size: 12px;
-  font-weight: 500;
-`
-
-export const FAQSection = styled.section`
-  margin-bottom: 64px;
-`
-
-export const FAQList = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-`
-
-export const FAQItem = styled.div`
-  background-color: white;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  border: 1px solid #f1f5f9;
-`
-
 export const FAQQuestion = styled.h3`
-  font-size: 18px;
+  font-size: 1rem;
   font-weight: 600;
-  color: #0f172a;
-  margin-bottom: 12px;
+  color: ${colors.gray900};
+  margin-bottom: 0.75rem;
 `
 
 export const FAQAnswer = styled.p`
-  font-size: 14px;
-  color: #64748b;
-  line-height: 1.6;
-  margin: 0;
+  font-size: 0.875rem;
+  color: ${colors.gray600};
+  line-height: 1.5;
 `
 
+// CTA 섹션
 export const CTASection = styled.section`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background: linear-gradient(135deg, ${colors.teal400} 0%, ${colors.cyan400} 100%);
+  color: ${colors.white};
+  border-radius: 0.75rem;
+  padding: 3rem 2rem;
   text-align: center;
-  background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%);
-  border-radius: 16px;
-  padding: 48px 32px;
-  margin-bottom: 32px;
 `
 
 export const CTATitle = styled.h2`
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 `
 
 export const CTADescription = styled.p`
-  font-size: 18px;
-  color: #64748b;
-  margin-bottom: 32px;
+  font-size: 1.125rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
 `
 
-export const CTAButtons = styled.div`
+export const CTAButtonGroup = styled.div`
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  gap: 1rem;
   justify-content: center;
-  flex-wrap: wrap;
-  width: 750px;
+  margin-bottom: 1rem;
+  
+  @media (min-width: 640px) {
+    flex-direction: row;
+  }
 `
 
-export const Footer = styled.footer`
-  background-color: #f8fafc;
-  border-top: 1px solid #f1f5f9;
-  padding: 32px;
+export const CTAWhiteButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: ${colors.white};
+  color: ${colors.teal400};
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: ${colors.gray100};
+  }
+`
+
+export const CTAOutlineButton = styled.button`
+  background-color: transparent;
+  color: ${colors.white};
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  border: 2px solid ${colors.white};
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background-color: ${colors.white};
+    color: ${colors.teal400};
+  }
+`
+
+export const CTASubtext = styled.p`
+  font-size: 0.875rem;
+  opacity: 0.75;
 `
