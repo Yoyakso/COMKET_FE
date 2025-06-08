@@ -29,7 +29,7 @@ interface CreateTicketModalProps {
   template?: TicketTemplate
   initialData?: {
     title?: string
-    assignee_member_id?: number | null
+    assignee_member_id_list?: number[] | null
     priority?: string
     start_date?: string
     end_date?: string
@@ -60,7 +60,7 @@ export const CreateTicketModal = ({
     status: "TODO",
     start_date: new Date().toISOString().split("T")[0],
     end_date: new Date().toISOString().split("T")[0],
-    assignee_member_id: null as number | null,
+    assignee_member_id_list: null as number[] | null,
     requester: {
       id: memberId,
       name: name,
@@ -136,23 +136,27 @@ export const CreateTicketModal = ({
   }
 
   const handleSelfAssign = () => {
+    console.log("현재 멤버 목록:", members)
+    console.log("현재 로그인 유저:", { email, name })
+
     if (!members || members.length === 0) {
-      toast.error("멤버 목록을 불러오지 못했습니다.");
-      return;
+      toast.error("멤버 목록을 불러오지 못했습니다.")
+      return
     }
 
-    const self = members.find((m) => m.email === email || m.name === name);
+    const self = members.find((m) => m.email === email || m.name === name)
+    console.log("검색된 나:", self)
 
     if (self) {
       setTicketData((prev) => ({
         ...prev,
-        assignee_member_id: self.projectMemberId,
-      }));
-      toast.success("담당자가 나로 설정되었습니다.");
+        assignee_member_id_list: [self.projectMemberId], // 기존 목록 초기화 후 본인만 설정
+      }))
+      toast.success("담당자가 나로 설정되었습니다.")
     } else {
-      toast.error("현재 멤버 목록에서 본인을 찾을 수 없습니다.");
+      toast.error("현재 멤버 목록에서 본인을 찾을 수 없습니다.")
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -166,7 +170,7 @@ export const CreateTicketModal = ({
         ticket_state: ticketData.status as any,
         start_date: ticketData.start_date,
         end_date: ticketData.end_date,
-        assignee_member_id: ticketData.assignee_member_id,
+        assignee_member_id_list: ticketData.assignee_member_id_list,
       }
 
       if (typeof ticketData.parentTicketId === "number") {
@@ -184,7 +188,7 @@ export const CreateTicketModal = ({
       }
     } else {
       try {
-        const assigneeMemberId = ticketData.assignee_member_id || 0
+        const assigneeMemberIdList = ticketData.assignee_member_id_list ?? []
 
         const allFieldValues = {
           ...ticketData,
@@ -192,7 +196,7 @@ export const CreateTicketModal = ({
           priority: ticketData.priority,
           ticketState: ticketData.status,
         }
-        const dto = mapTemplateToCreateTicketDto(template, allFieldValues, assigneeMemberId)
+        const dto = mapTemplateToCreateTicketDto(template, allFieldValues, assigneeMemberIdList)
         const response = await createTicket(projectName, dto)
         const mappedTicket = mapTicketFromResponse(response)
         onSubmit(mappedTicket)
@@ -500,16 +504,22 @@ export const CreateTicketModal = ({
               <S.FormLabel>담당자</S.FormLabel>
               <S.SelectField onClick={() => toggleDropdown("assignee", showAssigneeDropdown)}>
                 {(() => {
-                  const assignee = members.find((m) => m.projectMemberId === ticketData.assignee_member_id)
-                  return assignee ? (
-                    <S.UserOption>
-                      <S.UserAvatar>{assignee.name.charAt(0)}</S.UserAvatar>
-                      <S.UserName>{assignee.name}</S.UserName>
-                    </S.UserOption>
+                  const assignees = members.filter((m) =>
+                    ticketData.assignee_member_id_list?.includes(m.projectMemberId)
+                  )
+
+                  return assignees.length > 0 ? (
+                    assignees.map((assignee) => (
+                      <S.UserOption key={assignee.projectMemberId}>
+                        <S.UserAvatar>{assignee.name.charAt(0)}</S.UserAvatar>
+                        <S.UserName>{assignee.name}</S.UserName>
+                      </S.UserOption>
+                    ))
                   ) : (
                     <S.AssigneeText>담당자 선택</S.AssigneeText>
                   )
                 })()}
+
                 <ChevronDown size={16} />
                 {showAssigneeDropdown && (
                   <S.DropdownMenu>
@@ -517,18 +527,26 @@ export const CreateTicketModal = ({
                       <S.DropdownItem
                         key={member.projectMemberId}
                         onClick={() => {
+                          const selected = ticketData.assignee_member_id_list ?? []
+                          const alreadySelected = selected.includes(member.projectMemberId)
+                          const updatedList = alreadySelected
+                            ? selected.filter((id) => id !== member.projectMemberId)
+                            : [...selected, member.projectMemberId]
+
                           setTicketData({
                             ...ticketData,
-                            assignee_member_id: member.projectMemberId,
+                            assignee_member_id_list: updatedList,
                           })
-                          setShowAssigneeDropdown(false)
                         }}
                       >
                         <S.UserOption>
                           <S.UserAvatar>{member.name.charAt(0)}</S.UserAvatar>
-                          <S.UserName>{member.name}</S.UserName>
+                          <S.UserName>
+                            {member.name} {ticketData.assignee_member_id_list?.includes(member.projectMemberId) ? "(선택됨)" : ""}
+                          </S.UserName>
                         </S.UserOption>
                       </S.DropdownItem>
+
                     ))}
                   </S.DropdownMenu>
                 )}
