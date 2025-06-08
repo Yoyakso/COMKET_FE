@@ -6,7 +6,7 @@ interface Member {
   name: string;
   nickname: string;
   email: string;
-  profileUrl?: string;
+  profileFileUrl?: string;
 }
 
 interface Props {

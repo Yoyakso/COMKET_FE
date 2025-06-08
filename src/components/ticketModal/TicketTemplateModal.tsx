@@ -24,7 +24,7 @@ interface TicketTemplateModalProps {
   initialData?: {
     ticket_name?: string
     ticket_priority?: Priority
-    assignee_member_id?: number | null
+    assignee_member_id_list?: number[] | []
     due_date?: string | null
     ticket_type?: string
     description?: string

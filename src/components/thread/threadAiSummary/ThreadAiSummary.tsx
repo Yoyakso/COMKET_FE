@@ -65,7 +65,6 @@ export const ThreadAiSummary = ({
     const fetchAiHistory = async () => {
       try {
         const historyList = await getAiHistory(ticketId)
-        console.log("AI History Response:", historyList)
 
         if (Array.isArray(historyList) && historyList.length > 0) {
           const sortedHistory = historyList.sort(
@@ -282,7 +281,9 @@ export const ThreadAiSummary = ({
           initialData={{
             ticket_name: selectedActionItem.title,
             ticket_priority: selectedActionItem.priority,
-            assignee_member_id: selectedActionItem.memberInfo?.projectMemberId || null,
+            assignee_member_id_list: selectedActionItem.memberInfo?.projectMemberId
+              ? [selectedActionItem.memberInfo.projectMemberId]
+              : [],
             due_date: selectedActionItem.dueDate || null,
             ticket_type: "기본형",
             description: "",
@@ -306,7 +307,10 @@ export const ThreadAiSummary = ({
           parentTicketId={ticketId}
           initialData={{
             title: selectedActionItem.title,
-            assignee_member_id: selectedActionItem.memberInfo?.projectMemberId || null,
+            // assignee_member_id_list: selectedActionItem.memberInfo?.projectMemberId || null,
+            assignee_member_id_list: selectedActionItem.memberInfo?.projectMemberId
+              ? [selectedActionItem.memberInfo.projectMemberId]
+              : [],
             priority: selectedActionItem.priority,
             start_date: new Date().toISOString().split("T")[0],
           }}

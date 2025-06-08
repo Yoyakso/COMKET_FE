@@ -5,13 +5,13 @@ export interface Ticket {
   title: string;
   type: TicketType;
   description: string;
-  assignee_member: {
+  assignee_member_list: {
     name: string;
     nickname: string;
     profileFileUrl?: string;
     email: string;
     projectMemberId: number | null;
-  };
+  }[];
   threadCount: number;
   priority: Priority;
   status: Status;

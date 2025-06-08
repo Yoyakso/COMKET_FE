@@ -23,7 +23,7 @@ interface TicketUpdatePayload {
   start_date: string
   end_date: string
   description: string
-  assignee_member_id: number | null
+  assignee_member_id_list: number[] | null
   parent_ticket_id: number | null
 }
 
@@ -83,7 +83,7 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
         start_date: fetchedTicket.startDate,
         end_date: fetchedTicket.endDate,
         description: fetchedTicket.description,
-        assignee_member_id: fetchedTicket.assignee_member?.projectMemberId ?? null,
+        assignee_member_id_list: fetchedTicket.assignee_member_list?.projectMemberId ?? null,
         parent_ticket_id: fetchedTicket.parentId ?? null,
       })
     }
@@ -140,7 +140,7 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
         start_date: fetchedTicket.startDate,
         end_date: fetchedTicket.endDate,
         description: fetchedTicket.description,
-        assignee_member_id: fetchedTicket.assignee_member?.projectMemberId ?? null,
+        assignee_member_id_list: fetchedTicket.assignee_member_list?.projectMemberId ?? null,
         parent_ticket_id: fetchedTicket.parentId ?? null,
       })
     }
@@ -252,44 +252,115 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
               <User size={14} />
               담당자
             </S.InfoTitle>
-            <S.InfoContent>
+            {/* <S.InfoContent>
               <S.UserDisplay>
                 {isEditMode ? (
                   <S.StyledSelect
-                    value={editedTicket.assignee_member_id ?? ""}
-                    onChange={(e) =>
-                      setEditedTicket({
-                        ...editedTicket,
-                        assignee_member_id: e.target.value === "" ? null : Number(e.target.value),
-                      })
-                    }
+                    multiple
+                    size={projectMembers.length > 5 ? 5 : projectMembers.length}
+                    style={{ height: "auto", overflowY: "scroll", zIndex: 10 }}
+                    value={editedTicket.assignee_member_id_list?.map(String) || []}
+                    onChange={(e) => {
+                      const selectedIds = Array.from(e.target.selectedOptions).map((opt) => Number(opt.value))
+                      setEditedTicket({ ...editedTicket, assignee_member_id_list: selectedIds })
+                    }}
                   >
-                    <option value="">미지정</option>
                     {projectMembers.map((member) => (
                       <option key={member.projectMemberId} value={member.projectMemberId}>
                         {member.name}
                       </option>
                     ))}
                   </S.StyledSelect>
+
                 ) : (
                   <S.UserDisplay>
-                    <S.SmallAvatar>
-                      {fetchedTicket.assignee_member?.profileUrl ? (
-                        <S.AvatarImage
-                          src={fetchedTicket.assignee_member.profileUrl}
-                          alt={fetchedTicket.assignee_member.name || "미배정"}
-                        />
-                      ) : (
-                        fetchedTicket.assignee_member?.name?.slice(0, 2) || "미"
-                      )}
-                    </S.SmallAvatar>
-                    <S.UserInfo>
-                      <span>{fetchedTicket.assignee_member?.name || "미배정"}</span>
-                    </S.UserInfo>
+                    {fetchedTicket.assignee_member_list.map((member) => (
+                      <S.AssigneeWrapper key={member.projectMemberId}>
+                        <S.SmallAvatar>
+                          {member.profileFileUrl ? (
+                            <S.AvatarImage src={member.profileFileUrl} alt={member.name} />
+                          ) : (
+                            member.name?.slice(0, 2) || "미"
+                          )}
+                        </S.SmallAvatar>
+                        <S.UserInfo>{member.name}</S.UserInfo>
+                      </S.AssigneeWrapper>
+                    ))}
                   </S.UserDisplay>
+
+
                 )}
               </S.UserDisplay>
-            </S.InfoContent>
+            </S.InfoContent> */}
+            {isEditMode ? (
+              <div>
+                {/* 선택된 담당자들 표시 */}
+                <S.SelectedAssigneesDisplay>
+                  {(editedTicket.assignee_member_id_list || []).length > 0 ? (
+                    projectMembers
+                      .filter((member) =>
+                        (editedTicket.assignee_member_id_list || []).includes(member.projectMemberId),
+                      )
+                      .map((member) => (
+                        <S.SelectedAssigneeTag key={member.projectMemberId}>
+                          <S.SelectedAssigneeAvatar>
+                            {member.profileFileUrl ? (
+                              <S.SelectedAssigneeAvatarImage src={member.profileFileUrl} alt={member.name} />
+                            ) : (
+                              member.name?.slice(0, 2) || "미"
+                            )}
+                          </S.SelectedAssigneeAvatar>
+                          {member.name}
+                          <S.RemoveAssigneeButton
+                            onClick={() => {
+                              const newIds = (editedTicket.assignee_member_id_list || []).filter(
+                                (id) => id !== member.projectMemberId,
+                              )
+                              setEditedTicket({ ...editedTicket, assignee_member_id_list: newIds })
+                            }}
+                          >
+                            <X size={12} />
+                          </S.RemoveAssigneeButton>
+                        </S.SelectedAssigneeTag>
+                      ))
+                  ) : (
+                    <S.SelectLabel>담당자를 선택하세요 (Ctrl/Cmd + 클릭으로 다중선택)</S.SelectLabel>
+                  )}
+                </S.SelectedAssigneesDisplay>
+
+                {/* 개선된 다중선택 드롭다운 */}
+                <S.StyledSelect
+                  multiple
+                  size={projectMembers.length > 6 ? 6 : projectMembers.length}
+                  value={editedTicket.assignee_member_id_list?.map(String) || []}
+                  onChange={(e) => {
+                    const selectedIds = Array.from(e.target.selectedOptions).map((opt) => Number(opt.value))
+                    setEditedTicket({ ...editedTicket, assignee_member_id_list: selectedIds })
+                  }}
+                >
+                  {projectMembers.map((member) => (
+                    <option key={member.projectMemberId} value={member.projectMemberId}>
+                      {member.name}
+                    </option>
+                  ))}
+                </S.StyledSelect>
+              </div>
+            ) : (
+              <S.UserDisplay>
+                {fetchedTicket.assignee_member_list.map((member) => (
+                  <S.AssigneeWrapper key={member.projectMemberId}>
+                    <S.SmallAvatar>
+                      {member.profileFileUrl ? (
+                        <S.AvatarImage src={member.profileFileUrl} alt={member.name} />
+                      ) : (
+                        member.name?.slice(0, 2) || "미"
+                      )}
+                    </S.SmallAvatar>
+                    <S.UserInfo>{member.name}</S.UserInfo>
+                  </S.AssigneeWrapper>
+                ))}
+              </S.UserDisplay>
+            )}
           </S.InfoSection>
 
           <S.InfoSection>

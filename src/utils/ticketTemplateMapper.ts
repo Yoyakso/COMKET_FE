@@ -4,7 +4,7 @@ import type { CreateTicketDto } from "@/api/Ticket"
 export const mapTemplateToCreateTicketDto = (
   template: TicketTemplate,
   fieldValues: Record<string, any>,
-  assigneeMemberId: number,
+  assigneeMemberIdList: number[],
 ): CreateTicketDto => {
   const base: CreateTicketDto = {
     ticket_name: fieldValues.title || template.name,
@@ -14,7 +14,7 @@ export const mapTemplateToCreateTicketDto = (
     description: fieldValues.content || template.purpose,
     start_date: fieldValues.start_date,
     end_date: fieldValues.end_date ?? null,
-    assignee_member_id: assigneeMemberId,
+    assignee_member_id_list: assigneeMemberIdList,
     parent_ticket_id: fieldValues.parentTicketId || null,
     additional_info: getAdditionalInfo(template.id, fieldValues),
   }

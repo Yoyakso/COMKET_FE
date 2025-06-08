@@ -10,7 +10,7 @@ export interface CreateTicketDto {
   start_date: string;
   end_date: string;
   parent_ticket_id: null;
-  assignee_member_id: number;
+  assignee_member_id_list: number[];
   additional_info?: Record<string, any> | null;
 }
 

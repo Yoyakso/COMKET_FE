@@ -130,7 +130,7 @@ export const TicketTable = ({
         : PRIORITY_ORDER[bPriority] - PRIORITY_ORDER[aPriority];
     }
     // 담당자/작성자 name 기준 정렬
-    if (sortKey === 'assignee_member' || sortKey === 'creator_member') {
+    if (sortKey === 'assignee_member_list' || sortKey === 'creator_member') {
       const aName = (aValue as { name?: string })?.name ?? '';
       const bName = (bValue as { name?: string })?.name ?? '';
       return sortOrder === 'asc' ? aName.localeCompare(bName) : bName.localeCompare(aName);
