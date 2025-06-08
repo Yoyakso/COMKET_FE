@@ -38,7 +38,9 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, ticketList, se
   const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([])
   const modalRef = useRef<HTMLDivElement>(null)
   const writerColor = getColorFromString(ticket.creator_member.name)
-  const assigneeColor = getColorFromString(ticket.assignee_member.name)
+  const assigneeColors = ticket.assignee_member_list.map((member) =>
+    getColorFromString(member.name)
+  )
   useOutsideClick(modalRef, onClose);
 
   function flattenTickets(tickets: Ticket[]): Ticket[] {
@@ -166,14 +168,17 @@ export const TicketDetailPanel = ({ ticket, projectName, onClose, ticketList, se
 
             <S.InfoSection>
               <S.InfoLabel>담당자</S.InfoLabel>
-              {ticket.assignee_member ? (
-                <S.UserDisplay>
-                  <S.Avatar color={assigneeColor}>
-                    {/* <S.AvatarImage src={ticket.assignee.profileUrl || "/placeholder.svg"} alt={ticket.assignee.name} /> */}
-                    {ticket.assignee_member.name?.[0] ?? "?"}
-                  </S.Avatar>
-                  <S.UserName>{ticket.assignee_member.name}</S.UserName>
-                </S.UserDisplay>
+              {ticket.assignee_member_list && ticket.assignee_member_list.length > 0 ? (
+                <S.AssigneeList>
+                  {ticket.assignee_member_list.map((member, idx) => (
+                    <S.UserDisplay key={idx}>
+                      <S.Avatar color={getColorFromString(member.name)}>
+                        {member.name?.[0] ?? "?"}
+                      </S.Avatar>
+                      <S.UserName>{member.name}</S.UserName>
+                    </S.UserDisplay>
+                  ))}
+                </S.AssigneeList>
               ) : (
                 <S.UnassignedText>미배정</S.UnassignedText>
               )}

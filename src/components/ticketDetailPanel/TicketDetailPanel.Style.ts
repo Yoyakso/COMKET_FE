@@ -409,3 +409,10 @@ export const Badge = styled.span<{ $variant?: "default" | "outline" }>`
     color: #374151;
   `}
 `
+
+export const AssigneeList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+`
+

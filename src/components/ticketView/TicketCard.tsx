@@ -31,7 +31,12 @@ export const TicketCard = ({ ticket, onClick }: TicketCardProps) => {
         <PriorityBadge priority={ticket.priority} />
       </S.Badges>
       <S.DateRange>{ticket.startDate} ~ {ticket.endDate}</S.DateRange>
-      <S.Assignee>{ticket.type} | {ticket.assignee_member?.name ?? '담당자 없음'}</S.Assignee>
+      <S.Assignee>
+        {ticket.type} |{" "}
+        {ticket.assignee_member_list && ticket.assignee_member_list.length > 0
+          ? `${ticket.assignee_member_list[0].name} 외 ${ticket.assignee_member_list.length - 1}명`
+          : "담당자 없음"}
+      </S.Assignee>
     </S.CardContainer>
   );
 };
