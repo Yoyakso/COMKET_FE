@@ -454,3 +454,9 @@ export const ButtonContainer = styled.div`
   align-items: center;
   padding: 0 16px 16px;
 `
+
+export const AssigneeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+`

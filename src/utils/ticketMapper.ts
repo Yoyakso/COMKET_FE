@@ -11,13 +11,15 @@ export function mapTicketFromResponse(response: any): Ticket {
     startDate: response.start_date,
     endDate: response.end_date,
     parentId: response.parent_ticket_id ?? undefined,
-    assignee_member: {
-      name: response.assignee_member?.name ?? '',
-      email: response.assignee_member?.email ?? '',
-      profileFileUrl: response.assignee_member?.profileFileUr ?? '',
-      nickname: '',
-      projectMemberId: response.assignee_member?.projectMemberId ?? null,
-    },
+    assignee_member_list: Array.isArray(response.assignee_member_list)
+      ? response.assignee_member_list.map((member: any) => ({
+        name: member.name ?? '',
+        email: member.email ?? '',
+        profileFileUrl: member.profileFileUrl ?? '',
+        nickname: '',
+        projectMemberId: member.projectMemberId ?? null,
+      }))
+      : [],
     creator_member: {
       name: response.creator_member?.name ?? '',
       email: response.creator_member?.email ?? '',

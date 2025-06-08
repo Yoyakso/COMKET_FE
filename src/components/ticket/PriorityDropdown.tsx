@@ -38,7 +38,7 @@ export const PriorityDropdown = ({ ticketId, projectName }: PriorityDropdownProp
         start_date: ticket.startDate ?? null,
         end_date: ticket.endDate ?? null,
         parent_ticket_id: ticket.parentId ?? null,
-        assignee_member_id: ticket.assignee_member?.projectMemberId ?? null,
+        assignee_member_id_list: ticket.assignee_member_list?.[0]?.projectMemberId ?? null,
       };
 
       await editSingleTicket(ticketId, projectName, payload);
