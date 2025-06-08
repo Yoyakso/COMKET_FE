@@ -245,7 +245,7 @@ export const ProfilePage = () => {
               <S.InputContainer>
                 <S.Input
                   type="text"
-                  name="organization"
+                  name="department"
                   value={profile.department}
                   onChange={handleInputChange}
                   placeholder="소속 입력"
@@ -259,7 +259,7 @@ export const ProfilePage = () => {
               <S.Label>직무</S.Label>
               <S.InputContainer>
                 <S.SelectInput
-                  name="department"
+                  name="responsibility"
                   value={profile.responsibility}
                   onChange={handleInputChange}
                 >
