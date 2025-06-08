@@ -32,32 +32,6 @@ export const PlanSelectModal = ({ currentPlanId, onSelect, onClose }: PlanSelect
                   <S.PlanPrice>{plan.price}</S.PlanPrice>
                 </S.PlanHeader>
 
-                <S.Section>
-                  <S.SectionTitle>주요 기능</S.SectionTitle>
-                  <S.FeatureList>
-                    {plan.features.map((feature, i) => (
-                      <S.FeatureItem key={i}>
-                        <S.CheckIcon>✓</S.CheckIcon>
-                        {feature}
-                      </S.FeatureItem>
-                    ))}
-                  </S.FeatureList>
-                </S.Section>
-
-                {plan.limitations.length > 0 && (
-                  <S.Section>
-                    <S.SectionTitle>제한사항</S.SectionTitle>
-                    <S.FeatureList>
-                      {plan.limitations.map((lim, i) => (
-                        <S.FeatureItem key={i}>
-                          <S.XIcon>✕</S.XIcon>
-                          {lim}
-                        </S.FeatureItem>
-                      ))}
-                    </S.FeatureList>
-                  </S.Section>
-                )}
-
                 <Button
                   onClick={() => onSelect(planId)}
                   $variant={isCurrent ? 'neutralOutlined' : 'tealFilled'}

@@ -98,13 +98,13 @@ export const PriceSub = styled.span`
   color: ${color.textPlaceholder};
 `;
 
-export const FeatureList = styled.ul`
+export const DescriptionList = styled.ul`
   padding-left: 20px;
   font-size: 14px;
   color: ${color.textPrimary};
 `;
 
-export const FeatureItem = styled.li`
+export const DescriptionItem = styled.li`
   margin-bottom: 4px;
 `;
 

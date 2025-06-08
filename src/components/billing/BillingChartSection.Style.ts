@@ -73,7 +73,7 @@ const shimmer = keyframes`
 
 export const Skeleton = styled.div`
   width: 100%;
-  height: 512px; /* 카드 2개 높이 */
+  height: 512px;
   border-radius: 12px;
   background: ${color.textPlaceholder08 ?? '#f5f5f7'};
   animation: ${shimmer} 1.5s ease-in-out infinite;

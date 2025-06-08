@@ -7,7 +7,7 @@ interface PaymentModalProps {
     name: string;
     userRange: string;
     price: number;
-    features: string[];
+    description: string;
   };
   onClose: () => void;
   onConfirm: () => void;
@@ -59,11 +59,7 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
               <S.PriceSub>월 사용자당, 연간 청구</S.PriceSub>
             </S.PriceBox>
 
-            <S.FeatureList>
-              {selectedPlan.features.map((f, i) => (
-                <S.FeatureItem key={i}>✓ {f}</S.FeatureItem>
-              ))}
-            </S.FeatureList>
+            <S.DescriptionList>{selectedPlan.description}</S.DescriptionList>
 
             <S.SummaryBox>
               <S.SummaryItem>

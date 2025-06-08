@@ -16,6 +16,8 @@ import { Users, CreditCard } from 'lucide-react';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { useBillingInfo } from '@/hooks/useBillingInfo';
 import { parseHistoryToMonthlyArray } from '@/types/billing';
+import { PLAN_DATA } from '@/constants/planData';
+import { mapServerPlanToClientPlan } from '@/utils/mapPlanId';
 import * as S from './BillingChartSection.Style';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -26,9 +28,23 @@ export const BillingChartSection = () => {
 
   if (isLoading || !data) return <S.Skeleton />;
 
+  const planId = mapServerPlanToClientPlan(data.currentPlan);
+  const plan = PLAN_DATA[planId];
+
   const labels = Array.from({ length: 12 }, (_, i) => `${i + 1}월`);
   const memberArray = parseHistoryToMonthlyArray(data.memberCountHistory);
-  const amountArray = parseHistoryToMonthlyArray(data.billingAmountHistory);
+  const amountArray = memberArray.map(count => {
+    if (count === null) return null;
+
+    const monthlyPlanId =
+      (Object.entries(PLAN_DATA).find(
+        ([_, plan]) => count <= plan.maxUsers,
+      )?.[0] as keyof typeof PLAN_DATA) ?? 'enterprise';
+
+    const priceValue = PLAN_DATA[monthlyPlanId].priceValue;
+
+    return priceValue !== null ? priceValue * count : null;
+  });
 
   const memberDataset = {
     label: '팀 멤버',
@@ -89,6 +105,8 @@ export const BillingChartSection = () => {
     plugins: { legend: { display: false } },
   };
 
+  const currentTotal = plan.priceValue !== null ? plan.priceValue * data.memberCount : null;
+
   return (
     <S.SectionWrapper>
       <S.Card>
@@ -113,7 +131,9 @@ export const BillingChartSection = () => {
               <CreditCard size={16} strokeWidth={1.5} />
               <S.CardTitle>요금제 사용 현황</S.CardTitle>
             </S.TitleWrapper>
-            <S.MainValue>₩{data.displayAmount.toLocaleString('ko-KR')}</S.MainValue>
+            <S.MainValue>
+              {currentTotal !== null ? `₩${currentTotal.toLocaleString('ko-KR')}` : '맞춤형'}
+            </S.MainValue>
           </S.LeftBlock>
         </S.TopRow>
         <S.ChartArea>

@@ -1,44 +1,70 @@
+'use client';
+
 import { useState } from 'react';
+import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
-import * as S from './BillingPage.Style';
 import { BillingChartSection } from '@/components/billing/BillingChartSection';
 import { BillingPlanSection } from '@/components/billing/BillingPlanSection';
 import { PlanSelectModal } from '@/components/billing/PlanSelectModal';
 import { PaymentModal } from '@/components/billing/PaymentModal';
 import { PaymentCompleteModal } from '@/components/billing/PaymentCompleteModal';
-import { PLAN_DATA } from '@/constants/planData';
+// import { ContactSalesModal } from '@/components/billing/ContactSalesModal';
+import { PLAN_DATA, PlanId } from '@/constants/planData';
+import { mapServerPlanToClientPlan } from '@/utils/mapPlanId';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { useBillingInfo } from '@/hooks/useBillingInfo';
+import * as S from './BillingPage.Style';
 
-export const BillingPage = () => {
+const qc = new QueryClient();
+
+const BillingPageInner = () => {
+  const workspaceId = useWorkspaceStore(s => s.workspaceId);
+  const { data: billingInfo } = useBillingInfo(workspaceId);
+  const queryClient = useQueryClient();
+
   const [showSelectModal, setShowSelectModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [showPaymentCompleteModal, setShowPaymentCompleteModal] = useState(false);
-  const [nextPlanId, setNextPlanId] = useState<string | null>(null);
-  const [currentPlanId, setCurrentPlanId] = useState<
-    'basic' | 'startup' | 'professional' | 'enterprise'
-  >('startup');
+  const [showPaymentDoneModal, setShowPaymentDoneModal] = useState(false);
+  const [showContactSalesModal, setShowContactSalesModal] = useState(false);
+  const [nextPlanId, setNextPlanId] = useState<PlanId | null>(null);
 
-  const handleUpgrade = (planId: string) => {
+  const handleUpgrade = (planId: PlanId) => {
     setNextPlanId(planId);
     setShowSelectModal(true);
   };
 
-  const handleSelectPlan = (planId: string) => {
-    if (planId !== 'personal' && planId !== 'enterprise') {
-      setShowSelectModal(false);
-      setShowPaymentModal(true);
-    } else {
-      setCurrentPlanId(planId);
-      setShowSelectModal(false);
+  const handleSelectPlan = (planId: PlanId) => {
+    switch (planId) {
+      case 'basic':
+        queryClient.setQueryData(['billing', workspaceId], (prev: any) => ({
+          ...prev,
+          currentPlan: 'BASIC',
+        }));
+        setShowSelectModal(false);
+        break;
+      case 'enterprise':
+        setShowSelectModal(false);
+        setShowContactSalesModal(true);
+        break;
+      default:
+        setShowSelectModal(false);
+        setShowPaymentModal(true);
     }
   };
 
   const handleConfirmPayment = () => {
-    if (nextPlanId)
-      setCurrentPlanId(nextPlanId as 'personal' | 'startup' | 'professional' | 'enterprise');
+    if (nextPlanId) {
+      queryClient.setQueryData(['billing', workspaceId], (prev: any) => ({
+        ...prev,
+        currentPlan: nextPlanId.toUpperCase(),
+      }));
+    }
     setShowPaymentModal(false);
-    setShowPaymentCompleteModal(true);
+    setShowPaymentDoneModal(true);
   };
+
+  if (!billingInfo) return null;
 
   return (
     <S.PageContainer>
@@ -60,19 +86,22 @@ export const BillingPage = () => {
           <S.GridWrapper>
             <BillingChartSection />
             <BillingPlanSection
-              planId={currentPlanId}
-              currentUserCount={21}
+              billingInfo={{
+                currentPlan: 'PROFESSIONAL', // or 'STARTUP' 등 서버에서 오는 값 흉내
+                memberCount: 25,
+              }}
               onUpgrade={handleUpgrade}
             />
           </S.GridWrapper>
 
           {showSelectModal && nextPlanId && (
             <PlanSelectModal
-              currentPlanId={currentPlanId}
+              currentPlanId={mapServerPlanToClientPlan(billingInfo.currentPlan)}
               onSelect={handleSelectPlan}
               onClose={() => setShowSelectModal(false)}
             />
           )}
+
           {showPaymentModal && nextPlanId && (
             <PaymentModal
               selectedPlan={{
@@ -83,11 +112,22 @@ export const BillingPage = () => {
               onConfirm={handleConfirmPayment}
             />
           )}
-          {showPaymentCompleteModal && (
-            <PaymentCompleteModal onClose={() => setShowPaymentCompleteModal(false)} />
+
+          {showPaymentDoneModal && (
+            <PaymentCompleteModal onClose={() => setShowPaymentDoneModal(false)} />
           )}
+
+          {/* {showContactSalesModal && (
+            // <ContactSalesModal onClose={() => setShowContactSalesModal(false)} />
+          )} */}
         </S.Content>
       </S.MainContainer>
     </S.PageContainer>
   );
 };
+
+export const BillingPage = () => (
+  <QueryClientProvider client={qc}>
+    <BillingPageInner />
+  </QueryClientProvider>
+);
