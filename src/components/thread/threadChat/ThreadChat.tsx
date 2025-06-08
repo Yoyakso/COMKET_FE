@@ -22,11 +22,8 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
   const [showPreview, setShowPreview] = useState(false)
   const lastMessageRef = useRef<string | null>(null)
 
-  // 수정 관련 상태
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null)
   const [editContent, setEditContent] = useState("")
-
-  // 답글 관련 상태
   const [replyingTo, setReplyingTo] = useState<{ threadId: number; senderName: string; content: string } | null>(null)
 
   useEffect(() => {
@@ -73,17 +70,24 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     }
   }
 
+  // 메시지 전송 핸들러 (버튼 클릭 or Enter)
+  const handleSendClick = () => {
+    const trimmed = newMessage.trim();
+    if (!trimmed) return;
+
+    sendMessage();
+    setNewMessage('');
+    setReplyingTo(null);
+    setEditingMessageId(null);
+    setEditContent('');
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-      e.preventDefault()
-      if (newMessage.trim()) {
-        sendMessage()
-        if (replyingTo) {
-          setReplyingTo(null)
-        }
-      }
+      e.preventDefault();
+      handleSendClick(); // 동일한 로직 재사용
     }
-  }
+  };
 
   const getAvatarImage = (index: number, isCurrentUser: boolean) => {
     if (isCurrentUser) {
@@ -104,13 +108,13 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
   }
 
   const handleEditStart = (message: Message) => {
-    console.log("🧪 message 객체:", message);
     setEditingMessageId(message.threadId);
     setEditContent(message.content);
+
+    setReplyingTo(null);
   };
 
   const handleEditSave = () => {
-    console.log("💾 저장 시도:", editingMessageId, editContent);
     if (editingMessageId && editContent.trim() && onEditMessage) {
       onEditMessage(editingMessageId, editContent.trim());
       setEditingMessageId(null);
@@ -129,16 +133,16 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     }
   };
 
+  // 답글 시작 핸들러
   const handleReplyStart = (message: Message) => {
-    const replyInfo = {
+    setReplyingTo({
       threadId: message.threadId,
       senderName: message.senderName,
       content: message.content,
-    };
-    setReplyingTo(replyInfo);
-    if (onReplyToMessage) {
-      onReplyToMessage(replyInfo);
-    }
+    });
+
+    setEditingMessageId(null);
+    setEditContent('');
   };
 
   const handleCancelReply = () => {
@@ -180,7 +184,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
 
                 <S.MessageBubbleContainer $isCurrentUser={message.isCurrentUser}>
                   <S.MessageBubble $isCurrentUser={message.isCurrentUser}>
-                    {editingMessageId === message.threadId && message.isCurrentUser ? (
+                    {editingMessageId != null && editingMessageId === message.threadId && message.isCurrentUser && !replyingTo ? (
                       // 수정 모드
                       <S.EditContainer>
                         <S.EditTextarea
@@ -275,10 +279,16 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
           <S.ReplyingToContainer>
             <S.ReplyingToContent>
               <Reply size={14} />
-              <S.ReplyingToText>
-                <strong>{replyingTo.senderName}</strong>에게 답글:{" "}
-                {replyingTo.content.length > 40 ? `${replyingTo.content.substring(0, 40)}...` : replyingTo.content}
-              </S.ReplyingToText>
+              <S.ReplyText>
+                <span style={{ color: "#999", fontSize: "12px" }}>
+                  「{replyingTo.content.length > 30
+                    ? `${replyingTo.content.substring(0, 30)}...`
+                    : replyingTo.content
+                  }」
+                  에 대한 답글
+                </span>
+              </S.ReplyText>
+
             </S.ReplyingToContent>
             <S.CancelReplyButton onClick={handleCancelReply}>
               <X size={14} />
@@ -294,7 +304,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
           onCompositionStart={() => setIsComposing(true)}
           onCompositionEnd={() => setIsComposing(false)}
         />
-        <S.SendButton onClick={sendMessage} disabled={!newMessage || !newMessage.trim()}>
+        <S.SendButton onClick={handleSendClick} disabled={!newMessage || !newMessage.trim()}>
           <Send size={16} />
         </S.SendButton>
       </S.MessageInputContainer>
