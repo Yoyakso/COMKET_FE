@@ -1,13 +1,32 @@
-'use client';
-
+import { useState } from 'react';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
-import { Footer } from '@/components/common/footer/Footer';
 import * as S from './BillingPage.Style';
 import { BillingChartSection } from '@/components/billing/BillingChartSection';
-import { BillingPlanSection } from '@/components/billing/BillingPlanSection';
+import {
+  BillingPlanSection,
+  BillingPlanSectionProps,
+} from '@/components/billing/BillingPlanSection';
+import { PlanSelectModal } from '@/components/billing/PlanSelectModal';
 
 export const BillingPage = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [nextPlanId, setNextPlanId] = useState<string | null>(null);
+  const [currentPlanId, setCurrentPlanId] = useState<
+    'personal' | 'startup' | 'professional' | 'enterprise'
+  >('startup');
+
+  const handleUpgrade = (planId: string) => {
+    setNextPlanId(planId);
+    setShowModal(true);
+  };
+
+  const handleSelectPlan = (planId: string) => {
+    console.log('선택된 플랜:', planId);
+    setCurrentPlanId(planId as BillingPlanSectionProps['planId']);
+    setShowModal(false);
+  };
+
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -27,8 +46,20 @@ export const BillingPage = () => {
 
           <S.GridWrapper>
             <BillingChartSection />
-            <BillingPlanSection planId="professional" currentUserCount={28} />
+            <BillingPlanSection
+              planId={currentPlanId}
+              currentUserCount={21}
+              onUpgrade={handleUpgrade}
+            />
           </S.GridWrapper>
+
+          {showModal && nextPlanId && (
+            <PlanSelectModal
+              currentPlanId={currentPlanId}
+              onSelect={handleSelectPlan}
+              onClose={() => setShowModal(false)}
+            />
+          )}
         </S.Content>
       </S.MainContainer>
     </S.PageContainer>

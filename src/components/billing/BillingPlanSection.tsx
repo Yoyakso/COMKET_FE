@@ -2,7 +2,7 @@ import { Badge } from '@/components/common/badge/Badge';
 import { Button } from '@/components/common/button/Button';
 import * as S from './BillingPlanSection.Style';
 
-interface BillingPlanSectionProps {
+export interface BillingPlanSectionProps {
   planId: 'personal' | 'startup' | 'professional' | 'enterprise';
   currentUserCount?: number;
   onUpgrade?: (target: string) => void;
