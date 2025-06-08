@@ -7,6 +7,7 @@ import { MemberData } from '@/types/member';
 import * as S from './MemberPage.Style';
 import { getWorkspaceMembers } from '@/api/Member';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
+import { getBillingInfo } from '@/api/Billing';
 
 export const MemberPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,8 +17,22 @@ export const MemberPage = () => {
     roles: ['admin', 'member'],
     states: ['active', 'inactive', 'deleted'],
   });
+  const [planInfo, setPlanInfo] = useState<{ maxMemberCount: number } | null>(null);
 
   const workspaceId = useWorkspaceStore(state => state.workspaceId);
+
+  useEffect(() => {
+    const fetchBillingInfo = async () => {
+      try {
+        const data = await getBillingInfo(workspaceId);
+        setPlanInfo(data);
+      } catch (e) {
+        console.error('요금제 정보 조회 실패', e);
+      }
+    };
+
+    if (workspaceId) fetchBillingInfo();
+  }, [workspaceId]);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -103,6 +118,8 @@ export const MemberPage = () => {
             memberCount={finalFilteredMembers.filter(m => m.state !== 'DELETED').length}
             onSearch={handleSearch}
             onFilter={handleFilter}
+            currentMemberCount={members.length}
+            maxMemberCount={planInfo?.maxMemberCount ?? Infinity}
           />
           <MemberTable members={finalFilteredMembers} onUpdateMember={handleMemberUpdate} />
         </S.Content>
