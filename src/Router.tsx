@@ -33,7 +33,7 @@ export const Router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/login" replace />,
+        element: <Navigate to="/main" replace />,
       },
       {
         path: 'login',

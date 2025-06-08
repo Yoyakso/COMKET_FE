@@ -88,7 +88,7 @@ export const HeroButtons = styled.div`
 export const GetStartedButton = styled.button`
   padding: 12px 24px;
   border-radius: 6px;
-  background: linear-gradient(135deg, #2dd4bf 0%, ${color.teal500} 100%);
+  background: linear-gradient(135deg, #2dd4bf 0%, #22d3ee 100%);
   color: white;
   font-size: 16px;
   font-weight: 500;

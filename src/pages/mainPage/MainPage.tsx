@@ -69,7 +69,7 @@ export const MainPage = () => {
             더 빠르게, 더 똑똑하게 협업하세요.
           </S.HeroDescription>
           <S.HeroButtons>
-            <Link to="/signup">
+            <Link to="/login">
               <S.GetStartedButton>시작하기</S.GetStartedButton>
             </Link>
             {/* <Link to="#demo">
