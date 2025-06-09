@@ -18,6 +18,7 @@ import { TicketTemplateModal } from "@/components/ticketModal/TicketTemplateModa
 import type { Message } from "@/types/message"
 import { editThreadMesaage, deleteThreadMesaage, replyThreadMesaage } from "@/api/Thread"
 import { toast } from "react-toastify"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 export const ThreadPage = () => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
@@ -29,8 +30,9 @@ export const ThreadPage = () => {
   const state = location.state as { ticket?: Ticket; projectName?: string }
   const ticketFromState = state?.ticket
   const projectName = state?.projectName
-  const memberId = useUserStore((state) => state.memberId)
-  //  const memberId = useUserStore((state) => state.workspaceMemberId)
+  const workspaceId = useWorkspaceStore((state) => state.workspaceId)
+  // const memberId = useUserStore((state) => state.memberId)
+  const memberId = useUserStore((state) => state.workspaceMemberId)
   const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -90,22 +92,22 @@ export const ThreadPage = () => {
         .filter((msg) => msg.messageState !== "DELETE")
         .map((msg) => ({
           ...msg,
-          isCurrentUser: String(msg.senderMemberId) === String(memberId),
+          isCurrentUser: String(msg.senderWorkspaceMemberId) === String(memberId),
         }))
 
       setThreadMessages((prev) => {
-        const seen = new Set(prev.map((m) => `${m.sentAt}-${m.senderMemberId}-${m.threadId || "no-id"}`))
+        const seen = new Set(prev.map((m) => `${m.sentAt}-${m.senderWorkspaceMemberId}-${m.threadId || "no-id"}`))
         const updated = [...prev]
 
         processed.forEach((msg) => {
-          const key = `${msg.sentAt}-${msg.senderMemberId}-${msg.threadId || "no-id"}`
+          const key = `${msg.sentAt}-${msg.senderWorkspaceMemberId}-${msg.threadId || "no-id"}`
 
           // 현재 사용자의 메시지이고 단일 메시지인 경우 threadId 업데이트
           if (processed.length === 1 && msg.isCurrentUser) {
             const idx = updated.findIndex(
               (m) =>
                 m.sentAt === msg.sentAt &&
-                m.senderMemberId === msg.senderMemberId &&
+                m.senderWorkspaceMemberId === msg.senderWorkspaceMemberId &&
                 !m.threadId &&
                 m.content === msg.content,
             )
@@ -156,7 +158,7 @@ export const ThreadPage = () => {
       const replyMessage: Message = {
         ticketId: Number(ticketId),
         sentAt,
-        senderMemberId: memberId,
+        senderWorkspaceMemberId: memberId,
         senderName: memberName,
         content: newMessage,
         isCurrentUser: true,
@@ -172,10 +174,11 @@ export const ThreadPage = () => {
       replyThreadMesaage({
         ticketId: Number(ticketId),
         parentThreadId: replyingTo.threadId,
-        senderMemberId: memberId,
+        senderWorkspaceMemberId: memberId,
         senderName: memberName,
         reply: newMessage,
         sentAt,
+        workspaceId: workspaceId,
       })
         .then(() => {
           console.log("답글 전송 성공")
@@ -185,7 +188,7 @@ export const ThreadPage = () => {
           toast.error("답글 전송에 실패했습니다.")
           setThreadMessages((prev) =>
             prev.filter(
-              (msg) => !(msg.sentAt === sentAt && msg.senderMemberId === memberId && msg.content === newMessage),
+              (msg) => !(msg.sentAt === sentAt && msg.senderWorkspaceMemberId === memberId && msg.content === newMessage),
             ),
           )
         })
@@ -195,7 +198,7 @@ export const ThreadPage = () => {
     } else {
       const messageToSend = {
         ticketId: Number(ticketId),
-        senderMemberId: memberId,
+        senderWorkspaceMemberId: memberId,
         senderName: memberName,
         content: newMessage,
         sentAt,
@@ -204,7 +207,7 @@ export const ThreadPage = () => {
       const uiMessage: Message = {
         ticketId: messageToSend.ticketId,
         sentAt: messageToSend.sentAt,
-        senderMemberId: messageToSend.senderMemberId,
+        senderWorkspaceMemberId: messageToSend.senderWorkspaceMemberId,
         senderName: messageToSend.senderName,
         content: messageToSend.content,
         isCurrentUser: true,
@@ -224,9 +227,9 @@ export const ThreadPage = () => {
     navigate(-1)
   }
 
-  const handleEditMessage = async (threadId: number, newContent: string) => {
+  const handleEditMessage = async (threadId: number, newContent: string, workspaceId: number) => {
     try {
-      await editThreadMesaage(Number(threadId), memberId, newContent)
+      await editThreadMesaage(Number(threadId), memberId, newContent, workspaceId)
       setThreadMessages((prev) =>
         prev.map((msg) => (msg.threadId === threadId ? { ...msg, content: newContent, isModified: true } : msg)),
       )
@@ -237,9 +240,9 @@ export const ThreadPage = () => {
     }
   }
 
-  const handleDeleteMessage = async (threadId: number) => {
+  const handleDeleteMessage = async (threadId: number, workspaceId: number) => {
     try {
-      await deleteThreadMesaage(Number(threadId), memberId)
+      await deleteThreadMesaage(threadId, memberId, workspaceId)
       setThreadMessages((prev) => prev.filter((msg) => msg.threadId !== threadId))
       toast.success("메시지가 삭제되었습니다.")
     } catch (err) {

@@ -3,14 +3,15 @@ import { Send, X, Edit2, Trash2, Reply, Check, DeleteIcon as Cancel } from "luci
 import * as S from "./ThreadChat.Style"
 import { formatDateTime } from "@/utils/formatDateTime"
 import type { Message } from "@/types/message"
+import { useWorkspaceStore } from "@/stores/workspaceStore"
 
 interface ThreadChatProps {
   messages: Message[]
   newMessage: string
   setNewMessage: (message: string) => void
   sendMessage: () => void
-  onEditMessage?: (threadId: number, newContent: string) => void
-  onDeleteMessage?: (threadId: number) => void
+  onEditMessage?: (threadId: number, newContent: string, workspaceId: number) => void
+  onDeleteMessage?: (threadId: number, workspaceId: number) => void
   onReplyToMessage?: (replyTo: { threadId: number; senderName: string; content: string }) => void
   replyingTo: { threadId: number; senderName: string; content: string } | null
   setReplyingTo: (v: { threadId: number; senderName: string; content: string } | null) => void
@@ -27,6 +28,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null)
   const [editContent, setEditContent] = useState("")
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
+  const workspaceId = useWorkspaceStore((state) => state.workspaceId)
 
   useEffect(() => {
     if (!messages || messages.length === 0) return
@@ -35,7 +37,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     if (latestMessage.isCurrentUser) {
       scrollToBottom();
     }
-    const messageKey = `${latestMessage.senderMemberId}-${latestMessage.sentAt}-${latestMessage.content}`
+    const messageKey = `${latestMessage.senderWorkspaceMemberId}-${latestMessage.sentAt}-${latestMessage.content}`
 
     if (messageKey !== lastMessageRef.current && !latestMessage.isCurrentUser) {
       console.log("새 메시지 감지:", latestMessage)
@@ -130,7 +132,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
 
   const handleEditSave = () => {
     if (editingMessageId && editContent.trim() && onEditMessage) {
-      onEditMessage(editingMessageId, editContent.trim());
+      onEditMessage(editingMessageId, editContent.trim(), workspaceId);
       setEditingMessageId(null);
       setEditContent("");
     }
@@ -143,7 +145,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
 
   const handleDelete = (threadId: number) => {
     if (onDeleteMessage && window.confirm("정말 삭제하시겠습니까?")) {
-      onDeleteMessage(threadId);
+      onDeleteMessage(threadId, workspaceId);
     }
   };
 
@@ -170,7 +172,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
         {messages && messages.length > 0 ? (
           messages.map((message, index) => (
             <S.MessageWrapper
-              key={`${message.sentAt}-${message.senderMemberId}-${index}`}
+              key={`${message.sentAt}-${message.senderWorkspaceMemberId}-${index}`}
               $isCurrentUser={message.isCurrentUser}
               ref={(el: HTMLDivElement | null) => {
                 messageRefs.current[message.threadId] = el;

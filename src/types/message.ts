@@ -2,7 +2,7 @@ export interface Message {
   threadId?: number
   ticketId: number
   sentAt: string
-  senderMemberId: number
+  senderWorkspaceMemberId: number
   senderName: string
   content: string
   isCurrentUser: boolean
