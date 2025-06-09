@@ -72,9 +72,9 @@ export const ResetPassword = () => {
     try {
       await resetPassword({ email, code, newPassword: password });
       toast.success('비밀번호가 성공적으로 변경되었습니다.');
-      navigate('/resetpassword/complete');
+      navigate('/password-reset/complete');
     } catch (err) {
-      toast.error('비밀번호 변경에 실패했습니다. 인증 코드가 잘못되었거나 만료되었습니다.');
+      toast.error('비밀번호 변경에 실패했습니다.인증 코드가 잘못되었거나 만료되었습니다.');
     }
   };
 
