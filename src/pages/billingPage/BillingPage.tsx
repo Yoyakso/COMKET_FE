@@ -36,6 +36,7 @@ const BillingPageInner = () => {
   const [showPaymentDoneModal, setShowPaymentDoneModal] = useState(false);
   const [showContactSalesModal, setShowContactSalesModal] = useState(false);
   const [nextPlanId, setNextPlanId] = useState<PlanId | null>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState<PlanId | null>(null);
 
   const { data: creditCardInfo } = useQuery({
     queryKey: ['creditCardInfo', workspaceId],
@@ -121,6 +122,7 @@ const BillingPageInner = () => {
             <PlanSelectModal
               currentPlanId={mapServerPlanToClientPlan(billingInfo.currentPlan)}
               onSelect={planId => {
+                setSelectedPlanId(planId as PlanId);
                 setShowSelectModal(false);
                 setShowPaymentModal(true);
               }}
@@ -131,8 +133,8 @@ const BillingPageInner = () => {
           {showPaymentModal && nextPlanId && (
             <PaymentModal
               selectedPlan={{
-                ...PLAN_DATA[nextPlanId],
-                price: parseFloat(PLAN_DATA[nextPlanId].price.replace('$', '')) || 0,
+                ...PLAN_DATA[selectedPlanId],
+                price: PLAN_DATA[selectedPlanId].priceValue || 0,
               }}
               onClose={() => setShowPaymentModal(false)}
               onConfirm={handleConfirmPayment}

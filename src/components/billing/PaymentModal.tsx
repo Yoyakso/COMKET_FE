@@ -1,6 +1,7 @@
 import * as S from './PaymentModal.Style';
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/common/button/Button';
+import { X } from 'lucide-react';
 
 interface PaymentModalProps {
   selectedPlan: {
@@ -19,8 +20,7 @@ interface PaymentModalProps {
 }
 
 export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalProps) => {
-  const tax = Math.round(selectedPlan.price * 0.1 * 100) / 100;
-  const total = selectedPlan.price + tax;
+  const total = selectedPlan.price;
 
   const [cardParts, setCardParts] = useState(['', '', '', '']);
   const [cardTouched, setCardTouched] = useState(false);
@@ -47,13 +47,17 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
   const isCvcValid = /^\d{3}$/.test(cvc);
   const isNameValid = cardholderName.trim().length > 0;
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
   const isFormValid = isCardNumberValid && isCvcValid && isNameValid && isEmailValid;
 
   return (
     <>
       <S.ModalBackground onClick={onClose} />
       <S.Modal>
+        {/* 닫기 아이콘 */}
+        <S.CloseIcon onClick={onClose}>
+          <X size={20} />
+        </S.CloseIcon>
+
         <S.Header>
           <S.Title>결제 정보</S.Title>
           <S.Subtitle>선택하신 플랜의 결제를 진행합니다</S.Subtitle>
@@ -66,7 +70,7 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
 
             <S.PriceBox>
               <S.PriceLabel>월 구독료</S.PriceLabel>
-              <S.PriceValue>${selectedPlan.price.toFixed(2)}</S.PriceValue>
+              <S.PriceValue>₩{selectedPlan.price.toLocaleString('ko-KR')}</S.PriceValue>
               <S.PriceSub>월 사용자당, 연간 청구</S.PriceSub>
             </S.PriceBox>
 
@@ -74,17 +78,9 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
 
             <S.SummaryBox>
               <S.SummaryItem>
-                <span>월 구독료</span>
-                <span>${selectedPlan.price.toFixed(2)}</span>
-              </S.SummaryItem>
-              <S.SummaryItem>
-                <span>부가세 (10%)</span>
-                <span>${tax.toFixed(2)}</span>
-              </S.SummaryItem>
-              <S.TotalAmount>
                 <span>총 결제 금액</span>
-                <span>${total.toFixed(2)}</span>
-              </S.TotalAmount>
+                <span>₩{total.toLocaleString('ko-KR')}</span>
+              </S.SummaryItem>
             </S.SummaryBox>
           </S.PlanSection>
 
@@ -173,7 +169,7 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
                 })
               }
             >
-              ${total.toFixed(2)} 결제하기 →
+              ₩{total.toLocaleString('ko-KR')} 결제하기 →
             </Button>
           </S.PaymentForm>
         </S.Body>
