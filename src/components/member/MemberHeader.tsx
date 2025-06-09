@@ -6,6 +6,7 @@ import { Search } from '../common/search/Search';
 import { InviteModal } from '../workspace/InviteModal';
 import { Dropdown, type DropdownOption } from '@/components/common/dropdown/Dropdown';
 import { MemberData } from '@/types/member';
+import { useWorkspaceStore } from '@/stores/workspaceStore';
 
 interface MemberHeaderProps {
   memberCount: number;
@@ -32,6 +33,7 @@ export const MemberHeader = ({
   const filterButtonRef = useRef<HTMLDivElement>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const navigate = useNavigate();
+  const workspaceSlug = useWorkspaceStore(state => state.workspaceSlug);
 
   useEffect(() => {
     const roles = allFilterValues.filter(v => ['admin', 'member'].includes(v));
@@ -53,7 +55,7 @@ export const MemberHeader = ({
   };
 
   const openInviteModal = () => {
-    if (currentMemberCount >= 1) {
+    if (currentMemberCount >= maxMemberCount) {
       setShowUpgradeModal(true);
       return;
     }
@@ -123,7 +125,7 @@ export const MemberHeader = ({
           onClose={() => setShowUpgradeModal(false)}
           onUpgrade={() => {
             setShowUpgradeModal(false);
-            navigate('/billing');
+            navigate(`/${workspaceSlug}/plan`);
           }}
         />
       )}
