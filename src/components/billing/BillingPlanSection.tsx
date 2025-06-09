@@ -33,8 +33,8 @@ export const BillingPlanSection = ({
   const renderActionButton = () => {
     if (planId === 'enterprise') {
       return (
-        <Button $variant="tealFilled" size="lg">
-          영업팀 문의
+        <Button $variant="tealFilled" size="lg" onClick={() => onUpgrade?.(plan.nextPlan!)}>
+          플랜 변경하기
         </Button>
       );
     }
@@ -45,7 +45,7 @@ export const BillingPlanSection = ({
           <S.UpgradeNotice>인원이 한도를 초과했습니다. 플랜을 업그레이드하세요.</S.UpgradeNotice>
         )}
         <Button $variant="tealFilled" size="lg" onClick={() => onUpgrade?.(plan.nextPlan!)}>
-          플랜 업그레이드
+          플랜 변경하기
         </Button>
       </>
     );

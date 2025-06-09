@@ -1,12 +1,26 @@
 import axiosInstance from './axiosInstance';
 
 /**
- * 빌링 정보 조회 API
- * @param workspaceId 빌링 정보 조회를 위한 워크스페이스 ID
+ * 플랜 정보 조회 API
+ * @param workspaceId 플랜 정보 조회를 위한 워크스페이스 ID
  * @returns
  */
 export const getBillingInfo = async (workspaceId: number) => {
   const res = await axiosInstance.get(`/api/v1/workspaces/${workspaceId}/billing`);
+  return res.data;
+};
+
+/**
+ * 워크스페이스 플랜 업데이트 API
+ * @param workspaceId 워크스페이스 ID
+ */
+export const updateWorkspacePlan = async (
+  workspaceId: number,
+  plan: 'BASIC' | 'STARTUP' | 'PROFESSIONAL' | 'ENTERPRISE',
+) => {
+  const res = await axiosInstance.put(`/api/v1/workspaces/${workspaceId}/billing/plan`, {
+    plan,
+  });
   return res.data;
 };
 

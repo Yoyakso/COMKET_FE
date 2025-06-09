@@ -10,5 +10,4 @@ export const useBillingInfo = (workspaceId?: number) =>
       const { data } = await axiosInstance.get(`/api/v1/workspaces/${workspaceId}/billing`);
       return data;
     },
-    staleTime: 1000 * 60 * 5,
   });
