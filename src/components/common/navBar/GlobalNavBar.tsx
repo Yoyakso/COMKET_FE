@@ -2,7 +2,9 @@ import { ChevronDown, COMKET, InfoIcon, QuestionIcon } from '@assets/icons';
 import { useNavigate } from 'react-router-dom';
 import * as S from './GlobalNavBar.Style';
 import { WorkspaceSelector } from './WorkspaceSelector';
-import { Search } from '@/components/common/search/Search';
+import { NavProfile } from './NavProfile';
+import { useUserStore } from '@/stores/userStore';
+import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 
 type GNBVariant = 'default' | 'white' | 'workspace';
 
@@ -18,7 +20,7 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
   };
 
   const handleStartButton = () => {
-    navigate('/signup');
+    navigate('/login');
   };
 
   const handleLogoClick = () => {
@@ -43,8 +45,10 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
       )}
       {variant === 'default' && (
         <S.AuthContainer>
-          <S.LoginButton onClick={handleLoginButton}>로그인</S.LoginButton>
-          <S.StartButton onClick={handleStartButton}>시작하기</S.StartButton>
+          {/* <S.LoginButton onClick={handleLoginButton}>로그인</S.LoginButton> */}
+          <PrimaryButton size="sm" onClick={handleStartButton}>
+            시작하기
+          </PrimaryButton>
         </S.AuthContainer>
       )}
 
