@@ -46,6 +46,7 @@ export const LoginForm = () => {
           memberId: data.memberId,
           loginPlatformInfo: data.loginPlatformInfo,
           profileFileUrl: data.profileFileUrl,
+          workspaceMemberId: data.workspaceMemberId,
         });
       } else {
         clearUser();
