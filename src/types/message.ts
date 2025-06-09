@@ -2,13 +2,13 @@ export interface Message {
   threadId?: number
   ticketId: number
   sentAt: string
-  senderMemberId: number
+  senderWorkspaceMemberId: number
   senderName: string
   content: string
   isCurrentUser: boolean
   isModified?: boolean
   messageState?: string
-  parentThreadId?: string
+  parentThreadId?: number
   replyTo?: {
     threadId: number
     senderName: string

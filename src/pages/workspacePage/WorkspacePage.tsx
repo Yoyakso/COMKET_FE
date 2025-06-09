@@ -102,6 +102,7 @@ export const WorkspacePage = () => {
       useUserStore.getState().setProfileInfo({
         name: profileData.name ?? '',
         profileFileUrl: profileData.profileFileUrl ?? '',
+        workspaceMemberId: profileData.workspaceMemberid,
       });
       navigate(`/${selectedSlug}/project`);
     } catch (err) {

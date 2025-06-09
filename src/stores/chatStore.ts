@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 interface ChatMessage {
   ticketId: number;
-  senderMemberId: number;
+  senderWorkspaceMemberId: number;
   senderName: string;
   content: string;
   sentAt: string;
