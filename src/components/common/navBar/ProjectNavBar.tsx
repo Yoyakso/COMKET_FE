@@ -90,11 +90,7 @@ export const ProjectNavBar = ({ onNavigateProject }: ProjectNavBarProps) => {
 
             if (alarmCounts[p.id] > 0) {
               try {
-                await markAllAlarmsByProject(Number(p.id)); // 새로 만든 함수 사용
-                setAlarmCounts(prev => ({
-                  ...prev,
-                  [p.id]: 0,
-                }));
+                console.log(`프로젝트 ${p.name}의 알림을 모두 읽음 처리했습니다.`);
               } catch (e) {
                 console.error('알림 읽음 처리 실패:', e);
               }

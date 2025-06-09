@@ -93,6 +93,7 @@ export const TicketTable = ({
     if (alarmTicketIds.has(ticket.id)) {
       try {
         await markTicketAlarmAsRead(ticket.id);
+        console.log('알림 읽음 처리 성공:', ticket.id);
         setAlarmTicketIds(prev => {
           const updated = new Set(prev);
           updated.delete(ticket.id);

@@ -33,17 +33,11 @@ export const BillingChartSection = () => {
 
   const labels = Array.from({ length: 12 }, (_, i) => `${i + 1}월`);
   const memberArray = parseHistoryToMonthlyArray(data.memberCountHistory);
+  const pricePerMember = plan.priceValue;
+
   const amountArray = memberArray.map(count => {
-    if (count === null) return null;
-
-    const monthlyPlanId =
-      (Object.entries(PLAN_DATA).find(
-        ([_, plan]) => count <= plan.maxUsers,
-      )?.[0] as keyof typeof PLAN_DATA) ?? 'enterprise';
-
-    const priceValue = PLAN_DATA[monthlyPlanId].priceValue;
-
-    return priceValue !== null ? priceValue * count : null;
+    if (count === null || pricePerMember === null) return null;
+    return pricePerMember * count;
   });
 
   const memberDataset = {
