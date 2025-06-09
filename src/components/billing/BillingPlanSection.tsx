@@ -41,21 +41,11 @@ export const BillingPlanSection = ({
 
     return (
       <>
-        {atLimit && nextPlanId && (
-          <S.UpgradeNotice>
-            인원이 한도를 초과했습니다.&nbsp;
-            {PLAN_DATA[nextPlanId].name} 플랜으로 업그레이드하세요.
-          </S.UpgradeNotice>
+        {atLimit && (
+          <S.UpgradeNotice>인원이 한도를 초과했습니다. 플랜을 업그레이드하세요.</S.UpgradeNotice>
         )}
-        <Button
-          $variant="tealFilled"
-          size="lg"
-          disabled={!atLimit || !nextPlanId}
-          onClick={() => nextPlanId && onUpgrade?.(nextPlanId)}
-        >
-          {atLimit && nextPlanId
-            ? `${PLAN_DATA[nextPlanId].name} 플랜으로 업그레이드`
-            : '현재 사용 중인 플랜입니다'}
+        <Button $variant="tealFilled" size="lg" onClick={() => onUpgrade?.(plan.nextPlan!)}>
+          플랜 업그레이드
         </Button>
       </>
     );
