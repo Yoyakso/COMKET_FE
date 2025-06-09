@@ -12,19 +12,21 @@ interface ThreadChatProps {
   onEditMessage?: (threadId: number, newContent: string) => void
   onDeleteMessage?: (threadId: number) => void
   onReplyToMessage?: (replyTo: { threadId: number; senderName: string; content: string }) => void
+  replyingTo: { threadId: number; senderName: string; content: string } | null
+  setReplyingTo: (v: { threadId: number; senderName: string; content: string } | null) => void
 }
 
-export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, onEditMessage, onDeleteMessage, onReplyToMessage }: ThreadChatProps) => {
+export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, onEditMessage, onDeleteMessage, onReplyToMessage, replyingTo, setReplyingTo }: ThreadChatProps) => {
   const messagesEndRef = useRef(null)
+  const messageRefs = useRef<{ [key: number]: HTMLDivElement | null }>({})
   const containerRef = useRef<HTMLDivElement>(null)
   const [isComposing, setIsComposing] = useState(false)
   const [messagePreview, setMessagePreview] = useState<Message | null>(null)
   const [showPreview, setShowPreview] = useState(false)
   const lastMessageRef = useRef<string | null>(null)
-
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null)
   const [editContent, setEditContent] = useState("")
-  const [replyingTo, setReplyingTo] = useState<{ threadId: number; senderName: string; content: string } | null>(null)
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!messages || messages.length === 0) return
@@ -70,7 +72,19 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     }
   }
 
-  // 메시지 전송 핸들러 (버튼 클릭 or Enter)
+  const scrollToMessage = (threadId: number) => {
+    const el = messageRefs.current[threadId];
+
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setHighlightedId(threadId);
+      setTimeout(() => setHighlightedId(null), 1500);
+
+    } else {
+      console.warn('메시지 요소가 존재하지 않음:', threadId);
+    }
+  };
+
   const handleSendClick = () => {
     const trimmed = newMessage.trim();
     if (!trimmed) return;
@@ -85,7 +99,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
-      handleSendClick(); // 동일한 로직 재사용
+      handleSendClick();
     }
   };
 
@@ -133,21 +147,21 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     }
   };
 
-  // 답글 시작 핸들러
   const handleReplyStart = (message: Message) => {
     setReplyingTo({
       threadId: message.threadId,
       senderName: message.senderName,
       content: message.content,
     });
-
-    setEditingMessageId(null);
-    setEditContent('');
   };
 
   const handleCancelReply = () => {
     setReplyingTo(null);
   };
+
+  const handleReplyMessageClick = (replyToThreadId: number) => {
+    scrollToMessage(replyToThreadId)
+  }
 
   return (
     <>
@@ -158,6 +172,10 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
             <S.MessageWrapper
               key={`${message.sentAt}-${message.senderMemberId}-${index}`}
               $isCurrentUser={message.isCurrentUser}
+              ref={(el: HTMLDivElement | null) => {
+                messageRefs.current[message.threadId] = el;
+              }}
+              $highLighted={message.threadId === highlightedId}
             >
               <S.MessageAvatar>
                 <S.AvatarImage
@@ -183,7 +201,11 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
                 )}
 
                 <S.MessageBubbleContainer $isCurrentUser={message.isCurrentUser}>
-                  <S.MessageBubble $isCurrentUser={message.isCurrentUser}>
+                  <S.MessageBubble
+                    $isCurrentUser={message.isCurrentUser}
+                    $isReply={!!message.replyTo}
+                    onClick={message.replyTo ? () => handleReplyMessageClick(message.replyTo!.threadId) : undefined}
+                  >
                     {editingMessageId != null && editingMessageId === message.threadId && message.isCurrentUser && !replyingTo ? (
                       // 수정 모드
                       <S.EditContainer>

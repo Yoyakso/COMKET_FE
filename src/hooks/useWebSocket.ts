@@ -73,7 +73,7 @@ export const useWebSocket = ({
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(message));
     } else {
-      console.warn('연결 안됨');
+      console.warn('연결 안됨', socketRef.current?.readyState);
     }
   }, []);
 

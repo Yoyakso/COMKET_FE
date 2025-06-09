@@ -1,4 +1,4 @@
-import { styled, keyframes } from "styled-components"
+import { styled, keyframes, css } from "styled-components"
 import { color } from "@/styles/color"
 
 const slideUp = keyframes`
@@ -11,6 +11,22 @@ const slideUp = keyframes`
     opacity: 1;
   }
 `
+
+const highlightPulse = keyframes`
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.1);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+`
+
+export const PulseHighlight = styled.div`
+  animation: ${highlightPulse} 1.5s ease-out;
+`;
 
 export const SectionTitle = styled.h2`
   font-size: 14px;
@@ -31,14 +47,21 @@ export const ThreadContainer = styled.div`
   overflow-y: auto;
   min-height: 300px;
   max-height: 500px;
+  scroll-behavior: smooth;
 `
 
-export const MessageWrapper = styled.div<{ $isCurrentUser: boolean }>`
+export const MessageWrapper = styled.div<{ $isCurrentUser: boolean; $highLighted?: boolean }>`
   display: flex;
   align-items: flex-start;
   gap: 6px;
   flex-direction: ${(props) => (props.$isCurrentUser ? "row-reverse" : "row")};
+    ${({ $highLighted }) =>
+    $highLighted &&
+    css`
+      animation: ${highlightPulse} 1.5s ease-out;
+    `}
 `
+MessageWrapper.displayName = 'MessageWrapper';
 
 export const MessageAvatar = styled.div`
   width: 28px;
@@ -86,7 +109,7 @@ export const MessageBubbleContainer = styled.div<{ $isCurrentUser: boolean }>`
   flex-direction: ${(props) => (props.$isCurrentUser ? "row-reverse" : "row")};
 `
 
-export const MessageBubble = styled.div<{ $isCurrentUser: boolean }>`
+export const MessageBubble = styled.div<{ $isCurrentUser: boolean; $isReply?: boolean }>`
   background-color: ${(props) => (props.$isCurrentUser ? "#10b981" : "#f3f4f6")};
   color: ${(props) => (props.$isCurrentUser ? "#ffffff" : "#374151")};
   border-radius: 12px;

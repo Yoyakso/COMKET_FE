@@ -8,7 +8,7 @@ export interface Message {
   isCurrentUser: boolean
   isModified?: boolean
   messageState?: string
-  parentThreadId?: string
+  parentThreadId?: number
   replyTo?: {
     threadId: number
     senderName: string
