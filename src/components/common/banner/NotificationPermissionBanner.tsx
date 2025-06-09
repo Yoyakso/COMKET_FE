@@ -1,8 +1,8 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { Bell, X } from 'lucide-react';
 import * as S from './NotificationPermissionBanner.Style';
+import { requestFcmPermission } from '@/hooks/useFcm';
+import { registerFcmToken } from '@/api/notification';
 
 export const NotificationPermissionBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -20,6 +20,14 @@ export const NotificationPermissionBanner = () => {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
       setIsVisible(false);
+
+      // FCM 토큰 발급 및 서버 등록
+      const token = await requestFcmPermission(); // FCM 토큰 발급
+      console.log('FCM 토큰:', token);
+      if (token) {
+        await registerFcmToken(token); // 서버로 토큰 등록
+        console.log('FCM 토큰 서버에 등록 완료');
+      }
     }
   };
 

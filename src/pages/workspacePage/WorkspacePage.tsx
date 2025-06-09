@@ -89,6 +89,8 @@ export const WorkspacePage = () => {
       const selectedWorkspace = workspaces.find(ws => ws.slug === selectedSlug);
       if (!selectedWorkspace) throw new Error('선택된 워크스페이스가 없습니다.');
 
+      const workspaceId = Number(selectedWorkspace.id);
+
       useWorkspaceStore.getState().setWorkspaceStore({
         workspaceName: selectedWorkspace.name,
         workspaceSlug: selectedWorkspace.slug,

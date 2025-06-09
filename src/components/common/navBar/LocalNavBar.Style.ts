@@ -71,18 +71,23 @@ export const NavItem = styled.div`
   }
 `;
 
-export const ProjectItem = styled.div`
+export const ProjectItem = styled.div<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 12px;
+
+  padding: 8px 12px;
   font-size: 14px;
-  color: ${color.textPrimary};
+  color: ${color.textSecondary};
+  font-weight: 500;
+
   border-radius: 3px;
+  background-color: ${({ $active }) => ($active ? color.neutral : 'transparent')};
   cursor: pointer;
 
   &:hover {
-    background-color: #f9fafb;
+    background-color: #f3f4f6;
+    color: ${color.textPrimary};
   }
 
   svg {
@@ -96,8 +101,10 @@ export const CountBadge = styled.span`
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;
-  border-radius: 8px;
-  margin-left: auto;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1;
 `;
 
 export const IconWrapper = styled.span`

@@ -49,3 +49,45 @@ export const getTicketAlarms = async (projectId: number): Promise<TicketAlarm[]>
     throw error;
   }
 };
+
+/**
+ * 특정 티켓의 알람을 읽음 처리
+ * @param ticketId 티켓 ID
+ */
+export const markTicketAlarmAsRead = async (ticketId: number) => {
+  const token = localStorage.getItem('accessToken');
+  if (!token) throw new Error('로그인 필요');
+
+  await axios.put(`${BASE_URL}/api/v1/alarm/ticket/read`, null, {
+    params: { ticketId },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+/**
+ * 특정 프로젝트의 모든 티켓 알람을 읽음 처리
+ * (프론트에서 티켓 리스트 불러와서 일괄 처리하는 방식)
+ */
+export const markAllAlarmsByProject = async (projectId: number) => {
+  const token = localStorage.getItem('accessToken');
+  if (!token) throw new Error('로그인 필요');
+
+  const res = await axios.get(`${BASE_URL}/api/v1/alarm/tickets`, {
+    params: { projectId },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const ticketIds = [...new Set(res.data.map((alarm: TicketAlarm) => alarm.ticket_id))];
+  if (ticketIds.length === 0) return;
+
+  await Promise.all(
+    ticketIds.map(id =>
+      axios
+        .put(`${BASE_URL}/api/v1/alarm/ticket/read`, null, {
+          params: { ticketId: id },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .catch(err => console.error(`알림 읽음 실패 (ticketId: ${id})`, err)),
+    ),
+  );
+};
