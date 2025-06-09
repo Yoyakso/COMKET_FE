@@ -94,12 +94,12 @@ export interface UploadResponse {
 /**
  * 프로필 이미지 업로드
  * @param file - 업로드할 이미지 파일
- * @param category - 파일 카테고리 (WORKSPACE_PROFILE | MEMBER_PROFILE | PROJECT_PROFILE)
+ * @param category - 파일 카테고리 (WORKSPACE_PROFILE | MEMBER_PROFILE | PROJECT_PROFILE | THREAD_FILE)
  * @returns 서버로부터 받은 파일 정보 (file_id, file_url 등)
  */
 export const uploadProfileImage = async (
   file: File,
-  category: 'WORKSPACE_PROFILE' | 'MEMBER_PROFILE' | 'PROJECT_PROFILE',
+  category: 'WORKSPACE_PROFILE' | 'MEMBER_PROFILE' | 'PROJECT_PROFILE' | 'THREAD_FILE',
 ): Promise<UploadResponse> => {
   try {
     const formData = new FormData();

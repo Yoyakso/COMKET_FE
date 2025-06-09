@@ -78,3 +78,20 @@ export const replyThreadMesaage = async (params: {
     throw error;
   }
 };
+
+/**
+ * 파일 ID로 파일 정보 조회
+ * @param fileId 조회할 파일의 ID
+ * @returns 파일 정보 응답
+ */
+export const getFileById = async (fileId: number) => {
+  try {
+    const response = await axiosInstance.get("/api/v1/file/download", {
+      params: { fileId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("파일 조회 실패:", error);
+    throw error;
+  }
+};
