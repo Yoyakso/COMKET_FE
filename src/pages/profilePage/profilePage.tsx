@@ -66,6 +66,7 @@ export const ProfilePage = () => {
         setProfileInfo({
           name: wsProfile.name ?? '',
           profileFileUrl: wsProfile.profileFileUrl ?? '',
+          workspaceMemberId: wsProfile.workspaceMemberId,
         });
       } catch (err) {
         console.error('프로필 정보 불러오기 실패:', err);
@@ -159,6 +160,7 @@ export const ProfilePage = () => {
       setProfileInfo({
         name: updated.name,
         profileFileUrl: updated.profileFileUrl ?? '',
+        workspaceMemberId: updated.workspaceMemberId,
       });
 
       toast.success('프로필 수정이 완료되었습니다.');
