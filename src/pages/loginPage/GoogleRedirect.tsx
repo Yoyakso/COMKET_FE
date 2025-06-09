@@ -5,6 +5,8 @@ import { clearAuthStorage } from '@/utils/auth';
 import * as S from './GoogleRedirect.Style';
 import { useUserStore } from '@/stores/userStore';
 import { toast } from 'react-toastify';
+import { requestFcmPermission } from '@/hooks/useFcm';
+import { registerFcmToken } from '@/api/notification';
 
 export const GoogleRedirect = () => {
   const navigate = useNavigate();
@@ -33,6 +35,16 @@ export const GoogleRedirect = () => {
             profileFileUrl: result.profileFileUrl || '',
             workspaceMemberId: result.workspaceMemberId,
           });
+
+          try {
+            const token = await requestFcmPermission();
+            if (token) {
+              await registerFcmToken(token);
+              console.log(' FCM 토큰 등록 완료', token);
+            }
+          } catch (err) {
+            console.warn('FCM 등록 실패:', err);
+          }
           if (inviteCodeFromState) {
             navigate(`/workspaces/invite?code=${inviteCodeFromState}`, { replace: true });
           } else {

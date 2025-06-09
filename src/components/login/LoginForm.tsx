@@ -8,6 +8,8 @@ import { COMKET2 } from '@/assets/icons';
 import { logIn } from '@api/Oauth';
 import { toast } from 'react-toastify';
 import { useUserStore } from '@/stores/userStore';
+import { requestFcmPermission } from '@/hooks/useFcm';
+import { registerFcmToken } from '@/api/notification';
 
 export const LoginForm = () => {
   const [rememberEmail, setRememberEmail] = useState(false);
@@ -52,6 +54,17 @@ export const LoginForm = () => {
         clearUser();
       }
 
+      try {
+        const token = await requestFcmPermission();
+        if (token) {
+          await registerFcmToken(token);
+          console.log('FCM 토큰 서버에 등록 완료');
+        }
+      } catch (err) {
+        console.warn('FCM 등록 실패:', err);
+      }
+
+      // 리디렉션 처리
       if (inviteCodeParam) {
         navigate(`/workspaces/invite?code=${inviteCodeParam}`, { replace: true });
       } else {

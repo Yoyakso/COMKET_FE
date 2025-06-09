@@ -60,14 +60,14 @@ export const PlanSection = styled.div`
 `;
 
 export const PlanName = styled.h3`
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: ${color.textPrimary};
   padding-left: 6px;
 `;
 
 export const PlanDescription = styled.p`
-  font-size: 14px;
+  font-size: 16px;
   color: ${color.textSecondary};
   padding-left: 6px;
 `;
@@ -79,27 +79,27 @@ export const PriceBox = styled.div`
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 14px;
 `;
 
 export const PriceLabel = styled.span`
-  font-size: 14px;
+  font-size: 16px;
   color: ${color.textSecondary};
 `;
 
 export const PriceValue = styled.span`
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 700;
   color: ${color.teal600};
 `;
 
 export const PriceSub = styled.span`
-  font-size: 12px;
+  font-size: 14px;
   color: ${color.textPlaceholder};
 `;
 
 export const DescriptionList = styled.ul`
-  padding-left: 20px;
+  padding-left: 11px;
   font-size: 14px;
   color: ${color.textPrimary};
 `;
@@ -116,12 +116,15 @@ export const SummaryBox = styled.div`
   flex-direction: column;
   gap: 8px;
   font-size: 14px;
+  margin-top: 16px;
 `;
 
 export const SummaryItem = styled.div`
   display: flex;
   justify-content: space-between;
-  color: ${color.textSecondary};
+  color: ${color.textPrimary};
+  font-weight: 500;
+  font-size: 16px;
 `;
 
 export const TotalAmount = styled.div`
@@ -185,4 +188,12 @@ export const ErrorText = styled.div`
   font-size: 12px;
   color: ${color.error};
   margin-top: 4px;
+`;
+
+export const CloseIcon = styled.div`
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  cursor: pointer;
+  color: ${color.textSecondary}; // 원하는 색상 변수로 교체
 `;
