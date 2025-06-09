@@ -53,11 +53,11 @@ export const Router = createBrowserRouter([
         element: <FindPasswordCompletePage />,
       },
       {
-        path: 'resetPassword',
+        path: 'password-reset',
         element: <ResetPasswordPage />,
       },
       {
-        path: 'resetPassword/complete',
+        path: 'password-reset/complete',
         element: <ResetPasswordCompletePage />,
       },
       {

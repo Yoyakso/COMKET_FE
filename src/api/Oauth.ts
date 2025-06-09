@@ -144,3 +144,27 @@ export const sendResetPasswordEmail = async (email: string) => {
   const res = await axiosInstance.post('/api/v1/email/password-reset/send', { email });
   return res.data;
 };
+
+/**
+ * 비밀번호 재설정
+ * @param email 사용자가 입력한 이메일
+ * @param code 이메일로 받은 검증 코드
+ * @param newPassword 새 비밀번호
+ * @returns
+ */
+export const resetPassword = async ({
+  email,
+  code,
+  newPassword,
+}: {
+  email: string;
+  code: string;
+  newPassword: string;
+}) => {
+  const res = await axiosInstance.post('/api/v1/email/password-reset', {
+    email,
+    code,
+    newPassword,
+  });
+  return res.data;
+};
