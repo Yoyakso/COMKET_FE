@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { useParams, useLocation, useNavigate } from "react-router-dom"
 import { ArrowLeft, Plus } from "lucide-react"
 import * as S from "./ThreadPage.Style"
@@ -16,9 +16,11 @@ import { mapTicketFromResponse } from "@/utils/ticketMapper"
 import type { TicketTemplate } from "@/types/ticketTemplate"
 import { TicketTemplateModal } from "@/components/ticketModal/TicketTemplateModal"
 import type { Message } from "@/types/message"
-import { editThreadMesaage, deleteThreadMesaage, replyThreadMesaage } from "@/api/Thread"
+import { editThreadMesaage, deleteThreadMesaage, replyThreadMesaage, getFileById } from "@/api/Thread"
 import { toast } from "react-toastify"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
+import { uploadProfileImage } from "@/api/Workspace"
+import { getProjectMembers } from "@/api/Project"
 
 export const ThreadPage = () => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
@@ -31,7 +33,7 @@ export const ThreadPage = () => {
   const ticketFromState = state?.ticket
   const projectName = state?.projectName
   const workspaceId = useWorkspaceStore((state) => state.workspaceId)
-  // const memberId = useUserStore((state) => state.memberId)
+  const workspaceName = useWorkspaceStore((state) => state.workspaceName)
   const memberId = useUserStore((state) => state.workspaceMemberId)
   const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
@@ -39,6 +41,8 @@ export const ThreadPage = () => {
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null)
   const [replyingTo, setReplyingTo] = useState<{ threadId: number; senderName: string; content: string } | null>(null)
+  const [isFileUploading, setIsFileUploading] = useState(false)
+  const [projectMembers, setProjectMembers] = useState<any[]>([])
 
   useEffect(() => {
     if (ticketId && projectName) {
@@ -58,17 +62,30 @@ export const ThreadPage = () => {
     }
   }, [ticketId, projectName])
 
+  useEffect(() => {
+    const fetchProjectMembers = async () => {
+      try {
+        if (projectId && workspaceName) {
+          const members = await getProjectMembers(workspaceName, Number(projectId))
+          setProjectMembers(members)
+        }
+      } catch (err) {
+        console.error("프로젝트 멤버 조회 실패:", err)
+      }
+    }
+
+    fetchProjectMembers()
+  }, [projectId, workspaceName])
+
   const buildMessageWithReplyInfo = (messages: Message[]): Message[] => {
     const messageMap = new Map<number, Message>()
 
-    // 먼저 모든 메시지를 맵에 저장
     messages.forEach((msg) => {
       if (msg.threadId) {
         messageMap.set(msg.threadId, msg)
       }
     })
 
-    // 답글 정보를 추가
     return messages.map((msg) => {
       if (msg.parentThreadId && messageMap.has(msg.parentThreadId)) {
         const parentMessage = messageMap.get(msg.parentThreadId)!
@@ -148,6 +165,103 @@ export const ThreadPage = () => {
     }
   }, [ticketId, token, connect, disconnect])
 
+  const enrichedMessages = useMemo(() => {
+    const memberMap: Record<number, string> = {}
+    projectMembers.forEach((member) => {
+      if (member.workspaceMemberId && member.profileUri) {
+        memberMap[member.workspaceMemberId] = member.profileUri
+      }
+    })
+
+    return threadMessages.map((msg) => ({
+      ...msg,
+      profileFileUri: memberMap[msg.senderWorkspaceMemberId] || null,
+    }))
+  }, [threadMessages, projectMembers])
+
+  const handleFileUpload = async (file: File) => {
+    if (!file) return
+
+    const maxSize = 10 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast.error("파일 크기는 10MB 이하여야 합니다.")
+      return
+    }
+
+    setIsFileUploading(true)
+
+    try {
+      const category = "THREAD_FILE"
+      const uploadResult = await uploadProfileImage(file, category)
+      const fileId = uploadResult.fileId;
+
+      const fileInfo = await getFileById(fileId);
+      const fileUrl = fileInfo.fileUrl;
+      const fileMessage = `📎 ${file.name}\n[파일 다운로드](${fileUrl})`;
+
+      const now = new Date()
+      const sentAt = now.toISOString().slice(0, 19)
+
+      if (replyingTo) {
+        const replyMessage: Message = {
+          ticketId: Number(ticketId),
+          sentAt,
+          senderWorkspaceMemberId: memberId,
+          senderName: memberName,
+          content: fileMessage,
+          isCurrentUser: true,
+          parentThreadId: replyingTo.threadId,
+          replyTo: {
+            threadId: replyingTo.threadId,
+            senderName: replyingTo.senderName,
+            content: replyingTo.content,
+          },
+        }
+
+        setThreadMessages((prev) => [...prev, replyMessage])
+
+        await replyThreadMesaage({
+          ticketId: Number(ticketId),
+          parentThreadId: replyingTo.threadId,
+          senderWorkspaceMemberId: memberId,
+          senderName: memberName,
+          reply: fileMessage,
+          sentAt,
+          workspaceId: workspaceId,
+        })
+
+        setReplyingTo(null)
+      } else {
+        const messageToSend = {
+          ticketId: Number(ticketId),
+          senderWorkspaceMemberId: memberId,
+          senderName: memberName,
+          content: fileMessage,
+          sentAt,
+        }
+
+        const uiMessage: Message = {
+          ticketId: messageToSend.ticketId,
+          sentAt: messageToSend.sentAt,
+          senderWorkspaceMemberId: messageToSend.senderWorkspaceMemberId,
+          senderName: messageToSend.senderName,
+          content: messageToSend.content,
+          isCurrentUser: true,
+        }
+
+        send(messageToSend)
+        setThreadMessages((prev) => [...prev, uiMessage])
+      }
+
+      toast.success("파일이 업로드되었습니다.")
+    } catch (error) {
+      console.error("파일 업로드 실패:", error)
+      toast.error("파일 업로드에 실패했습니다.")
+    } finally {
+      setIsFileUploading(false)
+    }
+  }
+
   const sendMessage = () => {
     if (!newMessage.trim()) return
 
@@ -188,7 +302,8 @@ export const ThreadPage = () => {
           toast.error("답글 전송에 실패했습니다.")
           setThreadMessages((prev) =>
             prev.filter(
-              (msg) => !(msg.sentAt === sentAt && msg.senderWorkspaceMemberId === memberId && msg.content === newMessage),
+              (msg) =>
+                !(msg.sentAt === sentAt && msg.senderWorkspaceMemberId === memberId && msg.content === newMessage),
             ),
           )
         })
@@ -298,13 +413,15 @@ export const ThreadPage = () => {
             <S.ContentBody>
               <S.LeftColumn>
                 <ThreadChat
-                  messages={threadMessages}
+                  // messages={threadMessages}
+                  messages={enrichedMessages}
                   newMessage={newMessage}
                   setNewMessage={setNewMessage}
                   sendMessage={sendMessage}
                   onEditMessage={handleEditMessage}
                   onDeleteMessage={handleDeleteMessage}
                   onReplyToMessage={handleReplyToMessage}
+                  onFileUpload={handleFileUpload}
                   setReplyingTo={setReplyingTo}
                   replyingTo={replyingTo}
                 />
@@ -317,6 +434,47 @@ export const ThreadPage = () => {
           </S.ContentContainer>
         </S.MainContainer>
       </S.PageContainer>
+
+      {/* 파일 업로드 중 로딩 표시 */}
+      {isFileUploading && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "8px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                border: "2px solid #e5e7eb",
+                borderTop: "2px solid #10b981",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+              }}
+            />
+            <span>파일을 업로드하는 중...</span>
+          </div>
+        </div>
+      )}
 
       {isCreateModalOpen && ticket && projectName && (
         <CreateTicketModal
@@ -349,6 +507,13 @@ export const ThreadPage = () => {
           }}
         />
       )}
+
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { styled, keyframes, css } from "styled-components"
+import { styled, keyframes } from "styled-components"
 import { color } from "@/styles/color"
 
 const slideUp = keyframes`
@@ -24,10 +24,6 @@ const highlightPulse = keyframes`
   }
 `
 
-export const PulseHighlight = styled.div`
-  animation: ${highlightPulse} 1.5s ease-out;
-`;
-
 export const SectionTitle = styled.h2`
   font-size: 14px;
   font-weight: 600;
@@ -47,7 +43,6 @@ export const ThreadContainer = styled.div`
   overflow-y: auto;
   min-height: 300px;
   max-height: 500px;
-  scroll-behavior: smooth;
 `
 
 export const MessageWrapper = styled.div<{ $isCurrentUser: boolean; $highLighted?: boolean }>`
@@ -55,13 +50,12 @@ export const MessageWrapper = styled.div<{ $isCurrentUser: boolean; $highLighted
   align-items: flex-start;
   gap: 6px;
   flex-direction: ${(props) => (props.$isCurrentUser ? "row-reverse" : "row")};
-    ${({ $highLighted }) =>
-    $highLighted &&
-    css`
-      animation: ${highlightPulse} 1.5s ease-out;
-    `}
+  transition: background-color 0.3s ease;
+  border-radius: 8px;
+  padding: 4px;
+  margin: -4px;
+  background-color: ${(props) => (props.$highLighted ? "#fef3c7" : "transparent")};
 `
-MessageWrapper.displayName = 'MessageWrapper';
 
 export const MessageAvatar = styled.div`
   width: 28px;
@@ -100,7 +94,7 @@ const fadeIn = keyframes`
     opacity: 1;
     transform: translateY(0);
   }
-`;
+`
 
 export const MessageBubbleContainer = styled.div<{ $isCurrentUser: boolean }>`
   display: flex;
@@ -109,14 +103,42 @@ export const MessageBubbleContainer = styled.div<{ $isCurrentUser: boolean }>`
   flex-direction: ${(props) => (props.$isCurrentUser ? "row-reverse" : "row")};
 `
 
-export const MessageBubble = styled.div<{ $isCurrentUser: boolean; $isReply?: boolean }>`
-  background-color: ${(props) => (props.$isCurrentUser ? "#10b981" : "#f3f4f6")};
-  color: ${(props) => (props.$isCurrentUser ? "#ffffff" : "#374151")};
+export const MessageBubble = styled.div<{
+  $isCurrentUser: boolean
+  $isReply?: boolean
+}>`
+  background-color: ${(props) => {
+    if (props.$isReply) {
+      return props.$isCurrentUser ? "#059669" : "#e0f2fe"
+    }
+    return props.$isCurrentUser ? "#10b981" : "#f3f4f6"
+  }};
+  color: ${(props) => {
+    if (props.$isReply) {
+      return props.$isCurrentUser ? "#ffffff" : "#0c4a6e"
+    }
+    return props.$isCurrentUser ? "#ffffff" : "#374151"
+  }};
   border-radius: 12px;
-  padding: 8px 12px;
+  padding: ${(props) => (props.$isReply ? "12px 16px" : "8px 12px")};
   width: 100%;
   position: relative;
   animation: ${fadeIn} 0.5s ease-in-out;
+  cursor: ${(props) => (props.$isReply ? "pointer" : "default")};
+  transition: all 0.2s ease;
+  // min-height: ${(props) => (props.$isReply ? "60px" : "auto")};
+  // border: ${(props) => (props.$isReply ? "2px solid rgba(16, 185, 129, 0.3)" : "none")};
+  
+  &:hover {
+    ${(props) =>
+    props.$isReply &&
+    `
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border-color: rgba(16, 185, 129, 0.5);
+    `}
+  }
+  
   &:before {
     content: "";
     position: absolute;
@@ -124,7 +146,12 @@ export const MessageBubble = styled.div<{ $isCurrentUser: boolean; $isReply?: bo
     ${(props) => (props.$isCurrentUser ? "right: -4px" : "left: -4px")};
     width: 8px;
     height: 8px;
-    background-color: ${(props) => (props.$isCurrentUser ? "#10b981" : "#f3f4f6")};
+    background-color: ${(props) => {
+    if (props.$isReply) {
+      return props.$isCurrentUser ? "#059669" : "#e0f2fe"
+    }
+    return props.$isCurrentUser ? "#10b981" : "#f3f4f6"
+  }};
     transform: rotate(45deg);
     z-index: -1;
   }
@@ -134,6 +161,7 @@ export const MessageContent = styled.p`
   font-size: 13px;
   line-height: 1.4;
   word-break: break-word;
+  margin: 0;
 `
 
 export const MessageTime = styled.span<{ $isCurrentUser: boolean }>`
@@ -151,19 +179,55 @@ export const MessageInputContainer = styled.div`
   position: relative;
 `
 
-export const MessageInput = styled.textarea`
+export const MessageInputWrapper = styled.div`
   flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
+  background-color: white;
+  
+  &:focus-within {
+    border-color: ${color.teal800};
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  }
+`
+
+export const FileAttachButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: ${color.basic500};
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 4px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #f3f4f6;
+    color: ${color.basic700};
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+`
+
+export const MessageInput = styled.textarea`
+  flex: 1;
+  border: none;
+  outline: none;
   padding: 8px 10px;
   font-size: 13px;
   resize: none;
   min-height: 38px;
-  &:focus {
-    outline: none;
-    border-color: ${color.teal800};
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-  }
+  background: transparent;
+  font-family: inherit;
 `
 
 export const SendButton = styled.button`
@@ -256,7 +320,7 @@ export const PreviewCloseButton = styled.button`
     color: ${color.textPrimary};
   }
 `
-// 메시지 액션 관련 스타일
+
 export const MessageContentWrapper = styled.div`
   position: relative;
   width: 100%;
@@ -297,7 +361,6 @@ export const ActionButton = styled.button`
   }
 `
 
-// 수정 모드 관련 스타일
 export const EditContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -361,23 +424,31 @@ export const EditActionButton = styled.button<{ $type: "save" | "cancel" }>`
   `}
 `
 
-// 답글 관련 스타일
 export const ReplyReference = styled.div<{ $isCurrentUser: boolean }>`
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-bottom: 4px;
-  padding: 4px 8px;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 6px;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
   font-size: 11px;
-  color: ${color.basic600};
-  ${(props) => (props.$isCurrentUser ? "margin-right: 8px;" : "margin-left: 8px;")}
+  color: ${color.basic700};
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(240, 255, 250, 0.95);
+    border-color: rgba(16, 185, 129, 0.4);
+  }
 `
 
 export const ReplyIcon = styled.span`
-  font-size: 12px;
-  color: ${color.basic500};
+  font-size: 14px;
+  color: ${color.teal600};
+  font-weight: bold;
 `
 
 export const ReplyText = styled.span`
@@ -385,6 +456,11 @@ export const ReplyText = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  
+  strong {
+    color: ${color.teal700};
+    font-weight: 600;
+  }
 `
 
 export const ReplyingToContainer = styled.div`

@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react"
-import { Send, X, Edit2, Trash2, Reply, Check, DeleteIcon as Cancel } from "lucide-react"
+import { Send, X, Edit2, Trash2, Reply, Check, DeleteIcon as Cancel, Paperclip } from "lucide-react"
 import * as S from "./ThreadChat.Style"
 import { formatDateTime } from "@/utils/formatDateTime"
 import type { Message } from "@/types/message"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
+import { marked } from "marked"
+import DOMPurify from "dompurify"
 
 interface ThreadChatProps {
   messages: Message[]
@@ -15,12 +17,14 @@ interface ThreadChatProps {
   onReplyToMessage?: (replyTo: { threadId: number; senderName: string; content: string }) => void
   replyingTo: { threadId: number; senderName: string; content: string } | null
   setReplyingTo: (v: { threadId: number; senderName: string; content: string } | null) => void
+  onFileUpload?: (file: File) => void
 }
 
-export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, onEditMessage, onDeleteMessage, onReplyToMessage, replyingTo, setReplyingTo }: ThreadChatProps) => {
+export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, onEditMessage, onDeleteMessage, onReplyToMessage, replyingTo, setReplyingTo, onFileUpload }: ThreadChatProps) => {
   const messagesEndRef = useRef(null)
   const messageRefs = useRef<{ [key: number]: HTMLDivElement | null }>({})
   const containerRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [isComposing, setIsComposing] = useState(false)
   const [messagePreview, setMessagePreview] = useState<Message | null>(null)
   const [showPreview, setShowPreview] = useState(false)
@@ -165,6 +169,21 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     scrollToMessage(replyToThreadId)
   }
 
+  const handleFileButtonClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && onFileUpload) {
+      onFileUpload(file)
+    }
+    // 파일 입력 초기화 (같은 파일을 다시 선택할 수 있도록)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
   return (
     <>
       <S.SectionTitle>스레드</S.SectionTitle>
@@ -181,7 +200,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
             >
               <S.MessageAvatar>
                 <S.AvatarImage
-                  src={getAvatarImage(index, message.isCurrentUser)}
+                  src={message.profileFileUri || getAvatarImage(index, message.isCurrentUser)}
                   alt={`${message.senderName} 아바타`}
                 />
               </S.MessageAvatar>
@@ -228,18 +247,11 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
                     ) : (
                       // 일반 메시지 표시
                       <S.MessageContentWrapper>
-
-                        <S.MessageContent>
-                          {message.content
-                            ? message.content.split("\n").map((line, i) => (
-                              <span key={i}>
-                                {line}
-                                <br />
-                              </span>
-                            ))
-                            : <span>(내용 없음)</span>}
-                        </S.MessageContent>
-
+                        <S.MessageContent
+                          dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(marked.parse(message.content || "") as string),
+                          }}
+                        />
                         {/* 메시지 액션 버튼들 */}
                         <S.MessageActions $isCurrentUser={message.isCurrentUser}>
                           {message.isCurrentUser ? (
@@ -261,7 +273,6 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
                         </S.MessageActions>
                       </S.MessageContentWrapper>
                     )}
-
                   </S.MessageBubble>
                   <S.MessageTime $isCurrentUser={message.isCurrentUser}>{formatDateTime(message.sentAt)}</S.MessageTime>
                 </S.MessageBubbleContainer>
@@ -297,7 +308,6 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
             </S.PreviewCloseButton>
           </S.MessagePreview>
         )}
-
         {/* 답글 대상 표시 */}
         {replyingTo && (
           <S.ReplyingToContainer>
@@ -319,15 +329,27 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
             </S.CancelReplyButton>
           </S.ReplyingToContainer>
         )}
-
-        <S.MessageInput
-          placeholder="메시지를 입력해주세요."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onCompositionStart={() => setIsComposing(true)}
-          onCompositionEnd={() => setIsComposing(false)}
+        <input
+          ref={fileInputRef}
+          type="file"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+          accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
         />
+        <S.MessageInputWrapper>
+          <S.FileAttachButton onClick={handleFileButtonClick} title="파일 첨부">
+            <Paperclip size={16} />
+          </S.FileAttachButton>
+          <S.MessageInput
+            placeholder="메시지를 입력해주세요."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onCompositionStart={() => setIsComposing(true)}
+            onCompositionEnd={() => setIsComposing(false)}
+          />
+        </S.MessageInputWrapper>
+
         <S.SendButton onClick={handleSendClick} disabled={!newMessage || !newMessage.trim()}>
           <Send size={16} />
         </S.SendButton>
