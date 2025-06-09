@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { useParams, useLocation, useNavigate } from "react-router-dom"
 import { ArrowLeft, Plus } from "lucide-react"
 import * as S from "./ThreadPage.Style"
@@ -20,6 +20,7 @@ import { editThreadMesaage, deleteThreadMesaage, replyThreadMesaage, getFileById
 import { toast } from "react-toastify"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
 import { uploadProfileImage } from "@/api/Workspace"
+import { getProjectMembers } from "@/api/Project"
 
 export const ThreadPage = () => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
@@ -32,6 +33,7 @@ export const ThreadPage = () => {
   const ticketFromState = state?.ticket
   const projectName = state?.projectName
   const workspaceId = useWorkspaceStore((state) => state.workspaceId)
+  const workspaceName = useWorkspaceStore((state) => state.workspaceName)
   const memberId = useUserStore((state) => state.workspaceMemberId)
   const memberName = useUserStore((state) => state.name)
   const [ticket, setTicket] = useState<Ticket | null>(ticketFromState ?? null)
@@ -40,6 +42,7 @@ export const ThreadPage = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null)
   const [replyingTo, setReplyingTo] = useState<{ threadId: number; senderName: string; content: string } | null>(null)
   const [isFileUploading, setIsFileUploading] = useState(false)
+  const [projectMembers, setProjectMembers] = useState<any[]>([])
 
   useEffect(() => {
     if (ticketId && projectName) {
@@ -59,17 +62,30 @@ export const ThreadPage = () => {
     }
   }, [ticketId, projectName])
 
+  useEffect(() => {
+    const fetchProjectMembers = async () => {
+      try {
+        if (projectId && workspaceName) {
+          const members = await getProjectMembers(workspaceName, Number(projectId))
+          setProjectMembers(members)
+        }
+      } catch (err) {
+        console.error("프로젝트 멤버 조회 실패:", err)
+      }
+    }
+
+    fetchProjectMembers()
+  }, [projectId, workspaceName])
+
   const buildMessageWithReplyInfo = (messages: Message[]): Message[] => {
     const messageMap = new Map<number, Message>()
 
-    // 먼저 모든 메시지를 맵에 저장
     messages.forEach((msg) => {
       if (msg.threadId) {
         messageMap.set(msg.threadId, msg)
       }
     })
 
-    // 답글 정보를 추가
     return messages.map((msg) => {
       if (msg.parentThreadId && messageMap.has(msg.parentThreadId)) {
         const parentMessage = messageMap.get(msg.parentThreadId)!
@@ -149,11 +165,23 @@ export const ThreadPage = () => {
     }
   }, [ticketId, token, connect, disconnect])
 
-  // 파일 업로드 핸들러
+  const enrichedMessages = useMemo(() => {
+    const memberMap: Record<number, string> = {}
+    projectMembers.forEach((member) => {
+      if (member.workspaceMemberId && member.profileUri) {
+        memberMap[member.workspaceMemberId] = member.profileUri
+      }
+    })
+
+    return threadMessages.map((msg) => ({
+      ...msg,
+      profileFileUri: memberMap[msg.senderWorkspaceMemberId] || null,
+    }))
+  }, [threadMessages, projectMembers])
+
   const handleFileUpload = async (file: File) => {
     if (!file) return
 
-    // 파일 크기 제한 (10MB)
     const maxSize = 10 * 1024 * 1024
     if (file.size > maxSize) {
       toast.error("파일 크기는 10MB 이하여야 합니다.")
@@ -204,7 +232,6 @@ export const ThreadPage = () => {
 
         setReplyingTo(null)
       } else {
-        // 일반 메시지로 파일 전송
         const messageToSend = {
           ticketId: Number(ticketId),
           senderWorkspaceMemberId: memberId,
@@ -386,7 +413,8 @@ export const ThreadPage = () => {
             <S.ContentBody>
               <S.LeftColumn>
                 <ThreadChat
-                  messages={threadMessages}
+                  // messages={threadMessages}
+                  messages={enrichedMessages}
                   newMessage={newMessage}
                   setNewMessage={setNewMessage}
                   sendMessage={sendMessage}

@@ -169,12 +169,10 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     scrollToMessage(replyToThreadId)
   }
 
-  // 파일 첨부 버튼 클릭 핸들러
   const handleFileButtonClick = () => {
     fileInputRef.current?.click()
   }
 
-  // 파일 선택 핸들러
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && onFileUpload) {
@@ -202,7 +200,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
             >
               <S.MessageAvatar>
                 <S.AvatarImage
-                  src={getAvatarImage(index, message.isCurrentUser)}
+                  src={message.profileFileUri || getAvatarImage(index, message.isCurrentUser)}
                   alt={`${message.senderName} 아바타`}
                 />
               </S.MessageAvatar>
@@ -249,13 +247,11 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
                     ) : (
                       // 일반 메시지 표시
                       <S.MessageContentWrapper>
-
                         <S.MessageContent
                           dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(marked.parse(message.content || "") as string),
                           }}
                         />
-
                         {/* 메시지 액션 버튼들 */}
                         <S.MessageActions $isCurrentUser={message.isCurrentUser}>
                           {message.isCurrentUser ? (
@@ -277,7 +273,6 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
                         </S.MessageActions>
                       </S.MessageContentWrapper>
                     )}
-
                   </S.MessageBubble>
                   <S.MessageTime $isCurrentUser={message.isCurrentUser}>{formatDateTime(message.sentAt)}</S.MessageTime>
                 </S.MessageBubbleContainer>
@@ -313,7 +308,6 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
             </S.PreviewCloseButton>
           </S.MessagePreview>
         )}
-
         {/* 답글 대상 표시 */}
         {replyingTo && (
           <S.ReplyingToContainer>
@@ -335,7 +329,6 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
             </S.CancelReplyButton>
           </S.ReplyingToContainer>
         )}
-
         <input
           ref={fileInputRef}
           type="file"
@@ -343,7 +336,6 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
           onChange={handleFileChange}
           accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
         />
-
         <S.MessageInputWrapper>
           <S.FileAttachButton onClick={handleFileButtonClick} title="파일 첨부">
             <Paperclip size={16} />

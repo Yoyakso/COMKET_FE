@@ -5,6 +5,7 @@ export interface Message {
   senderWorkspaceMemberId: number
   senderName: string
   content: string
+  profileFileUri?: string | null
   isCurrentUser: boolean
   isModified?: boolean
   messageState?: string
@@ -13,6 +14,7 @@ export interface Message {
     threadId: number
     senderName: string
     content: string
+    profileFileUri?: string | null
   }
 }
 
