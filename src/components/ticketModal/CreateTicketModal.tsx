@@ -60,7 +60,7 @@ export const CreateTicketModal = ({
     status: "TODO",
     start_date: new Date().toISOString().split("T")[0],
     end_date: new Date().toISOString().split("T")[0],
-    assignee_member_id_list: [] as number[],
+    assignee_member_id_list: initialData?.assignee_member_id_list || [],
     requester: {
       id: memberId,
       name: name,
