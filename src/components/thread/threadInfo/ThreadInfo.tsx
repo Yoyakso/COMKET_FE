@@ -347,7 +347,7 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
               </div>
             ) : (
               <S.UserDisplay>
-                {fetchedTicket.assignee_member_list.map((member) => (
+                {(fetchedTicket.assignee_member_list ?? []).map((member) => (
                   <S.AssigneeWrapper key={member.projectMemberId}>
                     <S.SmallAvatar>
                       {member.profileFileUrl ? (
