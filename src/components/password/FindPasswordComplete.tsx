@@ -1,9 +1,28 @@
-import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as S from './FindPasswordComplete.Style';
 import { COMKET2 } from '@/assets/icons';
 import { Button } from '@/components/common/button/Button';
+import { sendResetPasswordEmail } from '@/api/Oauth';
+import { toast } from 'react-toastify';
 
 export const FindPasswordComplete = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const email = (location.state as { email: string })?.email;
+
+  const handleResend = async () => {
+    if (!email) {
+      toast.error('이메일 정보가 없습니다.');
+      return;
+    }
+
+    try {
+      await sendResetPasswordEmail(email);
+      toast.success('이메일이 다시 발송되었습니다.');
+    } catch {
+      toast.error('메일 재발송에 실패했습니다.');
+    }
+  };
   return (
     <S.Modal>
       <S.LogoWrapper>
@@ -17,10 +36,20 @@ export const FindPasswordComplete = () => {
       </S.Description>
 
       <S.ButtonRow>
-        <Button $variant="neutralOutlined" size="md" onClick={() => {}} style={{ width: '322px' }}>
+        <Button
+          $variant="neutralOutlined"
+          size="md"
+          onClick={handleResend}
+          style={{ width: '322px' }}
+        >
           메일 재발송
         </Button>
-        <Button $variant="tealFilled" size="md" onClick={() => {}} style={{ width: '322px' }}>
+        <Button
+          $variant="tealFilled"
+          size="md"
+          onClick={() => navigate('/login')}
+          style={{ width: '322px' }}
+        >
           확인
         </Button>
       </S.ButtonRow>

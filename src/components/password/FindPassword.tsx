@@ -4,6 +4,8 @@ import { COMKET2 } from '@/assets/icons';
 import { TextInput } from '@/components/common/textInput/TextInput';
 import { Button } from '@/components/common/button/Button';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { sendResetPasswordEmail } from '@/api/Oauth';
 
 interface Props {
   onBack: () => void;
@@ -20,15 +22,17 @@ export const FindPassword = ({ onBack, onNext }: Props) => {
     if (isInvalidEmail) setIsInvalidEmail(false);
   };
 
-  // 임시 테스트로 ajou.ac.kr 도메인만 허용
-  const handleNext = () => {
-    const isRegistered = email.endsWith('@ajou.ac.kr');
-    if (!isRegistered) {
+  const handleNext = async () => {
+    if (!email) return;
+
+    try {
+      await sendResetPasswordEmail(email);
+      onNext(email);
+      navigate('/findPassword/complete', { state: { email } });
+    } catch (err) {
       setIsInvalidEmail(true);
-      return;
+      toast.error('등록되지 않은 이메일입니다. 다시 확인해주세요.');
     }
-    onNext(email);
-    navigate('/findPassword/complete');
   };
 
   return (

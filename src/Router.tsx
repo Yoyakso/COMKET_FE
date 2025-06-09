@@ -25,6 +25,7 @@ import { ThreadPageWrapper } from './pages/threadPage/TreadPageWrapper';
 import { MainPage } from './pages/mainPage/MainPage';
 import { PlanPage } from './pages/planPage/PlanPage';
 import { NotFoundPage } from './pages/notFoundPage/NotFoundPage';
+import { BillingPage } from './pages/billingPage/BillingPage';
 
 export const Router = createBrowserRouter([
   {
@@ -52,11 +53,11 @@ export const Router = createBrowserRouter([
         element: <FindPasswordCompletePage />,
       },
       {
-        path: 'resetPassword',
+        path: 'password-reset',
         element: <ResetPasswordPage />,
       },
       {
-        path: 'resetPassword/complete',
+        path: 'password-reset/complete',
         element: <ResetPasswordCompletePage />,
       },
       {
@@ -140,9 +141,13 @@ export const Router = createBrowserRouter([
         element: <PlanPage />,
       },
       {
+        path: ':workspaceSlug/plan',
+        element: <BillingPage />,
+      },
+      {
         path: '*',
         element: <NotFoundPage />,
-      }
+      },
     ],
   },
 ]);

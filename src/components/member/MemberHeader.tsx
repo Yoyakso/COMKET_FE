@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { UpgradePlanModal } from '@/components/billing/UpgradePlanModal';
 import * as S from './MemberHeader.Style';
 import { Search } from '../common/search/Search';
 import { InviteModal } from '../workspace/InviteModal';
@@ -10,6 +12,8 @@ interface MemberHeaderProps {
   onSearch: (query: string) => void;
   onFilter?: (filters: { roles: string[]; states: string[] }) => void;
   onUpdateMemberList?: (members: MemberData[]) => void;
+  currentMemberCount: number;
+  maxMemberCount: number;
 }
 
 const allFilterValues = ['admin', 'member', 'active', 'inactive', 'removed'];
@@ -19,11 +23,15 @@ export const MemberHeader = ({
   onSearch,
   onFilter,
   onUpdateMemberList,
+  currentMemberCount,
+  maxMemberCount,
 }: MemberHeaderProps) => {
   const [searchValue, setSearchValue] = useState('');
   const [isInviteModalOpen, setInviteModalOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>(allFilterValues);
   const filterButtonRef = useRef<HTMLDivElement>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const roles = allFilterValues.filter(v => ['admin', 'member'].includes(v));
@@ -45,6 +53,11 @@ export const MemberHeader = ({
   };
 
   const openInviteModal = () => {
+    if (currentMemberCount >= 1) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
     setInviteModalOpen(true);
   };
 
@@ -104,6 +117,15 @@ export const MemberHeader = ({
 
       {isInviteModalOpen && (
         <InviteModal onClose={closeInviteModal} onUpdateMemberList={onUpdateMemberList} />
+      )}
+      {showUpgradeModal && (
+        <UpgradePlanModal
+          onClose={() => setShowUpgradeModal(false)}
+          onUpgrade={() => {
+            setShowUpgradeModal(false);
+            navigate('/billing');
+          }}
+        />
       )}
     </S.HeaderContainer>
   );

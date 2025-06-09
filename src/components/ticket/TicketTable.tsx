@@ -4,6 +4,7 @@ import * as S from './TicketTable.Style';
 import { Ticket } from '@/types/ticket';
 import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
 import { TicketSelectionStore } from '@/components/ticket/TicketSelectionStore';
+import { markTicketAlarmAsRead } from '@/api/Alarm';
 
 const INITIAL_WIDTHS = {
   expander: 28,
@@ -64,7 +65,7 @@ export const TicketTable = ({
   onInfoClick,
   onTicketHover,
   projectName,
-  alarmTicketIds,
+  alarmTicketIds: alarmTicketIdsProp,
 }: TicketTableProps) => {
   const [sortKey, setSortKey] = useState<keyof Ticket | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -73,6 +74,7 @@ export const TicketTable = ({
   const resizingCol = useRef<string | null>(null);
   const startX = useRef<number>(0);
   const startWidth = useRef<number>(0);
+  const [alarmTicketIds, setAlarmTicketIds] = useState<Set<number>>(new Set());
 
   const { selectedIds, toggleSingle, toggleWithSubtickets, setInitialTickets } =
     TicketSelectionStore();
@@ -80,6 +82,30 @@ export const TicketTable = ({
   useEffect(() => {
     setInitialTickets(tickets);
   }, [tickets]);
+
+  useEffect(() => {
+    if (alarmTicketIdsProp) {
+      setAlarmTicketIds(new Set(alarmTicketIdsProp));
+    }
+  }, [alarmTicketIdsProp]);
+
+  const handleTicketClick = async (ticket: Ticket) => {
+    if (alarmTicketIds.has(ticket.id)) {
+      try {
+        await markTicketAlarmAsRead(ticket.id);
+        setAlarmTicketIds(prev => {
+          const updated = new Set(prev);
+          updated.delete(ticket.id);
+          return updated;
+        });
+      } catch (e) {
+        console.error('알림 읽음 처리 실패:', e);
+      }
+    }
+
+    // 기존 동작
+    onTicketClick(ticket);
+  };
 
   const handleSort = (key: keyof Ticket) => {
     if (sortKey === key) {
@@ -158,19 +184,19 @@ export const TicketTable = ({
     sortable?: boolean;
     align?: 'left' | 'center';
   }[] = [
-      { key: 'expander', label: '', resizable: true, sortable: false, align: 'center' },
-      { key: 'checkbox', label: '', resizable: true, sortable: false, align: 'center' },
-      { key: 'id', label: '', resizable: true, sortable: false, align: 'center' },
-      { key: 'title', label: '티켓', resizable: true, sortable: true, align: 'left' },
-      { key: 'type', label: '유형', resizable: true, sortable: true, align: 'center' },
-      { key: 'assignee', label: '담당자', resizable: true, sortable: true, align: 'left' },
-      { key: 'priority', label: '우선순위', resizable: true, sortable: true, align: 'center' },
-      { key: 'status', label: '상태', resizable: true, sortable: true, align: 'center' },
-      { key: 'startDate', label: '시작일', resizable: true, sortable: true, align: 'center' },
-      { key: 'dueDate', label: '마감일', resizable: true, sortable: true, align: 'center' },
-      { key: 'subticketCount', label: '하위 티켓', resizable: true, sortable: true, align: 'center' },
-      { key: 'writer', label: '작성자', resizable: true, sortable: true, align: 'left' },
-    ];
+    { key: 'expander', label: '', resizable: true, sortable: false, align: 'center' },
+    { key: 'checkbox', label: '', resizable: true, sortable: false, align: 'center' },
+    { key: 'id', label: '', resizable: true, sortable: false, align: 'center' },
+    { key: 'title', label: '티켓', resizable: true, sortable: true, align: 'left' },
+    { key: 'type', label: '유형', resizable: true, sortable: true, align: 'center' },
+    { key: 'assignee', label: '담당자', resizable: true, sortable: true, align: 'left' },
+    { key: 'priority', label: '우선순위', resizable: true, sortable: true, align: 'center' },
+    { key: 'status', label: '상태', resizable: true, sortable: true, align: 'center' },
+    { key: 'startDate', label: '시작일', resizable: true, sortable: true, align: 'center' },
+    { key: 'dueDate', label: '마감일', resizable: true, sortable: true, align: 'center' },
+    { key: 'subticketCount', label: '하위 티켓', resizable: true, sortable: true, align: 'center' },
+    { key: 'writer', label: '작성자', resizable: true, sortable: true, align: 'left' },
+  ];
 
   return (
     <S.TableWrapper>
@@ -207,12 +233,12 @@ export const TicketTable = ({
                 isChecked={id => selectedIds?.includes(id) ?? false}
                 toggleSingle={toggleSingle}
                 toggleWithSubtickets={toggleWithSubtickets}
-                onTicketClick={onTicketClick}
+                onTicketClick={handleTicketClick}
                 onInfoClick={onInfoClick}
                 onTicketHover={onTicketHover}
                 projectName={projectName}
                 alarmTicketIds={alarmTicketIds}
-                hasAlarm={alarmTicketIds?.has(ticket.id) ?? false}
+                hasAlarm={alarmTicketIds.has(ticket.id)}
               />
             );
           })}

@@ -14,8 +14,6 @@ interface GNBProps {
 
 export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
   const navigate = useNavigate();
-  const userName = useUserStore(s => s.name);
-  const userProfile = useUserStore(s => s.profileFileUrl);
 
   const handleLoginButton = () => {
     navigate('/login');
@@ -48,17 +46,20 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
       {variant === 'default' && (
         <S.AuthContainer>
           {/* <S.LoginButton onClick={handleLoginButton}>로그인</S.LoginButton> */}
-          <PrimaryButton size='sm' onClick={handleStartButton}>시작하기</PrimaryButton>
+          <PrimaryButton size="sm" onClick={handleStartButton}>
+            시작하기
+          </PrimaryButton>
         </S.AuthContainer>
       )}
 
-      {variant === 'workspace' && (
-        <S.NavProfileContainer onClick={() => navigate('/profile')}>
-          <NavProfile name={userName} defaultImage={userProfile} />
-        </S.NavProfileContainer>
-      )}
+      {variant === 'workspace' && <S.SearchContainter></S.SearchContainter>}
 
-      {variant !== 'default' && <></>}
+      {variant !== 'default' && (
+        <S.IconContainer>
+          <InfoIcon />
+          <QuestionIcon />
+        </S.IconContainer>
+      )}
     </S.NavbarContainer>
   );
 };

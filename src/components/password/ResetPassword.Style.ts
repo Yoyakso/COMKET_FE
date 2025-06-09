@@ -38,9 +38,10 @@ export const Title = styled.h2`
 export const InputWrapper = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 8px;
   margin-bottom: 16px;
-
+  padding-right: 16px;
   label {
     font-size: 14px;
     color: ${color.textPrimary};
@@ -52,6 +53,7 @@ export const Label = styled.div`
   width: 150px;
   height: 48px;
   align-items: center;
+  margin-right: 40px;
 `;
 
 export const ButtonRow = styled.div`
@@ -59,4 +61,35 @@ export const ButtonRow = styled.div`
   justify-content: space-between;
   gap: 12px;
   margin-top: 16px;
+`;
+
+export const CodeInputWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  padding-left: 3px;
+`;
+
+export const CodeInput = styled.input<{ $error?: boolean }>`
+  width: 48px;
+  height: 56px;
+  font-size: 20px;
+  text-align: center;
+  border: 1px solid ${({ $error }) => ($error ? '#FF5B56' : color.textPlaceholder)};
+  border-radius: 8px;
+  outline: none;
+  background-color: ${color.white};
+
+  &:focus {
+    border-color: ${color.primary};
+    box-shadow: 0 0 0 2px rgba(0, 160, 173, 0.2);
+  }
+`;
+
+export const HelperText = styled.p<{ $error?: boolean }>`
+  font-size: 12px;
+  color: ${({ $error }) => ($error ? '#FF5B56' : color.textSecondary)};
+  margin-top: 6px;
+  text-align: center;
 `;
