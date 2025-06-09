@@ -17,8 +17,9 @@ export default defineConfig({
     }),
     svgr(),
     VitePWA({
+      filename: 'firebase-messaging-sw.js',
       registerType: 'autoUpdate',
-      injectRegister: false,
+      injectRegister: 'auto',
 
       pwaAssets: {
         disabled: false,
