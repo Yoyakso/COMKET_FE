@@ -55,12 +55,8 @@ export const getTicketAlarms = async (projectId: number): Promise<TicketAlarm[]>
  * @param ticketId 티켓 ID
  */
 export const markTicketAlarmAsRead = async (ticketId: number) => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) throw new Error('로그인 필요');
-
-  await axios.put(`${BASE_URL}/api/v1/alarm/ticket/read`, null, {
+  await axiosInstance.put(`/api/v1/alarm/ticket/read`, null, {
     params: { ticketId },
-    headers: { Authorization: `Bearer ${token}` },
   });
 };
 
@@ -69,12 +65,8 @@ export const markTicketAlarmAsRead = async (ticketId: number) => {
  * (프론트에서 티켓 리스트 불러와서 일괄 처리하는 방식)
  */
 export const markAllAlarmsByProject = async (projectId: number) => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) throw new Error('로그인 필요');
-
-  const res = await axios.get(`${BASE_URL}/api/v1/alarm/tickets`, {
+  const res = await axiosInstance.get(`/api/v1/alarm/tickets`, {
     params: { projectId },
-    headers: { Authorization: `Bearer ${token}` },
   });
 
   const ticketIds = [...new Set(res.data.map((alarm: TicketAlarm) => alarm.ticket_id))];
@@ -82,10 +74,9 @@ export const markAllAlarmsByProject = async (projectId: number) => {
 
   await Promise.all(
     ticketIds.map(id =>
-      axios
-        .put(`${BASE_URL}/api/v1/alarm/ticket/read`, null, {
+      axiosInstance
+        .put(`/api/v1/alarm/ticket/read`, null, {
           params: { ticketId: id },
-          headers: { Authorization: `Bearer ${token}` },
         })
         .catch(err => console.error(`알림 읽음 실패 (ticketId: ${id})`, err)),
     ),

@@ -31,6 +31,7 @@ export const GoogleRedirect = () => {
             memberId: result.memberId,
             loginPlatformInfo: result.loginPlatformInfo,
             profileFileUrl: result.profileFileUrl || '',
+            workspaceMemberId: result.workspaceMemberId,
           });
           if (inviteCodeFromState) {
             navigate(`/workspaces/invite?code=${inviteCodeFromState}`, { replace: true });

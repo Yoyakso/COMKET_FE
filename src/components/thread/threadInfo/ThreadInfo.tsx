@@ -3,7 +3,7 @@ import * as S from "./ThreadInfo.Style"
 import { StatusBadge } from "@components/ticket/StatusBadge"
 import { useNavigate, useParams } from "react-router-dom"
 import { PriorityBadge } from "@/components/ticket/PriorityBadge"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { toast } from "react-toastify"
 import { editSingleTicket, getTicketById } from "@/api/Ticket"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
@@ -158,6 +158,39 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
     setEditedAdditionalInfo((prev) => ({ ...prev, [key]: value }))
   }
 
+  // 1. projectMemberId → profileUri 매핑 Map 생성
+  const profileMap = useMemo(() => {
+    const map = new Map<number, string>()
+    projectMembers.forEach((member) => {
+      if (member.profileUri) {
+        map.set(member.projectMemberId, member.profileUri)
+      }
+    })
+    return map
+  }, [projectMembers])
+
+  // 2. assignee_member_list에 profileUri 매핑
+  const enrichedAssignees = useMemo(() => {
+    const assignees = fetchedTicket?.assignee_member_list ?? [];
+    return assignees.map((assignee) => {
+      const matched = projectMembers.find((pm) => pm.projectMemberId === assignee.projectMemberId);
+      return {
+        ...assignee,
+        profileUri: matched?.profileUri ?? null,
+      };
+    });
+  }, [fetchedTicket?.assignee_member_list, projectMembers]);
+
+  // 3. creator_member에 profileUri 매핑
+  const enrichedCreator = useMemo(() => {
+    const member = fetchedTicket?.creator_member
+    if (!member) return null
+    return {
+      ...member,
+      profileUri: member.profileUri || profileMap.get(member.projectMemberId) || null,
+    }
+  }, [fetchedTicket?.creator_member, profileMap])
+
   if (isLoading) return <div>불러오는 중...</div>
   if (isError || !fetchedTicket || !editedTicket) return <div>티켓 정보를 불러오지 못했습니다.</div>
   const currentTemplate = TICKET_TEMPLATE_DATA.find((t) => t.name === fetchedTicket.type)
@@ -252,46 +285,6 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
               <User size={14} />
               담당자
             </S.InfoTitle>
-            {/* <S.InfoContent>
-              <S.UserDisplay>
-                {isEditMode ? (
-                  <S.StyledSelect
-                    multiple
-                    size={projectMembers.length > 5 ? 5 : projectMembers.length}
-                    style={{ height: "auto", overflowY: "scroll", zIndex: 10 }}
-                    value={editedTicket.assignee_member_id_list?.map(String) || []}
-                    onChange={(e) => {
-                      const selectedIds = Array.from(e.target.selectedOptions).map((opt) => Number(opt.value))
-                      setEditedTicket({ ...editedTicket, assignee_member_id_list: selectedIds })
-                    }}
-                  >
-                    {projectMembers.map((member) => (
-                      <option key={member.projectMemberId} value={member.projectMemberId}>
-                        {member.name}
-                      </option>
-                    ))}
-                  </S.StyledSelect>
-
-                ) : (
-                  <S.UserDisplay>
-                    {fetchedTicket.assignee_member_list.map((member) => (
-                      <S.AssigneeWrapper key={member.projectMemberId}>
-                        <S.SmallAvatar>
-                          {member.profileFileUrl ? (
-                            <S.AvatarImage src={member.profileFileUrl} alt={member.name} />
-                          ) : (
-                            member.name?.slice(0, 2) || "미"
-                          )}
-                        </S.SmallAvatar>
-                        <S.UserInfo>{member.name}</S.UserInfo>
-                      </S.AssigneeWrapper>
-                    ))}
-                  </S.UserDisplay>
-
-
-                )}
-              </S.UserDisplay>
-            </S.InfoContent> */}
             {isEditMode ? (
               <div>
                 {/* 선택된 담당자들 표시 */}
@@ -304,8 +297,8 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
                       .map((member) => (
                         <S.SelectedAssigneeTag key={member.projectMemberId}>
                           <S.SelectedAssigneeAvatar>
-                            {member.profileFileUrl ? (
-                              <S.SelectedAssigneeAvatarImage src={member.profileFileUrl} alt={member.name} />
+                            {member.profileFileUri ? (
+                              <S.SelectedAssigneeAvatarImage src={member.profileFileUri} alt={member.name} />
                             ) : (
                               member.name?.slice(0, 2) || "미"
                             )}
@@ -347,11 +340,11 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
               </div>
             ) : (
               <S.UserDisplay>
-                {fetchedTicket.assignee_member_list.map((member) => (
+                {enrichedAssignees.map((member) => (
                   <S.AssigneeWrapper key={member.projectMemberId}>
                     <S.SmallAvatar>
-                      {member.profileFileUrl ? (
-                        <S.AvatarImage src={member.profileFileUrl} alt={member.name} />
+                      {member.profileUri ? (
+                        <S.AvatarImage src={member.profileUri} alt={member.name} />
                       ) : (
                         member.name?.slice(0, 2) || "미"
                       )}
@@ -360,6 +353,7 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
                   </S.AssigneeWrapper>
                 ))}
               </S.UserDisplay>
+
             )}
           </S.InfoSection>
 
@@ -372,8 +366,8 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
               <S.UserDisplay>
                 <S.SmallAvatar>
                   <S.AvatarImage
-                    src={fetchedTicket.creator_member?.profileUrl || "/images/avatar-me.png"}
-                    alt={fetchedTicket.creator_member?.name || "미지정"}
+                    src={enrichedCreator?.profileUri || "/images/avatar-me.png"}
+                    alt={enrichedCreator?.name || "미지정"}
                   />
                 </S.SmallAvatar>
                 <S.UserInfo>

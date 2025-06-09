@@ -307,7 +307,6 @@ export const ThreadAiSummary = ({
           parentTicketId={ticketId}
           initialData={{
             title: selectedActionItem.title,
-            // assignee_member_id_list: selectedActionItem.memberInfo?.projectMemberId || null,
             assignee_member_id_list: selectedActionItem.memberInfo?.projectMemberId
               ? [selectedActionItem.memberInfo.projectMemberId]
               : [],

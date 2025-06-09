@@ -152,9 +152,15 @@ export const SmallAvatar = styled.div`
 `
 
 export const AvatarImage = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 24px;
+  height: 24px;
   object-fit: cover;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
 `
 
 export const UserInfo = styled.div`
