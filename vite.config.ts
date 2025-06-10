@@ -15,11 +15,12 @@ export default defineConfig({
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src',
-      filename: 'sw.mjs',
+      filename: 'sw.js',
       injectRegister: 'auto',
 
       injectManifest: {
         swSrc: 'src/sw.js',
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
 
       manifest: {
