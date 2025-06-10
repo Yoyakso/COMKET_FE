@@ -2,10 +2,6 @@ import svgr from 'vite-plugin-svgr';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import mkcert from 'vite-plugin-mkcert';
-import fs from 'fs';
-
-const isDev = process.env.NODE_ENV !== 'production';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,13 +13,13 @@ export default defineConfig({
     }),
     svgr(),
     VitePWA({
-      filename: 'firebase-messaging-sw.js',
-      registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
 
-      pwaAssets: {
-        disabled: false,
-        config: true,
+      injectManifest: {
+        swSrc: 'src/sw.js',
+        swDest: 'sw.js',
       },
 
       manifest: {
@@ -33,12 +29,11 @@ export default defineConfig({
         theme_color: '#ffffff',
       },
 
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
-        cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-      },
+      // workbox: {
+      //   globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+      //   cleanupOutdatedCaches: true,
+      //   clientsClaim: true,
+      // },
 
       devOptions: {
         enabled: false,
@@ -47,17 +42,9 @@ export default defineConfig({
         type: 'module',
       },
     }),
-    // mkcert(),
   ],
-  base: '/',
   server: {
     port: 3333,
-    // https: isDev
-    //   ? {
-    //     key: fs.readFileSync('./localhost-key.pem'),
-    //     cert: fs.readFileSync('./localhost.pem'),
-    //   }
-    //   : undefined,
   },
   preview: {
     port: 3434,
@@ -75,8 +62,5 @@ export default defineConfig({
       '@utils': '/src/utils',
       '@api': '/src/api',
     },
-  },
-  optimizeDeps: {
-    exclude: ['react-toastify'],
   },
 });

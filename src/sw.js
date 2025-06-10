@@ -12,39 +12,23 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-/**
- * 백그라운드 푸시 수신
- *  브라우저가 notification-payload를 이미 처리한 경우 → skip
- *  열려있는 창(탭)이 있으면 → Foreground에서 처리하도록 skip
- *  data-only 메시지일 때만 직접 알림 표시
- */
 messaging.onBackgroundMessage(async payload => {
   console.log('[SW] background message:', payload);
+  const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+  if (clients.length || payload.notification) return;
 
-  /* 창 열려 있으면 skip */
-  const clients = await self.clients.matchAll({
-    type: 'window',
-    includeUncontrolled: true,
-  });
-  if (clients.length) return;
-
-  /* notification 필드가 있으면 브라우저 기본 알림으로 이미 표시됨 → skip */
-  if (payload.notification) return;
-
-  /* data-only 메시지라면 우리가 직접 표시 */
   const { title, body, url } = payload.data ?? {};
   if (!title || !body) return;
 
   self.registration.showNotification(title, {
     body,
     icon: '/logo192.png',
-    data: { url }, // 클릭 시 이동할 링크 전달
-    tag: 'comket-default', // 같은 tag면 OS가 중복 합침
+    data: { url },
+    tag: 'comket-default',
     renotify: false,
   });
 });
 
-/* 알림 클릭 시 새 창(또는 기존 창) 열기 */
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   const url = e.notification.data?.url;
@@ -59,3 +43,13 @@ self.addEventListener('notificationclick', e => {
     }),
   );
 });
+
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
+
+if (workbox) {
+  workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
+  workbox.precaching.cleanupOutdatedCaches();
+  workbox.core.clientsClaim();
+  workbox.core.skipWaiting();
+  console.log('[SW] Workbox loaded and precache done');
+}

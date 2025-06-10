@@ -19,7 +19,13 @@ export const requestFcmPermission = async (): Promise<string | null> => {
 
     /* Service-Worker가 아직 없으면 한 번만 register */
     if (!swRegistration) {
-      swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      try {
+        /* 이미 등록된 SW가 있다면 ready 상태로 가져옴 */
+        swRegistration = await navigator.serviceWorker.ready;
+      } catch {
+        /* 등록된 SW가 없으면 새로 등록 */
+        swRegistration = await navigator.serviceWorker.register('/sw.js');
+      }
     }
 
     /* 반드시 등록된 SW를 넘겨줘야 firebase가 push-scope SW를 또 생성하지 않음 */
