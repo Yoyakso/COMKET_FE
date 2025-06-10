@@ -15,11 +15,11 @@ export default defineConfig({
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src',
-      filename: 'sw.js',
+      filename: 'sw.mjs',
+      injectRegister: 'auto',
 
       injectManifest: {
         swSrc: 'src/sw.js',
-        swDest: 'sw.js',
       },
 
       manifest: {
