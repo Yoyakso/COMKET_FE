@@ -197,14 +197,7 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
               $variant="tealFilled"
               size="md"
               disabled={!isFormValid}
-              onClick={() =>
-                onConfirm({
-                  cardNumber: cardParts.join(''),
-                  cardholderName,
-                  expiryDate: `${selectedMonth}/${selectedYear.slice(2)}`,
-                  cvc,
-                })
-              }
+              onClick={handlePayment}
             >
               ₩{total.toLocaleString('ko-KR')} 결제하기 →
             </Button>

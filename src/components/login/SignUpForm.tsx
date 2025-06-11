@@ -124,12 +124,11 @@ export const SignUpForm = () => {
         toast.success('회원가입이 완료되었습니다.');
         navigate('/signup/complete', { replace: true });
       }
-      navigate('/signup/complete');
     } catch (err) {
       if (err.response) {
         console.error('회원가입 오류:', err.response);
         const status = err.response.data.code;
-        if (status === "EMAIL_DUPLICATE") {
+        if (status === 'EMAIL_DUPLICATE') {
           toast.error('이미 가입된 이메일입니다.');
         }
       } else {
@@ -250,7 +249,9 @@ export const SignUpForm = () => {
               checked={agreements.service}
               onChange={handleAgreementChange('service')}
             />
-            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">약관 보기</S.TermLink>
+            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">
+              약관 보기
+            </S.TermLink>
           </S.TermRow>
 
           <S.TermRow>
@@ -261,7 +262,9 @@ export const SignUpForm = () => {
               checked={agreements.privacy}
               onChange={handleAgreementChange('privacy')}
             />
-            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">약관 보기</S.TermLink>
+            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">
+              약관 보기
+            </S.TermLink>
           </S.TermRow>
 
           <S.TermRow>
@@ -272,7 +275,9 @@ export const SignUpForm = () => {
               checked={agreements.marketing}
               onChange={handleAgreementChange('marketing')}
             />
-            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">약관 보기</S.TermLink>
+            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">
+              약관 보기
+            </S.TermLink>
           </S.TermRow>
 
           <S.TermRow>
@@ -283,7 +288,9 @@ export const SignUpForm = () => {
               checked={agreements.information}
               onChange={handleAgreementChange('information')}
             />
-            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">약관 보기</S.TermLink>
+            <S.TermLink href="https://quick-expansion-40a.notion.site/20cf0c3423d980c78b29cef5ec442870?source=copy_link">
+              약관 보기
+            </S.TermLink>
           </S.TermRow>
         </S.CheckboxContainer>
 

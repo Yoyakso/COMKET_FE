@@ -11,6 +11,8 @@ import ErrorIcon from '@assets/icons/InviteCodeError.svg?react';
 import { fetchWorkspaceByInviteCode } from '@/api/Workspace';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
 import { toast } from 'react-toastify';
+import { getMyProfile } from '@/api/Member';
+import axios from 'axios';
 
 const rotate = keyframes`
   0% { transform: rotate(0deg); }
@@ -28,17 +30,7 @@ export const InviteCodePage = () => {
   const [searchParams] = useSearchParams();
   const codeFromUrl = searchParams.get('code');
   const accessToken = localStorage.getItem('accessToken');
-
-  useEffect(() => {
-    if (!accessToken) {
-      toast.info('초대된 워크스페이스에 참가하려면 먼저 회원가입을 완료해주세요!');
-    }
-  }, [accessToken]);
-
-  if (!accessToken) {
-    return <Navigate to={`/signup?inviteCode=${codeFromUrl}`} replace />;
-  }
-
+  const [checked, setChecked] = useState(false);
   const [code, setCode] = useState<string>('');
   const [workspace, setWorkspace] = useState<DropdownOption | null>(null);
 
@@ -51,6 +43,32 @@ export const InviteCodePage = () => {
     isSuccess: false,
     errorType: 'none',
   });
+
+  useEffect(() => {
+    const verify = async () => {
+      if (!accessToken) {
+        setChecked(true);
+        return;
+      }
+
+      try {
+        await getMyProfile();
+      } catch (err) {
+        if (
+          axios.isAxiosError(err) &&
+          (err.response?.status === 401 || err.response?.status === 403)
+        ) {
+          localStorage.removeItem('accessToken');
+          navigate(`/signup?inviteCode=${codeFromUrl}`, { replace: true });
+          return;
+        }
+      }
+
+      setChecked(true);
+    };
+
+    verify();
+  }, [accessToken, codeFromUrl, navigate]);
 
   useEffect(() => {
     if (codeFromUrl) {
@@ -137,6 +155,12 @@ export const InviteCodePage = () => {
     //   toast.error('입장 실패되었습니다.');
     //   console.error('입장 실패:', error);
     // }
+
+    if (!checked) return null;
+
+    if (!accessToken) {
+      return <Navigate to={`/signup?inviteCode=${codeFromUrl}`} replace />;
+    }
   };
   return (
     <S.Container>
