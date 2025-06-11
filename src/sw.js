@@ -17,12 +17,14 @@ messaging.onBackgroundMessage(async payload => {
   const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
   if (clients.length || payload.notification) return;
 
-  const { title, body, url } = payload.data ?? {};
-  if (!title || !body) return;
+  const { title, body, ticketId, projectId } = payload.data ?? {};
+  if (!title || !body || !ticketId || !projectId) return;
+
+  const url = `https://comket.co.kr/projects/${projectId}/tickets/${ticketId}`;
 
   self.registration.showNotification(title, {
     body,
-    icon: '/logo192.png',
+    icon: '/images/comket192.png',
     data: { url },
     tag: 'comket-default',
     renotify: false,
