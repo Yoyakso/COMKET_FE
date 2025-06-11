@@ -69,6 +69,18 @@ export const getTicketById = async (ticketId: number, projectName: string): Prom
   }
 };
 
+export const getTicketByProjectId = async (ticketId: number, projectId: number): Promise<Ticket> => {
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/tickets/${ticketId}?project_id=${projectId}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error('티켓 단건 조회 실패:', error);
+    throw error;
+  }
+};
+
 /**
  * 티켓 여러 개 삭제
  * @param ids 삭제할 티켓 ID 배열

@@ -409,7 +409,7 @@ export const ThreadPage = () => {
                 </S.CreateSubTicketButton>
               </S.PageHeaderActions>
             </S.PageHeader>
-            {ticket ? (
+            {ticketId ? (
               <div>
                 <ThreadInfo
                   projectName={projectName}

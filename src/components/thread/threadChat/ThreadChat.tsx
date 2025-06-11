@@ -53,6 +53,7 @@ export const ThreadChat = ({
   const mentionedIds = editingMessageId
     ? extractMentionedProjectMemberIds(editContent, projectMembers)
     : extractMentionedProjectMemberIds(newMessage, projectMembers)
+  const [initialMount, setInitialMount] = useState(true)
 
   const isScrollAtBottom = () => {
     const container = containerRef.current
@@ -63,18 +64,27 @@ export const ThreadChat = ({
   }
 
   useEffect(() => {
+    if (initialMount && messages.length > 0) {
+      scrollToBottom()
+      setInitialMount(false)
+      lastMessageRef.current = `${messages[messages.length - 1].senderWorkspaceMemberId}-${messages[messages.length - 1].sentAt}-${messages[messages.length - 1].content}`
+    }
+  }, [messages])
+
+  useEffect(() => {
     if (!messages || messages.length === 0) return
 
     const latestMessage = messages[messages.length - 1]
-    if (latestMessage.isCurrentUser) {
-      scrollToBottom()
-    }
     const messageKey = `${latestMessage.senderWorkspaceMemberId}-${latestMessage.sentAt}-${latestMessage.content}`
-    if (messageKey !== lastMessageRef.current && !latestMessage.isCurrentUser) {
-      console.log("새 메시지 감지:", latestMessage)
 
-      // 스크롤이 맨 아래에 있으면 미리보기를 표시하지 않음
-      if (!isScrollAtBottom()) {
+    const isNewMessage = messageKey !== lastMessageRef.current
+    const isFromOtherUser = !latestMessage.isCurrentUser
+    const atBottom = isScrollAtBottom()
+
+    if (isNewMessage && isFromOtherUser) {
+      if (atBottom) {
+        scrollToBottom()
+      } else {
         setMessagePreview(latestMessage)
         setShowPreview(true)
 
@@ -82,27 +92,16 @@ export const ThreadChat = ({
           setShowPreview(false)
         }, 5000)
 
-        lastMessageRef.current = messageKey
-
         return () => clearTimeout(timer)
-      } else {
-        // 맨 아래에 있으면 미리보기 없이 바로 스크롤
-        scrollToBottom()
       }
 
       lastMessageRef.current = messageKey
-    }
-
-    if (lastMessageRef.current === null) {
+    } else if (isNewMessage) {
+      // 내 메시지일 때는 무조건 스크롤
+      scrollToBottom()
       lastMessageRef.current = messageKey
     }
   }, [messages])
-
-  useEffect(() => {
-    if (showPreview) {
-      console.log("미리보기 표시됨:", messagePreview)
-    }
-  }, [showPreview, messagePreview])
 
   useEffect(() => {
     const match = newMessage.match(/@(\w*)$/)
@@ -204,9 +203,9 @@ export const ThreadChat = ({
   }
 
   const handleEditStart = (message: Message) => {
+    console.log("수정 시작", message)
     setEditingMessageId(message.threadId)
     setEditContent(message.content)
-
     setReplyingTo(null)
   }
 
@@ -260,6 +259,12 @@ export const ThreadChat = ({
       fileInputRef.current.value = ""
     }
   }
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom()
+    }
+  }, [])
 
   return (
     <>
@@ -425,8 +430,6 @@ export const ThreadChat = ({
           onChange={handleFileChange}
           accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
         />
-
-        {/* 자동완성 - 수정 모드가 아닐 때만 표시 */}
         {suggestions.length > 0 && !editingMessageId && (
           <S.SuggestionList>
             {suggestions.map((member) => (
@@ -436,7 +439,6 @@ export const ThreadChat = ({
             ))}
           </S.SuggestionList>
         )}
-
         <S.MessageInputWrapper>
           <S.FileAttachButton onClick={handleFileButtonClick} title="파일 첨부">
             <Paperclip size={16} />
