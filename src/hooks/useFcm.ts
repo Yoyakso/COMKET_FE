@@ -1,59 +1,93 @@
+import { useEffect } from 'react';
 import { messaging } from '@/utils/firebase';
-import { getToken, onMessage } from 'firebase/messaging';
+import { getToken, onMessage, isSupported } from 'firebase/messaging';
+
+type FcmPayload = {
+  title?: string;
+  body?: string;
+  icon?: string;
+  ticketId?: string;
+  projectId?: string;
+  url?: string;
+};
 
 let swRegistration: ServiceWorkerRegistration | null = null;
 
-/** FCM 권한 요청 + 토큰 발급(단 1회) */
+//권한 요청 + FCM 토큰 발급
 export const requestFcmPermission = async (): Promise<string | null> => {
-  if (typeof window === 'undefined' || !('Notification' in window)) {
-    console.warn('브라우저 환경이 아니거나 Notification API 사용 불가');
+  if (typeof window === 'undefined' || !('Notification' in window) || !(await isSupported())) {
+    console.warn('[FCM] 브라우저가 Notification 또는 FCM을 지원하지 않음');
     return null;
   }
 
   try {
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
-      console.warn('알림 권한 거부됨');
+      console.warn('[FCM] 알림 권한 거부됨');
       return null;
     }
 
+    /** 이미 등록된 SW 활용 (vite-plugin-pwa가 `register()` 해 둠) */
     swRegistration = await navigator.serviceWorker.ready;
 
-    /* 반드시 등록된 SW를 넘겨줘야 firebase가 push-scope SW를 또 생성하지 않음 */
     const token = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: swRegistration,
     });
 
-    console.log('FCM token:', token);
+    console.log('[FCM] token:', token);
     return token;
   } catch (err) {
-    console.error('FCM 토큰 발급 실패:', err);
+    console.error('[FCM] 토큰 발급 실패:', err);
     return null;
   }
 };
 
-/** Foreground 수신 */
 export const listenToForegroundMessages = () => {
-  onMessage(messaging, payload => {
-    console.log('foreground message:', payload);
+  const unsubscribe = onMessage(messaging, payload => {
+    console.log('[FCM] foreground message:', payload);
 
-    /* notification + data 없는 pure notification → 브라우저가 이미 토스트 띄움 */
     if (payload.notification && !payload.data) return;
 
-    /* data-only 또는 hybrid(payload.data 포함) */
-    const { title, body, url } = {
+    const data = {
+      icon: '/images/comket192.png',
       ...payload.notification,
       ...payload.data,
-    } as { title?: string; body?: string; url?: string };
+    } as FcmPayload;
+    const { title, body, icon, url, ticketId, projectId } = data;
 
     if (!title || !body) return;
 
-    new Notification(title, {
-      body,
-      icon: '/logo192.png',
-      tag: 'comket-default',
-      data: { url },
-    });
+    const link =
+      url ||
+      (projectId && ticketId
+        ? `https://comket.co.kr/projects/${projectId}/tickets/${ticketId}`
+        : undefined);
+
+    const tag = `comket-fg-${ticketId || Date.now()}`;
+
+    if (Notification.permission === 'granted') {
+      const n = new Notification(title, {
+        body,
+        icon: '/images/comket192.png',
+        tag,
+        data: { url: link },
+      });
+
+      n.onclick = () => {
+        window.focus();
+        if (link) window.location.href = link;
+      };
+    }
   });
+
+  return unsubscribe; // 필요 시 호출측에서 해제
+};
+
+//React Hook ─ 앱 루트에서 1회 호출
+export const useForegroundNotification = () => {
+  useEffect(() => {
+    const off = listenToForegroundMessages();
+    return off; // 컴포넌트 언마운트 시 리스너 해제
+  }, []);
 };

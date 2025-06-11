@@ -5,7 +5,7 @@ export const BannerWrapper = styled.div`
   position: fixed;
   top: 1rem;
   right: 1rem;
-  z-index: 50;
+  z-index: 9999;
   width: 360px;
   background-color: white;
   border-left: 4px solid ${color.teal500};
@@ -77,7 +77,22 @@ export const GhostButton = styled.button`
   padding: 0 12px;
   font-size: 12px;
   background-color: transparent;
-  color: #6b7280;
+  color: ${color.textPlaceholder};
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+`;
+
+export const DangerButton = styled.button`
+  height: 28px;
+  padding: 0 12px;
+  font-size: 12px;
+  background-color: transparent;
+  color: ${color.textPlaceholder};
   border-radius: 6px;
   border: none;
   cursor: pointer;
