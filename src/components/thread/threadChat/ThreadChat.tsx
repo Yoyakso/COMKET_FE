@@ -50,10 +50,17 @@ export const ThreadChat = ({
 
   const [suggestions, setSuggestions] = useState([])
   const [cursorPosition, setCursorPosition] = useState<number | null>(null)
-  // const mentionedIds = extractMentionedProjectMemberIds(newMessage, projectMembers)
   const mentionedIds = editingMessageId
     ? extractMentionedProjectMemberIds(editContent, projectMembers)
     : extractMentionedProjectMemberIds(newMessage, projectMembers)
+
+  const isScrollAtBottom = () => {
+    const container = containerRef.current
+    if (!container) return false
+
+    const threshold = 10
+    return container.scrollTop + container.clientHeight >= container.scrollHeight - threshold
+  }
 
   useEffect(() => {
     if (!messages || messages.length === 0) return
@@ -63,19 +70,27 @@ export const ThreadChat = ({
       scrollToBottom()
     }
     const messageKey = `${latestMessage.senderWorkspaceMemberId}-${latestMessage.sentAt}-${latestMessage.content}`
-
     if (messageKey !== lastMessageRef.current && !latestMessage.isCurrentUser) {
       console.log("새 메시지 감지:", latestMessage)
-      setMessagePreview(latestMessage)
-      setShowPreview(true)
+
+      // 스크롤이 맨 아래에 있으면 미리보기를 표시하지 않음
+      if (!isScrollAtBottom()) {
+        setMessagePreview(latestMessage)
+        setShowPreview(true)
+
+        const timer = setTimeout(() => {
+          setShowPreview(false)
+        }, 5000)
+
+        lastMessageRef.current = messageKey
+
+        return () => clearTimeout(timer)
+      } else {
+        // 맨 아래에 있으면 미리보기 없이 바로 스크롤
+        scrollToBottom()
+      }
 
       lastMessageRef.current = messageKey
-
-      const timer = setTimeout(() => {
-        setShowPreview(false)
-      }, 5000)
-
-      return () => clearTimeout(timer)
     }
 
     if (lastMessageRef.current === null) {
@@ -271,9 +286,11 @@ export const ThreadChat = ({
                 <S.SenderName $isCurrentUser={message.isCurrentUser}>{message.senderName}</S.SenderName>
                 {/* 답글 대상 표시 */}
                 {message.replyTo && (
-                  <S.ReplyReference $isCurrentUser={message.isCurrentUser}>
+                  <S.ReplyReference
+                    $isCurrentUser={message.isCurrentUser}
+                    onClick={() => handleReplyMessageClick(message.replyTo!.threadId)}
+                  >
                     <S.ReplyIcon>↳</S.ReplyIcon>
-
                     <S.ReplyText>
                       <strong>{message.replyTo?.senderName}</strong>:{" "}
                       {message.replyTo?.content?.length > 30
@@ -284,75 +301,71 @@ export const ThreadChat = ({
                 )}
 
                 <S.MessageBubbleContainer $isCurrentUser={message.isCurrentUser}>
-                  <S.MessageBubble
-                    $isCurrentUser={message.isCurrentUser}
-                    $isReply={!!message.replyTo}
-                    onClick={message.replyTo ? () => handleReplyMessageClick(message.replyTo!.threadId) : undefined}
-                  >
+                  <S.MessageBubble $isCurrentUser={message.isCurrentUser} $isReply={!!message.replyTo}>
                     {editingMessageId != null &&
                       editingMessageId === message.threadId &&
-                      message.isCurrentUser &&
-                      !replyingTo ? (
-                      // 수정 모드
-                      <S.EditContainer>
-                        {/* 수정 모드 자동완성 */}
-                        {suggestions.length > 0 && (
-                          <S.EditSuggestionList>
-                            {suggestions.map((member) => (
-                              <S.SuggestionItem
-                                key={member.projectMemberId}
-                                onClick={() => handleSelectSuggestion(member.name)}
-                              >
-                                @{member.name}
-                              </S.SuggestionItem>
-                            ))}
-                          </S.EditSuggestionList>
-                        )}
-                        <S.EditTextarea
-                          value={editContent}
-                          onChange={(e) => setEditContent(e.target.value)}
-                          autoFocus
-                        />
-                        <S.EditActions>
-                          <S.EditActionButton onClick={handleEditSave} $type="save">
-                            <Check size={12} />
-                          </S.EditActionButton>
-                          <S.EditActionButton onClick={handleEditCancel} $type="cancel">
-                            <Cancel size={12} />
-                          </S.EditActionButton>
-                        </S.EditActions>
-                      </S.EditContainer>
-                    ) : (
-                      // 일반 메시지 표시
-                      <S.MessageContentWrapper>
-                        <S.MessageContent
-                          dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(
-                              highlightMentions(marked.parse(message.content || "") as string),
-                            ),
-                          }}
-                        />
-                        {/* 메시지 액션 버튼들 */}
-                        <S.MessageActions $isCurrentUser={message.isCurrentUser}>
-                          {message.isCurrentUser ? (
-                            // 내 메시지: 수정/삭제
-                            <>
-                              <S.ActionButton onClick={() => handleEditStart(message)} title="수정">
-                                <Edit2 size={10} />
-                              </S.ActionButton>
-                              <S.ActionButton onClick={() => handleDelete(message.threadId)} title="삭제">
-                                <Trash2 size={10} />
-                              </S.ActionButton>
-                            </>
-                          ) : (
-                            // 다른 사람 메시지: 답글
-                            <S.ActionButton onClick={() => handleReplyStart(message)} title="답글">
-                              <Reply size={10} />
-                            </S.ActionButton>
+                      message.isCurrentUser ?
+                      (
+                        // 수정 모드
+                        <S.EditContainer>
+                          {/* 수정 모드 자동완성 */}
+                          {suggestions.length > 0 && (
+                            <S.EditSuggestionList>
+                              {suggestions.map((member) => (
+                                <S.SuggestionItem
+                                  key={member.projectMemberId}
+                                  onClick={() => handleSelectSuggestion(member.name)}
+                                >
+                                  @{member.name}
+                                </S.SuggestionItem>
+                              ))}
+                            </S.EditSuggestionList>
                           )}
-                        </S.MessageActions>
-                      </S.MessageContentWrapper>
-                    )}
+                          <S.EditTextarea
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            autoFocus
+                          />
+                          <S.EditActions>
+                            <S.EditActionButton onClick={handleEditSave} $type="save">
+                              <Check size={12} />
+                            </S.EditActionButton>
+                            <S.EditActionButton onClick={handleEditCancel} $type="cancel">
+                              <Cancel size={12} />
+                            </S.EditActionButton>
+                          </S.EditActions>
+                        </S.EditContainer>
+                      ) : (
+                        // 일반 메시지 표시
+                        <S.MessageContentWrapper>
+                          <S.MessageContent
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(
+                                highlightMentions(marked.parse(message.content || "") as string),
+                              ),
+                            }}
+                          />
+                          {/* 메시지 액션 버튼들 */}
+                          <S.MessageActions $isCurrentUser={message.isCurrentUser}>
+                            {message.isCurrentUser ? (
+                              // 내 메시지: 수정/삭제
+                              <>
+                                <S.ActionButton onClick={() => handleEditStart(message)} title="수정">
+                                  <Edit2 size={10} />
+                                </S.ActionButton>
+                                <S.ActionButton onClick={() => handleDelete(message.threadId)} title="삭제">
+                                  <Trash2 size={10} />
+                                </S.ActionButton>
+                              </>
+                            ) : (
+                              // 다른 사람 메시지: 답글
+                              <S.ActionButton onClick={() => handleReplyStart(message)} title="답글">
+                                <Reply size={10} />
+                              </S.ActionButton>
+                            )}
+                          </S.MessageActions>
+                        </S.MessageContentWrapper>
+                      )}
                   </S.MessageBubble>
                   <S.MessageTime $isCurrentUser={message.isCurrentUser}>{formatDateTime(message.sentAt)}</S.MessageTime>
                 </S.MessageBubbleContainer>
