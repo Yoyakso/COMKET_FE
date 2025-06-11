@@ -61,7 +61,7 @@ export const listenToForegroundMessages = () => {
     const link =
       url ||
       (projectId && ticketId
-        ? `https://comket.co.kr/projects/${projectId}/tickets/${ticketId}`
+        ? `https://comket.co.kr/${projectId}/tickets/${ticketId}/thread`
         : undefined);
 
     const tag = `comket-fg-${ticketId || Date.now()}`;

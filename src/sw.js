@@ -20,7 +20,7 @@ messaging.onBackgroundMessage(async payload => {
   const { title, body, ticketId, projectId } = payload.data ?? {};
   if (!title || !body || !ticketId || !projectId) return;
 
-  const url = `https://comket.co.kr/projects/${projectId}/tickets/${ticketId}`;
+  const url = `https://comket.co.kr/${projectId}/tickets/${ticketId}/thread`;
 
   self.registration.showNotification(title, {
     body,
