@@ -17,6 +17,7 @@ export default defineConfig({
       srcDir: 'src',
       filename: 'sw.js',
       injectRegister: 'auto',
+      registerType: 'autoUpdate',
 
       injectManifest: {
         swSrc: 'src/sw.js',
