@@ -22,7 +22,19 @@ interface ThreadChatProps {
   projectMembers: { projectMemberId: number; name: string }[]
 }
 
-export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, onEditMessage, onDeleteMessage, onReplyToMessage, replyingTo, setReplyingTo, onFileUpload, projectMembers }: ThreadChatProps) => {
+export const ThreadChat = ({
+  messages,
+  newMessage,
+  setNewMessage,
+  sendMessage,
+  onEditMessage,
+  onDeleteMessage,
+  onReplyToMessage,
+  replyingTo,
+  setReplyingTo,
+  onFileUpload,
+  projectMembers,
+}: ThreadChatProps) => {
   const messagesEndRef = useRef(null)
   const messageRefs = useRef<{ [key: number]: HTMLDivElement | null }>({})
   const containerRef = useRef<HTMLDivElement>(null)
@@ -33,11 +45,11 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
   const lastMessageRef = useRef<string | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null)
   const [editContent, setEditContent] = useState("")
-  const [highlightedId, setHighlightedId] = useState<number | null>(null);
+  const [highlightedId, setHighlightedId] = useState<number | null>(null)
   const workspaceId = useWorkspaceStore((state) => state.workspaceId)
 
-  const [suggestions, setSuggestions] = useState([]);
-  const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+  const [suggestions, setSuggestions] = useState([])
+  const [cursorPosition, setCursorPosition] = useState<number | null>(null)
   const mentionedIds = extractMentionedProjectMemberIds(newMessage, projectMembers)
 
   useEffect(() => {
@@ -45,7 +57,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
 
     const latestMessage = messages[messages.length - 1]
     if (latestMessage.isCurrentUser) {
-      scrollToBottom();
+      scrollToBottom()
     }
     const messageKey = `${latestMessage.senderWorkspaceMemberId}-${latestMessage.sentAt}-${latestMessage.content}`
 
@@ -75,26 +87,44 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
   }, [showPreview, messagePreview])
 
   useEffect(() => {
-    const match = newMessage.match(/@(\w*)$/);
+    const match = newMessage.match(/@(\w*)$/)
     if (match) {
-      const keyword = match[1].toLowerCase();
-      const filtered = projectMembers.filter((m) =>
-        m.name.toLowerCase().startsWith(keyword)
-      );
-      setSuggestions(filtered);
+      const keyword = match[1].toLowerCase()
+      const filtered = projectMembers.filter((m) => m.name.toLowerCase().startsWith(keyword))
+      setSuggestions(filtered)
     } else {
-      setSuggestions([]);
+      setSuggestions([])
     }
-  }, [newMessage]);
+  }, [newMessage])
+
+  useEffect(() => {
+    const targetText = editingMessageId ? editContent : newMessage
+    const match = targetText.match(/@(\w*)$/)
+
+    if (match) {
+      const keyword = match[1].toLowerCase()
+      const filtered = projectMembers.filter((m) => m.name.toLowerCase().startsWith(keyword))
+      setSuggestions(filtered)
+    } else {
+      setSuggestions([])
+    }
+  }, [newMessage, editContent, editingMessageId])
 
   const handleSelectSuggestion = (memberName: string) => {
-    const newText = newMessage.replace(/@\w*$/, `@${memberName} `);
-    setNewMessage(newText);
-    setSuggestions([]);
-  };
+    const targetText = editingMessageId ? editContent : newMessage
+    const newText = targetText.replace(/@\w*$/, `@${memberName} `)
+
+    if (editingMessageId) {
+      setEditContent(newText)
+    } else {
+      setNewMessage(newText)
+    }
+
+    setSuggestions([])
+  }
 
   const scrollToBottom = () => {
-    const container = containerRef.current;
+    const container = containerRef.current
     if (container) {
       container.scrollTo({
         top: container.scrollHeight,
@@ -104,39 +134,38 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
   }
 
   const scrollToMessage = (threadId: number) => {
-    const el = messageRefs.current[threadId];
+    const el = messageRefs.current[threadId]
 
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setHighlightedId(threadId);
-      setTimeout(() => setHighlightedId(null), 1500);
-
+      el.scrollIntoView({ behavior: "smooth", block: "center" })
+      setHighlightedId(threadId)
+      setTimeout(() => setHighlightedId(null), 1500)
     } else {
-      console.warn('메시지 요소가 존재하지 않음:', threadId);
+      console.warn("메시지 요소가 존재하지 않음:", threadId)
     }
-  };
+  }
 
   const handleSendClick = () => {
-    const trimmed = newMessage.trim();
-    if (!trimmed) return;
+    const trimmed = newMessage.trim()
+    if (!trimmed) return
 
-    sendMessage(mentionedIds);
-    setNewMessage('');
-    setReplyingTo(null);
-    setEditingMessageId(null);
-    setEditContent('');
-  };
+    sendMessage(mentionedIds)
+    setNewMessage("")
+    setReplyingTo(null)
+    setEditingMessageId(null)
+    setEditContent("")
+  }
 
   const highlightMentions = (content: string) => {
-    return content.replace(/@(\S+)/g, '<span class="mention">@$1</span>');
-  };
+    return content.replace(/@(\S+)/g, '<span class="mention">@$1</span>')
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-      e.preventDefault();
-      handleSendClick();
+      e.preventDefault()
+      handleSendClick()
     }
-  };
+  }
 
   const getAvatarImage = (index: number, isCurrentUser: boolean) => {
     if (isCurrentUser) {
@@ -157,42 +186,42 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
   }
 
   const handleEditStart = (message: Message) => {
-    setEditingMessageId(message.threadId);
-    setEditContent(message.content);
+    setEditingMessageId(message.threadId)
+    setEditContent(message.content)
 
-    setReplyingTo(null);
-  };
+    setReplyingTo(null)
+  }
 
   const handleEditSave = () => {
     if (editingMessageId && editContent.trim() && onEditMessage) {
-      onEditMessage(editingMessageId, editContent.trim(), workspaceId);
-      setEditingMessageId(null);
-      setEditContent("");
+      onEditMessage(editingMessageId, editContent.trim(), workspaceId)
+      setEditingMessageId(null)
+      setEditContent("")
     }
-  };
+  }
 
   const handleEditCancel = () => {
-    setEditingMessageId(null);
-    setEditContent("");
-  };
+    setEditingMessageId(null)
+    setEditContent("")
+  }
 
   const handleDelete = (threadId: number) => {
     if (onDeleteMessage && window.confirm("정말 삭제하시겠습니까?")) {
-      onDeleteMessage(threadId, workspaceId);
+      onDeleteMessage(threadId, workspaceId)
     }
-  };
+  }
 
   const handleReplyStart = (message: Message) => {
     setReplyingTo({
       threadId: message.threadId,
       senderName: message.senderName,
       content: message.content,
-    });
-  };
+    })
+  }
 
   const handleCancelReply = () => {
-    setReplyingTo(null);
-  };
+    setReplyingTo(null)
+  }
 
   const handleReplyMessageClick = (replyToThreadId: number) => {
     scrollToMessage(replyToThreadId)
@@ -223,7 +252,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
               key={`${message.sentAt}-${message.senderWorkspaceMemberId}-${index}`}
               $isCurrentUser={message.isCurrentUser}
               ref={(el: HTMLDivElement | null) => {
-                messageRefs.current[message.threadId] = el;
+                messageRefs.current[message.threadId] = el
               }}
               $highLighted={message.threadId === highlightedId}
             >
@@ -256,9 +285,25 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
                     $isReply={!!message.replyTo}
                     onClick={message.replyTo ? () => handleReplyMessageClick(message.replyTo!.threadId) : undefined}
                   >
-                    {editingMessageId != null && editingMessageId === message.threadId && message.isCurrentUser && !replyingTo ? (
+                    {editingMessageId != null &&
+                      editingMessageId === message.threadId &&
+                      message.isCurrentUser &&
+                      !replyingTo ? (
                       // 수정 모드
                       <S.EditContainer>
+                        {/* 수정 모드 자동완성 */}
+                        {suggestions.length > 0 && (
+                          <S.EditSuggestionList>
+                            {suggestions.map((member) => (
+                              <S.SuggestionItem
+                                key={member.projectMemberId}
+                                onClick={() => handleSelectSuggestion(member.name)}
+                              >
+                                @{member.name}
+                              </S.SuggestionItem>
+                            ))}
+                          </S.EditSuggestionList>
+                        )}
                         <S.EditTextarea
                           value={editContent}
                           onChange={(e) => setEditContent(e.target.value)}
@@ -279,7 +324,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
                         <S.MessageContent
                           dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(
-                              highlightMentions(marked.parse(message.content || "") as string)
+                              highlightMentions(marked.parse(message.content || "") as string),
                             ),
                           }}
                         />
@@ -346,14 +391,10 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
               <Reply size={14} />
               <S.ReplyText>
                 <span style={{ color: "#999", fontSize: "12px" }}>
-                  「{replyingTo.content.length > 30
-                    ? `${replyingTo.content.substring(0, 30)}...`
-                    : replyingTo.content
-                  }」
-                  에 대한 답글
+                  「{replyingTo.content.length > 30 ? `${replyingTo.content.substring(0, 30)}...` : replyingTo.content}
+                  」 에 대한 답글
                 </span>
               </S.ReplyText>
-
             </S.ReplyingToContent>
             <S.CancelReplyButton onClick={handleCancelReply}>
               <X size={14} />
@@ -367,18 +408,18 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
           onChange={handleFileChange}
           accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
         />
-        {suggestions.length > 0 && (
+
+        {/* 자동완성 - 수정 모드가 아닐 때만 표시 */}
+        {suggestions.length > 0 && !editingMessageId && (
           <S.SuggestionList>
             {suggestions.map((member) => (
-              <S.SuggestionItem
-                key={member.projectMemberId}
-                onClick={() => handleSelectSuggestion(member.name)}
-              >
+              <S.SuggestionItem key={member.projectMemberId} onClick={() => handleSelectSuggestion(member.name)}>
                 @{member.name}
               </S.SuggestionItem>
             ))}
           </S.SuggestionList>
         )}
+
         <S.MessageInputWrapper>
           <S.FileAttachButton onClick={handleFileButtonClick} title="파일 첨부">
             <Paperclip size={16} />
