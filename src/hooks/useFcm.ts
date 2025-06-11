@@ -45,8 +45,6 @@ export const requestFcmPermission = async (): Promise<string | null> => {
 
 export const listenToForegroundMessages = () => {
   const unsubscribe = onMessage(messaging, payload => {
-    console.log('[FCM] foreground message:', payload);
-
     if (payload.notification && !payload.data) return;
 
     const data = {
@@ -58,11 +56,13 @@ export const listenToForegroundMessages = () => {
     const { title, body, icon, url, ticketId, projectId, workspaceId, alarmType } = data;
 
     if (!title || !body) return;
-
     let link: string | undefined = url;
 
-    //alarmType 기준 fallback 링크 설정
+    // alarmType 기준 fallback 링크 설정
     if (!link) {
+      const isDev = window.location.hostname === 'localhost';
+      const baseUrl = isDev ? 'http://localhost:3333' : 'https://comket.co.kr';
+
       switch (alarmType) {
         case 'TICKET_ASSIGNED':
         case 'TICKET_STATE_CHANGED':
@@ -71,15 +71,18 @@ export const listenToForegroundMessages = () => {
         case 'THREAD_MENTIONED':
         case 'TICKET_DATE_CHANGED':
           if (projectId && ticketId)
-            link = `https://comket.co.kr/${projectId}/tickets/${ticketId}/thread`;
+            link = `${baseUrl}/${projectId}/tickets/${ticketId}/thread`;
+          else if (projectId)
+            link = `${baseUrl}/${projectId}/tickets`;
+          console.log('[FCM] foreground message link:', link);
           break;
 
         case 'PROJECT_INVITE':
-          if (projectId) link = `https://comket.co.kr/${projectId}/tickets`; // or project detail if 있음
+          if (projectId) link = `${baseUrl}/${projectId}/tickets`;
           break;
 
         case 'WORKSPACE_INVITE':
-          link = `https://comket.co.kr/workspace`;
+          link = `${baseUrl}/workspace`;
           break;
 
         case 'WORKSPACE_POSITIONTYPE_CHANGED':

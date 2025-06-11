@@ -13,11 +13,14 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
-
 // 알림 데이터 → 링크 변환 함수
 const buildUrlFromPayload = data => {
   const { ticketId, projectId, workspaceId, alarmType, url } = data || {};
   if (url) return url;
+
+  // 환경 분기: 개발(local) vs 운영
+  const isDev = self.location.hostname === 'localhost';
+  const baseUrl = isDev ? 'http://localhost:3333' : 'https://comket.co.kr';
 
   switch (alarmType) {
     case 'TICKET_ASSIGNED':
@@ -27,15 +30,15 @@ const buildUrlFromPayload = data => {
     case 'THREAD_MENTIONED':
     case 'TICKET_DATE_CHANGED':
       if (projectId && ticketId)
-        return `https://comket.co.kr/${projectId}/tickets/${ticketId}/thread`;
+        return `${baseUrl}/${projectId}/tickets/${ticketId}/thread`;
       break;
 
     case 'PROJECT_INVITE':
-      if (projectId) return `https://comket.co.kr/${projectId}/tickets`;
+      if (projectId) return `${baseUrl}/${projectId}/tickets`;
       break;
 
     case 'WORKSPACE_INVITE':
-      return `https://comket.co.kr/workspace`;
+      return `${baseUrl}/workspace`;
 
     case 'WORKSPACE_POSITIONTYPE_CHANGED':
       return null;
