@@ -53,23 +53,49 @@ export const listenToForegroundMessages = () => {
       icon: '/images/comket192.png',
       ...payload.notification,
       ...payload.data,
-    } as FcmPayload;
-    const { title, body, icon, url, ticketId, projectId } = data;
+    } as FcmPayload & { alarmType?: string; workspaceId?: string };
+
+    const { title, body, icon, url, ticketId, projectId, workspaceId, alarmType } = data;
 
     if (!title || !body) return;
 
-    const link =
-      url ||
-      (projectId && ticketId
-        ? `https://comket.co.kr/${projectId}/tickets/${ticketId}/thread`
-        : undefined);
+    let link: string | undefined = url;
+
+    //alarmType 기준 fallback 링크 설정
+    if (!link) {
+      switch (alarmType) {
+        case 'TICKET_ASSIGNED':
+        case 'TICKET_STATE_CHANGED':
+        case 'TICKET_NAME_CHANGED':
+        case 'TICKET_PRIORITY_CHANGED':
+        case 'TICKET_DATE_CHANGED':
+          if (projectId && ticketId)
+            link = `https://comket.co.kr/${projectId}/tickets/${ticketId}/thread`;
+          break;
+
+        case 'PROJECT_INVITE':
+          if (projectId) link = `https://comket.co.kr/${projectId}/tickets`; // or project detail if 있음
+          break;
+
+        case 'WORKSPACE_INVITE':
+          link = `https://comket.co.kr/workspace`;
+          break;
+
+        case 'WORKSPACE_POSITIONTYPE_CHANGED':
+          link = undefined;
+          break;
+
+        default:
+          link = undefined;
+      }
+    }
 
     const tag = `comket-fg-${ticketId || Date.now()}`;
 
     if (Notification.permission === 'granted') {
       const n = new Notification(title, {
         body,
-        icon: '/images/comket192.png',
+        icon: icon || '/images/comket192.png',
         tag,
         data: { url: link },
       });
@@ -81,7 +107,7 @@ export const listenToForegroundMessages = () => {
     }
   });
 
-  return unsubscribe; // 필요 시 호출측에서 해제
+  return unsubscribe;
 };
 
 //React Hook ─ 앱 루트에서 1회 호출
