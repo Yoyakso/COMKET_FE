@@ -373,6 +373,7 @@ export const EditContainer = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  position: relative;
 `
 
 export const EditTextarea = styled.textarea`
@@ -521,21 +522,6 @@ export const CancelReplyButton = styled.button`
   }
 `
 
-export const SuggestionList = styled.ul`
-  position: absolute;
-  bottom: 60px;
-  left: 12px;
-  width: 240px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  z-index: 10;
-  list-style: none;
-  padding: 8px 0;
-  margin: 0;
-`
-
 export const SuggestionItem = styled.li`
   padding: 8px 12px;
   cursor: pointer;
@@ -545,4 +531,34 @@ export const SuggestionItem = styled.li`
   &:hover {
     background-color: #f3f4f6;
   }
+`
+
+export const SuggestionList = styled.ul<{ $isEditMode?: boolean }>`
+  position: absolute;
+  ${(props) => (props.$isEditMode ? "bottom: 100%; margin-bottom: 4px;" : "bottom: 60px; left: 12px;")}
+  width: 240px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  z-index: 15;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+`
+
+export const EditSuggestionList = styled.ul`
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 4px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  z-index: 20;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
 `
