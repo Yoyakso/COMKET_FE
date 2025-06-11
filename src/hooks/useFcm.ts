@@ -68,6 +68,7 @@ export const listenToForegroundMessages = () => {
         case 'TICKET_STATE_CHANGED':
         case 'TICKET_NAME_CHANGED':
         case 'TICKET_PRIORITY_CHANGED':
+        case 'THREAD_MENTIONED':
         case 'TICKET_DATE_CHANGED':
           if (projectId && ticketId)
             link = `https://comket.co.kr/${projectId}/tickets/${ticketId}/thread`;

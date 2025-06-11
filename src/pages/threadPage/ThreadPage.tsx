@@ -43,7 +43,9 @@ export const ThreadPage = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null)
   const [replyingTo, setReplyingTo] = useState<{ threadId: number; senderName: string; content: string } | null>(null)
   const [isFileUploading, setIsFileUploading] = useState(false)
-  const [projectMembers, setProjectMembers] = useState<{ projectMemberId: number; name: string; workspaceMemberId: number; profileUri: string }[]>([])
+  const [projectMembers, setProjectMembers] = useState<
+    { projectMemberId: number; name: string; workspaceMemberId: number; profileUri: string }[]
+  >([])
   const mentionedIds = extractMentionedProjectMemberIds(newMessage, projectMembers)
 
   useEffect(() => {
@@ -195,11 +197,11 @@ export const ThreadPage = () => {
     try {
       const category = "THREAD_FILE"
       const uploadResult = await uploadProfileImage(file, category)
-      const fileId = uploadResult.fileId;
+      const fileId = uploadResult.fileId
 
-      const fileInfo = await getFileById(fileId);
-      const fileUrl = fileInfo.fileUrl;
-      const fileMessage = `📎 ${file.name}\n[파일 다운로드](${fileUrl})`;
+      const fileInfo = await getFileById(fileId)
+      const fileUrl = fileInfo.fileUrl
+      const fileMessage = `📎 ${file.name}\n[파일 다운로드](${fileUrl})`
 
       const now = new Date()
       const sentAt = now.toISOString().slice(0, 19)
@@ -348,9 +350,14 @@ export const ThreadPage = () => {
     navigate(-1)
   }
 
-  const handleEditMessage = async (threadId: number, newContent: string, workspaceId: number) => {
+  const handleEditMessage = async (
+    threadId: number,
+    newContent: string,
+    workspaceId: number,
+    mentionedProjectMemberIds: number[],
+  ) => {
     try {
-      await editThreadMesaage(Number(threadId), memberId, newContent, workspaceId)
+      await editThreadMesaage(Number(threadId), memberId, newContent, workspaceId, mentionedProjectMemberIds)
       setThreadMessages((prev) =>
         prev.map((msg) => (msg.threadId === threadId ? { ...msg, content: newContent, isModified: true } : msg)),
       )

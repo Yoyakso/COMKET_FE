@@ -9,13 +9,14 @@ import axiosInstance from "./axiosInstance";
  * @returns 수정된 메시지에 대한 서버 응답 데이터
  * @throws 서버 요청 실패 시 예외 발생
  */
-export const editThreadMesaage = async (threadId: number, senderWorkspaceMemberId: number, content: string, workspaceId: number) => {
+export const editThreadMesaage = async (threadId: number, senderWorkspaceMemberId: number, content: string, workspaceId: number, mentionedProjectMemberIds: number[]) => {
   try {
     const response = await axiosInstance.patch(`/api/v1/thread/edit`, {
       threadId,
       senderWorkspaceMemberId,
       content,
       workspaceId,
+      mentionedProjectMemberIds,
     });
     return response.data;
   } catch (error) {
