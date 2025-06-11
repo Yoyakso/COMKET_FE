@@ -13,7 +13,7 @@ interface ThreadChatProps {
   newMessage: string
   setNewMessage: (message: string) => void
   sendMessage: (mentionedMemberIds: number[]) => void
-  onEditMessage?: (threadId: number, newContent: string, workspaceId: number) => void
+  onEditMessage?: (threadId: number, newContent: string, workspaceId: number, mentionedMemberIds: number[]) => void
   onDeleteMessage?: (threadId: number, workspaceId: number) => void
   onReplyToMessage?: (replyTo: { threadId: number; senderName: string; content: string }) => void
   replyingTo: { threadId: number; senderName: string; content: string } | null
@@ -50,7 +50,10 @@ export const ThreadChat = ({
 
   const [suggestions, setSuggestions] = useState([])
   const [cursorPosition, setCursorPosition] = useState<number | null>(null)
-  const mentionedIds = extractMentionedProjectMemberIds(newMessage, projectMembers)
+  // const mentionedIds = extractMentionedProjectMemberIds(newMessage, projectMembers)
+  const mentionedIds = editingMessageId
+    ? extractMentionedProjectMemberIds(editContent, projectMembers)
+    : extractMentionedProjectMemberIds(newMessage, projectMembers)
 
   useEffect(() => {
     if (!messages || messages.length === 0) return
@@ -194,7 +197,8 @@ export const ThreadChat = ({
 
   const handleEditSave = () => {
     if (editingMessageId && editContent.trim() && onEditMessage) {
-      onEditMessage(editingMessageId, editContent.trim(), workspaceId)
+      const editMentionedIds = extractMentionedProjectMemberIds(editContent, projectMembers)
+      onEditMessage(editingMessageId, editContent.trim(), workspaceId, editMentionedIds)
       setEditingMessageId(null)
       setEditContent("")
     }
