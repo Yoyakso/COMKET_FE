@@ -1,7 +1,13 @@
 import * as S from './PaymentModal.Style';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/common/button/Button';
 import { X } from 'lucide-react';
+
+declare global {
+  interface Window {
+    IMP: any;
+  }
+}
 
 interface PaymentModalProps {
   selectedPlan: {
@@ -31,6 +37,37 @@ export const PaymentModal = ({ selectedPlan, onClose, onConfirm }: PaymentModalP
   const [selectedYear, setSelectedYear] = useState('2024');
   const [cardholderName, setCardholderName] = useState('');
   const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    if (window.IMP) {
+      window.IMP.init('imp53325701'); // 너희 imp 식별코드
+    }
+  }, []);
+
+  const handlePayment = () => {
+    window.IMP.request_pay(
+      {
+        pg: 'kakaopay.TCSUBSCRIP', // 정기결제 PG사+CID
+        pay_method: 'card',
+        merchant_uid: `comket_${new Date().getTime()}`, // 주문번호
+        name: selectedPlan.name,
+        amount: 0, // 최초 billing_key 발급 시 amount는 0원 (카드 등록만)
+        customer_uid: 'user1234', // 유저별 고유값 (DB 기준으로 생성해서 백엔드 전달)
+        buyer_email: 'example@comket.com',
+        buyer_name: '홍길동',
+      },
+      (rsp: any) => {
+        if (rsp.success) {
+          alert('카드 등록 완료');
+          console.log('카드등록 응답:', rsp);
+
+          // rsp.customer_uid와 billing_key를 백엔드에 저장 요청
+        } else {
+          alert('카드 등록 실패: ' + rsp.error_msg);
+        }
+      },
+    );
+  };
 
   const handleCardChange = (value: string, index: number) => {
     if (!cardTouched) setCardTouched(true);
