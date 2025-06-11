@@ -42,7 +42,7 @@ export const ThreadPage = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TicketTemplate | null>(null)
   const [replyingTo, setReplyingTo] = useState<{ threadId: number; senderName: string; content: string } | null>(null)
   const [isFileUploading, setIsFileUploading] = useState(false)
-  const [projectMembers, setProjectMembers] = useState<any[]>([])
+  const [projectMembers, setProjectMembers] = useState<{ projectMemberId: number; name: string; workspaceMemberId: number; profileUri: string }[]>([])
 
   useEffect(() => {
     if (ticketId && projectName) {
@@ -262,7 +262,7 @@ export const ThreadPage = () => {
     }
   }
 
-  const sendMessage = () => {
+  const sendMessage = (mentionedProjectMemberIds: number[]) => {
     if (!newMessage.trim()) return
 
     const now = new Date()
@@ -317,6 +317,7 @@ export const ThreadPage = () => {
         senderName: memberName,
         content: newMessage,
         sentAt,
+        mentionedProjectMemberIds,
       }
 
       const uiMessage: Message = {
@@ -413,7 +414,6 @@ export const ThreadPage = () => {
             <S.ContentBody>
               <S.LeftColumn>
                 <ThreadChat
-                  // messages={threadMessages}
                   messages={enrichedMessages}
                   newMessage={newMessage}
                   setNewMessage={setNewMessage}
@@ -424,6 +424,7 @@ export const ThreadPage = () => {
                   onFileUpload={handleFileUpload}
                   setReplyingTo={setReplyingTo}
                   replyingTo={replyingTo}
+                  projectMembers={projectMembers}
                 />
               </S.LeftColumn>
 

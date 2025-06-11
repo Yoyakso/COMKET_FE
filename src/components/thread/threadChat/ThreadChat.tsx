@@ -11,16 +11,17 @@ interface ThreadChatProps {
   messages: Message[]
   newMessage: string
   setNewMessage: (message: string) => void
-  sendMessage: () => void
+  sendMessage: (mentionedMemberIds: number[]) => void
   onEditMessage?: (threadId: number, newContent: string, workspaceId: number) => void
   onDeleteMessage?: (threadId: number, workspaceId: number) => void
   onReplyToMessage?: (replyTo: { threadId: number; senderName: string; content: string }) => void
   replyingTo: { threadId: number; senderName: string; content: string } | null
   setReplyingTo: (v: { threadId: number; senderName: string; content: string } | null) => void
   onFileUpload?: (file: File) => void
+  projectMembers: { projectMemberId: number; name: string }[]
 }
 
-export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, onEditMessage, onDeleteMessage, onReplyToMessage, replyingTo, setReplyingTo, onFileUpload }: ThreadChatProps) => {
+export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, onEditMessage, onDeleteMessage, onReplyToMessage, replyingTo, setReplyingTo, onFileUpload, projectMembers }: ThreadChatProps) => {
   const messagesEndRef = useRef(null)
   const messageRefs = useRef<{ [key: number]: HTMLDivElement | null }>({})
   const containerRef = useRef<HTMLDivElement>(null)
@@ -33,6 +34,9 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
   const [editContent, setEditContent] = useState("")
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const workspaceId = useWorkspaceStore((state) => state.workspaceId)
+
+  const [suggestions, setSuggestions] = useState([]);
+  const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
   useEffect(() => {
     if (!messages || messages.length === 0) return
@@ -68,6 +72,27 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     }
   }, [showPreview, messagePreview])
 
+
+
+  useEffect(() => {
+    const match = newMessage.match(/@(\w*)$/);
+    if (match) {
+      const keyword = match[1].toLowerCase();
+      const filtered = projectMembers.filter((m) =>
+        m.name.toLowerCase().startsWith(keyword)
+      );
+      setSuggestions(filtered);
+    } else {
+      setSuggestions([]);
+    }
+  }, [newMessage]);
+
+  const handleSelectSuggestion = (memberName: string) => {
+    const newText = newMessage.replace(/@\w*$/, `@${memberName} `);
+    setNewMessage(newText);
+    setSuggestions([]);
+  };
+
   const scrollToBottom = () => {
     const container = containerRef.current;
     if (container) {
@@ -91,15 +116,34 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     }
   };
 
+  const extractMentionedIds = (message: string): number[] => {
+    const mentionRegex = /@(\S+)/g;
+    const mentionedNames = [...message.matchAll(mentionRegex)].map((m) => m[1]);
+    const mentionedSet = new Set<number>(); // 중복 제거
+
+    mentionedNames.forEach((name) => {
+      const matchedMember = projectMembers.find((m) => m.name === name);
+      if (matchedMember) mentionedSet.add(matchedMember.projectMemberId);
+    });
+
+    return Array.from(mentionedSet);
+  };
+
   const handleSendClick = () => {
     const trimmed = newMessage.trim();
     if (!trimmed) return;
 
-    sendMessage();
+    const mentionedIds = extractMentionedIds(newMessage);
+
+    sendMessage(mentionedIds);
     setNewMessage('');
     setReplyingTo(null);
     setEditingMessageId(null);
     setEditContent('');
+  };
+
+  const highlightMentions = (content: string) => {
+    return content.replace(/@(\S+)/g, '<span class="mention">@$1</span>');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -249,7 +293,9 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
                       <S.MessageContentWrapper>
                         <S.MessageContent
                           dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(marked.parse(message.content || "") as string),
+                            __html: DOMPurify.sanitize(
+                              highlightMentions(marked.parse(message.content || "") as string)
+                            ),
                           }}
                         />
                         {/* 메시지 액션 버튼들 */}
@@ -336,6 +382,18 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
           onChange={handleFileChange}
           accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
         />
+        {suggestions.length > 0 && (
+          <S.SuggestionList>
+            {suggestions.map((member) => (
+              <S.SuggestionItem
+                key={member.projectMemberId}
+                onClick={() => handleSelectSuggestion(member.name)}
+              >
+                @{member.name}
+              </S.SuggestionItem>
+            ))}
+          </S.SuggestionList>
+        )}
         <S.MessageInputWrapper>
           <S.FileAttachButton onClick={handleFileButtonClick} title="파일 첨부">
             <Paperclip size={16} />
