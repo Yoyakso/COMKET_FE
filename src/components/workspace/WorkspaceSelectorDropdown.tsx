@@ -86,6 +86,7 @@ export const WorkspaceSelectorDropdown = ({ triggerRef, close }: Props) => {
             <S.Item onClick={() => window.open(`/${workspaceSlug}/plan`)}>플랜 관리</S.Item>
             <S.Item onClick={() => window.open(`/${workspaceSlug}/member`)}>멤버 관리</S.Item>
             <S.Item onClick={() => window.open(`/${workspaceSlug}/project`)}>프로젝트 관리</S.Item>
+            <S.Item onClick={() => window.open(`/contact`)}>문의하기</S.Item>
 
             <S.Divider />
 

@@ -162,6 +162,13 @@ export const MessageContent = styled.p`
   line-height: 1.4;
   word-break: break-word;
   margin: 0;
+
+  .mention {
+    color: #10b981;
+    background-color: #ecfdf5;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
 `
 
 export const MessageTime = styled.span<{ $isCurrentUser: boolean }>`
@@ -511,5 +518,31 @@ export const CancelReplyButton = styled.button`
   &:hover {
     background-color: #e5e7eb;
     color: ${color.basic700};
+  }
+`
+
+export const SuggestionList = styled.ul`
+  position: absolute;
+  bottom: 60px;
+  left: 12px;
+  width: 240px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+`
+
+export const SuggestionItem = styled.li`
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+
+  &:hover {
+    background-color: #f3f4f6;
   }
 `

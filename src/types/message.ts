@@ -16,5 +16,6 @@ export interface Message {
     content: string
     profileFileUri?: string | null
   }
+  mentionedProjectMemberIds?: number[]
 }
 

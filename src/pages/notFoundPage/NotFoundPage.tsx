@@ -76,10 +76,10 @@ export const NotFoundPage = () => {
               <S.HelpTitle>도움이 필요하신가요?</S.HelpTitle>
               <S.HelpLinks>
                 <S.HelpLink href="/contact">문의하기</S.HelpLink>
-                <S.HelpDivider>•</S.HelpDivider>
+                {/* <S.HelpDivider>•</S.HelpDivider>
                 <S.HelpLink href="/support">고객지원</S.HelpLink>
                 <S.HelpDivider>•</S.HelpDivider>
-                <S.HelpLink href="/docs">도움말</S.HelpLink>
+                <S.HelpLink href="/docs">도움말</S.HelpLink> */}
               </S.HelpLinks>
             </S.HelpSection>
           </S.TextContent>

@@ -26,6 +26,7 @@ import { MainPage } from './pages/mainPage/MainPage';
 import { PlanPage } from './pages/planPage/PlanPage';
 import { NotFoundPage } from './pages/notFoundPage/NotFoundPage';
 import { BillingPage } from './pages/billingPage/BillingPage';
+import { ContactPage } from './pages/contactPage/ContactPage';
 
 export const Router = createBrowserRouter([
   {
@@ -148,6 +149,10 @@ export const Router = createBrowserRouter([
         path: '*',
         element: <NotFoundPage />,
       },
+      {
+        path: 'contact',
+        element: <ContactPage />,
+      }
     ],
   },
 ]);

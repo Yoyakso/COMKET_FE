@@ -69,6 +69,7 @@ export const replyThreadMesaage = async (params: {
   reply: string
   sentAt: string
   workspaceId: number
+  mentionedProjectMemberIds: number[]
 }) => {
   try {
     const response = await axiosInstance.post(`/api/v1/thread/reply`, params);
