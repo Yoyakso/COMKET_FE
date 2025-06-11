@@ -6,6 +6,7 @@ import type { Message } from "@/types/message"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
 import { marked } from "marked"
 import DOMPurify from "dompurify"
+import { extractMentionedProjectMemberIds } from "@/utils/mentionUtils"
 
 interface ThreadChatProps {
   messages: Message[]
@@ -37,6 +38,7 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
 
   const [suggestions, setSuggestions] = useState([]);
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+  const mentionedIds = extractMentionedProjectMemberIds(newMessage, projectMembers)
 
   useEffect(() => {
     if (!messages || messages.length === 0) return
@@ -71,8 +73,6 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
       console.log("미리보기 표시됨:", messagePreview)
     }
   }, [showPreview, messagePreview])
-
-
 
   useEffect(() => {
     const match = newMessage.match(/@(\w*)$/);
@@ -116,24 +116,9 @@ export const ThreadChat = ({ messages, newMessage, setNewMessage, sendMessage, o
     }
   };
 
-  const extractMentionedIds = (message: string): number[] => {
-    const mentionRegex = /@(\S+)/g;
-    const mentionedNames = [...message.matchAll(mentionRegex)].map((m) => m[1]);
-    const mentionedSet = new Set<number>(); // 중복 제거
-
-    mentionedNames.forEach((name) => {
-      const matchedMember = projectMembers.find((m) => m.name === name);
-      if (matchedMember) mentionedSet.add(matchedMember.projectMemberId);
-    });
-
-    return Array.from(mentionedSet);
-  };
-
   const handleSendClick = () => {
     const trimmed = newMessage.trim();
     if (!trimmed) return;
-
-    const mentionedIds = extractMentionedIds(newMessage);
 
     sendMessage(mentionedIds);
     setNewMessage('');

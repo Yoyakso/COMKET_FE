@@ -21,6 +21,7 @@ import { toast } from "react-toastify"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
 import { uploadProfileImage } from "@/api/Workspace"
 import { getProjectMembers } from "@/api/Project"
+import { extractMentionedProjectMemberIds } from "@/utils/mentionUtils"
 
 export const ThreadPage = () => {
   const { projectId, ticketId } = useParams<{ projectId: string; ticketId: string }>()
@@ -43,6 +44,7 @@ export const ThreadPage = () => {
   const [replyingTo, setReplyingTo] = useState<{ threadId: number; senderName: string; content: string } | null>(null)
   const [isFileUploading, setIsFileUploading] = useState(false)
   const [projectMembers, setProjectMembers] = useState<{ projectMemberId: number; name: string; workspaceMemberId: number; profileUri: string }[]>([])
+  const mentionedIds = extractMentionedProjectMemberIds(newMessage, projectMembers)
 
   useEffect(() => {
     if (ticketId && projectName) {
@@ -216,6 +218,7 @@ export const ThreadPage = () => {
             senderName: replyingTo.senderName,
             content: replyingTo.content,
           },
+          mentionedProjectMemberIds: mentionedIds,
         }
 
         setThreadMessages((prev) => [...prev, replyMessage])
@@ -228,6 +231,7 @@ export const ThreadPage = () => {
           reply: fileMessage,
           sentAt,
           workspaceId: workspaceId,
+          mentionedProjectMemberIds: mentionedIds,
         })
 
         setReplyingTo(null)
@@ -293,6 +297,7 @@ export const ThreadPage = () => {
         reply: newMessage,
         sentAt,
         workspaceId: workspaceId,
+        mentionedProjectMemberIds: mentionedIds,
       })
         .then(() => {
           console.log("답글 전송 성공")
