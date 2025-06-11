@@ -1,9 +1,9 @@
-import type React from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Mail, Phone, MapPin, Clock, Send, MessageSquare, ArrowRight } from "lucide-react"
 import * as S from "./ContactPage.Style"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
+import { createInquiry } from "@/api/Inquiry"
 
 export const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -28,21 +28,34 @@ export const ContactPage = () => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // 실제 폼 제출 로직
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      await createInquiry({
+        name: formData.name,
+        email: formData.email,
+        inquiry_type: formData.subject.toUpperCase() as
+          | "PRODUCT"
+          | "PRICING"
+          | "TECHNICAL"
+          | "PARTNERSHIP"
+          | "OTHER",
+        message: formData.message,
+      })
 
-    setIsSubmitting(false)
-    // 성공 메시지 표시 로직
-    alert("문의가 성공적으로 전송되었습니다!")
+      alert("문의가 성공적으로 전송되었습니다!")
 
-    // 폼 초기화
-    setFormData({
-      name: "",
-      email: "",
-      company: "",
-      subject: "",
-      message: "",
-    })
+      setFormData({
+        name: "",
+        email: "",
+        company: "",
+        subject: "",
+        message: "",
+      })
+    } catch (error) {
+      console.error("문의 전송 실패:", error)
+      alert("문의 전송에 실패했습니다. 다시 시도해주세요.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const contactInfo = [

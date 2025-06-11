@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { PriorityBadge } from "@/components/ticket/PriorityBadge"
 import { useState, useEffect, useMemo } from "react"
 import { toast } from "react-toastify"
-import { editSingleTicket, getTicketById } from "@/api/Ticket"
+import { editSingleTicket, getTicketById, getTicketByProjectId } from "@/api/Ticket"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { getProjectMembers } from "@/api/Project"
 import { useWorkspaceStore } from "@/stores/workspaceStore"
@@ -43,8 +43,10 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
     isError,
   } = useQuery({
     queryKey: ["ticket", ticketId],
-    queryFn: () => getTicketById(Number(ticketId), projectName),
-    enabled: !!ticketId && !!projectName,
+    queryFn: async () => {
+      return getTicketByProjectId(Number(ticketId), Number(projectId));
+    },
+    enabled: !!ticketId && !!projectId,
     select: (data: any) => ({
       ...data,
       title: data.ticket_name,
@@ -56,7 +58,7 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
       parentId: data.parent_ticket_id,
       subtickets: data.subtickets || [],
     }),
-  })
+  });
 
   const { workspaceName } = useWorkspaceStore()
   const {
@@ -105,18 +107,35 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
         ...editedTicket,
         additional_info: editedAdditionalInfo,
       }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] })
+    // onSuccess: async () => {
+    //   await queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] })
 
-      const updatedRaw = await getTicketById(Number(ticketId), projectName);
+    //   // const updatedRaw = await getTicketById(Number(ticketId), projectName);
+    //   const updatedRaw = projectName
+    //     ? await getTicketById(Number(ticketId), projectName)
+    //     : await getTicketByProjectId(Number(ticketId), Number(projectId));
+
+    //   const mapped = mapTicketFromResponse(updatedRaw);
+
+    //   onUpdateTicket?.(mapped);
+    //   if (mapped.additional_info) {
+    //     setEditedAdditionalInfo({ ...mapped.additional_info });
+    //   }
+    //   setIsEditMode(false)
+    //   toast.success("정보가 수정되었습니다.")
+    // },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
+
+      const updatedRaw = await getTicketByProjectId(Number(ticketId), Number(projectId));
       const mapped = mapTicketFromResponse(updatedRaw);
 
       onUpdateTicket?.(mapped);
       if (mapped.additional_info) {
         setEditedAdditionalInfo({ ...mapped.additional_info });
       }
-      setIsEditMode(false)
-      toast.success("정보가 수정되었습니다.")
+      setIsEditMode(false);
+      toast.success("정보가 수정되었습니다.");
     },
 
     onError: () => {
