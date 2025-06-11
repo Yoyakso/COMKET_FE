@@ -2,8 +2,6 @@ import { ChevronDown, COMKET, InfoIcon, QuestionIcon } from '@assets/icons';
 import { useNavigate } from 'react-router-dom';
 import * as S from './GlobalNavBar.Style';
 import { WorkspaceSelector } from './WorkspaceSelector';
-import { NavProfile } from './NavProfile';
-import { useUserStore } from '@/stores/userStore';
 import { PrimaryButton } from '@/components/common/button/PrimaryButton';
 
 type GNBVariant = 'default' | 'white' | 'workspace';
@@ -39,7 +37,7 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
 
       {variant === 'default' && (
         <S.NavLinks>
-          <S.NavLink href="#">서비스 소개</S.NavLink>
+          <S.NavLink href="main">서비스 소개</S.NavLink>
           <S.NavLink href="/plan">이용 요금</S.NavLink>
         </S.NavLinks>
       )}

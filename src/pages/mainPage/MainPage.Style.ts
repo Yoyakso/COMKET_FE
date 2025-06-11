@@ -43,6 +43,9 @@ export const Container = styled.div`
 export const HeaderWrapper = styled.header`
   width: 100%;
   background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 `
 
 export const Main = styled.main`
