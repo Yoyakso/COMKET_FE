@@ -5,7 +5,7 @@ export const Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: 32px;
-  max-width: 320px;
+  max-width: 360px;
 `;
 
 export const Card = styled.article`
@@ -14,7 +14,6 @@ export const Card = styled.article`
   border-radius: 16px;
   box-shadow: 0 4px 10px rgba(16, 24, 40, 0.05);
   padding: 32px 28px;
-  min-height: 320px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -22,17 +21,6 @@ export const Card = styled.article`
 
 export const Header = styled.header`
   margin-bottom: 20px;
-`;
-
-export const HeaderWithIcon = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-
-  svg {
-    color: ${color.basic500};
-  }
 `;
 
 export const Heading = styled.h2`
@@ -110,7 +98,7 @@ export const InfoLine = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 0;
+  padding: 10px 10px;
   font-size: 14px;
   color: ${color.basic700};
 
@@ -123,11 +111,52 @@ export const InfoLabel = styled.span`
   flex-shrink: 0;
   width: 96px;
   font-weight: 400;
-  color: ${color.basic600};
+  color: ${color.textPrimary};
 `;
 
 export const InfoValue = styled.span`
   font-weight: 600;
+  color: ${color.basic900};
+  padding-left: 90px;
+`;
+
+export const ExpectedPrice = styled.section`
+  margin-top: 24px;
+`;
+
+export const Title = styled.h4`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${color.basic800};
+  margin-bottom: 12px;
+`;
+
+export const ExpectedPriceContainer = styled.div`
+  background: ${color.basic100};
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 14px;
+`;
+
+export const ExpectedPriceRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+`;
+
+export const RowDivider = styled.hr`
+  border: none;
+  border-top: 1px dashed ${color.basic300};
+  margin: 12px 0;
+`;
+
+export const Label = styled.span`
+  color: ${color.basic600};
+`;
+
+export const Value = styled.span<{ strong?: boolean }>`
+  font-weight: ${({ strong }) => (strong ? 800 : 500)};
   color: ${color.basic900};
 `;
 
@@ -144,6 +173,40 @@ export const UpgradeNotice = styled.p`
   color: ${color.error};
   text-align: center;
 `;
+
+export const BadgeRegistered = styled.span`
+  background: ${color.teal500};
+  color: white;
+  font-weight: 500;
+  padding: 2px 10px;
+  font-size: 14px;
+  border-radius: 999px;
+  margin-left: 8px;
+`;
+
+// export const CardVisual = styled.div`
+//   display: flex;
+//   align-items: center;
+//   gap: 12px;
+//   background: ${color.basic100};
+//   padding: 12px 16px;
+//   border-radius: 8px;
+//   margin-top: 12px;
+// `;
+
+// export const CardIconWrapper = styled.div`
+//   width: 40px;
+//   height: 28px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// `;
+
+// export const CardNumber = styled.span`
+//   font-size: 16px;
+//   font-weight: 600;
+//   color: ${color.basic900};
+// `;
 
 export const DisabledButton = css`
   background: ${color.basic100} !important;
