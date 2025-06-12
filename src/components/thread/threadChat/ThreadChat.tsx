@@ -390,7 +390,7 @@ export const ThreadChat = ({
           <S.MessagePreview onClick={handlePreviewClick}>
             <S.PreviewContent>
               <S.PreviewAvatar>
-                <S.AvatarImage src={getAvatarImage(0, false)} alt={`${messagePreview.senderName} 아바타`} />
+                {/* <S.AvatarImage src={getAvatarImage(0, false)} alt={`${messagePreview.senderName} 아바타`} /> */}
               </S.PreviewAvatar>
               <S.PreviewText>
                 <S.PreviewSender>{messagePreview.senderName}</S.PreviewSender>

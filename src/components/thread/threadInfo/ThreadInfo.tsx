@@ -14,6 +14,7 @@ import { marked } from "marked"
 import { TICKET_TEMPLATE_DATA } from "@/constants/ticketTemplateData"
 import type { Ticket } from "@/types/ticket"
 import { mapTicketFromResponse } from "@/utils/ticketMapper"
+import Select from "react-select"
 
 interface TicketUpdatePayload {
   ticket_name: string
@@ -214,6 +215,11 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
   if (isError || !fetchedTicket || !editedTicket) return <div>티켓 정보를 불러오지 못했습니다.</div>
   const currentTemplate = TICKET_TEMPLATE_DATA.find((t) => t.name === fetchedTicket.type)
 
+  const options = projectMembers.map((member) => ({
+    value: member.projectMemberId,
+    label: member.name,
+  }))
+
   return (
     <S.Container>
       <S.Section>
@@ -307,7 +313,7 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
             {isEditMode ? (
               <div>
                 {/* 선택된 담당자들 표시 */}
-                <S.SelectedAssigneesDisplay>
+                {/* <S.SelectedAssigneesDisplay>
                   {(editedTicket.assignee_member_id_list || []).length > 0 ? (
                     projectMembers
                       .filter((member) =>
@@ -338,10 +344,22 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
                   ) : (
                     <S.SelectLabel>담당자를 선택하세요 (Ctrl/Cmd + 클릭으로 다중선택)</S.SelectLabel>
                   )}
-                </S.SelectedAssigneesDisplay>
-
+                </S.SelectedAssigneesDisplay> */}
+                <Select
+                  isMulti
+                  options={options}
+                  value={options.filter((opt) =>
+                    editedTicket.assignee_member_id_list?.includes(opt.value)
+                  )}
+                  onChange={(selectedOptions) =>
+                    setEditedTicket({
+                      ...editedTicket,
+                      assignee_member_id_list: selectedOptions.map((opt) => opt.value),
+                    })
+                  }
+                />
                 {/* 개선된 다중선택 드롭다운 */}
-                <S.StyledSelect
+                {/* <S.StyledSelect
                   multiple
                   size={projectMembers.length > 6 ? 6 : projectMembers.length}
                   value={editedTicket.assignee_member_id_list?.map(String) || []}
@@ -355,7 +373,7 @@ export const ThreadInfo = ({ projectName, ticket, onUpdateTicket }: ThreadInfoPr
                       {member.name}
                     </option>
                   ))}
-                </S.StyledSelect>
+                </S.StyledSelect> */}
               </div>
             ) : (
               <S.UserDisplay>
