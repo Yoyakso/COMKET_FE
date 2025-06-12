@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
 import { Button } from '@/components/common/button/Button';
 import * as S from './BillingPlanSection.Style';
 import { PLAN_DATA, PlanId } from '@/constants/planData';
 import { mapServerPlanToClientPlan } from '@/utils/mapPlanId';
+import { PaymentModal } from '@/components/billing/PaymentModal';
 import { CreditCard } from 'lucide-react';
 
 interface BillingPlanSectionProps {
@@ -29,6 +31,7 @@ export const BillingPlanSection = ({
 
   const atLimit = billingInfo.memberCount >= plan.maxUsers;
   const nextPlanId = plan.nextPlan;
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const renderActionButton = () => {
     return (
@@ -111,13 +114,21 @@ export const BillingPlanSection = ({
           <Button
             $variant="neutralOutlined"
             size="md"
-            onClick={onChangeCard}
+            onClick={() => setShowPaymentModal(true)}
             style={{ width: '100%' }}
           >
             카드 변경
           </Button>
         </S.CardFooter>
       </S.Card>
+      {showPaymentModal && (
+        <PaymentModal
+          onClose={() => setShowPaymentModal(false)}
+          onConfirm={() => {
+            setShowPaymentModal(false);
+          }}
+        />
+      )}
     </S.Container>
   );
 };

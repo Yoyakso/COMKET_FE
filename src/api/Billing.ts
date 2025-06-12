@@ -55,3 +55,26 @@ export const getCreditCardInfo = async (workspaceId: number) => {
   const res = await axiosInstance.get(`/api/v1/workspaces/${workspaceId}/billing/credit-card`);
   return res.data;
 };
+
+/**
+ * 결제수단 등록 여부 확인 API
+ * @param workspaceId 워크스페이스 ID
+ * @returns 결제수단 등록 여부 객체 (hasPaymentMethod: true/false)
+ */
+export const checkPaymentStatus = async (workspaceId: string) => {
+  const res = await axiosInstance.get(`/api/v1/workspaces/${workspaceId}/payment/status`);
+  return res.data; // 예: { hasPaymentMethod: true }
+};
+
+/**
+ * 결제 정보 등록 API
+ * @param workspaceId 워크스페이스 ID
+ * @param impUid 포트원 결제 고유 ID
+ * @returns 서버 응답
+ */
+export const registerPaymentMethod = async (workspaceId: number, impUid: string) => {
+  const res = await axiosInstance.post(
+    `/api/v1/workspaces/${workspaceId}/payment/register?impUid=${impUid}`,
+  );
+  return res.data;
+};
