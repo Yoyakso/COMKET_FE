@@ -1,82 +1,61 @@
+import React, { useState } from 'react';
 import { Button } from '@/components/common/button/Button';
 import * as S from './BillingPlanSection.Style';
 import { PLAN_DATA, PlanId } from '@/constants/planData';
 import { mapServerPlanToClientPlan } from '@/utils/mapPlanId';
-import { CreditCard, Calendar } from 'lucide-react';
+import { PaymentModal } from '@/components/billing/PaymentModal';
+import { BadgeCheck } from 'lucide-react';
+import type { BillingSummary } from '@/api/Billing';
 
 interface BillingPlanSectionProps {
-  billingInfo: {
-    currentPlan: string;
-    memberCount: number;
-  };
-  creditCardInfo?: {
-    maskedCardNumber: string;
-    cardholderName: string;
-    expiryDate: string;
-  };
+  billing: BillingSummary;
+  user: { name: string; email: string };
+  workspaceId: number;
   onUpgrade?: (target: PlanId) => void;
-  onChangeCard?: () => void;
 }
 
 export const BillingPlanSection = ({
-  billingInfo,
-  creditCardInfo,
+  billing,
+  user,
+  workspaceId,
   onUpgrade,
-  onChangeCard,
 }: BillingPlanSectionProps) => {
-  const planId = mapServerPlanToClientPlan(billingInfo.currentPlan);
-  const plan = PLAN_DATA[planId];
+  const currentPlanId = mapServerPlanToClientPlan(billing.currentPlan);
+  const currentPlan = PLAN_DATA[currentPlanId];
 
-  const atLimit = billingInfo.memberCount >= plan.maxUsers;
-  const nextPlanId = plan.nextPlan;
+  const atLimit = billing.memberCount >= currentPlan.maxUsers;
+  const nextPlanId = currentPlan.nextPlan;
 
-  const renderActionButton = () => {
-    if (planId === 'enterprise') {
-      return (
-        <Button $variant="tealFilled" size="lg" onClick={() => onUpgrade?.(plan.nextPlan!)}>
-          플랜 변경하기
-        </Button>
-      );
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [pendingPlanId, setPendingPlanId] = useState<PlanId | null>(null);
+
+  const handleUpgrade = () => {
+    if (!billing.hasPayment) {
+      setPendingPlanId(nextPlanId!);
+      setShowPaymentModal(true);
+      return;
     }
-
-    return (
-      <>
-        {atLimit && (
-          <S.UpgradeNotice>인원이 한도를 초과했습니다. 플랜을 업그레이드하세요.</S.UpgradeNotice>
-        )}
-        <Button $variant="tealFilled" size="lg" onClick={() => onUpgrade?.(plan.nextPlan!)}>
-          플랜 변경하기
-        </Button>
-      </>
-    );
+    onUpgrade?.(nextPlanId!);
   };
 
-  const getNextBillingDate = () => {
-    const today = new Date();
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 20);
-    return nextMonth.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
+  /* ---------- UI ---------- */
   return (
     <S.Container>
+      {/* 요금제 카드 */}
       <S.Card>
         <S.Header>
           <S.Heading>현재 요금제</S.Heading>
-          <S.Sub>{plan.name} 플랜의 상세 정보</S.Sub>
+          <S.Sub>{currentPlan.name} 플랜의 상세 정보</S.Sub>
         </S.Header>
 
         <S.PlanRow>
-          <S.PlanName>{plan.name}</S.PlanName>
-          <S.PlanBadge>{plan.badge}</S.PlanBadge>
+          <S.PlanName>{currentPlan.name}</S.PlanName>
+          <S.PlanBadge>{currentPlan.badge}</S.PlanBadge>
         </S.PlanRow>
 
-        {plan.priceValue !== null && (
+        {typeof currentPlan.priceValue === 'number' && (
           <S.PriceRow>
-            <S.Price>₩{plan.priceValue.toLocaleString('ko-KR')}</S.Price>
+            <S.Price>₩{currentPlan.priceValue.toLocaleString('ko-KR')}</S.Price>
             <S.PriceUnit>/ 월 / 사용자</S.PriceUnit>
           </S.PriceRow>
         )}
@@ -84,36 +63,87 @@ export const BillingPlanSection = ({
         <S.Divider />
 
         <S.InfoList>
-          <li>팀 인원 · {plan.userRange}</li>
-          <li>{plan.description}</li>
+          <li>팀 인원: {currentPlan.userRange}</li>
+          <li>{currentPlan.description}</li>
         </S.InfoList>
 
-        <S.CardFooter>{renderActionButton()}</S.CardFooter>
-      </S.Card>
-
-      <S.Card>
-        <S.Header>
-          <S.Heading>결제 정보</S.Heading>
-        </S.Header>
-
-        <S.InfoLine>
-          <Calendar size={16} strokeWidth={1.5} />
-          <S.InfoLabel>다음 결제일</S.InfoLabel>
-          <S.InfoValue>{getNextBillingDate()}</S.InfoValue>
-        </S.InfoLine>
-
-        <S.InfoLine>
-          <CreditCard size={16} strokeWidth={1.5} />
-          <S.InfoLabel>결제 방법</S.InfoLabel>
-          <S.InfoValue>{creditCardInfo ? creditCardInfo.maskedCardNumber : '미등록'}</S.InfoValue>
-        </S.InfoLine>
+        <S.ExpectedPrice>
+          <S.Title>예상 월 요금</S.Title>
+          <S.ExpectedPriceContainer>
+            <S.ExpectedPriceRow>
+              <S.Label>요금제 단가</S.Label>
+              <S.Value>₩{currentPlan.priceValue.toLocaleString('ko-KR')}/월</S.Value>
+            </S.ExpectedPriceRow>
+            <S.ExpectedPriceRow>
+              <S.Label>워크스페이스 멤버</S.Label>
+              <S.Value>{billing.memberCount}명</S.Value>
+            </S.ExpectedPriceRow>
+            <S.RowDivider />
+            <S.ExpectedPriceRow>
+              <S.Label>총 예상 요금</S.Label>
+              <S.Value>
+                ₩{(currentPlan.priceValue * billing.memberCount).toLocaleString('ko-KR')}/월
+              </S.Value>
+            </S.ExpectedPriceRow>
+          </S.ExpectedPriceContainer>
+        </S.ExpectedPrice>
 
         <S.CardFooter>
-          <Button $variant="tealFilled" size="md" onClick={onChangeCard} style={{ width: '100%' }}>
-            결제 방법 변경
+          {atLimit && (
+            <S.UpgradeNotice>인원이 한도를 초과했습니다. 플랜을 업그레이드하세요.</S.UpgradeNotice>
+          )}
+          <Button $variant="tealFilled" size="lg" onClick={handleUpgrade}>
+            플랜 변경하기
           </Button>
         </S.CardFooter>
       </S.Card>
+
+      {/* 결제 등록 카드 */}
+      <S.Card>
+        <S.Header>
+          <S.Heading>정기결제 등록</S.Heading>
+        </S.Header>
+
+        <S.InfoLine>
+          <BadgeCheck size={16} strokeWidth={1.5} />
+          <S.InfoLabel>등록 상태</S.InfoLabel>
+          <S.InfoValue>
+            {billing.hasPayment ? <S.BadgeRegistered>등록 완료</S.BadgeRegistered> : '미등록'}
+          </S.InfoValue>
+        </S.InfoLine>
+
+        <S.CardFooter>
+          <Button
+            $variant="neutralOutlined"
+            size="md"
+            onClick={() => {
+              setPendingPlanId(null);
+              setShowPaymentModal(true);
+            }}
+            style={{ width: '100%' }}
+          >
+            정기결제 등록/변경
+          </Button>
+        </S.CardFooter>
+      </S.Card>
+
+      {/* 결제 모달 */}
+      {showPaymentModal && (
+        <PaymentModal
+          workspaceId={workspaceId}
+          selectedPlan={pendingPlanId ? PLAN_DATA[pendingPlanId] : undefined}
+          cardholderName={user.name}
+          email={user.email}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setPendingPlanId(null);
+          }}
+          onSuccess={() => {
+            if (pendingPlanId) onUpgrade?.(pendingPlanId);
+            setShowPaymentModal(false);
+          }}
+        />
+      )}
     </S.Container>
   );
 };

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 import { LocalNavBar } from '@/components/common/navBar/LocalNavBar';
@@ -11,23 +10,16 @@ import { PaymentCompleteModal } from '@/components/billing/PaymentCompleteModal'
 import { PLAN_DATA, PlanId } from '@/constants/planData';
 import { mapServerPlanToClientPlan } from '@/utils/mapPlanId';
 import { useWorkspaceStore } from '@/stores/workspaceStore';
-import { useBillingInfo } from '@/hooks/useBillingInfo';
-import { registerCreditCard, getCreditCardInfo, updateWorkspacePlan } from '@/api/Billing';
+import { useBillingSummary } from '@/hooks/useBillingSummary';
+import { updateWorkspacePlan } from '@/api/Billing';
 import * as S from './BillingPage.Style';
 import { toast } from 'react-toastify';
-
-interface CardInfo {
-  cardNumber: string;
-  cardholderName: string;
-  expiryDate: string;
-  cvc: string;
-}
 
 const qc = new QueryClient();
 
 const BillingPageInner = () => {
   const workspaceId = useWorkspaceStore(s => s.workspaceId);
-  const { data: billingInfo } = useBillingInfo(workspaceId);
+  const { data: billing } = useBillingSummary(workspaceId);
   const queryClient = useQueryClient();
 
   const [showSelectModal, setShowSelectModal] = useState(false);
@@ -35,56 +27,49 @@ const BillingPageInner = () => {
   const [showPaymentDoneModal, setShowPaymentDoneModal] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<PlanId | null>(null);
 
-  const { data: creditCardInfo } = useQuery({
-    queryKey: ['creditCardInfo', workspaceId],
-    queryFn: () => getCreditCardInfo(workspaceId),
-    enabled: !!workspaceId,
-  });
+  /* ---------- 이벤트 ---------- */
+  const openPlanModal = () => setShowSelectModal(true);
 
-  const handleOpenPlanModal = () => {
-    setShowSelectModal(true);
-  };
-
-  const handleSelectPlan = async (planId: PlanId) => {
+  const selectPlan = async (planId: PlanId) => {
     setSelectedPlanId(planId);
     setShowSelectModal(false);
 
+    // BASIC → 바로 변경
     if (planId === 'basic') {
       try {
         await updateWorkspacePlan(workspaceId, 'BASIC');
         await queryClient.invalidateQueries({ queryKey: ['billing', workspaceId] });
         toast.success('플랜이 변경되었습니다.');
-      } catch (err) {
-        console.error(err);
-        toast.error('요금제 변경에 실패했어요.');
+      } catch (e) {
+        console.error(e);
+        toast.error('요금제 변경에 실패했습니다.');
       }
     } else {
+      // 유료 플랜 → 결제 모달
       setShowPaymentModal(true);
     }
   };
 
-  const handleConfirmPayment = async (cardInfo: CardInfo) => {
+  const onPaymentSuccess = async () => {
     if (!workspaceId || !selectedPlanId) return;
 
     try {
-      await registerCreditCard(workspaceId, cardInfo);
       await updateWorkspacePlan(
         workspaceId,
-        selectedPlanId.toUpperCase() as 'BASIC' | 'STARTUP' | 'PROFESSIONAL' | 'ENTERPRISE',
+        selectedPlanId.toUpperCase() as 'STARTUP' | 'PROFESSIONAL' | 'ENTERPRISE',
       );
-
       await queryClient.invalidateQueries({ queryKey: ['billing', workspaceId] });
-
       setShowPaymentModal(false);
       setShowPaymentDoneModal(true);
-    } catch (err) {
-      console.error('카드 등록 or 요금제 변경 실패:', err);
-      toast.error('결제에 실패했어요. 정보를 다시 확인해주세요.');
+    } catch (e) {
+      console.error(e);
+      toast.error('요금제 변경에 실패했습니다.');
     }
   };
 
-  if (!billingInfo) return null;
+  if (!billing) return null;
 
+  /* ---------- UI ---------- */
   return (
     <S.PageContainer>
       <S.GNBContainer>
@@ -99,34 +84,38 @@ const BillingPageInner = () => {
         <S.Content>
           <S.TitleWrapper>
             <S.Title>이달의 사용 현황</S.Title>
-            <S.Description>요금제, 팀 인원, 기능 사용량을 한눈에 확인해보세요</S.Description>
+            <S.Description>요금제, 팀 인원, 기능 사용량을 한눈에 확인하세요.</S.Description>
           </S.TitleWrapper>
 
           <S.GridWrapper>
             <BillingChartSection />
             <BillingPlanSection
-              billingInfo={billingInfo}
-              creditCardInfo={creditCardInfo}
-              onUpgrade={handleOpenPlanModal}
+              billing={billing}
+              user={{ name: '', email: '' }}
+              workspaceId={workspaceId}
+              onUpgrade={openPlanModal}
             />
           </S.GridWrapper>
 
+          {/* 모달들 */}
           {showSelectModal && (
             <PlanSelectModal
-              currentPlanId={mapServerPlanToClientPlan(billingInfo.currentPlan)}
-              onSelect={handleSelectPlan}
+              currentPlanId={mapServerPlanToClientPlan(billing.currentPlan)}
+              workspaceId={workspaceId}
+              user={{ name: '', email: '' }}
+              onSelect={selectPlan}
               onClose={() => setShowSelectModal(false)}
             />
           )}
 
           {showPaymentModal && selectedPlanId && (
             <PaymentModal
-              selectedPlan={{
-                ...PLAN_DATA[selectedPlanId],
-                price: PLAN_DATA[selectedPlanId].priceValue || 0,
-              }}
+              workspaceId={workspaceId}
+              selectedPlan={PLAN_DATA[selectedPlanId]}
+              cardholderName={''}
+              email={''}
               onClose={() => setShowPaymentModal(false)}
-              onConfirm={handleConfirmPayment}
+              onSuccess={onPaymentSuccess}
             />
           )}
 

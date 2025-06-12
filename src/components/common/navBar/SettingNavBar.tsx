@@ -50,7 +50,6 @@ export const SettingNavBar = () => {
       items: [
         { id: 'profile', label: '프로필 설정', href: '/profile', icon: <ProfileIcon /> },
         { id: 'account_information', label: '계정 정보', href: '/account', icon: <KeyIcon /> },
-        { id: 'alarm', label: '알림 설정', href: '#', icon: <AlarmIcon /> },
       ],
     },
   ];

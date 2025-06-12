@@ -55,7 +55,10 @@ export const MemberHeader = ({
   };
 
   const openInviteModal = () => {
+    console.log(currentMemberCount, maxMemberCount);
+    // 현재 멤버 수가 최대치에 도달했는지 확인
     if (currentMemberCount >= maxMemberCount) {
+      console.warn('멤버 수가 최대치를 초과했습니다.');
       setShowUpgradeModal(true);
       return;
     }

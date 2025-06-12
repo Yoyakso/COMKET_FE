@@ -42,19 +42,6 @@ export const Title = styled.h2`
   color: ${color.textPrimary};
 `;
 
-export const Description = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-  background-color: ${color.textPlaceholder08};
-  border-radius: 6px;
-  font-size: 14px;
-  text-align: center;
-  color: ${color.textPrimary};
-  margin-bottom: 32px;
-`;
-
 export const PlanList = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -64,29 +51,36 @@ export const PlanList = styled.div`
 
 export const PlanCard = styled.div<{ $selected?: boolean }>`
   position: relative;
-  border: ${({ $selected }) => ($selected ? `2px solid ${color.teal500}` : `1px solid #e2e8f0`)};
+  border: ${({ $selected }) =>
+    $selected ? `2px solid ${color.teal500}` : `1px solid ${color.basic200}`};
   border-radius: 16px;
-  padding: 20px 16px;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  padding: 24px 20px;
+  background-color: ${color.white};
+  box-shadow: ${({ $selected }) =>
+    $selected ? '0 0 0 3px rgba(45, 212, 191, 0.3)' : '0 1px 3px rgba(0, 0, 0, 0.06)'};
   transition: all 0.2s ease;
-  font-size: 13px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 460px;
+  min-height: 200px;
+  text-align: center;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
 `;
 
 export const Badge = styled.div`
   position: absolute;
-  top: -10px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
   background-color: ${color.teal500};
   color: white;
   font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
   font-weight: 600;
 `;
 
@@ -109,51 +103,23 @@ export const PlanInfo = styled.p`
 `;
 
 export const PlanPrice = styled.p`
-  font-size: 20px;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 900;
   color: ${color.textPrimary};
-  margin: 8px 0;
-`;
-
-export const Section = styled.div`
-  margin-top: 10px;
-`;
-
-export const SectionTitle = styled.h4`
-  font-size: 13px;
-  font-weight: 600;
-  color: ${color.textPrimary};
-  margin-bottom: 6px;
-`;
-
-export const FeatureList = styled.ul`
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-`;
-
-export const FeatureItem = styled.li`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: ${color.textPrimary};
-  margin-bottom: 4px;
-`;
-
-export const CheckIcon = styled.span`
-  color: ${color.teal500};
-  font-weight: bold;
-`;
-
-export const XIcon = styled.span`
-  color: #ef4444;
-  font-weight: bold;
+  margin: 12px 0 0;
 `;
 
 export const ButtonRow = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 32px;
+`;
+
+export const CloseIcon = styled.div`
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  cursor: pointer;
+  color: ${color.textSecondary}; // 원하는 색상 변수로 교체
 `;

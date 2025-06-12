@@ -35,42 +35,45 @@ export const LoginForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    console.log('🔥 handleSubmit 시작됨');
     try {
       const data = await logIn({ email, password });
+      console.log('로그인 응답:', data);
       toast.success('로그인 성공!');
-      localStorage.setItem('accessToken', data.accessToken);
+      // localStorage.setItem('accessToken', data.accessToken);
 
-      if (rememberEmail) {
-        setUserState({
-          email: data.email,
-          name: data.name,
-          memberId: data.memberId,
-          loginPlatformInfo: data.loginPlatformInfo,
-          profileFileUrl: data.profileFileUrl,
-          workspaceMemberId: data.workspaceMemberId,
-        });
-      } else {
-        clearUser();
-      }
-
-      try {
-        const token = await requestFcmPermission();
-        if (token) {
-          await registerFcmToken(token);
-          console.log('FCM 토큰 서버에 등록 완료');
-        }
-      } catch (err) {
-        console.warn('FCM 등록 실패:', err);
-      }
-
-      // 리디렉션 처리
       if (inviteCodeParam) {
         navigate(`/workspaces/invite?code=${inviteCodeParam}`, { replace: true });
       } else {
         navigate(from, { replace: true });
       }
+
+      setTimeout(async () => {
+        try {
+          if (rememberEmail) {
+            setUserState({
+              email: data.email,
+              name: data.name,
+              memberId: data.memberId,
+              loginPlatformInfo: data.loginPlatformInfo,
+              profileFileUrl: data.profileFileUrl,
+              workspaceMemberId: data.workspaceMemberId,
+            });
+          } else {
+            clearUser();
+          }
+          const token = await requestFcmPermission();
+          if (token) {
+            await registerFcmToken(token);
+            console.log('FCM 토큰 서버에 등록 완료');
+          }
+        } catch (err) {
+          console.warn('FCM 등록 실패:', err);
+        }
+      }, 0);
     } catch (error) {
+      console.log('redirecting to from page...', from);
+      navigate(from, { replace: true });
       console.error('로그인 실패:', error);
       toast.error('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
     }
