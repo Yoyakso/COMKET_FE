@@ -39,6 +39,7 @@ export const GlobalNavBar = ({ variant = 'default' }: GNBProps) => {
         <S.NavLinks>
           <S.NavLink href="main">서비스 소개</S.NavLink>
           <S.NavLink href="/plan">이용 요금</S.NavLink>
+          <S.NavLink href="/contact">문의하기</S.NavLink>
         </S.NavLinks>
       )}
       {variant === 'default' && (

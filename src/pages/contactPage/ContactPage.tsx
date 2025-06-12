@@ -4,6 +4,7 @@ import { Mail, Phone, MapPin, Clock, Send, MessageSquare, ArrowRight } from "luc
 import * as S from "./ContactPage.Style"
 import { GlobalNavBar } from "@/components/common/navBar/GlobalNavBar"
 import { createInquiry } from "@/api/Inquiry"
+import { toast } from 'react-toastify'
 
 export const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ export const ContactPage = () => {
         message: formData.message,
       })
 
-      alert("문의가 성공적으로 전송되었습니다!")
+      toast.success("문의가 성공적으로 전송되었습니다!")
 
       setFormData({
         name: "",
@@ -52,7 +53,7 @@ export const ContactPage = () => {
       })
     } catch (error) {
       console.error("문의 전송 실패:", error)
-      alert("문의 전송에 실패했습니다. 다시 시도해주세요.")
+      toast.error("문의 전송에 실패했습니다. 다시 시도해주세요.")
     } finally {
       setIsSubmitting(false)
     }

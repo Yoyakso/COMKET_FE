@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Zap, Shield, Headphones, Star, ArrowRight, Crown, Gem, Rocket } from 'lucide-react';
 import * as S from './PlanPage.Style';
+import { GlobalNavBar } from '@/components/common/navBar/GlobalNavBar';
 
 export const PlanPage = () => {
   const [selectedUserRange, setSelectedUserRange] = useState<string>('startup');
@@ -103,7 +104,7 @@ export const PlanPage = () => {
     <S.Container>
       {/* Header */}
       <S.Header>
-        <S.HeaderContent>
+        {/* <S.HeaderContent>
           <S.LogoContainer>
             <S.LogoBadge>
               <span>C</span>
@@ -113,7 +114,8 @@ export const PlanPage = () => {
           <S.HeaderActions>
             <S.PrimaryButton onClick={handleStart}>로그인</S.PrimaryButton>
           </S.HeaderActions>
-        </S.HeaderContent>
+        </S.HeaderContent> */}
+        <GlobalNavBar variant='default' />
       </S.Header>
 
       <S.Main>
