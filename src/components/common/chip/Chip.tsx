@@ -54,7 +54,7 @@ export const Chip = ({
 
   return (
     <S.ChipContainer $variant={$variant} $styleType={$styleType} disabled={isDisabled} size={size}>
-      {coloredIcon}
+      {coloredIcon && <span data-testid="icon">{coloredIcon}</span>}
       <S.ChipText>{children}</S.ChipText>
       {onClose && (
         <S.CloseButton

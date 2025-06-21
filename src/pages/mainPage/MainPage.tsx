@@ -72,9 +72,6 @@ export const MainPage = () => {
             <Link to="/login">
               <S.GetStartedButton>시작하기</S.GetStartedButton>
             </Link>
-            {/* <Link to="#demo">
-              <S.WatchDemoButton>데모 보기</S.WatchDemoButton>
-            </Link> */}
           </S.HeroButtons>
         </S.HeroSection>
 
