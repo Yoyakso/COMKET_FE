@@ -35,9 +35,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = ({ children, $variant, size, withIcon, ...props }: ButtonProps) => {
   return (
     <S.ButtonContainer $variant={$variant} size={size} disabled={props.disabled} {...props}>
-      {withIcon && <S.IconWrapper><PlusIcon /></S.IconWrapper>}
+      {withIcon && <S.IconWrapper data-testid="button-icon"><PlusIcon /></S.IconWrapper>}
       {children}
-      {withIcon && <S.IconWrapper><PlusIcon /></S.IconWrapper>}
+      {withIcon && <S.IconWrapper data-testid="button-icon"><PlusIcon /></S.IconWrapper>}
     </S.ButtonContainer>
   )
 }

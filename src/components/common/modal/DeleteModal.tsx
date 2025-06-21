@@ -74,7 +74,7 @@ export const DeleteModal = ({
             {isLoading ? (
               <>
                 {confirmText}
-                <S.SpinnerContainer>
+                <S.SpinnerContainer data-testid="loader-svg">
                   <Loader size={16} />
                 </S.SpinnerContainer>
               </>

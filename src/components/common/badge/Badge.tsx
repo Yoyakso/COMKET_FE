@@ -51,7 +51,8 @@ export const Badge = ({
       $shape={shape}
       className={className}
     >
-      {size === "lg" && coloredIcon && <S.IconWrapper>{coloredIcon}</S.IconWrapper>}
+      {size === "lg" && coloredIcon &&
+        <S.IconWrapper data-testid='icon-wrapper'>{coloredIcon}</S.IconWrapper>}
       {children}
     </S.BadgeContainer>
   )

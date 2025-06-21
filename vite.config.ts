@@ -2,6 +2,7 @@ import svgr from 'vite-plugin-svgr';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { configDefaults } from 'vitest/config'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -64,5 +65,10 @@ export default defineConfig({
       '@utils': '/src/utils',
       '@api': '/src/api',
     },
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    exclude: [...configDefaults.exclude, 'e2e/*'],
   },
 });
