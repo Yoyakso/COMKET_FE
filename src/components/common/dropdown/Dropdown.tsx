@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import * as S from './Dropdown.style';
 import { AnimatePresence, motion } from 'framer-motion';
-
 import ChevronDown from '@/assets/icons/ChevronDown.svg?react';
 import ChevronUp from '@/assets/icons/ChevronUp.svg?react';
 import DropdownIcon from '@/assets/icons/DropdownIcon.svg?react';
@@ -58,9 +57,9 @@ export const Dropdown = ({
 
   const selectedText = isMulti
     ? selectedValues
-        .map(v => options.find(o => o.value === v)?.label)
-        .filter(Boolean)
-        .join(', ') || placeholder
+      .map(v => options.find(o => o.value === v)?.label)
+      .filter(Boolean)
+      .join(', ') || placeholder
     : (options.find(o => o.value === value)?.label ?? placeholder);
 
   useEffect(() => {
@@ -92,6 +91,7 @@ export const Dropdown = ({
         $size={size}
         selected={isSelected}
         onClick={() => (isMulti ? handleMultiSelect(o.value) : handleSingleSelect(o.value))}
+        data-testid="dropdown-option"
       >
         <S.OptionItemContent>
           {type === 'single-image' && o.imageSrc && <S.IconCircle src={o.imageSrc} alt="icon" />}
@@ -186,11 +186,11 @@ export const Dropdown = ({
           >
             {type === 'group-check'
               ? [...new Set(options.map(o => o.groupName))].map((group, idx) => (
-                  <S.GroupBlock key={`${group}-${idx}`}>
-                    <S.GroupLabel>{group}</S.GroupLabel>
-                    {options.filter(o => o.groupName === group).map(renderOption)}
-                  </S.GroupBlock>
-                ))
+                <S.GroupBlock key={`${group}-${idx}`}>
+                  <S.GroupLabel>{group}</S.GroupLabel>
+                  {options.filter(o => o.groupName === group).map(renderOption)}
+                </S.GroupBlock>
+              ))
               : options.map((o, i) => renderOption(o, i))}
           </S.OptionList>
         )}
